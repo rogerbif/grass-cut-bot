@@ -35,13 +35,13 @@ func _build_level_1_mvp() -> void:
 	# Área retangular compacta coberta por grama verde básica
 	# Meta: 60 tufos de grama verde, cronômetro de 90 segundos (1:30)
 	# Sem obstáculos internos
-	var width_count = 10
-	var height_count = 6
-	var spacing = 1.1
-	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
-	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+	var width_count: int = 10
+	var height_count: int = 6
+	var spacing: float = 1.1
+	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
-	var total_grass = 0
+	var total_grass: int = 0
 	for x in range(width_count):
 		for z in range(height_count):
 			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
@@ -62,29 +62,29 @@ func _build_level_1_mvp() -> void:
 
 func _build_level_2() -> void:
 	# Fase 2: Introdução de Trigo e Rochas
-	var width_count = 11
-	var height_count = 8
-	var spacing = 1.1
-	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
-	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+	var width_count: int = 11
+	var height_count: int = 8
+	var spacing: float = 1.1
+	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
 	# Adiciona algumas rochas de obstáculo
-	var rock_coords = [Vector2i(3, 2), Vector2i(7, 5), Vector2i(4, 6)]
+	var rock_coords: Array[Vector2i] = [Vector2i(3, 2), Vector2i(7, 5), Vector2i(4, 6)]
 	for rc in rock_coords:
-		var r_pos = Vector3(offset_x + rc.x * spacing, 0.0, offset_z + rc.y * spacing)
+		var r_pos = Vector3(offset_x + float(rc.x) * spacing, 0.0, offset_z + float(rc.y) * spacing)
 		var rock = rock_scene.instantiate()
 		rock.position = r_pos
 		obstacles_container.add_child(rock)
 
-	var grass_count = 0
-	var wheat_count = 0
+	var grass_count: int = 0
+	var wheat_count: int = 0
 
 	for x in range(width_count):
 		for z in range(height_count):
 			var grid_coord = Vector2i(x, z)
 			if grid_coord in rock_coords:
 				continue
-			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
+			var pos = Vector3(offset_x + float(x) * spacing, 0.0, offset_z + float(z) * spacing)
 			if pos.length() < 1.2:
 				continue
 
@@ -102,27 +102,27 @@ func _build_level_2() -> void:
 	if cutter:
 		cutter.position = Vector3(0, 0.1, 0)
 
-	var goals = { "grass": grass_count, "wheat": wheat_count }
+	var goals: Dictionary = { "grass": grass_count, "wheat": wheat_count }
 	GameManager.start_level(2, goals, 100.0)
 
 func _build_level_3() -> void:
 	# Fase 3: Introdução de Flores e mais obstáculos
-	var width_count = 12
-	var height_count = 10
-	var spacing = 1.1
-	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
-	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+	var width_count: int = 12
+	var height_count: int = 10
+	var spacing: float = 1.1
+	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
-	var rock_coords = [Vector2i(2, 2), Vector2i(9, 2), Vector2i(2, 7), Vector2i(9, 7), Vector2i(6, 4)]
+	var rock_coords: Array[Vector2i] = [Vector2i(2, 2), Vector2i(9, 2), Vector2i(2, 7), Vector2i(9, 7), Vector2i(6, 4)]
 	for rc in rock_coords:
-		var r_pos = Vector3(offset_x + rc.x * spacing, 0.0, offset_z + rc.y * spacing)
+		var r_pos = Vector3(offset_x + float(rc.x) * spacing, 0.0, offset_z + float(rc.y) * spacing)
 		var rock = rock_scene.instantiate()
 		rock.position = r_pos
 		obstacles_container.add_child(rock)
 
-	var grass_count = 0
-	var wheat_count = 0
-	var flower_count = 0
+	var grass_count: int = 0
+	var wheat_count: int = 0
+	var flower_count: int = 0
 
 	for x in range(width_count):
 		for z in range(height_count):
@@ -157,13 +157,13 @@ func _build_level_3() -> void:
 	GameManager.start_level(3, goals, 110.0)
 
 func _build_procedural_level(level_num: int) -> void:
-	var width_count = min(14, 10 + level_num / 2)
-	var height_count = min(12, 8 + level_num / 2)
-	var spacing = 1.1
-	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
-	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+	var width_count: int = mini(14, 10 + int(float(level_num) / 2.0))
+	var height_count: int = mini(12, 8 + int(float(level_num) / 2.0))
+	var spacing: float = 1.1
+	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
-	var goals = { "grass": 0, "wheat": 0, "flower": 0 }
+	var goals: Dictionary = { "grass": 0, "wheat": 0, "flower": 0 }
 
 	for x in range(width_count):
 		for z in range(height_count):

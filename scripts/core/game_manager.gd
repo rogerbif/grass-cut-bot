@@ -71,7 +71,7 @@ func register_cut(plant_type: String, base_coins: int = 1) -> void:
 	if goals.has(plant_type):
 		var goal_info: Dictionary = goals[plant_type]
 		goal_info["current"] += 1
-		var remaining: int = max(0, goal_info["target"] - goal_info["current"])
+		var remaining: int = maxi(0, int(goal_info["target"]) - int(goal_info["current"]))
 		goal_updated.emit(plant_type, remaining, goal_info["target"])
 
 		if remaining == 0:

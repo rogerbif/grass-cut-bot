@@ -23,7 +23,7 @@ const BASE_COST: Dictionary = {
 }
 
 func add_coins(amount: int) -> void:
-	total_coins += amount * get_coin_multiplier()
+	total_coins += amount
 
 func spend_coins(amount: int) -> bool:
 	if total_coins >= amount:

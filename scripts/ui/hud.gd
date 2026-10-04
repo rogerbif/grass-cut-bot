@@ -1,9 +1,9 @@
 extends Control
 
-@onready var timer_label: Label = $TopBar/TimerContainer/TimerLabel
-@onready var pause_button: Button = $TopBar/PauseButton
-@onready var coins_label: Label = $TopBar/CoinsContainer/CoinsLabel
-@onready var goals_container: HBoxContainer = $TopBar/GoalsContainer
+@onready var timer_label: Label = $TopBar/HBox/TimerContainer/TimerLabel
+@onready var pause_button: Button = $TopBar/HBox/PauseButton
+@onready var coins_label: Label = $TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
+@onready var goals_container: HBoxContainer = $TopBar/HBox/GoalsContainer
 
 @onready var pause_modal: Control = $PauseModal
 @onready var victory_modal: Control = $VictoryModal
@@ -57,15 +57,16 @@ func _ready() -> void:
 	_setup_workshop_buttons()
 
 func _on_time_updated(time_left: float) -> void:
-	var minutes := int(time_left) / 60
-	var seconds := int(time_left) % 60
-	timer_label.text = "%d:%02d" % [minutes, seconds]
-	
-	# Alerta visual se o tempo estiver acabando (< 15 segundos)
-	if time_left <= 15.0:
-		timer_label.modulate = Color(1.0, 0.3, 0.3)
-	else:
-		timer_label.modulate = Color.WHITE
+	var minutes: int = int(time_left / 60.0)
+	var seconds: int = int(time_left) % 60
+	if timer_label != null:
+		timer_label.text = "%d:%02d" % [minutes, seconds]
+		
+		# Alerta visual se o tempo estiver acabando (< 15 segundos)
+		if time_left <= 15.0:
+			timer_label.modulate = Color(1.0, 0.3, 0.3)
+		else:
+			timer_label.modulate = Color.WHITE
 
 func _on_goal_updated(plant_type: String, remaining: int, target: int) -> void:
 	if not goal_cards.has(plant_type):
@@ -134,7 +135,8 @@ func _on_goal_completed(plant_type: String) -> void:
 		card["style"].bg_color = Color(0.1, 0.4, 0.2, 0.9)
 
 func _on_coins_changed(new_amount: int) -> void:
-	coins_label.text = "%d" % new_amount
+	if coins_label != null:
+		coins_label.text = "%d" % new_amount
 
 func _on_pause_pressed() -> void:
 	GameManager.toggle_pause()
