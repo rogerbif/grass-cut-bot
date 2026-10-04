@@ -20,6 +20,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | :--- | :--- | :--- |
 | [`001_fundacao_mvp_fase_1.md`](./001_fundacao_mvp_fase_1.md) | Fundação do Projeto e MVP da Fase 1 | Cortador circular omnidirecional, corte radial por contato, tufos de grama/trigo/flores, física de ricochete com rochas e partículas parabólicas. |
 | [`002_shader_interativo_grama_arnklit.md`](./002_shader_interativo_grama_arnklit.md) | Shader de Grama Interativa (Arnklit) | Deformação radial de vértices via Shader globals, oscilação de vento procedural, gradiente de cores da raiz ao topo e preservação da colheita. |
+| [`003_modelo_lamina_primitivas_godot.md`](./003_modelo_lamina_primitivas_godot.md) | Modelagem da Lâmina Estilizada com Primitivas Godot | Hub central com botão em domo azul, asas aerodinâmicas duplas de perfil hélice e arcos crescentes de vento (swoosh trails) de alta rotação. |
 
 ---
 

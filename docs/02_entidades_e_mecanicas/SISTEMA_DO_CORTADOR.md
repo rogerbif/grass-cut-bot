@@ -6,20 +6,32 @@ Este documento detalha a física, estrutura mecânica, lógica de movimentação
 
 ## 1. Estrutura do Cortador (`cutter.tscn`)
 
-O cortador é instanciado a partir de um `CharacterBody3D` posicionado rente ao solo (`Y = 0.1m`):
+O cortador é instanciado a partir de um `CharacterBody3D` posicionado rente ao solo (`Y = 0.1m`), utilizando exclusivamente **primitivas geométricas nativas da Godot 4** para compor uma lâmina estilizada aerodinâmica com acabamento toy/arcade e rastros dinâmicos de rotação:
 
 ```
 Cutter (CharacterBody3D - Layer 2, Mask 1|8)
-├── BodyCollision (CollisionShape3D - Cylinder r=0.5m, h=0.3m)
+├── BodyCollision (CollisionShape3D - Cylinder r=0.45m, h=0.25m)
 ├── VisualPivot (Node3D)
-│   └── SawMesh (Node3D - gira continuamente em Y)
-│       ├── BladeDisc (MeshInstance3D - Cylinder r=0.65m, h=0.04m, Aço)
-│       ├── CenterMotor (MeshInstance3D - Cylinder r=0.28m, h=0.22m, Vermelho)
-│       └── MotorCap (MeshInstance3D - Cylinder r=0.12m, h=0.28m, Chumbo)
+│   └── SawMesh (Node3D - rotação contínua em Y a 1200°/s)
+│       ├── HubCenter (Node3D - Hub motor central azul)
+│       │   ├── Base (MeshInstance3D - CylinderMesh r_topo=0.20m, r_base=0.23m, h=0.08m, Azul #0076F5)
+│       │   └── TopDome (MeshInstance3D - SphereMesh achatada r=0.14m, h=0.075m, Azul Celeste #24B2FF)
+│       ├── WingRight (Node3D - Asa direita aerodinâmica)
+│       │   ├── RootBase (MeshInstance3D - BoxMesh 0.2x0.035x0.2m, Branco #F8F9FF)
+│       │   ├── MainWedge (MeshInstance3D - PrismMesh aerodinâmico 0.28x0.54x0.035m, left_to_right=0.4)
+│       │   ├── Spine (MeshInstance3D - CapsuleMesh espinha central r=0.032m, h=0.48m)
+│       │   └── TipRound (MeshInstance3D - SphereMesh ponta suave r=0.024m)
+│       ├── WingLeft (Node3D - Asa esquerda simétrica girada 180° em Y)
+│       ├── SwooshRight (Node3D - Rastros de vento crescentes atrás da ponta direita)
+│       │   ├── OuterSeg_1..10 (MeshInstance3D - 10 cápsulas tangentes em arco r=0.66m, unshaded alpha)
+│       │   └── InnerSeg_1..8 (MeshInstance3D - 8 cápsulas tangentes em arco r=0.52m, unshaded alpha)
+│       └── SwooshLeft (Node3D - Rastros de vento crescentes atrás da ponta esquerda, girado 180° em Y)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
-│   └── CollisionShape3D (Cylinder r=0.65m, h=0.5m)
-└── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto)
+│   └── CollisionShape3D (Cylinder r=0.65m, h=0.4m)
+└── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco)
 ```
+
+![Preview da Lâmina Estilizada](../assets/blade_preview.png)
 
 ---
 
