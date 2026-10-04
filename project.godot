@@ -47,3 +47,9 @@ pointing/emulate_touch_from_mouse=true
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/directional_shadow/size=2048
+
+[shader_globals]
+
+cutter_pos={"type":"vec3","value":Vector3(0, 0, 0)}
+cutter_interact_radius={"type":"float","value":1.6}
+

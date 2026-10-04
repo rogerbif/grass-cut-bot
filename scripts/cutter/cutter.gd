@@ -18,8 +18,21 @@ var stun_timer: float = 0.0
 
 func _ready() -> void:
 	update_upgrades()
+	_update_shader_globals()
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
+
+func _process(_delta: float) -> void:
+	_update_shader_globals()
+
+func _update_shader_globals() -> void:
+	var blade_radius: float = 0.65
+	if UpgradeManager != null:
+		blade_radius = UpgradeManager.get_blade_radius()
+	var interact_radius: float = blade_radius + 0.95
+	RenderingServer.global_shader_parameter_set("cutter_pos", global_position)
+	RenderingServer.global_shader_parameter_set("cutter_interact_radius", interact_radius)
+
 
 func _on_upgrade_purchased(upgrade_name: String, _level: int) -> void:
 	if upgrade_name == "radius" or upgrade_name == "speed":

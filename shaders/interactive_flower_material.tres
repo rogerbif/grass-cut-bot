@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://interactive_flower_mat_01"]
+
+[ext_resource type="Shader" path="res://shaders/interactive_grass.gdshader" id="1_shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/interact_power = 0.70
+shader_parameter/wind_speed = 2.2
+shader_parameter/wind_strength = 0.06
+shader_parameter/color_base = Color(0.15, 0.45, 0.2, 1)
+shader_parameter/color_top = Color(0.92, 0.22, 0.58, 1)
+shader_parameter/roughness = 0.9
+shader_parameter/specular = 0.15

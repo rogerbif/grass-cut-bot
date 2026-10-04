@@ -43,3 +43,16 @@ Tuft (Node3D - grupo "plants", script plant.gd)
      - Decrementa a cota pendente no Top HUD da partida.
    - O modelo 3D é achatado e encolhido a zero via Tween em 0.14s, revelando o piso limpo.
    - O nó aguarda o término das partículas e executa `queue_free()`.
+
+---
+
+## 4. Shader Interativo de Vegetação (Técnica Arnklit)
+
+As plantas utilizam o shader espacial `interactive_grass.gdshader`:
+1. **Deformação Dinâmica de Vértices:**
+   - Lê a posição global e o raio de interação do cortador via parâmetros globais (`global uniform vec3 cutter_pos` e `global uniform float cutter_interact_radius`).
+   - Converte os vértices para o espaço de mundo ($XZ$), calcula o vetor de afastamento radial em relação ao robô e aplica curvatura atenuada com `smoothstep()`.
+   - As pontas das folhas se curvam para fora enquanto a base permanece fixa ao solo graças ao fator de altura vertical (`1.0 - UV.y`).
+2. **Vento Procedural e Gradiente de Cor:**
+   - Adiciona oscilação senoidal suave no tempo (`TIME`), dando aspecto vivo e orgânico à vegetação antes do corte.
+   - Aplica gradiente fosco *Low Poly* da raiz (tom mais escuro e denso) até a ponta (mais viva e iluminada), conferindo profundidade sem necessidade de texturas externas.
