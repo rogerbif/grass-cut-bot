@@ -1,9 +1,10 @@
 shader_type spatial;
 render_mode cull_disabled;
 
-// Posição e raio do cortador passados via RenderingServer / global uniforms
-global uniform vec3 cutter_pos;
-global uniform float cutter_interact_radius;
+// Posição e raio do cortador (atualizados pelo cortador no material compartilhado)
+uniform vec3 cutter_pos = vec3(0.0);
+uniform float cutter_interact_radius = 1.6;
+
 
 // Parâmetros de curvatura e interação
 uniform float interact_power : hint_range(0.0, 2.0) = 0.85;

@@ -14,12 +14,11 @@ Integrar a técnica de **Shader Interativo de Grama** inspirada no tutorial can�
 
 ## 2. O Que Foi Desenvolvido
 
-### 2.1 Shader Espacial e Variáveis Globais
+### 2.1 Shader Espacial e Injeção em Materiais Compartilhados
 - Criado o shader espacial [`shaders/interactive_grass.gdshader`](../../shaders/interactive_grass.gdshader) configurado com `render_mode cull_disabled`.
-- Registradas as variáveis globais no [`project.godot`](../../project.godot) sob `[shader_globals]`:
-  - `cutter_pos`: `Vector3`
-  - `cutter_interact_radius`: `float`
-- No script [`cutter.gd`](../../scripts/cutter/cutter.gd), implementada a função `_update_shader_globals()` transmitindo a posição global do cortador e o raio dinâmico de interação (`blade_radius + 0.95m`) para o `RenderingServer` a cada frame.
+- Utilizados parâmetros uniformes padrão (`uniform vec3 cutter_pos` e `uniform float cutter_interact_radius`), exatamente como na implementação canônica do Arnklit, eliminando qualquer dependência de registros manuais no `ProjectSettings` e evitando erros de compilação.
+- No script [`cutter.gd`](../../scripts/cutter/cutter.gd), implementada a função `_update_shader_globals()` transmitindo a posição global do cortador e o raio dinâmico de interação (`blade_radius + 0.95m`) diretamente para os materiais compartilhados (`GRASS_MAT`, `WHEAT_MAT`, `FLOWER_MAT`) a cada frame com custo zero de CPU.
+
 
 ### 2.2 Física Visual de Curvatura e Vento
 - No `vertex()` do shader:

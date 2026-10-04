@@ -50,7 +50,7 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 
 As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 1. **Deformação Dinâmica de Vértices:**
-   - Lê a posição global e o raio de interação do cortador via parâmetros globais (`global uniform vec3 cutter_pos` e `global uniform float cutter_interact_radius`).
+   - Lê a posição global e o raio de interação do cortador via parâmetros de shader atualizados dinamicamente pelo cortador nos materiais compartilhados (`uniform vec3 cutter_pos` e `uniform float cutter_interact_radius`).
    - Converte os vértices para o espaço de mundo ($XZ$), calcula o vetor de afastamento radial em relação ao robô e aplica curvatura atenuada com `smoothstep()`.
    - As pontas das folhas se curvam para fora enquanto a base permanece fixa ao solo graças ao fator de altura vertical (`1.0 - UV.y`).
 2. **Vento Procedural e Gradiente de Cor:**

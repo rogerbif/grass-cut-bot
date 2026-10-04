@@ -25,13 +25,25 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	_update_shader_globals()
 
+const GRASS_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
+const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_material.tres")
+const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
+
 func _update_shader_globals() -> void:
 	var blade_radius: float = 0.65
 	if UpgradeManager != null:
 		blade_radius = UpgradeManager.get_blade_radius()
 	var interact_radius: float = blade_radius + 0.95
-	RenderingServer.global_shader_parameter_set("cutter_pos", global_position)
-	RenderingServer.global_shader_parameter_set("cutter_interact_radius", interact_radius)
+
+	if GRASS_MAT:
+		GRASS_MAT.set_shader_parameter("cutter_pos", global_position)
+		GRASS_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
+	if WHEAT_MAT:
+		WHEAT_MAT.set_shader_parameter("cutter_pos", global_position)
+		WHEAT_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
+	if FLOWER_MAT:
+		FLOWER_MAT.set_shader_parameter("cutter_pos", global_position)
+		FLOWER_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
 
 
 func _on_upgrade_purchased(upgrade_name: String, _level: int) -> void:
