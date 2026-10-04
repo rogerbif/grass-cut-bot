@@ -1,0 +1,98 @@
+[gd_scene load_steps=9 format=3 uid="uid://cutter_scene_01"]
+
+[ext_resource type="Script" path="res://scripts/cutter/cutter.gd" id="1_cutter"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_body"]
+height = 0.3
+radius = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_blade"]
+top_radius = 0.65
+bottom_radius = 0.65
+height = 0.04
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blade"]
+metallic = 0.8
+roughness = 0.35
+albedo_color = Color(0.85, 0.88, 0.9, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_motor"]
+top_radius = 0.28
+bottom_radius = 0.3
+height = 0.22
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_motor"]
+roughness = 0.8
+albedo_color = Color(0.9, 0.25, 0.2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cap"]
+top_radius = 0.12
+bottom_radius = 0.14
+height = 0.28
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cap"]
+roughness = 0.7
+albedo_color = Color(0.18, 0.2, 0.24, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_blade"]
+height = 0.5
+radius = 0.65
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparks"]
+albedo_color = Color(1, 0.85, 0.25, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_spark"]
+material = SubResource("StandardMaterial3D_sparks")
+size = Vector3(0.06, 0.06, 0.06)
+
+[node name="Cutter" type="CharacterBody3D" groups=["cutter"]]
+collision_layer = 2
+collision_mask = 9
+script = ExtResource("1_cutter")
+
+[node name="BodyCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+shape = SubResource("CylinderShape3D_body")
+
+[node name="VisualPivot" type="Node3D" parent="."]
+
+[node name="SawMesh" type="Node3D" parent="VisualPivot"]
+
+[node name="BladeDisc" type="MeshInstance3D" parent="VisualPivot/SawMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("CylinderMesh_blade")
+surface_material_override/0 = SubResource("StandardMaterial3D_blade")
+
+[node name="CenterMotor" type="MeshInstance3D" parent="VisualPivot/SawMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("CylinderMesh_motor")
+surface_material_override/0 = SubResource("StandardMaterial3D_motor")
+
+[node name="MotorCap" type="MeshInstance3D" parent="VisualPivot/SawMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+mesh = SubResource("CylinderMesh_cap")
+surface_material_override/0 = SubResource("StandardMaterial3D_cap")
+
+[node name="BladeArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BladeArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+shape = SubResource("CylinderShape3D_blade")
+
+[node name="SparkParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+emitting = false
+amount = 16
+lifetime = 0.35
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("BoxMesh_spark")
+direction = Vector3(0, 1, 0)
+spread = 70.0
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 5.5

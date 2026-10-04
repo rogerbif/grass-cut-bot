@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://main_scene_01"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://terrain_island_01" path="res://scenes/level/terrain.tscn" id="2_terrain"]
+[ext_resource type="Script" path="res://scripts/level/level_controller.gd" id="3_level"]
+[ext_resource type="PackedScene" uid="uid://cutter_scene_01" path="res://scenes/cutter/cutter.tscn" id="4_cutter"]
+[ext_resource type="Script" path="res://scripts/camera/isometric_camera.gd" id="5_camera"]
+[ext_resource type="PackedScene" uid="uid://hud_scene_01" path="res://scenes/ui/hud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" uid="uid://floating_joystick_01" path="res://scenes/ui/floating_joystick.tscn" id="7_joystick"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.68, 0.85, 0.9, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.92, 0.88, 1)
+ambient_light_energy = 0.85
+tonemap_mode = 2
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 40.0
+
+[node name="Terrain" parent="." instance=ExtResource("2_terrain")]
+
+[node name="LevelController" type="Node3D" parent="."]
+script = ExtResource("3_level")
+
+[node name="PlantsContainer" type="Node3D" parent="LevelController"]
+
+[node name="ObstaclesContainer" type="Node3D" parent="LevelController"]
+
+[node name="Cutter" parent="LevelController" instance=ExtResource("4_cutter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="IsometricCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 11, 7.5)
+current = true
+fov = 48.0
+script = ExtResource("5_camera")
+target_path = NodePath("../LevelController/Cutter")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource("6_hud")]
+
+[node name="FloatingJoystick" parent="CanvasLayer" instance=ExtResource("7_joystick")]

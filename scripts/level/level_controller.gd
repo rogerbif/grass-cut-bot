@@ -1,0 +1,194 @@
+extends Node3D
+
+@export var grass_scene: PackedScene = preload("res://scenes/plants/grass_tuft.tscn")
+@export var wheat_scene: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
+@export var flower_scene: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
+@export var rock_scene: PackedScene = preload("res://scenes/obstacles/rock.tscn")
+
+@onready var plants_container: Node3D = $PlantsContainer
+@onready var obstacles_container: Node3D = $ObstaclesContainer
+@onready var cutter: CharacterBody3D = $Cutter
+
+func _ready() -> void:
+	generate_level(GameManager.current_level)
+
+func generate_level(level_num: int) -> void:
+	# Limpa entidades anteriores se houver
+	for child in plants_container.get_children():
+		child.queue_free()
+	for child in obstacles_container.get_children():
+		child.queue_free()
+
+	# Configurações por nível
+	match level_num:
+		1:
+			_build_level_1_mvp()
+		2:
+			_build_level_2()
+		3:
+			_build_level_3()
+		_:
+			_build_procedural_level(level_num)
+
+func _build_level_1_mvp() -> void:
+	# Fase 1 (MVP de Validação do GDD):
+	# Área retangular compacta coberta por grama verde básica
+	# Meta: 60 tufos de grama verde, cronômetro de 90 segundos (1:30)
+	# Sem obstáculos internos
+	var width_count = 10
+	var height_count = 6
+	var spacing = 1.1
+	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+
+	var total_grass = 0
+	for x in range(width_count):
+		for z in range(height_count):
+			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
+			# Deixa o centro inicial livre para o cortador começar suave
+			if pos.length() < 1.0:
+				continue
+			var tuft = grass_scene.instantiate()
+			tuft.position = pos
+			plants_container.add_child(tuft)
+			total_grass += 1
+
+	if cutter:
+		cutter.position = Vector3(0, 0.1, 0)
+
+	# Inicia no GameManager com a meta exata de grama
+	var goals = { "grass": total_grass }
+	GameManager.start_level(1, goals, 90.0)
+
+func _build_level_2() -> void:
+	# Fase 2: Introdução de Trigo e Rochas
+	var width_count = 11
+	var height_count = 8
+	var spacing = 1.1
+	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+
+	# Adiciona algumas rochas de obstáculo
+	var rock_coords = [Vector2i(3, 2), Vector2i(7, 5), Vector2i(4, 6)]
+	for rc in rock_coords:
+		var r_pos = Vector3(offset_x + rc.x * spacing, 0.0, offset_z + rc.y * spacing)
+		var rock = rock_scene.instantiate()
+		rock.position = r_pos
+		obstacles_container.add_child(rock)
+
+	var grass_count = 0
+	var wheat_count = 0
+
+	for x in range(width_count):
+		for z in range(height_count):
+			var grid_coord = Vector2i(x, z)
+			if grid_coord in rock_coords:
+				continue
+			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
+			if pos.length() < 1.2:
+				continue
+
+			if (x + z) % 4 == 0:
+				var wheat = wheat_scene.instantiate()
+				wheat.position = pos
+				plants_container.add_child(wheat)
+				wheat_count += 1
+			else:
+				var grass = grass_scene.instantiate()
+				grass.position = pos
+				plants_container.add_child(grass)
+				grass_count += 1
+
+	if cutter:
+		cutter.position = Vector3(0, 0.1, 0)
+
+	var goals = { "grass": grass_count, "wheat": wheat_count }
+	GameManager.start_level(2, goals, 100.0)
+
+func _build_level_3() -> void:
+	# Fase 3: Introdução de Flores e mais obstáculos
+	var width_count = 12
+	var height_count = 10
+	var spacing = 1.1
+	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+
+	var rock_coords = [Vector2i(2, 2), Vector2i(9, 2), Vector2i(2, 7), Vector2i(9, 7), Vector2i(6, 4)]
+	for rc in rock_coords:
+		var r_pos = Vector3(offset_x + rc.x * spacing, 0.0, offset_z + rc.y * spacing)
+		var rock = rock_scene.instantiate()
+		rock.position = r_pos
+		obstacles_container.add_child(rock)
+
+	var grass_count = 0
+	var wheat_count = 0
+	var flower_count = 0
+
+	for x in range(width_count):
+		for z in range(height_count):
+			var grid_coord = Vector2i(x, z)
+			if grid_coord in rock_coords:
+				continue
+			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
+			if pos.length() < 1.2:
+				continue
+
+			var rnd = randf()
+			if rnd < 0.15:
+				var fl = flower_scene.instantiate()
+				fl.position = pos
+				plants_container.add_child(fl)
+				flower_count += 1
+			elif rnd < 0.35:
+				var wh = wheat_scene.instantiate()
+				wh.position = pos
+				plants_container.add_child(wh)
+				wheat_count += 1
+			else:
+				var gr = grass_scene.instantiate()
+				gr.position = pos
+				plants_container.add_child(gr)
+				grass_count += 1
+
+	if cutter:
+		cutter.position = Vector3(0, 0.1, 0)
+
+	var goals = { "grass": grass_count, "wheat": wheat_count, "flower": flower_count }
+	GameManager.start_level(3, goals, 110.0)
+
+func _build_procedural_level(level_num: int) -> void:
+	var width_count = min(14, 10 + level_num / 2)
+	var height_count = min(12, 8 + level_num / 2)
+	var spacing = 1.1
+	var offset_x = -(width_count * spacing) / 2.0 + (spacing / 2.0)
+	var offset_z = -(height_count * spacing) / 2.0 + (spacing / 2.0)
+
+	var goals = { "grass": 0, "wheat": 0, "flower": 0 }
+
+	for x in range(width_count):
+		for z in range(height_count):
+			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
+			if pos.length() < 1.2:
+				continue
+
+			var rnd = randf()
+			if rnd < 0.2:
+				var fl = flower_scene.instantiate()
+				fl.position = pos
+				plants_container.add_child(fl)
+				goals["flower"] += 1
+			elif rnd < 0.45:
+				var wh = wheat_scene.instantiate()
+				wh.position = pos
+				plants_container.add_child(wh)
+				goals["wheat"] += 1
+			else:
+				var gr = grass_scene.instantiate()
+				gr.position = pos
+				plants_container.add_child(gr)
+				goals["grass"] += 1
+
+	if cutter:
+		cutter.position = Vector3(0, 0.1, 0)
+
+	GameManager.start_level(level_num, goals, 120.0)

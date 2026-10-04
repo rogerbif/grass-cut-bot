@@ -1,0 +1,77 @@
+extends Node
+
+signal coins_changed(new_amount: int)
+signal upgrade_purchased(upgrade_name: String, new_level: int)
+
+var total_coins: int = 0:
+	set(val):
+		total_coins = val
+		coins_changed.emit(total_coins)
+
+# Níveis de Upgrade
+var radius_level: int = 1
+var power_level: int = 1
+var speed_level: int = 1
+var multiplier_level: int = 1
+
+# Custos base e multiplicadores
+const BASE_COST: Dictionary = {
+	"radius": 50,
+	"power": 100,
+	"speed": 60,
+	"multiplier": 150
+}
+
+func add_coins(amount: int) -> void:
+	total_coins += amount * get_coin_multiplier()
+
+func spend_coins(amount: int) -> bool:
+	if total_coins >= amount:
+		total_coins -= amount
+		return true
+	return false
+
+func get_upgrade_cost(upgrade_name: String) -> int:
+	var level: int = 1
+	match upgrade_name:
+		"radius": level = radius_level
+		"power": level = power_level
+		"speed": level = speed_level
+		"multiplier": level = multiplier_level
+	var base: int = BASE_COST.get(upgrade_name, 50)
+	return int(base * pow(1.6, level - 1))
+
+func buy_upgrade(upgrade_name: String) -> bool:
+	var cost := get_upgrade_cost(upgrade_name)
+	if spend_coins(cost):
+		match upgrade_name:
+			"radius": radius_level += 1
+			"power": power_level += 1
+			"speed": speed_level += 1
+			"multiplier": multiplier_level += 1
+		upgrade_purchased.emit(upgrade_name, get_level(upgrade_name))
+		return true
+	return false
+
+func get_level(upgrade_name: String) -> int:
+	match upgrade_name:
+		"radius": return radius_level
+		"power": return power_level
+		"speed": return speed_level
+		"multiplier": return multiplier_level
+	return 1
+
+# Getters para valores no gameplay
+func get_blade_radius() -> float:
+	# Raio base de 0.65m + 0.12m a cada upgrade
+	return 0.65 + (radius_level - 1) * 0.12
+
+func get_cutter_speed() -> float:
+	# Velocidade base de 6.5m/s + 0.75m/s por nível
+	return 6.5 + (speed_level - 1) * 0.75
+
+func get_cutter_power() -> int:
+	return power_level
+
+func get_coin_multiplier() -> int:
+	return multiplier_level
