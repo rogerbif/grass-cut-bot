@@ -25,7 +25,11 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 └── CutParticles (CPUParticles3D - emissão explosiva em arco)
 ```
 
-- **Variação Orgânica:** No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0` a $2\pi$) e uma leve oscilação de escala (`0.85` a `1.15`), garantindo que o gramado pareça natural mesmo estando em uma grade uniforme.
+- **Variação Orgânica e Estrutura em Leque:**
+  - O tufo de grama básico (`grass_tuft.tscn`) é modelado volumetricamente com **5 lâminas PrismMesh** (`subdivide_height = 4`) dispostas em formato de cálice/leque radial:
+    - `BladeCenter`: Haste central mais alta (0.72m) e esguia, orientada quase verticalmente para garantir volume central.
+    - `Blade1` a `Blade4`: Lâminas periféricas com alturas entre 0.52m e 0.64m, inclinadas radialmente para fora (pitch de 13° a 16°) e distribuídas em ângulos de yaw espaçados, conferindo volume 360° em qualquer perspectiva de câmera.
+  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0` a $2\pi$) e uma leve oscilação de escala (`0.85` a `1.15`), garantindo que o gramado pareça natural mesmo em malha densa.
 
 ---
 
@@ -36,7 +40,7 @@ Tuft (Node3D - grupo "plants", script plant.gd)
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal), dando feedback imediato de que a planta sofreu impacto mas resistiu.
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - O emissor `CutParticles` dispara 14-16 fragmentos em arco parabólico com gravidade natural.
+   - O emissor `CutParticles` dispara 16 fragmentos em arco parabólico com gravidade natural.
    - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
@@ -46,13 +50,14 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 
 ---
 
-## 4. Shader Interativo de Vegetação (Técnica Arnklit)
+## 4. Shader Interativo de Vegetação (Técnica Arnklit Refinada)
 
 As plantas utilizam o shader espacial `interactive_grass.gdshader`:
-1. **Deformação Dinâmica de Vértices:**
-   - Lê a posição global e o raio de interação do cortador via parâmetros de shader atualizados dinamicamente pelo cortador nos materiais compartilhados (`uniform vec3 cutter_pos` e `uniform float cutter_interact_radius`).
-   - Converte os vértices para o espaço de mundo ($XZ$), calcula o vetor de afastamento radial em relação ao robô e aplica curvatura atenuada com `smoothstep()`.
-   - As pontas das folhas se curvam para fora enquanto a base permanece fixa ao solo graças ao fator de altura vertical (`1.0 - UV.y`).
-2. **Vento Procedural e Gradiente de Cor:**
-   - Adiciona oscilação senoidal suave no tempo (`TIME`), dando aspecto vivo e orgânico à vegetação antes do corte.
-   - Aplica gradiente fosco *Low Poly* da raiz (tom mais escuro e denso) até a ponta (mais viva e iluminada), conferindo profundidade sem necessidade de texturas externas.
+1. **Curvatura Elástica Não-Linear e Compressão:**
+   - Lê a posição global e o raio de interação do cortador via parâmetros de shader atualizados dinamicamente pelo cortador nos materiais compartilhados (`cutter_pos` e `cutter_interact_radius`).
+   - Converte os vértices para o espaço de mundo ($XZ$), calcula o vetor de afastamento radial e projeta no espaço de modelo via `mat3(inverse(MODEL_MATRIX))`.
+   - Aplica curvatura elástica exponencial `bend_factor = pow(height_factor, 1.6)`: a raiz permanece 100% ancorada ao solo enquanto a ponta se curva suavemente em arco sob a aproximação da lâmina.
+   - Aplica compressão elástica no eixo Y (`VERTEX.y -= power * interact_power * 0.14 * bend_factor`), simulando o achatamento da grama sob a carcaça da serra.
+2. **Vento Orgânico Multidirecional e Gradiente Fosco:**
+   - Adiciona ondas de vento cruzadas senoidais no espaço de mundo projetadas de volta ao modelo, criando ondulações fluidas que percorrem todo o gramado.
+   - Aplica gradiente fosco *Low Poly* da raiz (tom mais escuro e denso) até a ponta (mais viva e iluminada), mantendo `roughness = 0.9` e acabamento sem reflexos especulares plásticos.

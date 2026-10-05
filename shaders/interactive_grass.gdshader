@@ -37,14 +37,22 @@ void vertex() {
 		height_factor = clamp(VERTEX.y / 0.6, 0.0, 1.0);
 	}
 
-	// Converte direção de volta para o espaço de modelo e deforma o vértice
-	vec3 model_dir = (vec4(dir_norm, 0.0) * MODEL_MATRIX).xyz;
-	VERTEX += model_dir * power * interact_power * height_factor;
+	// Curvatura elastica nao-linear: base ancorada e ponta arqueada
+	float bend_factor = pow(height_factor, 1.6);
 
-	// Balanço orgânico suave de vento no topo
-	float wind = sin(TIME * wind_speed + world_vert.x * 2.0 + world_vert.z * 1.5) * wind_strength;
-	VERTEX.x += wind * height_factor;
-	VERTEX.z += wind * 0.6 * height_factor;
+	// Converte direcao radial para o espaco de modelo e deforma o vertice
+	vec3 model_dir = mat3(inverse(MODEL_MATRIX)) * dir_norm;
+	VERTEX += model_dir * (power * interact_power * bend_factor);
+
+	// Compressao/abaixamento elastico vertical na aproximacao da lamina
+	VERTEX.y -= power * interact_power * 0.14 * bend_factor;
+
+	// Balanco organico de vento em coordenadas globais com ondas cruzadas
+	float wave_x = sin(TIME * wind_speed + world_vert.x * 2.0 + world_vert.z * 1.5);
+	float wave_z = cos(TIME * (wind_speed * 0.8) + world_vert.x * 1.2 + world_vert.z * 2.2);
+	vec3 world_wind = vec3(wave_x, 0.0, wave_z * 0.6) * (wind_strength * bend_factor);
+	vec3 model_wind = mat3(inverse(MODEL_MATRIX)) * world_wind;
+	VERTEX += model_wind;
 }
 
 void fragment() {
