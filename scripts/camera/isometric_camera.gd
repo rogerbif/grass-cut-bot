@@ -15,8 +15,12 @@ func _ready() -> void:
 	if GameManager != null:
 		GameManager.camera_shake_requested.connect(_on_shake_requested)
 
-	# Configura orientação isométrica elevada
-	look_at_from_position(global_position, global_position - offset, Vector3.UP)
+	# Configura e trava a orientacao isometrica inicial
+	if target:
+		global_position = target.global_position + offset
+		look_at_from_position(global_position, target.global_position, Vector3.UP)
+	else:
+		look_at_from_position(global_position, global_position - offset, Vector3.UP)
 
 func _on_shake_requested(intensity: float, duration: float) -> void:
 	shake_intensity = intensity
@@ -26,21 +30,24 @@ func _process(delta: float) -> void:
 	if not target:
 		return
 
-	var desired_pos = target.global_position + offset
-	global_position = global_position.lerp(desired_pos, follow_speed * delta)
+	# Translada suavemente nos eixos X e Z sem qualquer rotacao
+	var follow_factor: float = clampf(follow_speed * delta, 0.0, 1.0)
+	var desired_x: float = target.global_position.x + offset.x
+	var desired_z: float = target.global_position.z + offset.z
+	var desired_y: float = target.global_position.y + offset.y
 
-	# Aplica camera shake se ativo
+	var new_x: float = lerpf(global_position.x, desired_x, follow_factor)
+	var new_z: float = lerpf(global_position.z, desired_z, follow_factor)
+	var new_y: float = desired_y
+
+	# Aplica camera shake apenas como perturbacao de translacao
+	var shake_x: float = 0.0
+	var shake_z: float = 0.0
 	if shake_duration > 0.0:
 		shake_duration -= delta
-		var shake_offset = Vector3(
-			randf_range(-shake_intensity, shake_intensity),
-			randf_range(-shake_intensity, shake_intensity) * 0.5,
-			randf_range(-shake_intensity, shake_intensity)
-		)
-		global_position += shake_offset
+		shake_x = randf_range(-shake_intensity, shake_intensity)
+		shake_z = randf_range(-shake_intensity, shake_intensity)
 		if shake_duration <= 0.0:
 			shake_intensity = 0.0
 
-	# Mantém a rotação focada no ponto à frente do cortador
-	var look_target = target.global_position + Vector3(0, 0, -0.5)
-	look_at(look_target, Vector3.UP)
+	global_position = Vector3(new_x + shake_x, new_y, new_z + shake_z)

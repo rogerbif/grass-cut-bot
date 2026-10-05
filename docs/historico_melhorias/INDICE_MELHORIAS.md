@@ -31,6 +31,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | :--- | :--- | :--- |
 | [`001_fundacao_mvp_fase_1.md`](./001_fundacao_mvp_fase_1.md) | Controles Touch e Top HUD Dinâmico | Joystick virtual flutuante na metade inferior da tela com deadzone, top HUD com anel de cronômetro regressivo, metas com escala pop e modais completos. |
 | [`002_correcao_erros_hud_e_warnings_divisao.md`](./002_correcao_erros_hud_e_warnings_divisao.md) | Correção de Hierarquia do HUD e Eliminação de Warnings | Correção dos caminhos `@onready` da barra superior (`TopBar/HBox`), eliminação de warnings de divisão inteira em `level_controller.gd` e `hud.gd`. |
+| [`005_camera_isometrica_translacao_pura_xz.md`](./005_camera_isometrica_translacao_pura_xz.md) | Câmera Isométrica com Translação Pura (X e Z) | Travamento estrito da orientação angular no `_ready()`, eliminação de `look_at()` a cada frame e translação suave exclusiva nos eixos horizontais. |
 
 ---
 
