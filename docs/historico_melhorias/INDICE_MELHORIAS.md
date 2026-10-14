@@ -25,6 +25,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`007_integracao_modelo_3d_robo_e_laminas_loja.md`](./007_integracao_modelo_3d_robo_e_laminas_loja.md) | Integração do Modelo 3D do Robô Cortador, Lâminas Modulares e Evolução na Loja | Modelo 3D oficial do Blender com rotor no blade_container (3 tiers de lâminas), exportação glTF, rolagem de mono-wheel, direção suave e evolução na Oficina. |
 | [`008_colorizacao_detalhada_robo_concept_art.md`](./008_colorizacao_detalhada_robo_concept_art.md) | Colorização Detalhada do Robô Conforme Arte Conceitual | Pintura mecha/arcade no Blender: máscara dos olhos, pupilas ciano, placas de blindagem brancas, cubo da mono-wheel detalhado e LED traseiro. |
 | [`009_ajuste_escala_lamina_e_orientacao_frontal.md`](./009_ajuste_escala_lamina_e_orientacao_frontal.md) | Lâmina 1.5x Maior e Correção da Orientação Frontal do Robô | Ampliação da lâmina e deck em 1.5x (raio 0.98m) e correção angular da frente do robô para olhar no sentido de condução. |
+| [`010_ajuste_preto_borracha_e_retorno_escala_lamina.md`](./010_ajuste_preto_borracha_e_retorno_escala_lamina.md) | Escurecimento do Preto da Borracha e Calibração de Escala da Lâmina | Escurecimento do material M_Borracha_Preta para preto grafite profundo (#141416) e calibração da lâmina para o tamanho base 1.0x (raio 0.65m). |
 
 ---
 

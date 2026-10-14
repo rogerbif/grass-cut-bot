@@ -26,7 +26,7 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 | **Flores do Campo** | `#E91E63` / `#AB47BC` | 🌸 Magenta Vibrante | Alvo raro/valioso com pétalas coloridas. |
 | **Carcaça do Robô** | `#F5A623` / `#F7A81B` | 🟨 Amarelo Industrial | Carcaça externa em ABS/Policarbonato (cabeça, paralamas, deck). |
 | **Blindagem e Estrutura** | `#E8ECEF` / `#F0F3F6` | ⚪ Branco Metal | Placas protetoras superiores parafusadas e estrutura central. |
-| **Pneu Mono-Wheel & Viseira** | `#202428` / `#1A1D21` | ⚫ Grafite Escuro | Pneu com cravos, máscara frontal dos olhos, grelhas e calha da serra. |
+| **Pneu Mono-Wheel & Viseira** | `#141416` / `#0D0E10` | ⬛ Preto Profundo | Pneu com cravos, máscara frontal dos olhos, grelhas e calha da serra. |
 | **Lâminas e Pistões** | `#CBD3DC` / `#B0BEC5` | ⚙️ Aço Temperado | Disco rotor de alta rotação e hastes dos pistões de suspensão. |
 | **Parafusos e Acabamento** | `#F2C738` / `#FFD54F` | 🟡 Ouro / Titânio | Anel de parafusos da roda e lâminas avançadas da loja. |
 | **Sensores & Visor** | `#18D8F0` / `#00E5FF` | 🔵 Ciano Emissivo | Lentes duplas de visão computacional da cabeça. |

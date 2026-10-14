@@ -21,7 +21,7 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 │               ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Serra Dupla Turbo 20 dentes)
 │               └── blade_tier_3 (MeshInstance3D - Nv. 5+: Lâmina Estelar de Titânio)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
-│   └── CollisionShape3D (Cylinder r=0.98m dinâmico ampliado 1.5x, h=0.4m em Y=0.45m)
+│   └── CollisionShape3D (Cylinder r=0.65m dinâmico, h=0.4m em Y=0.45m)
 └── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
 ```
 
@@ -60,7 +60,7 @@ move_and_slide()
 - A detecção é executada por um `Area3D` dedicado (`BladeArea`) com camada de colisão configurada para monitorar a vegetação (`collision_mask = 4`).
 - A cada frame de física, o cortador varre as áreas sobrepostas pertencentes ao grupo `"vegetation"` e dispara `plant.cut(power)`.
 - **Evolução por Upgrade:**
-  - O raio da lâmina é calibrado dinamicamente: `raio = 0.98m + (nivel - 1) * 0.18m` (ampliação base de 1.5x das lâminas).
+  - O raio da lâmina é calibrado dinamicamente: `raio = 0.65m + (nivel - 1) * 0.12m`.
   - A malha visual do disco e a área de interação com o shader de grama acompanham proporcionalmente o diâmetro da colisão.
 
 ---

@@ -63,8 +63,8 @@ func get_level(upgrade_name: String) -> int:
 
 # Getters para valores no gameplay
 func get_blade_radius() -> float:
-	# Raio base de 0.98m (1.5x maior) + 0.18m a cada upgrade
-	return 0.98 + (radius_level - 1) * 0.18
+	# Raio base de 0.65m + 0.12m a cada upgrade
+	return 0.65 + (radius_level - 1) * 0.12
 
 func get_cutter_speed() -> float:
 	# Velocidade base de 6.5m/s + 0.75m/s por nível
