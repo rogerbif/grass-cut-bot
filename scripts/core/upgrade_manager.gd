@@ -63,8 +63,8 @@ func get_level(upgrade_name: String) -> int:
 
 # Getters para valores no gameplay
 func get_blade_radius() -> float:
-	# Raio base de 0.65m + 0.12m a cada upgrade
-	return 0.65 + (radius_level - 1) * 0.12
+	# Raio base de 1.18m + 0.15m a cada upgrade
+	return 1.18 + (radius_level - 1) * 0.15
 
 func get_cutter_speed() -> float:
 	# Velocidade base de 6.5m/s + 0.75m/s por nível
@@ -86,7 +86,7 @@ func get_blade_tier() -> int:
 
 func get_blade_tier_name() -> String:
 	match get_blade_tier():
-		1: return "Lâmina Básica de Aço"
-		2: return "Serra Dupla Turbo"
+		1: return "Lâmina Tripla de Aço"
+		2: return "Lâmina Quádrupla Ninja"
 		3: return "Lâmina Estelar de Titânio"
 	return "Lâmina Básica"

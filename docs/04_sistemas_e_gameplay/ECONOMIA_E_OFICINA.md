@@ -20,7 +20,7 @@ $$\text{Moedas Ganhas} = \text{Moedas Base da Planta} \times \text{Multiplicador
 
 | Atributo | Custo Base | Efeito por Nível | Impacto no Gameplay |
 | :--- | :--- | :--- | :--- |
-| **Raio da Lâmina** | 50 🪙 | $+0.12\text{m}$ no raio (base de $0.65\text{m}$) | Expande a área de corte radial, permitindo ceifar mais tufos simultaneamente em cada passada. |
+| **Raio da Lâmina** | 50 🪙 | $+0.15\text{m}$ no raio (base de $1.18\text{m}$) | Expande a área de corte radial, permitindo ceifar mais tufos simultaneamente em cada passada. |
 | **Potência e Fio** | 100 🪙 | $+1$ ponto de dano por golpe | Corta plantas resistentes (trigo e flores) em uma só passada em vez de duas. |
 | **Velocidade da Serra** | 60 🪙 | $+0.75\text{m/s}$ na velocidade linear | Acelera a translação do cortador pelo gramado, facilitando vencer os estágios contra o relógio. |
 | **Multiplicador de Moedas** | 150 🪙 | $+1\times$ no ganho de cada tufo | Aumenta exponencialmente a receita de moedas para financiar upgrades mais caros. |
@@ -47,8 +47,8 @@ Conforme o jogador adquire upgrades de **Raio da Lâmina** e **Potência e Fio**
 
 | Tier | Modelo Visual | Requisito de Nível | Descrição Estética |
 | :--- | :--- | :--- | :--- |
-| **Tier 1** | **Lâmina Básica de Aço** | Nível 1 a 2 | Disco de aço temperado clássico com 16 dentes afiados salientes em arco. |
-| **Tier 2** | **Serra Dupla Turbo** | Nível 3 a 4 | 20 dentes duplos com perfil de serra alternada e recortes de alívio aerodinâmico. |
+| **Tier 1** | **Lâmina Tripla de Aço** | Nível 1 a 2 | Lâmina estampada estilizada de 3 pontas (estilo roçadeira/shuriken) com perfil aerodinâmico e alcance de $1.18\text{m}$. |
+| **Tier 2** | **Lâmina Quádrupla Ninja** | Nível 3 a 4 | Lâmina estilizada de 4 pontas em cruz com o mesmo alcance radial ($1.18\text{m}$) e 4 dentes afiados. |
 | **Tier 3** | **Lâmina Estelar de Titânio** | Nível 5 ou superior | 12 lâminas poligonais em diamante com bisel reforçado em liga de ouro/titânio. |
 
 O modelo atualmente equipado é exibido em tempo real no cabeçalho da Oficina: `"Lâmina: [Nome do Tier]"`.

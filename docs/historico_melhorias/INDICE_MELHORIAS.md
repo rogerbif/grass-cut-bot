@@ -27,6 +27,8 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`009_ajuste_escala_lamina_e_orientacao_frontal.md`](./009_ajuste_escala_lamina_e_orientacao_frontal.md) | Lâmina 1.5x Maior e Correção da Orientação Frontal do Robô | Ampliação da lâmina e deck em 1.5x (raio 0.98m) e correção angular da frente do robô para olhar no sentido de condução. |
 | [`010_ajuste_preto_borracha_e_retorno_escala_lamina.md`](./010_ajuste_preto_borracha_e_retorno_escala_lamina.md) | Escurecimento do Preto da Borracha e Calibração de Escala da Lâmina | Escurecimento do material M_Borracha_Preta para preto grafite profundo (#141416) e calibração da lâmina para o tamanho base 1.0x (raio 0.65m). |
 | [`011_correcao_mirror_export_gltf_modelo_robo.md`](./011_correcao_mirror_export_gltf_modelo_robo.md) | Correção do Mirror Modifier no Export glTF do Robô Cortador | Ativação obrigatória de export_apply=True no glTF exporter do Blender para inclusão simétrica de ambos os lados do chassi do robô. |
+| [`012_nova_lamina_tripla_tier_1.md`](./012_nova_lamina_tripla_tier_1.md) | Nova Lâmina Tripla de Aço (3 Pontas) para o Tier 1 | Modelagem da lâmina de 3 pontas inspirada em roçadeira/shuriken, substituindo a lâmina básica nos níveis 1 e 2. |
+| [`013_nova_lamina_quadrupla_tier_2.md`](./013_nova_lamina_quadrupla_tier_2.md) | Nova Lâmina Quádrupla Ninja (4 Pontas) para o Tier 2 | Modelagem da lâmina de 4 pontas em cruz com o mesmo alcance da Tier 1 e integração ao Tier 2 da Oficina. |
 
 ---
 

@@ -45,7 +45,7 @@ const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_mater
 const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
 
 func _update_shader_globals() -> void:
-	var blade_radius: float = 0.65
+	var blade_radius: float = 1.18
 	if UpgradeManager != null:
 		blade_radius = UpgradeManager.get_blade_radius()
 	var interact_radius: float = blade_radius + 0.95
@@ -75,8 +75,8 @@ func update_upgrades() -> void:
 	elif blade_shape.shape is SphereShape3D:
 		blade_shape.shape.radius = radius
 	
-	# Escala da malha visual da serra para refletir o upgrade de raio (base 0.65m)
-	var visual_scale: float = radius / 0.65
+	# Escala da malha visual da serra para refletir o upgrade de raio (base 1.18m)
+	var visual_scale: float = radius / 1.18
 	if blade_spinner:
 		blade_spinner.scale = Vector3(visual_scale, 1.0, visual_scale)
 	
