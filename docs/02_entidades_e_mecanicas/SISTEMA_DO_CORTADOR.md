@@ -21,7 +21,7 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 │               ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Serra Dupla Turbo 20 dentes)
 │               └── blade_tier_3 (MeshInstance3D - Nv. 5+: Lâmina Estelar de Titânio)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
-│   └── CollisionShape3D (Cylinder r=0.65m dinâmico, h=0.4m em Y=0.45m)
+│   └── CollisionShape3D (Cylinder r=0.98m dinâmico ampliado 1.5x, h=0.4m em Y=0.45m)
 └── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
 ```
 
@@ -37,13 +37,16 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 | `rotation_speed`| `1200.0 °/s` | Rotação angular ininterrupta do disco da serra em torno do eixo Y. |
 | `knockback_force`| `5.0 m/s` | Impulso reverso aplicado na direção normal da colisão contra obstáculos. |
 
-### Lógica de Vetor de Movimento
+### Lógica de Vetor de Movimento e Orientação Frontal
 O vetor 2D fornecido pelo joystick flutuante é convertido diretamente para o plano horizontal 3D ($X, Z$):
 ```gdscript
 var move_dir = Vector3(input_direction.x, 0.0, input_direction.y)
 if move_dir.length_squared() > 0.001:
     var target_vel = move_dir * target_speed
     velocity = velocity.move_toward(target_vel, acceleration * delta)
+    # Alinhamento da frente do robô na direção de deslocamento (glTF +Z para frente):
+    var target_angle = atan2(move_dir.x, move_dir.z)
+    visual_pivot.rotation.y = lerp_angle(visual_pivot.rotation.y, target_angle, 12.0 * delta)
 else:
     velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
 move_and_slide()
@@ -53,12 +56,12 @@ move_and_slide()
 
 ## 3. Mecânica de Corte Radial por Contato
 
-- O cortador é omnidirecional: não existe dianteira ou traseira, o corte é uniforme em qualquer sentido de condução.
+- O cortador opera com corte omnidirecional: o disco corta uniformemente em 360° em qualquer sentido de condução.
 - A detecção é executada por um `Area3D` dedicado (`BladeArea`) com camada de colisão configurada para monitorar a vegetação (`collision_mask = 4`).
 - A cada frame de física, o cortador varre as áreas sobrepostas pertencentes ao grupo `"vegetation"` e dispara `plant.cut(power)`.
 - **Evolução por Upgrade:**
-  - O raio da lâmina é calibrado dinamicamente: `raio = 0.65m + (nivel - 1) * 0.12m`.
-  - A malha visual do disco acompanha proporcionalmente o novo diâmetro da área de colisão.
+  - O raio da lâmina é calibrado dinamicamente: `raio = 0.98m + (nivel - 1) * 0.18m` (ampliação base de 1.5x das lâminas).
+  - A malha visual do disco e a área de interação com o shader de grama acompanham proporcionalmente o diâmetro da colisão.
 
 ---
 

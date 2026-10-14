@@ -12,6 +12,8 @@ O projeto adota uma estrutura desacoplada por tipo e domínio:
 grass-cut-bot/
 ├── .agent/                    # Configurações e skills do agente de desenvolvimento
 │   └── skills/atualizar-documentacao/
+├── assets/                    # Modelos 3D, texturas e materiais
+│   └── models/grass_bot.glb   # Modelo 3D oficial do robô e lâminas modulares (glTF)
 ├── docs/                      # Hub Central da Wiki e documentação técnica canônica
 │   ├── .gdignore              # Instrução para Godot ignorar a pasta
 │   ├── 01_visao_geral_e_gdd/
