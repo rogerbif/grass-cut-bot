@@ -78,3 +78,12 @@ Ao colidir frontalmente contra obstáculos sólidos (como rochas do grupo `"obst
    $$\vec{v}_{\text{choque}} = \vec{n}_{\text{colisão}} \times \text{knockback\_force}$$
 3. **Emissão de Faíscas:** O nó `SparkParticles` é reposicionado no ponto de contato e ativado instantaneamente.
 4. **Vibração Tátil e Tremer de Câmera:** O `GameManager` emite vibração seca (`Input.vibrate_handheld(60)`) e solicita um camera shake de intensidade 0.35 por 0.2s.
+
+---
+
+## 5. Desativação da Lâmina no Fim de Fase
+
+Quando o estado do jogo transita para fora de `GameState.PLAYING` (abertura de modal de vitória `VICTORY`, derrota `GAME_OVER` ou pausa `PAUSED`):
+1. **Zerar Vetores:** `velocity` e `input_direction` são imediatamente forçados para `Vector3.ZERO`.
+2. **Interrupção de Física:** O loop `_physics_process()` retorna antecipadamente, cessando a rotação da serra (`rotate_y`), o deslocamento (`move_and_slide()`) e o corte de vegetação (`_process_cutting()`).
+3. **Imunidade a Entradas:** Quaisquer comandos do joystick ou teclado são descartados enquanto os modais estiverem abertos.

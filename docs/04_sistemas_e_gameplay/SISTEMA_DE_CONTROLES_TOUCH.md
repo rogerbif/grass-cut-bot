@@ -34,3 +34,16 @@ Para máxima nitidez em qualquer densidade de pixels mobile (telas HD, Full HD e
 Para permitir iterações de desenvolvimento e testes instantâneos no ambiente de desenvolvimento:
 - **Mouse:** O mouse simula toques de tela graças ao parâmetro `pointing/emulate_touch_from_mouse = true` em `project.godot`.
 - **Teclado:** Quando não houver toque ativo na tela, o script lê diretamente as teclas **WASD** ou as **Setas do Teclado**, convertendo a direção ortogonal/diagonal em vetor unitário e repassando ao cortador.
+
+---
+
+## 4. Hierarquia no CanvasLayer e Desativação em Modais
+
+1. **Ordenação de Camada:**
+   - O nó `FloatingJoystick` é posicionado **antes** do nó `HUD` dentro do `CanvasLayer` em `main.tscn`.
+   - Isso garante que o `HUD` e todos os seus modais de interface fiquem no topo da fila de renderização e de recepção de eventos de entrada.
+2. **Desativação Fora de Gameplay Ativo:**
+   - O joystick escuta `GameManager.state_changed`. Caso o estado mude para `VICTORY`, `GAME_OVER` ou `PAUSED`, o joystick zera seu vetor de saída, oculta seus desenhos visuais (`visible = false`) e descarta quaisquer eventos em `_input()`.
+   - Isso impede qualquer conflito ou sequestro de toques/cliques direcionados aos botões dos modais de fim de fase.
+3. **Emulação Bidirecional de Toque e Mouse:**
+   - Configurados `pointing/emulate_touch_from_mouse = true` e `pointing/emulate_mouse_from_touch = true` em `project.godot`, garantindo que os botões de interface respondam imediatamente tanto a cliques de mouse no PC quanto a toques diretos em telas móveis touchscreen.

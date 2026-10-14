@@ -44,15 +44,14 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
 
 ### 2.2 Modal de Vitória (`VictoryModal`)
 - Disparado automaticamente quando todas as metas chegam a zero antes do tempo expirar.
-- Exibe o bônus de moedas obtidas na fase.
-- **Ações:**
-  - `Próxima Fase ⏩`: Avança para o próximo nível.
-  - `Repetir Fase 🔄`: Joga o estágio novamente para acumular mais moedas.
-  - `Oficina ⚙`: Abre a loja de melhorias.
+- Desativa imediatamente a rotação, corte e movimentação da lâmina, além de ocultar e desativar o joystick virtual.
+- Exibe o título "Fase Concluída!" e o bônus de moedas obtidas na fase.
+- **Ação Exclusiva:**
+  - `Repetir Fase 🔄`: Botão único em destaque (altura 56px), com suporte nativo a clique de mouse e toque direto na tela touchscreen (`gui_input` + `pressed`). Recarrega o estágio instantaneamente.
 
 ### 2.3 Modal de Derrota (`GameOverModal`)
 - Disparado caso o cronômetro atinja `0:00` antes de bater as cotas.
-- Exibe mensagem explicativa de falha.
-- **Ações:**
-  - `Tentar Novamente 🔄`: Reinicia a fase imediatamente.
-  - `Oficina ⚙`: Permite melhorar o cortador para superar a fase.
+- Desativa imediatamente a rotação, corte e movimentação da lâmina e oculta o joystick virtual.
+- Exibe mensagem explicativa de falha ("Tempo Esgotado!").
+- **Ação Exclusiva:**
+  - `Repetir Fase 🔄`: Botão único em destaque com suporte total a clique e toque na tela touchscreen. Reinicia a fase imediatamente.

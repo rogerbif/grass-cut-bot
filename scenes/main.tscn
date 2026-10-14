@@ -48,6 +48,6 @@ target_path = NodePath("../LevelController/Cutter")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="HUD" parent="CanvasLayer" instance=ExtResource("6_hud")]
-
 [node name="FloatingJoystick" parent="CanvasLayer" instance=ExtResource("7_joystick")]
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource("6_hud")]

@@ -38,23 +38,33 @@ func _ready() -> void:
 		UpgradeManager.coins_changed.connect(_on_coins_changed)
 		_on_coins_changed(UpgradeManager.total_coins)
 
-	# Conecta botões
-	pause_button.pressed.connect(_on_pause_pressed)
-	$PauseModal/Panel/VBox/ResumeBtn.pressed.connect(_on_resume_pressed)
-	$PauseModal/Panel/VBox/RestartBtn.pressed.connect(_on_restart_pressed)
-	$PauseModal/Panel/VBox/WorkshopBtn.pressed.connect(_on_open_workshop_pressed)
+	# Conecta botões com suporte robusto a clique e touch
+	_connect_button(pause_button, _on_pause_pressed)
+	_connect_button($PauseModal/Panel/VBox/ResumeBtn, _on_resume_pressed)
+	_connect_button($PauseModal/Panel/VBox/RestartBtn, _on_restart_pressed)
+	_connect_button($PauseModal/Panel/VBox/WorkshopBtn, _on_open_workshop_pressed)
 
-	$VictoryModal/Panel/VBox/NextBtn.pressed.connect(_on_next_level_pressed)
-	$VictoryModal/Panel/VBox/RestartBtn.pressed.connect(_on_restart_pressed)
-	$VictoryModal/Panel/VBox/WorkshopBtn.pressed.connect(_on_open_workshop_pressed)
+	if $VictoryModal/Panel/VBox.has_node("RestartBtn"):
+		_connect_button($VictoryModal/Panel/VBox/RestartBtn, _on_restart_pressed)
 
-	$GameOverModal/Panel/VBox/RetryBtn.pressed.connect(_on_restart_pressed)
-	$GameOverModal/Panel/VBox/WorkshopBtn.pressed.connect(_on_open_workshop_pressed)
+	if $GameOverModal/Panel/VBox.has_node("RetryBtn"):
+		_connect_button($GameOverModal/Panel/VBox/RetryBtn, _on_restart_pressed)
 
-	$WorkshopModal/Panel/VBox/CloseBtn.pressed.connect(_on_close_workshop_pressed)
+	_connect_button($WorkshopModal/Panel/VBox/CloseBtn, _on_close_workshop_pressed)
 
 	# Setup dos botões de upgrade da oficina
 	_setup_workshop_buttons()
+
+func _connect_button(btn: Button, callback: Callable) -> void:
+	if btn == null:
+		return
+	btn.pressed.connect(callback)
+	btn.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventScreenTouch and event.pressed:
+			callback.call()
+	)
+
+var _is_restarting: bool = false
 
 func _on_time_updated(time_left: float) -> void:
 	var minutes: int = int(time_left / 60.0)
@@ -148,6 +158,9 @@ func _on_resume_pressed() -> void:
 	GameManager.toggle_pause()
 
 func _on_restart_pressed() -> void:
+	if _is_restarting:
+		return
+	_is_restarting = true
 	GameManager.restart_level()
 
 func _on_next_level_pressed() -> void:

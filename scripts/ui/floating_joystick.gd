@@ -22,9 +22,24 @@ func _ready() -> void:
 	anchor_right = 1.0
 	anchor_bottom = 1.0
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	if GameManager != null:
+		GameManager.state_changed.connect(_on_game_state_changed)
 	queue_redraw()
 
+func _on_game_state_changed(new_state: int) -> void:
+	if new_state != GameManager.GameState.PLAYING:
+		_reset_joystick()
+		visible = false
+	else:
+		visible = true
+
 func _input(event: InputEvent) -> void:
+	# Ignora completamente entradas quando a fase terminou ou está em modal
+	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		if is_active:
+			_reset_joystick()
+		return
+
 	# Suporte a toque e mouse
 	if event is InputEventScreenTouch:
 		_handle_touch(event)
@@ -98,6 +113,12 @@ func _reset_joystick() -> void:
 	queue_redraw()
 
 func _process(_delta: float) -> void:
+	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		if output_vector != Vector2.ZERO:
+			output_vector = Vector2.ZERO
+			joystick_moved.emit(Vector2.ZERO)
+		return
+
 	# Fallback para teclado (WASD / Setas) se o joystick não estiver ativo
 	if not is_active:
 		var keyboard_dir: Vector2 = Vector2.ZERO

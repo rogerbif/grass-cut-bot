@@ -21,6 +21,13 @@ func _ready() -> void:
 	_update_shader_globals()
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
+	if GameManager != null:
+		GameManager.state_changed.connect(_on_game_state_changed)
+
+func _on_game_state_changed(new_state: int) -> void:
+	if new_state != GameManager.GameState.PLAYING:
+		velocity = Vector3.ZERO
+		input_direction = Vector2.ZERO
 
 func _process(_delta: float) -> void:
 	_update_shader_globals()
@@ -67,9 +74,18 @@ func update_upgrades() -> void:
 		saw_mesh.scale = Vector3(visual_scale, 1.0, visual_scale)
 
 func set_input_direction(dir: Vector2) -> void:
+	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		input_direction = Vector2.ZERO
+		return
 	input_direction = dir
 
 func _physics_process(delta: float) -> void:
+	# Desativa completamente rotação, movimento e corte se não estiver em gameplay ativo (ex: modal de fim de fase)
+	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		velocity = Vector3.ZERO
+		input_direction = Vector2.ZERO
+		return
+
 	# Rotação contínua de alta velocidade da serra circular (eixo Y)
 	if saw_mesh:
 		saw_mesh.rotate_y(deg_to_rad(rotation_speed * delta))
