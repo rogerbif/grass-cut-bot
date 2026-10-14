@@ -26,6 +26,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`008_colorizacao_detalhada_robo_concept_art.md`](./008_colorizacao_detalhada_robo_concept_art.md) | Colorização Detalhada do Robô Conforme Arte Conceitual | Pintura mecha/arcade no Blender: máscara dos olhos, pupilas ciano, placas de blindagem brancas, cubo da mono-wheel detalhado e LED traseiro. |
 | [`009_ajuste_escala_lamina_e_orientacao_frontal.md`](./009_ajuste_escala_lamina_e_orientacao_frontal.md) | Lâmina 1.5x Maior e Correção da Orientação Frontal do Robô | Ampliação da lâmina e deck em 1.5x (raio 0.98m) e correção angular da frente do robô para olhar no sentido de condução. |
 | [`010_ajuste_preto_borracha_e_retorno_escala_lamina.md`](./010_ajuste_preto_borracha_e_retorno_escala_lamina.md) | Escurecimento do Preto da Borracha e Calibração de Escala da Lâmina | Escurecimento do material M_Borracha_Preta para preto grafite profundo (#141416) e calibração da lâmina para o tamanho base 1.0x (raio 0.65m). |
+| [`011_correcao_mirror_export_gltf_modelo_robo.md`](./011_correcao_mirror_export_gltf_modelo_robo.md) | Correção do Mirror Modifier no Export glTF do Robô Cortador | Ativação obrigatória de export_apply=True no glTF exporter do Blender para inclusão simétrica de ambos os lados do chassi do robô. |
 
 ---
 
