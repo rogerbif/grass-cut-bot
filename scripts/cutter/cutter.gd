@@ -7,7 +7,13 @@ extends CharacterBody3D
 @export var knockback_force: float = 5.0
 
 @onready var visual_pivot: Node3D = $VisualPivot
-@onready var saw_mesh: Node3D = $VisualPivot/SawMesh
+@onready var robot_body: Node3D = $VisualPivot/GrassBot/Robot/Body if has_node("VisualPivot/GrassBot/Robot/Body") else null
+@onready var wheel_mesh: MeshInstance3D = $VisualPivot/GrassBot/Robot/Body/wheel if has_node("VisualPivot/GrassBot/Robot/Body/wheel") else null
+@onready var blade_spinner: Node3D = $VisualPivot/GrassBot/Robot/BladeSpinner if has_node("VisualPivot/GrassBot/Robot/BladeSpinner") else null
+@onready var blade_tier_1: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_1 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_1") else null
+@onready var blade_tier_2: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_2 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_2") else null
+@onready var blade_tier_3: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3") else null
+
 @onready var blade_area: Area3D = $BladeArea
 @onready var blade_shape: CollisionShape3D = $BladeArea/CollisionShape3D
 @onready var spark_particles: CPUParticles3D = $SparkParticles
@@ -52,26 +58,39 @@ func _update_shader_globals() -> void:
 		FLOWER_MAT.set_shader_parameter("cutter_pos", global_position)
 		FLOWER_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
 
-
 func _on_upgrade_purchased(upgrade_name: String, _level: int) -> void:
-	if upgrade_name == "radius" or upgrade_name == "speed":
+	if upgrade_name == "radius" or upgrade_name == "speed" or upgrade_name == "power":
 		update_upgrades()
 
 func update_upgrades() -> void:
 	if UpgradeManager == null:
 		return
 	
-	# Atualiza raio da lâmina
-	var radius := UpgradeManager.get_blade_radius()
+	# Atualiza raio da área física de corte
+	var radius: float = UpgradeManager.get_blade_radius()
 	if blade_shape.shape is CylinderShape3D:
 		blade_shape.shape.radius = radius
 	elif blade_shape.shape is SphereShape3D:
 		blade_shape.shape.radius = radius
 	
-	# Escala sutil da malha visual da lâmina para refletir o upgrade
-	var visual_scale = radius / 0.65
-	if saw_mesh:
-		saw_mesh.scale = Vector3(visual_scale, 1.0, visual_scale)
+	# Escala da malha visual da serra para refletir o upgrade de raio
+	var visual_scale: float = radius / 0.65
+	if blade_spinner:
+		blade_spinner.scale = Vector3(visual_scale, 1.0, visual_scale)
+	
+	_update_blade_tier_visual()
+
+func _update_blade_tier_visual() -> void:
+	var tier: int = 1
+	if UpgradeManager != null and UpgradeManager.has_method("get_blade_tier"):
+		tier = UpgradeManager.get_blade_tier()
+	
+	if blade_tier_1:
+		blade_tier_1.visible = (tier == 1)
+	if blade_tier_2:
+		blade_tier_2.visible = (tier == 2)
+	if blade_tier_3:
+		blade_tier_3.visible = (tier == 3)
 
 func set_input_direction(dir: Vector2) -> void:
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
@@ -87,8 +106,8 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# Rotação contínua de alta velocidade da serra circular (eixo Y)
-	if saw_mesh:
-		saw_mesh.rotate_y(deg_to_rad(rotation_speed * delta))
+	if blade_spinner:
+		blade_spinner.rotate_y(deg_to_rad(rotation_speed * delta))
 
 	# Gerenciamento de choque / ricochete
 	if is_stunned:
@@ -102,28 +121,38 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# Movimento omnidirecional responsivo baseado na entrada
-	var target_speed = base_speed
+	var target_speed: float = base_speed
 	if UpgradeManager != null:
 		target_speed = UpgradeManager.get_cutter_speed()
 
 	# Converte a direção 2D (da tela isométrica) para coordenadas de mundo 3D
-	# Ajustamos para a perspectiva isométrica (diagonal suave ou direta)
-	var move_dir = Vector3(input_direction.x, 0.0, input_direction.y)
+	var move_dir: Vector3 = Vector3(input_direction.x, 0.0, input_direction.y)
 	if move_dir.length_squared() > 0.001:
-		var target_vel = move_dir * target_speed
+		var target_vel: Vector3 = move_dir * target_speed
 		velocity = velocity.move_toward(target_vel, acceleration * delta)
+		
+		# Orientação suave do chassi do robô na direção do movimento
+		if robot_body:
+			var target_rot_y: float = atan2(-move_dir.x, -move_dir.z)
+			robot_body.rotation.y = lerp_angle(robot_body.rotation.y, target_rot_y, 14.0 * delta)
 	else:
 		velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
+
+	# Rotação física da mono-wheel baseada no deslocamento linear
+	if wheel_mesh and velocity.length_squared() > 0.01:
+		var linear_speed: float = velocity.length()
+		var effective_radius: float = 0.45 * 0.7 # Raio do pneu com a escala visual
+		wheel_mesh.rotate_x(-linear_speed / effective_radius * delta)
 
 	move_and_slide()
 	_check_obstacle_collisions()
 	_process_cutting()
 
 func _check_obstacle_collisions() -> void:
-	var count = get_slide_collision_count()
+	var count: int = get_slide_collision_count()
 	for i in range(count):
-		var collision = get_slide_collision(i)
-		var collider = collision.get_collider()
+		var collision: KinematicCollision3D = get_slide_collision(i)
+		var collider: Object = collision.get_collider()
 		if collider and collider.is_in_group("obstacles"):
 			# Colisão direta com obstáculo sólido!
 			_trigger_obstacle_shock(collision.get_normal())
@@ -147,13 +176,13 @@ func _process_cutting() -> void:
 	if blade_area == null:
 		return
 	
-	var cutting_power = 1
+	var cutting_power: int = 1
 	if UpgradeManager != null:
 		cutting_power = UpgradeManager.get_cutter_power()
 
-	var overlapping_areas = blade_area.get_overlapping_areas()
+	var overlapping_areas: Array[Area3D] = blade_area.get_overlapping_areas()
 	for area in overlapping_areas:
 		if area.is_in_group("vegetation"):
-			var plant = area.get_parent()
+			var plant: Node = area.get_parent()
 			if plant and plant.has_method("cut"):
 				plant.cut(cutting_power)

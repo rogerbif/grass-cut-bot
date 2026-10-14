@@ -6,32 +6,24 @@ Este documento detalha a física, estrutura mecânica, lógica de movimentação
 
 ## 1. Estrutura do Cortador (`cutter.tscn`)
 
-O cortador é instanciado a partir de um `CharacterBody3D` posicionado rente ao solo (`Y = 0.1m`), utilizando exclusivamente **primitivas geométricas nativas da Godot 4** para compor uma lâmina estilizada aerodinâmica com acabamento toy/arcade e rastros dinâmicos de rotação:
+O cortador é instanciado a partir de um `CharacterBody3D` posicionado rente ao solo (`Y = 0.1m`), utilizando o modelo 3D oficial em glTF (`res://assets/models/grass_bot.glb`) modelado no Blender a partir do concept art ortogonal oficial, com acabamento fosco Low Poly (`roughness 0.85 ~ 0.95`):
 
 ```
 Cutter (CharacterBody3D - Layer 2, Mask 1|8)
-├── BodyCollision (CollisionShape3D - Cylinder r=0.45m, h=0.25m)
-├── VisualPivot (Node3D)
-│   └── SawMesh (Node3D - rotação contínua em Y a 1200°/s)
-│       ├── HubCenter (Node3D - Hub motor central azul)
-│       │   ├── Base (MeshInstance3D - CylinderMesh r_topo=0.20m, r_base=0.23m, h=0.08m, Azul #0076F5)
-│       │   └── TopDome (MeshInstance3D - SphereMesh achatada r=0.14m, h=0.075m, Azul Celeste #24B2FF)
-│       ├── WingRight (Node3D - Asa direita aerodinâmica)
-│       │   ├── RootBase (MeshInstance3D - BoxMesh 0.2x0.035x0.2m, Branco #F8F9FF)
-│       │   ├── MainWedge (MeshInstance3D - PrismMesh aerodinâmico 0.28x0.54x0.035m, left_to_right=0.4)
-│       │   ├── Spine (MeshInstance3D - CapsuleMesh espinha central r=0.032m, h=0.48m)
-│       │   └── TipRound (MeshInstance3D - SphereMesh ponta suave r=0.024m)
-│       ├── WingLeft (Node3D - Asa esquerda simétrica girada 180° em Y)
-│       ├── SwooshRight (Node3D - Rastros de vento crescentes atrás da ponta direita)
-│       │   ├── OuterSeg_1..10 (MeshInstance3D - 10 cápsulas tangentes em arco r=0.66m, unshaded alpha)
-│       │   └── InnerSeg_1..8 (MeshInstance3D - 8 cápsulas tangentes em arco r=0.52m, unshaded alpha)
-│       └── SwooshLeft (Node3D - Rastros de vento crescentes atrás da ponta esquerda, girado 180° em Y)
+├── BodyCollision (CollisionShape3D - Cylinder r=0.45m, h=0.5m)
+├── VisualPivot (Node3D - Escala 0.70x)
+│   └── GrassBot (Instância de grass_bot.glb)
+│       └── Robot (Node3D)
+│           ├── Body (Node3D - Chassi, Cabeça, Paralama, Bateria, Container)
+│           │   └── wheel (MeshInstance3D - Rolagem contínua no eixo X por velocidade)
+│           └── BladeSpinner (Node3D - Rotação omnidirecional ininterrupta em Y a 1200°/s)
+│               ├── blade_tier_1 (MeshInstance3D - Nv. 1-2: Aço Básico 16 dentes)
+│               ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Serra Dupla Turbo 20 dentes)
+│               └── blade_tier_3 (MeshInstance3D - Nv. 5+: Lâmina Estelar de Titânio)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
-│   └── CollisionShape3D (Cylinder r=0.65m, h=0.4m)
-└── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco)
+│   └── CollisionShape3D (Cylinder r=0.65m dinâmico, h=0.4m em Y=0.45m)
+└── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
 ```
-
-![Preview da Lâmina Estilizada](../assets/blade_preview.png)
 
 ---
 

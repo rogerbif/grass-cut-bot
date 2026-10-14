@@ -199,7 +199,11 @@ func _buy_upgrade(upgrade_name: String) -> void:
 func _update_workshop_display() -> void:
 	if UpgradeManager == null:
 		return
-	$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d" % UpgradeManager.total_coins
+	var blade_name: String = UpgradeManager.get_blade_tier_name() if UpgradeManager.has_method("get_blade_tier_name") else ""
+	if blade_name != "":
+		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d 🪙\nLâmina: %s" % [UpgradeManager.total_coins, blade_name]
+	else:
+		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d 🪙" % UpgradeManager.total_coins
 
 	_update_card("radius", $WorkshopModal/Panel/VBox/UpgradesList/RadiusCard, "Raio da Lâmina")
 	_update_card("power", $WorkshopModal/Panel/VBox/UpgradesList/PowerCard, "Potência e Fio")

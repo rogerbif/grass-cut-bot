@@ -22,6 +22,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`002_shader_interativo_grama_arnklit.md`](./002_shader_interativo_grama_arnklit.md) | Shader de Grama Interativa (Arnklit) | Deformação radial de vértices via Shader globals, oscilação de vento procedural, gradiente de cores da raiz ao topo e preservação da colheita. |
 | [`003_modelo_lamina_primitivas_godot.md`](./003_modelo_lamina_primitivas_godot.md) | Modelagem da Lâmina Estilizada com Primitivas Godot | Hub central com botão em domo azul, asas aerodinâmicas duplas de perfil hélice e arcos crescentes de vento (swoosh trails) de alta rotação. |
 | [`004_refinamento_distribuicao_curvatura_grama.md`](./004_refinamento_distribuicao_curvatura_grama.md) | Refinamento da Distribuição em Leque e Curvatura Elástica da Grama | Arquitetura de 5 lâminas PrismMesh em leque/cálice radial com inclinações orgânicas, curvatura elástica não-linear exponencial e compressão Y no corte. |
+| [`007_integracao_modelo_3d_robo_e_laminas_loja.md`](./007_integracao_modelo_3d_robo_e_laminas_loja.md) | Integração do Modelo 3D do Robô Cortador, Lâminas Modulares e Evolução na Loja | Modelo 3D oficial do Blender com rotor no blade_container (3 tiers de lâminas), exportação glTF, rolagem de mono-wheel, direção suave e evolução na Oficina. |
 
 ---
 

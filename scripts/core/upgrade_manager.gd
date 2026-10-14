@@ -75,3 +75,18 @@ func get_cutter_power() -> int:
 
 func get_coin_multiplier() -> int:
 	return multiplier_level
+
+func get_blade_tier() -> int:
+	var max_lvl: int = maxi(radius_level, power_level)
+	if max_lvl >= 5:
+		return 3
+	elif max_lvl >= 3:
+		return 2
+	return 1
+
+func get_blade_tier_name() -> String:
+	match get_blade_tier():
+		1: return "Lâmina Básica de Aço"
+		2: return "Serra Dupla Turbo"
+		3: return "Lâmina Estelar de Titânio"
+	return "Lâmina Básica"
