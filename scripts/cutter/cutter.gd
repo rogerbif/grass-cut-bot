@@ -23,6 +23,8 @@ var is_stunned: bool = false
 var stun_timer: float = 0.0
 
 func _ready() -> void:
+	if robot_body:
+		robot_body.rotation.y = PI
 	update_upgrades()
 	_update_shader_globals()
 	if UpgradeManager != null:
@@ -43,7 +45,7 @@ const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_mater
 const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
 
 func _update_shader_globals() -> void:
-	var blade_radius: float = 0.65
+	var blade_radius: float = 0.98
 	if UpgradeManager != null:
 		blade_radius = UpgradeManager.get_blade_radius()
 	var interact_radius: float = blade_radius + 0.95
@@ -73,8 +75,8 @@ func update_upgrades() -> void:
 	elif blade_shape.shape is SphereShape3D:
 		blade_shape.shape.radius = radius
 	
-	# Escala da malha visual da serra para refletir o upgrade de raio
-	var visual_scale: float = radius / 0.65
+	# Escala da malha visual da serra para refletir o upgrade de raio (base 0.98m)
+	var visual_scale: float = radius / 0.98
 	if blade_spinner:
 		blade_spinner.scale = Vector3(visual_scale, 1.0, visual_scale)
 	
@@ -131,9 +133,9 @@ func _physics_process(delta: float) -> void:
 		var target_vel: Vector3 = move_dir * target_speed
 		velocity = velocity.move_toward(target_vel, acceleration * delta)
 		
-		# Orientação suave do chassi do robô na direção do movimento
+		# Orientação suave do chassi do robô na direção do movimento (frente alinhada)
 		if robot_body:
-			var target_rot_y: float = atan2(-move_dir.x, -move_dir.z)
+			var target_rot_y: float = atan2(move_dir.x, move_dir.z)
 			robot_body.rotation.y = lerp_angle(robot_body.rotation.y, target_rot_y, 14.0 * delta)
 	else:
 		velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
@@ -142,7 +144,7 @@ func _physics_process(delta: float) -> void:
 	if wheel_mesh and velocity.length_squared() > 0.01:
 		var linear_speed: float = velocity.length()
 		var effective_radius: float = 0.45 * 0.7 # Raio do pneu com a escala visual
-		wheel_mesh.rotate_x(-linear_speed / effective_radius * delta)
+		wheel_mesh.rotate_x(linear_speed / effective_radius * delta)
 
 	move_and_slide()
 	_check_obstacle_collisions()
