@@ -6,6 +6,14 @@ extends CharacterBody3D
 @export var rotation_speed: float = 1200.0 # Graus por segundo de rotação da serra
 @export var knockback_force: float = 5.0
 
+@export_group("Procedural Motion")
+@export var max_pitch_deg: float = 6.0         # Inclinação máxima para frente/trás (graus)
+@export var max_roll_deg: float = 4.5          # Inclinação máxima lateral em curvas (graus)
+@export var tilt_responsiveness: float = 9.0   # Responsividade do chassi ao inclinar
+@export var suspension_bob_amp: float = 0.022  # Amplitude do bobbing vertical da suspensão (metros)
+@export var suspension_frequency: float = 14.0 # Frequência de oscilação pelo rolamento da roda
+@export var head_lag_factor: float = 0.28      # Sensibilidade do atraso inercial da cabeça
+
 @onready var visual_pivot: Node3D = $VisualPivot
 @onready var robot_body: Node3D = $VisualPivot/GrassBot/Robot/Body if has_node("VisualPivot/GrassBot/Robot/Body") else null
 @onready var wheel_mesh: MeshInstance3D = $VisualPivot/GrassBot/Robot/Body/wheel if has_node("VisualPivot/GrassBot/Robot/Body/wheel") else null
@@ -13,6 +21,11 @@ extends CharacterBody3D
 @onready var blade_tier_1: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_1 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_1") else null
 @onready var blade_tier_2: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_2 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_2") else null
 @onready var blade_tier_3: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3") else null
+
+@onready var head_node: Node3D = $VisualPivot/GrassBot/Robot/Body/head if has_node("VisualPivot/GrassBot/Robot/Body/head") else null
+@onready var neck_node: Node3D = $VisualPivot/GrassBot/Robot/Body/neck if has_node("VisualPivot/GrassBot/Robot/Body/neck") else null
+@onready var low_arm_node: Node3D = $VisualPivot/GrassBot/Robot/Body/low_arm if has_node("VisualPivot/GrassBot/Robot/Body/low_arm") else null
+@onready var up_arm_node: Node3D = $VisualPivot/GrassBot/Robot/Body/up_arm if has_node("VisualPivot/GrassBot/Robot/Body/up_arm") else null
 
 @onready var blade_area: Area3D = $BladeArea
 @onready var blade_shape: CollisionShape3D = $BladeArea/CollisionShape3D
@@ -22,9 +35,22 @@ var input_direction: Vector2 = Vector2.ZERO
 var is_stunned: bool = false
 var stun_timer: float = 0.0
 
+var current_pitch: float = 0.0
+var current_roll: float = 0.0
+var suspension_phase: float = 0.0
+var shock_compression: float = 0.0
+var last_body_yaw: float = PI
+var head_yaw_lag: float = 0.0
+var initial_body_y: float = 0.0
+var initial_wheel_y: float = 0.0
+
 func _ready() -> void:
 	if robot_body:
 		robot_body.rotation.y = PI
+		initial_body_y = robot_body.position.y
+		last_body_yaw = robot_body.rotation.y
+	if wheel_mesh:
+		initial_wheel_y = wheel_mesh.position.y
 	update_upgrades()
 	_update_shader_globals()
 	if UpgradeManager != null:
@@ -105,11 +131,16 @@ func _physics_process(delta: float) -> void:
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
 		velocity = Vector3.ZERO
 		input_direction = Vector2.ZERO
+		_process_procedural_motion(delta, 1.0)
 		return
 
 	# Rotação contínua de alta velocidade da serra circular (eixo Y)
 	if blade_spinner:
 		blade_spinner.rotate_y(deg_to_rad(rotation_speed * delta))
+
+	var target_speed: float = base_speed
+	if UpgradeManager != null:
+		target_speed = UpgradeManager.get_cutter_speed()
 
 	# Gerenciamento de choque / ricochete
 	if is_stunned:
@@ -119,14 +150,11 @@ func _physics_process(delta: float) -> void:
 		# Aplica atrito durante o recuo
 		velocity = velocity.move_toward(Vector3.ZERO, friction * 2.0 * delta)
 		move_and_slide()
+		_process_procedural_motion(delta, target_speed)
 		_check_obstacle_collisions()
 		return
 
 	# Movimento omnidirecional responsivo baseado na entrada
-	var target_speed: float = base_speed
-	if UpgradeManager != null:
-		target_speed = UpgradeManager.get_cutter_speed()
-
 	# Converte a direção 2D (da tela isométrica) para coordenadas de mundo 3D
 	var move_dir: Vector3 = Vector3(input_direction.x, 0.0, input_direction.y)
 	if move_dir.length_squared() > 0.001:
@@ -146,9 +174,89 @@ func _physics_process(delta: float) -> void:
 		var effective_radius: float = 0.45 * 0.7 # Raio do pneu com a escala visual
 		wheel_mesh.rotate_x(linear_speed / effective_radius * delta)
 
+	# Atualiza a física procedural de suspensão, inclinação e movimentos da cabeça
+	_process_procedural_motion(delta, target_speed)
+
 	move_and_slide()
 	_check_obstacle_collisions()
 	_process_cutting()
+
+func _process_procedural_motion(delta: float, target_speed: float) -> void:
+	if robot_body == null:
+		return
+
+	# Se não estiver jogando, interpola tudo suavemente de volta ao repouso
+	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		current_pitch = lerp(current_pitch, 0.0, 8.0 * delta)
+		current_roll = lerp(current_roll, 0.0, 8.0 * delta)
+		shock_compression = move_toward(shock_compression, 0.0, 3.0 * delta)
+		robot_body.rotation.x = current_pitch
+		robot_body.rotation.z = current_roll
+		robot_body.position.y = initial_body_y + shock_compression
+		if wheel_mesh:
+			wheel_mesh.position.y = initial_wheel_y
+		if head_node:
+			head_node.rotation = head_node.rotation.lerp(Vector3.ZERO, 8.0 * delta)
+		if neck_node:
+			neck_node.rotation = neck_node.rotation.lerp(Vector3.ZERO, 8.0 * delta)
+		return
+
+	# --- 1. Dinâmica de Inclinação (Pitch & Roll / Lean) ---
+	# Direção frontal do robô (no glTF, +Z local com rotation.y atual)
+	var forward_dir := Vector3(sin(robot_body.rotation.y), 0.0, cos(robot_body.rotation.y))
+	var forward_speed := velocity.dot(forward_dir)
+	var speed_ratio := clampf(forward_speed / maxf(target_speed, 0.1), -1.0, 1.0)
+	var target_pitch := speed_ratio * deg_to_rad(max_pitch_deg)
+
+	# Taxa angular de curva (Yaw delta) para calcular o Roll lateral
+	var yaw_delta := angle_difference(last_body_yaw, robot_body.rotation.y)
+	last_body_yaw = robot_body.rotation.y
+	var turn_rate := yaw_delta / maxf(delta, 0.0001)
+	var target_roll := clampf(turn_rate * 0.025, -deg_to_rad(max_roll_deg), deg_to_rad(max_roll_deg))
+
+	# Interpolação suave com amortecimento
+	current_pitch = lerp(current_pitch, target_pitch, tilt_responsiveness * delta)
+	current_roll = lerp(current_roll, target_roll, tilt_responsiveness * delta)
+
+	robot_body.rotation.x = current_pitch
+	robot_body.rotation.z = current_roll
+
+	# --- 2. Suspensão Vertical & Amortecedores ---
+	var linear_speed := velocity.length()
+	if linear_speed > 0.05:
+		suspension_phase += linear_speed * delta * suspension_frequency
+
+	# Relaxamento suave do impacto
+	shock_compression = move_toward(shock_compression, 0.0, 4.5 * delta)
+	var bob := sin(suspension_phase) * suspension_bob_amp if linear_speed > 0.05 else 0.0
+	var total_suspension := bob + shock_compression
+
+	# Chassi sobe/desce suavemente com o terreno
+	robot_body.position.y = initial_body_y + total_suspension
+
+	# Roda contra-reage para absorver o relevo
+	if wheel_mesh:
+		wheel_mesh.position.y = initial_wheel_y - total_suspension * 0.7
+
+	# Braços articulados (low_arm e up_arm) rotacionam sutilmente em X com o curso da suspensão
+	var arm_rot_x := -total_suspension * 1.8
+	if low_arm_node:
+		low_arm_node.rotation.x = arm_rot_x
+	if up_arm_node:
+		up_arm_node.rotation.x = -arm_rot_x * 0.75
+
+	# --- 3. Movimento Secundário de Cabeça e Pescoço ---
+	# O pescoço absorve o pitch compensando levemente para manter visão horizontal
+	if neck_node:
+		neck_node.rotation.x = lerp_angle(neck_node.rotation.x, -current_pitch * 0.35, 10.0 * delta)
+		neck_node.rotation.z = lerp_angle(neck_node.rotation.z, -current_roll * 0.3, 10.0 * delta)
+
+	# A cabeça tem leve inércia/antecipação no Yaw ao curvar
+	var target_head_yaw := clampf(-turn_rate * 0.03 * head_lag_factor, -deg_to_rad(6.0), deg_to_rad(6.0))
+	head_yaw_lag = lerp_angle(head_yaw_lag, target_head_yaw, 8.0 * delta)
+	if head_node:
+		head_node.rotation.y = head_yaw_lag
+		head_node.rotation.x = lerp_angle(head_node.rotation.x, -current_pitch * 0.25, 12.0 * delta)
 
 func _check_obstacle_collisions() -> void:
 	var count: int = get_slide_collision_count()
@@ -164,6 +272,7 @@ func _trigger_obstacle_shock(normal: Vector3) -> void:
 	is_stunned = true
 	stun_timer = 0.18
 	velocity = normal * knockback_force
+	shock_compression = -0.045
 	
 	# Efeito de faíscas
 	if spark_particles:

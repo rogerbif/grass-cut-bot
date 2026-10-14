@@ -29,6 +29,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`011_correcao_mirror_export_gltf_modelo_robo.md`](./011_correcao_mirror_export_gltf_modelo_robo.md) | Correção do Mirror Modifier no Export glTF do Robô Cortador | Ativação obrigatória de export_apply=True no glTF exporter do Blender para inclusão simétrica de ambos os lados do chassi do robô. |
 | [`012_nova_lamina_tripla_tier_1.md`](./012_nova_lamina_tripla_tier_1.md) | Nova Lâmina Tripla de Aço (3 Pontas) para o Tier 1 | Modelagem da lâmina de 3 pontas inspirada em roçadeira/shuriken, substituindo a lâmina básica nos níveis 1 e 2. |
 | [`013_nova_lamina_quadrupla_tier_2.md`](./013_nova_lamina_quadrupla_tier_2.md) | Nova Lâmina Quádrupla Ninja (4 Pontas) para o Tier 2 | Modelagem da lâmina de 4 pontas em cruz com o mesmo alcance da Tier 1 e integração ao Tier 2 da Oficina. |
+| [`014_suspensao_procedural_e_inclinacao_dinamica_robo.md`](./014_suspensao_procedural_e_inclinacao_dinamica_robo.md) | Suspensão Procedural, Inclinação Dinâmica e Articulações do Robô | Suspensão vertical com bobbing reativo da roda, rotação compensatória dos braços em X, pitch/roll do chassi, estabilização do pescoço e antecipação de olhar da cabeça. |
 
 ---
 

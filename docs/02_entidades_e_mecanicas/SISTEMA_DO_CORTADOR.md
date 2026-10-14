@@ -46,11 +46,23 @@ if move_dir.length_squared() > 0.001:
     velocity = velocity.move_toward(target_vel, acceleration * delta)
     # Alinhamento da frente do robô na direção de deslocamento (glTF +Z para frente):
     var target_angle = atan2(move_dir.x, move_dir.z)
-    visual_pivot.rotation.y = lerp_angle(visual_pivot.rotation.y, target_angle, 12.0 * delta)
+    robot_body.rotation.y = lerp_angle(robot_body.rotation.y, target_angle, 14.0 * delta)
 else:
     velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
 move_and_slide()
 ```
+
+### Dinâmica Procedural de Suspensão e Inclinação (Game Feel)
+O chassi e suas peças reagem organicamente às forças de inércia e relevo do gramado:
+1. **Inclinação Longitudinal (Pitch):** O corpo inclina até $6^\circ$ para frente ao acelerar e inclina para trás ao desacelerar/frear, proporcionalmente a $(\vec{v} \cdot \vec{f}_{\text{robot}})$.
+2. **Inclinação Lateral (Roll / Lean):** Ao curvar o joystick, o chassi inclina suavemente até $4.5^\circ$ no sentido da curva proporcionalmente à velocidade angular $\Delta \text{yaw} / \Delta t$.
+3. **Suspensão Vertical (Bobbing & Shock):** 
+   - Oscilação senoidal suave ($\pm 0.022\text{m}$) sincronizada com a velocidade de rolamento da mono-wheel.
+   - Compressão súbita de suspensão ($-0.045\text{m}$) com retorno elástico amortecido em batidas contra rochas.
+   - Contra-reação vertical da roda (`wheel`) absorvendo o relevo.
+4. **Articulação de Braços e Cabeça:**
+   - Braços da suspensão (`low_arm` e `up_arm`) rotacionam sutilmente em $X$ acompanhando o curso dos pistões.
+   - O pescoço (`neck`) absorve o pitch para estabilizar a visão, e a cabeça (`head`) apresenta leve inércia/antecipação no Yaw ao virar.
 
 ---
 
