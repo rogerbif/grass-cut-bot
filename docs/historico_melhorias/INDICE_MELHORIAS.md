@@ -36,6 +36,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`018_restauracao_animacao_vento_e_interacao_grama_3d.md`](./018_restauracao_animacao_vento_e_interacao_grama_3d.md) | Restauração da Animação de Vento e Interatividade no Modelo 3D | Aplicação do shader espacial interactive_grass em todas as 4 variantes de cores, balanço orgânico de vento e curvatura/compressão reativa à serra. |
 | [`019_migracao_fases_para_cenas_godot_edicao_manual.md`](./019_migracao_fases_para_cenas_godot_edicao_manual.md) | Migração de Fases para Cenas Godot (.tscn) e Edição Manual da Fase 1 | Conversão das fases em cenas independentes (level_01.tscn), 56 tufos editáveis visualmente no Viewport 3D, detecção reativa de metas e carregador dinâmico com fallback procedural. |
 | [`020_modelo_unico_blender_variacoes_cenas_godot.md`](./020_modelo_unico_blender_variacoes_cenas_godot.md) | Consolidação de Modelo Único no Blender e Cenas Base Coloridas no Godot | Malha limpa e neutra no Blender sem sub-objetos, cenas base modulares no Godot para cada cor (verde, amarelo, azul, roxo) e redução de 75% na contagem de nós de malha. |
+| [`021_reimportacao_tufo_grama_392_vertices.md`](./021_reimportacao_tufo_grama_392_vertices.md) | Reimportação do Tufo de Grama Refinado do Blender (392 Vértices) | Enriquecimento da malha para 392 vértices e 280 faces (área de cobertura de 1m x 1m), preservação da ancoragem UV e recompilação do glTF. |
 
 
 ---

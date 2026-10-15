@@ -68,8 +68,8 @@ As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 O arquivo de modelagem `grass_01.blend` contém rigorosamente **1 único modelo default neutro e limpo**, exportado para `assets/models/grass_01.glb`. A definição de cores, materiais de shader e partículas ocorre diretamente na engine através de cenas especializadas.
 
 ### A. Geometria Única no Blender (`grass_01.blend`)
-- **Malha Base:** `grass_01_mesh` (baseada na malha `grass_varien_4_grass_0` com 112 vértices e 80 faces).
-- **Normalização e Origem:** Dimensões $0.89\text{m} \times 0.89\text{m} \times 1.025\text{m}$, coordenadas $(0.0, 0.0, 0.0)$ e base ancorada em $Z = 0.0$.
+- **Malha Base:** `grass_01_mesh` refinada e enriquecida volumetricamente (392 vértices e 280 faces).
+- **Normalização e Origem:** Dimensões $1.01\text{m} \times 0.99\text{m} \times 1.025\text{m}$, coordenadas $(0.0, 0.0, 0.0)$ e base ancorada em $Z = 0.0$.
 - **Material Neutro:** `M_Grama_Default` sem texturas e sem cores saturadas aplicadas diretamente no Blender.
 
 ### B. Cenas Base Especializadas por Cor (`scenes/plants/`)
