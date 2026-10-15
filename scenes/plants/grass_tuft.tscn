@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://grass_tuft_01"]
+[gd_scene load_steps=8 format=3 uid="uid://grass_tuft_01"]
 
 [ext_resource type="Script" path="res://scripts/plants/plant.gd" id="1_plant"]
 [ext_resource type="PackedScene" uid="uid://oow7pgxl0ues" path="res://assets/models/grass_01.glb" id="2_grass_model"]
+[ext_resource type="Material" uid="uid://interactive_grass_mat_01" path="res://shaders/interactive_grass_material.tres" id="3_grass_mat"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_area"]
 height = 0.6
@@ -37,6 +38,9 @@ shape = SubResource("CylinderShape3D_area")
 [node name="VisualMesh" type="Node3D" parent="."]
 
 [node name="Grass01" parent="VisualMesh" instance=ExtResource("2_grass_model")]
+
+[node name="grass_green" parent="VisualMesh/Grass01" index="1"]
+material_override = ExtResource("3_grass_mat")
 
 [node name="CutParticles" type="CPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)

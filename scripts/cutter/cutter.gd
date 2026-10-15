@@ -68,6 +68,9 @@ func _process(_delta: float) -> void:
 	_update_shader_globals()
 
 const GRASS_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
+const GRASS_YELLOW_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_yellow_material.tres")
+const GRASS_BLUE_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_blue_material.tres")
+const GRASS_PURPLE_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_purple_material.tres")
 const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_material.tres")
 const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
 
@@ -80,6 +83,15 @@ func _update_shader_globals() -> void:
 	if GRASS_MAT:
 		GRASS_MAT.set_shader_parameter("cutter_pos", global_position)
 		GRASS_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
+	if GRASS_YELLOW_MAT:
+		GRASS_YELLOW_MAT.set_shader_parameter("cutter_pos", global_position)
+		GRASS_YELLOW_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
+	if GRASS_BLUE_MAT:
+		GRASS_BLUE_MAT.set_shader_parameter("cutter_pos", global_position)
+		GRASS_BLUE_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
+	if GRASS_PURPLE_MAT:
+		GRASS_PURPLE_MAT.set_shader_parameter("cutter_pos", global_position)
+		GRASS_PURPLE_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
 	if WHEAT_MAT:
 		WHEAT_MAT.set_shader_parameter("cutter_pos", global_position)
 		WHEAT_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)

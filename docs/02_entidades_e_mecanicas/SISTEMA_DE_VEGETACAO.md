@@ -82,3 +82,13 @@ Todas as texturas rasterizadas foram substituídas por materiais com cores sóli
 | **`grass_blue`** | $(+0.75, 0.0, 0.0)$ | `M_Grama_Azul` | `(0.04, 0.45, 0.90, 1.0)` | Bioma místico / flora gélida |
 | **`grass_purple`** | $(+2.25, 0.0, 0.0)$ | `M_Grama_Roxa` | `(0.48, 0.08, 0.85, 1.0)` | Flora exótica / vegetação mágica |
 
+### C. Animação de Vento e Interatividade com o Cortador no Modelo 3D
+Para que o modelo 3D estilizado não permaneça estático no cenário, conectamos a geometria ao shader espacial `interactive_grass.gdshader`:
+1. **Mapeamento UV e Ancoragem:** As coordenadas $UV.y$ da malha original variam exatamente de $1.0$ (na raiz em $Y=0.0$) a $0.0$ (no topo em $Y=1.025$). O shader calcula `height_factor = clamp(1.0 - UV.y, 0.0, 1.0)` e `bend_factor = pow(height_factor, 1.6)`, garantindo que as raízes permaneçam firmemente plantadas ao solo enquanto as pontas ondulam com o vento.
+2. **Quatro Materiais de Shader Interativo Dedicados:**
+   - `interactive_grass_material.tres`: Grama verde vibrante (`color_base = #1f6b29`, `color_top = #33b338`).
+   - `interactive_grass_yellow_material.tres`: Grama dourada/amarela (`color_base = #a66605`, `color_top = #ffa60d`).
+   - `interactive_grass_blue_material.tres`: Grama mística azul (`color_base = #05479e`, `color_top = #0f85f2`).
+   - `interactive_grass_purple_material.tres`: Grama exótica roxa (`color_base = #4d0d8c`, `color_top = #8c1fea`).
+3. **Sincronização em Tempo Real:** O script `cutter.gd` atualiza continuamente `cutter_pos` e `cutter_interact_radius` em todos os materiais de grama, fazendo com que os tufos 3D se curvem suavemente e se comprimam para baixo com a aproximação da serra antes do corte.
+
