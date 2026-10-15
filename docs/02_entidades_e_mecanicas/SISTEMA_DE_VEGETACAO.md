@@ -61,3 +61,25 @@ As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 2. **Vento Orgânico Multidirecional e Gradiente Fosco:**
    - Adiciona ondas de vento cruzadas senoidais no espaço de mundo projetadas de volta ao modelo, criando ondulações fluidas que percorrem todo o gramado.
    - Aplica gradiente fosco *Low Poly* da raiz (tom mais escuro e denso) até a ponta (mais viva e iluminada), mantendo `roughness = 0.9` e acabamento sem reflexos especulares plásticos.
+
+---
+
+## 5. Modelo 3D Estilizado Low Poly (`grass_01.glb`) e Variações Cromáticas
+
+Originado do arquivo fonte de modelagem `grass_01.blend` e integrado como cena `scenes/plants/grass_01.tscn` (modelo `assets/models/grass_01.glb`), o tufo `grass_01` representa a evolução das malhas vegetais para geometria modelada tridimensional.
+
+### A. Geometria e Otimização
+- **Malha Base:** Selecionada da variante compacta `grass_varien_4_grass_0` (112 vértices, 80 faces em quads/tris de baixo custo de renderização).
+- **Normalização de Escala:** Fator de calibração $s = 0.0242265$, adequando as dimensões para a escala padrão de jogo ($0.89\text{m} \times 0.89\text{m} \times 1.025\text{m}$).
+- **Pivô no Solo:** Vértices inferiores alinhados estritamente em $Z = 0.0$, garantindo contato e ancoragem imediata com o piso do terreno.
+
+### B. Variações Lado a Lado e Materiais Foscos (Mandamento 7)
+Todas as texturas rasterizadas foram substituídas por materiais com cores sólidas vibrantes e acabamento fosco (`roughness = 0.88`, sem reflexos especulares plásticos):
+
+| Objeto no Modelo | Posição no Blender ($X, Y, Z$) | Material | Cor Sólida (RGBA Linear) | Uso Previsto no Jogo |
+| :--- | :--- | :--- | :--- | :--- |
+| **`grass_green`** | $(-2.25, 0.0, 0.0)$ | `M_Grama_Verde` | `(0.18, 0.65, 0.12, 1.0)` | Gramado clássico temperado |
+| **`grass_yellow`** | $(-0.75, 0.0, 0.0)$ | `M_Grama_Amarela` | `(1.00, 0.62, 0.02, 1.0)` | Campo seco / pastagem dourada |
+| **`grass_blue`** | $(+0.75, 0.0, 0.0)$ | `M_Grama_Azul` | `(0.04, 0.45, 0.90, 1.0)` | Bioma místico / flora gélida |
+| **`grass_purple`** | $(+2.25, 0.0, 0.0)$ | `M_Grama_Roxa` | `(0.48, 0.08, 0.85, 1.0)` | Flora exótica / vegetação mágica |
+

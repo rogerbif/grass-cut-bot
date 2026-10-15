@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://grass_01_variations_scene"]
+
+[ext_resource type="PackedScene" uid="uid://oow7pgxl0ues" path="res://assets/models/grass_01.glb" id="1_grass_01"]
+
+[node name="Grass01" type="Node3D"]
+
+[node name="GrassVariations" parent="." instance=ExtResource("1_grass_01")]
