@@ -63,32 +63,28 @@ As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 
 ---
 
-## 5. Modelo 3D Estilizado Low Poly (`grass_01.glb`) e Variações Cromáticas
+## 5. Modelo 3D Estilizado Low Poly (`grass_01.glb`) e Cenas Base Coloridas
 
-Originado do arquivo fonte de modelagem `grass_01.blend` e integrado como cena `scenes/plants/grass_01.tscn` (modelo `assets/models/grass_01.glb`), o tufo `grass_01` representa a evolução das malhas vegetais para geometria modelada tridimensional.
+O arquivo de modelagem `grass_01.blend` contém rigorosamente **1 único modelo default neutro e limpo**, exportado para `assets/models/grass_01.glb`. A definição de cores, materiais de shader e partículas ocorre diretamente na engine através de cenas especializadas.
 
-### A. Geometria e Otimização
-- **Malha Base:** Selecionada da variante compacta `grass_varien_4_grass_0` (112 vértices, 80 faces em quads/tris de baixo custo de renderização).
-- **Normalização de Escala:** Fator de calibração $s = 0.0242265$, adequando as dimensões para a escala padrão de jogo ($0.89\text{m} \times 0.89\text{m} \times 1.025\text{m}$).
-- **Pivô no Solo:** Vértices inferiores alinhados estritamente em $Z = 0.0$, garantindo contato e ancoragem imediata com o piso do terreno.
+### A. Geometria Única no Blender (`grass_01.blend`)
+- **Malha Base:** `grass_01_mesh` (baseada na malha `grass_varien_4_grass_0` com 112 vértices e 80 faces).
+- **Normalização e Origem:** Dimensões $0.89\text{m} \times 0.89\text{m} \times 1.025\text{m}$, coordenadas $(0.0, 0.0, 0.0)$ e base ancorada em $Z = 0.0$.
+- **Material Neutro:** `M_Grama_Default` sem texturas e sem cores saturadas aplicadas diretamente no Blender.
 
-### B. Variações Lado a Lado e Materiais Foscos (Mandamento 7)
-Todas as texturas rasterizadas foram substituídas por materiais com cores sólidas vibrantes e acabamento fosco (`roughness = 0.88`, sem reflexos especulares plásticos):
+### B. Cenas Base Especializadas por Cor (`scenes/plants/`)
+No Godot, cada tipo vegetal é encapsulado em uma cena própria que instancia a malha única `grass_01.glb` aplicando seu respectivo `material_override` com o shader espacial `interactive_grass.gdshader`:
 
-| Objeto no Modelo | Posição no Blender ($X, Y, Z$) | Material | Cor Sólida (RGBA Linear) | Uso Previsto no Jogo |
+| Cena no Godot | Arquivo | Shader Material | Partículas de Corte | Bioma / Papel Visual |
 | :--- | :--- | :--- | :--- | :--- |
-| **`grass_green`** | $(-2.25, 0.0, 0.0)$ | `M_Grama_Verde` | `(0.18, 0.65, 0.12, 1.0)` | Gramado clássico temperado |
-| **`grass_yellow`** | $(-0.75, 0.0, 0.0)$ | `M_Grama_Amarela` | `(1.00, 0.62, 0.02, 1.0)` | Campo seco / pastagem dourada |
-| **`grass_blue`** | $(+0.75, 0.0, 0.0)$ | `M_Grama_Azul` | `(0.04, 0.45, 0.90, 1.0)` | Bioma místico / flora gélida |
-| **`grass_purple`** | $(+2.25, 0.0, 0.0)$ | `M_Grama_Roxa` | `(0.48, 0.08, 0.85, 1.0)` | Flora exótica / vegetação mágica |
+| **Grama Verde** | `grass_tuft.tscn` / `grass_green.tscn` | `interactive_grass_material.tres` | Verde (`#40b847`) | Vegetação padrão da ilha |
+| **Grama Amarela** | `grass_yellow.tscn` | `interactive_grass_yellow_material.tres` | Dourado (`#f2bf26`) | Pastagem seca e campos ensolarados |
+| **Grama Azul** | `grass_blue.tscn` | `interactive_grass_blue_material.tres` | Azul celeste (`#3399f2`) | Bioma místico / flora gélida |
+| **Grama Roxa** | `grass_purple.tscn` | `interactive_grass_purple_material.tres` | Magenta/Roxo (`#a640f2`) | Vegetação exótica e mágica |
 
 ### C. Animação de Vento e Interatividade com o Cortador no Modelo 3D
-Para que o modelo 3D estilizado não permaneça estático no cenário, conectamos a geometria ao shader espacial `interactive_grass.gdshader`:
+Conectamos a geometria única ao shader espacial `interactive_grass.gdshader`:
 1. **Mapeamento UV e Ancoragem:** As coordenadas $UV.y$ da malha original variam exatamente de $1.0$ (na raiz em $Y=0.0$) a $0.0$ (no topo em $Y=1.025$). O shader calcula `height_factor = clamp(1.0 - UV.y, 0.0, 1.0)` e `bend_factor = pow(height_factor, 1.6)`, garantindo que as raízes permaneçam firmemente plantadas ao solo enquanto as pontas ondulam com o vento.
-2. **Quatro Materiais de Shader Interativo Dedicados:**
-   - `interactive_grass_material.tres`: Grama verde vibrante (`color_base = #1f6b29`, `color_top = #33b338`).
-   - `interactive_grass_yellow_material.tres`: Grama dourada/amarela (`color_base = #a66605`, `color_top = #ffa60d`).
-   - `interactive_grass_blue_material.tres`: Grama mística azul (`color_base = #05479e`, `color_top = #0f85f2`).
-   - `interactive_grass_purple_material.tres`: Grama exótica roxa (`color_base = #4d0d8c`, `color_top = #8c1fea`).
-3. **Sincronização em Tempo Real:** O script `cutter.gd` atualiza continuamente `cutter_pos` e `cutter_interact_radius` em todos os materiais de grama, fazendo com que os tufos 3D se curvem suavemente e se comprimam para baixo com a aproximação da serra antes do corte.
+2. **Sincronização em Tempo Real:** O script `cutter.gd` atualiza continuamente `cutter_pos` e `cutter_interact_radius` em todos os materiais de grama, fazendo com que os tufos 3D se curvem suavemente e se comprimam para baixo com a aproximação da serra antes do corte.
+3. **Performance Otimizada:** Cada tufo possui apenas 1 nó de malha ativo, eliminando 75% dos nós invisíveis na árvore de cena e permitindo arraste e duplicação direta no Viewport 3D da Godot.
 

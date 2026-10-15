@@ -39,7 +39,7 @@ shape = SubResource("CylinderShape3D_area")
 
 [node name="Grass01" parent="VisualMesh" instance=ExtResource("2_grass_model")]
 
-[node name="grass_green" parent="VisualMesh/Grass01" index="1"]
+[node name="grass_01" parent="VisualMesh/Grass01" index="0"]
 material_override = ExtResource("3_grass_mat")
 
 [node name="CutParticles" type="CPUParticles3D" parent="."]
