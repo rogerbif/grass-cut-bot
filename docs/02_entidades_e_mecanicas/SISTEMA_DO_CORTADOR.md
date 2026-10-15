@@ -16,7 +16,7 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 │       └── Robot (Node3D)
 │           ├── Body (Node3D - Chassi, Cabeça, Paralama, Bateria, Container)
 │           │   └── wheel (MeshInstance3D - Rolagem contínua no eixo X por velocidade)
-│           └── BladeSpinner (Node3D - Rotação omnidirecional ininterrupta em Y a 1200°/s)
+│           └── BladeSpinner (Node3D - Rotação omnidirecional em Y: 1200°/s em movimento, 90°/s em idle)
 │               ├── blade_tier_1 (MeshInstance3D - Nv. 1-2: Lâmina Tripla de Aço 3 pontas)
 │               ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Lâmina Quádrupla Ninja 4 pontas)
 │               └── blade_tier_3 (MeshInstance3D - Nv. 5+: Lâmina Estelar de Titânio)
@@ -34,7 +34,8 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 | `base_speed` | `6.5 m/s` | Velocidade máxima de deslocamento linear. Escalável via upgrade de Velocidade. |
 | `acceleration` | `24.0 m/s²` | Rapidez com que o cortador atinge a velocidade desejada após o toque. |
 | `friction` | `18.0 m/s²` | Desaceleração suave quando o jogador solta o joystick. |
-| `rotation_speed`| `1200.0 °/s` | Rotação angular ininterrupta do disco da serra em torno do eixo Y. |
+| `rotation_speed`| `1200.0 °/s` | Rotação angular de alta velocidade da serra em torno do eixo Y durante a condução. |
+| `idle_rotation_speed`| `90.0 °/s` | Rotação suave e lenta da lâmina em torno do eixo Y quando o robô estiver parado (idle). |
 | `knockback_force`| `5.0 m/s` | Impulso reverso aplicado na direção normal da colisão contra obstáculos. |
 
 ### Lógica de Vetor de Movimento e Orientação Frontal

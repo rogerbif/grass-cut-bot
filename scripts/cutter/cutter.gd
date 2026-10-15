@@ -3,7 +3,8 @@ extends CharacterBody3D
 @export var base_speed: float = 6.5
 @export var acceleration: float = 24.0
 @export var friction: float = 18.0
-@export var rotation_speed: float = 1200.0 # Graus por segundo de rotação da serra
+@export var rotation_speed: float = 1200.0 # Graus por segundo de rotação da serra em velocidade máxima (em movimento)
+@export var idle_rotation_speed: float = 90.0 # Graus por segundo de rotação suave da serra quando parado (marcha lenta)
 @export var knockback_force: float = 5.0
 
 @export_group("Procedural Motion")
@@ -35,6 +36,7 @@ extends CharacterBody3D
 var input_direction: Vector2 = Vector2.ZERO
 var is_stunned: bool = false
 var stun_timer: float = 0.0
+var current_blade_speed: float = 90.0
 
 var current_pitch: float = 0.0
 var current_roll: float = 0.0
@@ -46,6 +48,7 @@ var initial_body_y: float = 0.0
 var initial_wheel_y: float = 0.0
 
 func _ready() -> void:
+	current_blade_speed = idle_rotation_speed
 	if robot_body:
 		robot_body.rotation.y = PI
 		initial_body_y = robot_body.position.y
@@ -146,12 +149,18 @@ func _physics_process(delta: float) -> void:
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
 		velocity = Vector3.ZERO
 		input_direction = Vector2.ZERO
+		current_blade_speed = 0.0
 		_process_procedural_motion(delta, 1.0)
 		return
 
-	# Rotação contínua de alta velocidade da serra circular (eixo Y)
+	# Rotação da serra circular: rotação acelerada durante deslocamento e marcha lenta suave quando parado
+	var is_moving: bool = velocity.length_squared() > 0.01 or input_direction.length_squared() > 0.01
+	var target_blade_speed: float = rotation_speed if is_moving else idle_rotation_speed
+	var blade_accel: float = 12.0 if is_moving else 3.5
+	current_blade_speed = lerp(current_blade_speed, target_blade_speed, blade_accel * delta)
+
 	if blade_spinner:
-		blade_spinner.rotate_y(deg_to_rad(rotation_speed * delta))
+		blade_spinner.rotate_y(deg_to_rad(current_blade_speed * delta))
 
 	var target_speed: float = base_speed
 	if UpgradeManager != null:

@@ -42,6 +42,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`024_calibracao_escala_grama_e_particulas_ampliadas.md`](./024_calibracao_escala_grama_e_particulas_ampliadas.md) | Calibração da Escala dos Tufos de Grama e Partículas Ampliadas com Variação Dinâmica | Redução da escala da grama em ~20% (0.70 a 0.90), fatiamento imediato (0.04s) sem sensação de murchar e partículas de folhas ampliadas em 50% com escala variável (1.2 a 2.4). |
 | [`025_emissao_em_area_giro_3d_e_aleatoriedade_particulas.md`](./025_emissao_em_area_giro_3d_e_aleatoriedade_particulas.md) | Emissão em Área Circular, Giro no Ar e Alta Aleatoriedade de Trajetória | Emissão distribuída por disco de 0.35m (área do tufo), ativação de giro 3D (particle_flag_rotate_y = true de -540° a 540°/s) e espalhamento caótico hemisférico (spread = 85°). |
 | [`026_remocao_folga_grade_vegetacao.md`](./026_remocao_folga_grade_vegetacao.md) | Remoção de Folga Livre e Padronização do Gramado Contínuo | Espaçamento canônico reduzido para 0.80m, escala horizontal calibrada (0.95 ~ 1.10m) e sobreposição de folhas sem gaps ou chão visível na grade de fases. |
+| [`027_rotacao_lenta_lamina_idle.md`](./027_rotacao_lenta_lamina_idle.md) | Rotação Suave em Marcha Lenta (Idle) da Lâmina | Rotação suave de 90°/s quando parado (idle), aceleração instantânea de corte em movimento e desaceleração inercial ao soltar o joystick. |
 
 
 ---
