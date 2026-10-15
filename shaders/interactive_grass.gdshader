@@ -20,13 +20,13 @@ void vertex() {
 	// Converte para coordenadas globais de mundo
 	vec3 world_vert = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
-	// Altura normalizada da folha: 0.0 na raiz até 1.0 na ponta
-	float h = clamp(1.0 - UV.y, 0.0, 1.0);
+	// Altura normalizada da folha: 0.0 na raiz (UV.y = 0.0) até 1.0 na ponta (UV.y = 1.0)
+	float h = clamp(UV.y, 0.0, 1.0);
 
 	// A base da folha fica 100% estática, agindo rigorosamente como uma dobradiça/eixo na raiz.
-	// Vértices abaixo de 5% de altura possuem deslocamento rigorosamente zero.
-	float bend_factor = smoothstep(0.05, 1.0, h);
-	// Curva quadrática não-linear: flexão concentrada do meio para a ponta
+	// Vértices abaixo de 6% de altura possuem deslocamento rigorosamente zero.
+	float bend_factor = smoothstep(0.06, 1.0, h);
+	// Curva quadrática não-linear: o movimento cresce em arco até o topo
 	bend_factor = bend_factor * bend_factor;
 
 	// Identificação e parâmetros individuais de cada folha (via COLOR assado no Blender)
@@ -86,7 +86,7 @@ void vertex() {
 }
 
 void fragment() {
-	float h = clamp(1.0 - UV.y, 0.0, 1.0);
+	float h = clamp(UV.y, 0.0, 1.0);
 	ALBEDO = mix(color_base.rgb, color_top.rgb, h);
 	ROUGHNESS = roughness;
 	SPECULAR = specular;

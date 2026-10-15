@@ -53,7 +53,7 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 
 As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 1. **Curvatura Elástica Não-Linear e Eixo Fixo na Base:**
-   - **Ancoragem Rígida da Raiz:** O cálculo de curvatura utiliza `bend_factor = smoothstep(0.05, 1.0, h)^2`. Qualquer vértice na faixa de $0 \dots 5\%$ de altura (toda a base plantada) recebe rigorosamente `bend_factor = 0.0`, fixando a raiz 100% estática ao solo como um eixo/dobradiça inabalável.
+   - **Ancoragem Rígida da Raiz:** No formato glTF, as coordenadas de textura possuem $UV.y = 0.0$ nas raízes e $UV.y = 1.0$ nas pontas. A altura normalizada é dada diretamente por $h = \text{clamp}(UV.y, 0.0, 1.0)$, e o fator de flexão por $\text{bend\_factor} = \text{smoothstep}(0.06, 1.0, h)^2$. Qualquer vértice na faixa de $0 \dots 6\%$ de altura (toda a base plantada) recebe rigorosamente `bend_factor = 0.0`, fixando a raiz 100% estática ao solo como um eixo/dobradiça inabalável, enquanto as pontas no topo recebem amplitude total ($1.0$).
    - Converte os vértices para o espaço de mundo ($XZ$), calcula o vetor de afastamento radial e projeta no espaço de modelo via `mat3(inverse(MODEL_MATRIX))`.
    - Aplica compressão elástica no eixo Y (`VERTEX.y -= power * interact_power * 0.14 * bend_factor`), simulando o achatamento da grama sob a carcaça da serra.
 2. **Animação Pendular Independente por Folha (Atributos de Vértice `COLOR`):**

@@ -11,12 +11,13 @@ O usuário solicitou três refinamentos fundamentais de física e game feel:
 ## 2. Implementações Técnicas
 
 ### A. Ancoragem Rígida da Base como Eixo de Dobradiça (`interactive_grass.gdshader`)
-- **Eliminação de Deslocamento Parasita na Raiz:**
-  - Removido o antigo override condicional que alterava `height_factor` para vértices com $Y > 0.0$.
-  - Implementado cálculo estrito de curvatura via `bend_factor = smoothstep(0.05, 1.0, h)^2`.
-  - Vértices na base ($0 \dots 5\%$ de altura) recebem rigorosamente `bend_factor = 0.0`. A raiz permanece 100% estática e presa ao solo.
+- **Correção da Inversão de Coordenadas no glTF:**
+  - Na convenção oficial glTF 2.0, o exportador inverte o eixo vertical das coordenadas de textura, de modo que $UV.y = 0.0$ corresponde às raízes e $UV.y = 1.0$ corresponde às pontas das folhas.
+  - O shader utilizava anteriormente `1.0 - UV.y`, o que invertia o comportamento (aplicava força máxima na raiz e travava a ponta).
+  - Corrigido diretamente para `float h = clamp(UV.y, 0.0, 1.0)`.
+  - Aplicado `bend_factor = smoothstep(0.06, 1.0, h)^2`: a base ($0 \dots 6\%$) recebe rigorosamente `0.0` de deformação, fixando a raiz ao solo com 100% de estabilidade.
 - **Movimento em Dobradiça com Compensação de Arco:**
-  - O balanço lateral suave (`sway_side`) e a respiração radial (`sway_fwd`) operam com pivô centrado na raiz.
+  - O topo das folhas oscila livremente no ápice com amplitude plena.
   - Aplicada compensação vertical geométrica `VERTEX.y -= sway_displacement * 0.22`: conforme o topo se curva lateralmente, ele desce suavemente em arco, preservando o comprimento natural da folha sem esticar a malha.
 
 ### B. Calibração e Expansão das Partículas de Corte (`CPUParticles3D`)
