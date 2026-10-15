@@ -9,26 +9,79 @@ extends Node3D
 @onready var obstacles_container: Node3D = $ObstaclesContainer
 @onready var cutter: CharacterBody3D = $Cutter
 
+var current_level_node: Node3D = null
+@onready var default_terrain: Node3D = get_node_or_null("../Terrain") as Node3D
+
 func _ready() -> void:
 	generate_level(GameManager.current_level)
 
 func generate_level(level_num: int) -> void:
+	# Remove nivel instanciado anterior se houver
+	if current_level_node != null:
+		current_level_node.queue_free()
+		current_level_node = null
+
 	# Limpa entidades anteriores se houver
 	for child in plants_container.get_children():
 		child.queue_free()
 	for child in obstacles_container.get_children():
 		child.queue_free()
 
-	# Configurações por nível
-	match level_num:
-		1:
-			_build_level_1_mvp()
-		2:
-			_build_level_2()
-		3:
-			_build_level_3()
-		_:
-			_build_procedural_level(level_num)
+	# Tenta carregar a cena customizada do nível (ex: res://scenes/levels/level_01.tscn)
+	var scene_path: String = "res://scenes/levels/level_%02d.tscn" % level_num
+	if ResourceLoader.exists(scene_path):
+		_load_level_scene(scene_path, level_num)
+	else:
+		# Fallback para geradores procedurais caso o nível ainda não possua cena própria
+		if default_terrain:
+			default_terrain.visible = true
+			default_terrain.process_mode = Node.PROCESS_MODE_INHERIT
+		match level_num:
+			1:
+				_build_level_1_mvp()
+			2:
+				_build_level_2()
+			3:
+				_build_level_3()
+			_:
+				_build_procedural_level(level_num)
+
+func _load_level_scene(path: String, level_num: int) -> void:
+	var level_packed: PackedScene = load(path) as PackedScene
+	if level_packed == null:
+		return
+
+	var lvl: Node3D = level_packed.instantiate() as Node3D
+	add_child(lvl)
+	current_level_node = lvl
+
+	# Se o nível instanciado possui o próprio terreno, oculta/desativa o terreno de fallback da main
+	if lvl.has_node("Terrain") and default_terrain != null:
+		default_terrain.visible = false
+		default_terrain.process_mode = Node.PROCESS_MODE_DISABLED
+
+	# Posiciona o cortador no spawn do nível
+	if cutter:
+		if lvl.has_method("get_spawn_position"):
+			cutter.position = lvl.get_spawn_position()
+		else:
+			cutter.position = Vector3(0.0, 0.1, 0.0)
+
+	# Obtém as metas automaticamente através dos nós da cena
+	var goals: Dictionary = {}
+	var time_limit: float = 90.0
+
+	if lvl.has_method("get_goals"):
+		goals = lvl.get_goals()
+	if "time_limit" in lvl:
+		time_limit = float(lvl.time_limit)
+
+	# Se nenhuma meta foi detectada, garante a meta básica
+	if goals.is_empty():
+		goals = { "grass": 56 }
+
+	GameManager.start_level(level_num, goals, time_limit)
+
 
 func _build_level_1_mvp() -> void:
 	# Fase 1 (MVP de Validação do GDD):

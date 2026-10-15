@@ -26,7 +26,8 @@ grass-cut-bot/
 │   └── PROJETO_GRASS_CUT_BOT.md
 ├── scenes/                    # Cenas montadas (.tscn)
 │   ├── cutter/                # Cortador robótico
-│   ├── level/                 # Terrenos e ilhas
+│   ├── level/                 # Terrenos e ilhas base
+│   ├── levels/                # Fases autorais editáveis (level_01.tscn, etc.)
 │   ├── obstacles/             # Rochas e barreiras
 │   ├── plants/                # Tufos de grama, trigo e flores
 │   ├── ui/                    # HUD, joystick virtual e modais
@@ -35,7 +36,7 @@ grass-cut-bot/
 │   ├── camera/
 │   ├── core/                  # Autoloads e singletons (GameManager, UpgradeManager)
 │   ├── cutter/
-│   ├── level/
+│   ├── level/                 # base_level.gd e level_controller.gd
 │   ├── plants/
 │   └── ui/
 ├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador de Diretrizes

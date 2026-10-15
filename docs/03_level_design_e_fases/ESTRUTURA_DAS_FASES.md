@@ -17,13 +17,13 @@ Este documento detalha o desenho dos estágios, a progressão de dificuldade, a 
 
 ## 2. Progressão Canônica dos Estágios
 
-### Fase 1: MVP de Validação (O Básico do Corte)
-- **Área do Cenário:** Retângulo compacto ($10 \times 6$ tufos com espaçamento de $1.1\text{m}$).
-- **Composição:** 60 tufos de grama verde básica. Centro inicial livre para partida suave.
-- **Metas do HUD:** Cortar 60 tufos de grama.
+### Fase 1: MVP de Validação (Cena `scenes/levels/level_01.tscn`)
+- **Cena Própria no Godot:** Montada como cena autônoma `scenes/levels/level_01.tscn`, permitindo que o level designer selecione, mova, duplique ou exclua tufos diretamente no Viewport 3D da Godot.
+- **Área do Cenário:** Ilha com terreno próprio (`terrain.tscn`) e muretas limítrofes.
+- **Composição Inicial:** 56 tufos de grama verde estilizada 3D (`grass_tuft.tscn`), distribuídos em grid retangular ($10 \times 6$) com o centro livre para spawn do cortador (`CutterSpawn` em $(0, 0.1, 0)$).
+- **Detecção Automática de Metas:** O script `base_level.gd` varre o nó `$Plants` em tempo de execução e registra automaticamente as metas no `GameManager`. Qualquer tufo adicionado ou removido manualmente na cena tem sua meta sincronizada instantaneamente sem necessidade de alterar código.
 - **Cronômetro:** 90 segundos ($1:30$).
-- **Obstáculos Internos:** Nenhum.
-- **Foco de Design:** Calibração do joystick flutuante, sensação tátil do corte contínuo, verificação dos contadores e finalização com vitória.
+- **Obstáculos Internos:** Nó `$Obstacles` preparado para futuras adições manuais.
 
 ### Fase 2: Introdução de Trigo e Primeiras Rochas
 - **Área do Cenário:** $11 \times 8$ tufos.
@@ -50,9 +50,10 @@ Este documento detalha o desenho dos estágios, a progressão de dificuldade, a 
 
 ---
 
-## 3. Controlador de Níveis (`level_controller.gd`)
+## 3. Controlador de Níveis e Cenas (`level_controller.gd` & `base_level.gd`)
 
-O gerenciamento de montagem dos estágios é centralizado no nó `LevelController`:
-- Limpa nós anteriores de vegetação e obstáculos de forma assíncrona.
-- Instancia os tufos corretos com variação procedural de escala e ângulo.
-- Invoca `GameManager.start_level(current_level, goals, duration)` para inicializar os sistemas de HUD e regras de vitória/derrota com sincronismo perfeito.
+O gerenciamento de estágios combina montagem visual por cena com compatibilidade procedural:
+1. **Carregamento Automático de Cenas:** O `LevelController` busca por `res://scenes/levels/level_%02d.tscn`. Se a cena existir, ela é instanciada dinamicamente sob a hierarquia de jogo.
+2. **Fallback Procedural Suave:** Caso o nível solicitado ainda não possua cena própria montada, o sistema ativa os geradores procedurais anteriores (`_build_level_2()`, `_build_procedural_level()`), garantindo continuidade ininterrupta do ciclo de jogo.
+3. **Ponto de Spawn e Câmera:** O robô cortador é reposicionado automaticamente no marcador `CutterSpawn` da fase.
+4. **Execução Standalone (F6):** Ao executar diretamente a cena do nível no editor via F6, o script `base_level.gd` intercepta a chamada e direciona para a cena mestre `main.tscn` configurando o nível correspondente.
