@@ -8,7 +8,7 @@ Este documento detalha os elementos sensoriais que constroem a sensação de rel
 
 1. **Resposta Mecânica Imediata:** Não há atraso entre a passagem da lâmina e a remoção da grama. O corte ocorre no exato instante do contato radial.
 2. **Recompensa Sensorial Multissensorial:** Cada corte aciona simultaneamente:
-   - Resposta visual (partículas parabólicas + animação de squeeze do tufo + piso limpo revelado).
+   - Resposta visual (30 folhas partidas estilizadas voando em cone com gravidade real e tumbling 3D + animação de squeeze do tufo + piso limpo revelado).
    - Resposta de interface (card de metas com animação de pop + incremento de moedas).
    - Resposta tátil (pulso háptico no motor de vibração do smartphone).
 3. **Fluidez de Movimento:** O cortador possui inércia equilibrada, permitindo deslizamento suave sem sensação de atrito excessivo.
