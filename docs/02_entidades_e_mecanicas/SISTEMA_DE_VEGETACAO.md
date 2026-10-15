@@ -25,11 +25,10 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 └── CutParticles (CPUParticles3D - emissão explosiva em arco)
 ```
 
-- **Variação Orgânica e Estrutura em Leque:**
-  - O tufo de grama básico (`grass_tuft.tscn`) é modelado volumetricamente com **5 lâminas PrismMesh** (`subdivide_height = 4`) dispostas em formato de cálice/leque radial:
-    - `BladeCenter`: Haste central mais alta (0.72m) e esguia, orientada quase verticalmente para garantir volume central.
-    - `Blade1` a `Blade4`: Lâminas periféricas com alturas entre 0.52m e 0.64m, inclinadas radialmente para fora (pitch de 13° a 16°) e distribuídas em ângulos de yaw espaçados, conferindo volume 360° em qualquer perspectiva de câmera.
-  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0` a $2\pi$) e uma leve oscilação de escala (`0.85` a `1.15`), garantindo que o gramado pareça natural mesmo em malha densa.
+- **Estrutura 3D Estilizada Low Poly:**
+  - O tufo de grama básico (`grass_tuft.tscn`) utiliza o modelo 3D oficial `assets/models/grass_01.glb` (baseado na malha de 112 vértices e 80 faces `grass_varien_4_grass_0`).
+  - O nó visual contém a cena instanciada `Grass01`, com suporte dinâmico no `plant.gd` via enum `@export var grass_variation: GrassVariation` (`GREEN`, `YELLOW`, `BLUE`, `PURPLE`, `RANDOM`), permitindo rápida personalização de biomas mantendo o verde clássico por padrão.
+  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma leve oscilação de escala (`0.85` a `1.15`), garantindo que o gramado pareça orgânico e variado por todo o cenário.
 
 ---
 

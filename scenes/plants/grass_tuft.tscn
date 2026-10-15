@@ -1,40 +1,15 @@
-[gd_scene load_steps=12 format=3 uid="uid://grass_tuft_01"]
+[gd_scene load_steps=7 format=3 uid="uid://grass_tuft_01"]
 
 [ext_resource type="Script" path="res://scripts/plants/plant.gd" id="1_plant"]
-[ext_resource type="Material" uid="uid://interactive_grass_mat_01" path="res://shaders/interactive_grass_material.tres" id="2_grass_mat"]
+[ext_resource type="PackedScene" uid="uid://oow7pgxl0ues" path="res://assets/models/grass_01.glb" id="2_grass_model"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_area"]
 height = 0.6
 radius = 0.35
 
-[sub_resource type="PrismMesh" id="PrismMesh_center"]
-material = ExtResource("2_grass_mat")
-size = Vector3(0.16, 0.72, 0.07)
-subdivide_height = 4
-
-[sub_resource type="PrismMesh" id="PrismMesh_tall"]
-material = ExtResource("2_grass_mat")
-size = Vector3(0.17, 0.64, 0.07)
-subdivide_height = 4
-
-[sub_resource type="PrismMesh" id="PrismMesh_med1"]
-material = ExtResource("2_grass_mat")
-size = Vector3(0.15, 0.58, 0.07)
-subdivide_height = 4
-
-[sub_resource type="PrismMesh" id="PrismMesh_med2"]
-material = ExtResource("2_grass_mat")
-size = Vector3(0.18, 0.62, 0.07)
-subdivide_height = 4
-
-[sub_resource type="PrismMesh" id="PrismMesh_short"]
-material = ExtResource("2_grass_mat")
-size = Vector3(0.14, 0.52, 0.06)
-subdivide_height = 4
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_particle"]
 roughness = 0.9
-albedo_color = Color(0.35, 0.78, 0.38, 1)
+albedo_color = Color(0.25, 0.72, 0.28, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_particle"]
 material = SubResource("StandardMaterial3D_particle")
@@ -61,25 +36,7 @@ shape = SubResource("CylinderShape3D_area")
 
 [node name="VisualMesh" type="Node3D" parent="."]
 
-[node name="BladeCenter" type="MeshInstance3D" parent="VisualMesh"]
-transform = Transform3D(0.965926, 0, -0.258819, 0.013546, 0.99863, 0.050553, 0.258464, -0.052336, 0.964602, 0.0026, 0.36, 0.0097)
-mesh = SubResource("PrismMesh_center")
-
-[node name="Blade1" type="MeshInstance3D" parent="VisualMesh"]
-transform = Transform3D(0.5, 0, -0.866025, 0.209511, 0.970296, 0.120961, 0.840301, -0.241922, 0.485148, 0.0303, 0.32, 0.0175)
-mesh = SubResource("PrismMesh_tall")
-
-[node name="Blade2" type="MeshInstance3D" parent="VisualMesh"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0.194905, 0.961262, -0.194905, 0.679715, -0.275637, -0.679715, 0.0283, 0.29, -0.0283)
-mesh = SubResource("PrismMesh_med1")
-
-[node name="Blade3" type="MeshInstance3D" parent="VisualMesh"]
-transform = Transform3D(-0.866025, 0, 0.5, -0.112476, 0.97437, -0.194813, -0.487185, -0.224951, -0.843829, -0.0175, 0.31, -0.0303)
-mesh = SubResource("PrismMesh_med2")
-
-[node name="Blade4" type="MeshInstance3D" parent="VisualMesh"]
-transform = Transform3D(0.258819, 0, 0.965926, -0.25, 0.965926, 0.066987, -0.933013, -0.258819, 0.25, -0.0386, 0.26, 0.0104)
-mesh = SubResource("PrismMesh_short")
+[node name="Grass01" parent="VisualMesh" instance=ExtResource("2_grass_model")]
 
 [node name="CutParticles" type="CPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)

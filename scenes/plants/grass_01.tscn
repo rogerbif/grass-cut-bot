@@ -5,3 +5,15 @@
 [node name="Grass01" type="Node3D"]
 
 [node name="GrassVariations" parent="." instance=ExtResource("1_grass_01")]
+
+[node name="grass_blue" parent="GrassVariations" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, 0)
+
+[node name="grass_green" parent="GrassVariations" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 0, 0)
+
+[node name="grass_purple" parent="GrassVariations" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 0, 0)
+
+[node name="grass_yellow" parent="GrassVariations" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0, 0)
