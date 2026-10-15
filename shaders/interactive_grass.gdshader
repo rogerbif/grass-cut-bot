@@ -20,14 +20,14 @@ void vertex() {
 	// Converte para coordenadas globais de mundo
 	vec3 world_vert = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
-	// Fator de altura: a base da planta fica firme no chão e a ponta se curva
-	float height_factor = clamp(1.0 - UV.y, 0.0, 1.0);
-	if (height_factor < 0.05 && VERTEX.y > 0.0) {
-		height_factor = clamp(VERTEX.y / 0.6, 0.0, 1.0);
-	}
+	// Altura normalizada da folha: 0.0 na raiz até 1.0 na ponta
+	float h = clamp(1.0 - UV.y, 0.0, 1.0);
 
-	// Curvatura elástica não-linear: base ancorada e ponta arqueada
-	float bend_factor = pow(height_factor, 1.8);
+	// A base da folha fica 100% estática, agindo rigorosamente como uma dobradiça/eixo na raiz.
+	// Vértices abaixo de 5% de altura possuem deslocamento rigorosamente zero.
+	float bend_factor = smoothstep(0.05, 1.0, h);
+	// Curva quadrática não-linear: flexão concentrada do meio para a ponta
+	bend_factor = bend_factor * bend_factor;
 
 	// Identificação e parâmetros individuais de cada folha (via COLOR assado no Blender)
 	float blade_phase = 0.0;
@@ -57,7 +57,7 @@ void vertex() {
 	// 2. Respiração suave para frente e para trás com frequência secundária
 	float sway_fwd = cos(TIME * (wind_speed * blade_freq * 0.65) + blade_phase * 1.4) * 0.35;
 
-	// Deslocamento pendular individual da folha
+	// Deslocamento pendular individual da folha ancorado na base
 	vec3 leaf_sway = (dir_side * sway_side + dir_fwd * sway_fwd) * (wind_strength * bend_factor);
 
 	// Brisa global sutil para coerência de campo
@@ -66,6 +66,10 @@ void vertex() {
 
 	// Aplica balanço suave das folhas
 	VERTEX += leaf_sway + model_breeze;
+
+	// Compensação de arco: ao inclinar horizontalmente em torno da base fixa, o topo desce ligeiramente em Y
+	float sway_displacement = length(leaf_sway.xz);
+	VERTEX.y -= sway_displacement * 0.22;
 
 	// --- Interação com a lâmina do cortador ---
 	vec3 direction = world_vert - cutter_pos;

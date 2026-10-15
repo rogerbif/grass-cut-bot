@@ -15,7 +15,7 @@ roughness = 0.9
 albedo_color = Color(0.2, 0.65, 0.95, 1)
 
 [sub_resource type="Curve" id="Curve_scale"]
-_data = [Vector2(0, 0.8), 0.0, 0.0, 0, 0, Vector2(0.15, 1), 0.0, 0.0, 0, 0, Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.0, 0.0, 0, 0]
+_data = [Vector2(0, 0.8), 0.0, 0.0, 0, 0, Vector2(0.15, 1), 0.0, 0.0, 0, 0, Vector2(0.65, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.0, 0.0, 0, 0]
 point_count = 4
 
 [node name="GrassBlue" type="Node3D" groups=["plants"]]
@@ -44,16 +44,16 @@ material_override = ExtResource("3_grass_mat")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 material_override = SubResource("StandardMaterial3D_particle")
 emitting = false
-amount = 20
-lifetime = 0.85
+amount = 30
+lifetime = 0.65
 one_shot = true
 explosiveness = 0.92
 mesh = ExtResource("4_leaf_mesh")
 direction = Vector3(0, 1, 0)
-spread = 50.0
-gravity = Vector3(0, -9.8, 0)
-initial_velocity_min = 3.8
-initial_velocity_max = 5.6
+spread = 32.0
+gravity = Vector3(0, -10.5, 0)
+initial_velocity_min = 2.4
+initial_velocity_max = 3.8
 angular_velocity_min = 180.0
 angular_velocity_max = 540.0
 angle_min = 0.0

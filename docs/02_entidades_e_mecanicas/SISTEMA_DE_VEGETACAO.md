@@ -39,23 +39,22 @@ Tuft (Node3D - grupo "plants", script plant.gd)
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal), dando feedback imediato de que a planta sofreu impacto mas resistiu.
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - O emissor `CutParticles` ejeta 20 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) em cone ascendente (`spread = 50.0`, velocidade `3.8 ~ 5.6 m/s`), submetidas à gravidade física real (`gravity = -9.8 m/s²`), com rotação 3D contínua no ar (tumbling de `180° ~ 540°/s`) e encolhimento suave ao tocar o piso.
+   - O emissor `CutParticles` ejeta 30 pedaços de folhas partidas estilizadas (+50% de volume, `cut_leaf_piece.obj`) em cone contido e focado (`spread = 32.0`, velocidade calibrada de `2.4 ~ 3.8 m/s`), submetidas à gravidade física ágil (`gravity = -10.5 m/s²`), com tumbling 3D contínuo (`180° ~ 540°/s`), voo parabólico de `0.65s` e encolhimento suave a zero no solo.
    - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
    - O modelo 3D do tufo é achatado e encolhido a zero via Tween em 0.14s, revelando o piso limpo.
-   - O nó aguarda o ciclo completo de queda das partículas (1.2s) e executa `queue_free()`.
+   - O nó aguarda o término das partículas (1.2s) e executa `queue_free()`.
 
 ---
 
 ## 4. Shader Interativo de Vegetação (Balanço Pendular Independente de Folhas)
 
 As plantas utilizam o shader espacial `interactive_grass.gdshader`:
-1. **Curvatura Elástica Não-Linear e Compressão:**
-   - Lê a posição global e o raio de interação do cortador via parâmetros de shader atualizados dinamicamente pelo cortador nos materiais compartilhados (`cutter_pos` e `cutter_interact_radius`).
+1. **Curvatura Elástica Não-Linear e Eixo Fixo na Base:**
+   - **Ancoragem Rígida da Raiz:** O cálculo de curvatura utiliza `bend_factor = smoothstep(0.05, 1.0, h)^2`. Qualquer vértice na faixa de $0 \dots 5\%$ de altura (toda a base plantada) recebe rigorosamente `bend_factor = 0.0`, fixando a raiz 100% estática ao solo como um eixo/dobradiça inabalável.
    - Converte os vértices para o espaço de mundo ($XZ$), calcula o vetor de afastamento radial e projeta no espaço de modelo via `mat3(inverse(MODEL_MATRIX))`.
-   - Aplica curvatura elástica exponencial `bend_factor = pow(height_factor, 1.8)`: a raiz permanece 100% ancorada ao solo enquanto a ponta se curva suavemente em arco sob a aproximação da lâmina.
    - Aplica compressão elástica no eixo Y (`VERTEX.y -= power * interact_power * 0.14 * bend_factor`), simulando o achatamento da grama sob a carcaça da serra.
 2. **Animação Pendular Independente por Folha (Atributos de Vértice `COLOR`):**
    - Cada uma das 56 folhas de cada tufo possui fase ($\phi$), orientação radial ($\theta$) e frequência natural assadas no atributo de vértice `COLOR` durante o export do Blender (`grass_01.blend`):
@@ -65,6 +64,7 @@ As plantas utilizam o shader espacial `interactive_grass.gdshader`:
    - O Vertex Shader decompõe a folha em dois vetores no plano horizontal: `dir_side` (perpendicular à lâmina) e `dir_fwd` (ao longo do crescimento).
    - **Pender Lateral ("de um lado para o outro"):** Oscilação senoidal suave `sway_side = sin(TIME * (wind_speed * blade_freq) + blade_phase)` aplicada ao longo de `dir_side`.
    - **Respiração Radial:** Oscilação secundária amortecida `sway_fwd = cos(...) * 0.35` ao longo de `dir_fwd`.
+   - **Compensação de Arco:** Ao inclinar horizontalmente a partir da base imóvel, o topo sofre leve redução em Y (`VERTEX.y -= sway_displacement * 0.22`), preservando geometricamente o comprimento de haste.
    - Como cada folha opera com sua própria fase e orientação, as folhas vizinhas balançam em tempos e direções distintas de forma orgânica, eliminando completamente a sensação de bloco rígido.
    - **Custo Computacional Zero:** Calculado integralmente no Vertex Shader na GPU em uma única draw call por tufo (sem necessidade de nós ou objetos separados para cada folha).
    - Aplica gradiente fosco *Low Poly* da raiz (tom mais escuro e denso) até a ponta (mais viva e iluminada), mantendo `roughness = 0.9` e acabamento sem reflexos especulares plásticos.

@@ -38,6 +38,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`020_modelo_unico_blender_variacoes_cenas_godot.md`](./020_modelo_unico_blender_variacoes_cenas_godot.md) | Consolidação de Modelo Único no Blender e Cenas Base Coloridas no Godot | Malha limpa e neutra no Blender sem sub-objetos, cenas base modulares no Godot para cada cor (verde, amarelo, azul, roxo) e redução de 75% na contagem de nós de malha. |
 | [`021_reimportacao_tufo_grama_392_vertices.md`](./021_reimportacao_tufo_grama_392_vertices.md) | Reimportação do Tufo de Grama Refinado do Blender (392 Vértices) | Enriquecimento da malha para 392 vértices e 280 faces (área de cobertura de 1m x 1m), preservação da ancoragem UV e recompilação do glTF. |
 | [`022_animacao_pendular_folhas_e_particulas_corte.md`](./022_animacao_pendular_folhas_e_particulas_corte.md) | Animação Pendular Independente de Folhas e Partículas de Corte em Pedaços | Balanço lateral e respiração independente por folha via atributos de vértice (COLOR) no Vertex Shader, malha estilizada de folhas partidas (cut_leaf_piece.obj), gravidade física e tumbling 3D. |
+| [`023_ancoragem_base_folhas_e_calibracao_particulas.md`](./023_ancoragem_base_folhas_e_calibracao_particulas.md) | Ancoragem Rígida da Base das Folhas e Calibração de Partículas de Corte | Eixo de dobradiça 100% fixo no solo via smoothstep na raiz, compensação de arco em Y, aumento de 50% nas partículas (30 folhas) e lançamento contido com gravidade rápida. |
 
 
 ---
