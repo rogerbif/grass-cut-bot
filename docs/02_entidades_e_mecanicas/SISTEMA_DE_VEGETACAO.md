@@ -39,7 +39,7 @@ Tuft (Node3D - grupo "plants", script plant.gd)
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal), dando feedback imediato de que a planta sofreu impacto mas resistiu.
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - O emissor `CutParticles` ejeta 30 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) com tamanhos dinamicamente variáveis e ampliados em 50% (`scale_amount = 1.2 ~ 2.4`), em cone contido e focado (`spread = 32.0`, velocidade calibrada de `2.4 ~ 3.8 m/s`), submetidas à gravidade física ágil (`gravity = -10.5 m/s²`), com tumbling 3D contínuo (`180° ~ 540°/s`), voo parabólico de `0.65s` e encolhimento suave a zero no solo.
+   - O emissor `CutParticles` ejeta 30 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por toda a área do tufo (`emission_shape = RING`, raio $0.35\text{m}$), com tamanhos dinamicamente variáveis (`scale_amount = 1.2 ~ 2.4`), rotação no ar ativa (`particle_flag_rotate_y = true`, giro de $-540^\circ$ a $+540^\circ/\text{s}$), espalhamento multidirecional caótico (`spread = 85.0°`, velocidade `2.0 ~ 4.5 m/s`), aceleração tangencial (`-3.0 ~ 3.0`) e arrasto aerodinâmico sob gravidade natural (`gravity = -9.8 m/s²`), com voo orgânico de `0.70s` e encolhimento suave ao tocar o solo.
    - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
