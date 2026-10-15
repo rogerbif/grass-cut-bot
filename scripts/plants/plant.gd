@@ -17,9 +17,9 @@ var is_cut: bool = false
 
 func _ready() -> void:
 	health = max_health
-	# Leve variação aleatória de escala e rotação para aspecto natural Low Poly
+	# Leve variação aleatória de escala e rotação proporcional Low Poly
 	var random_rot: float = randf_range(0.0, TAU)
-	var random_scale: float = randf_range(0.85, 1.15)
+	var random_scale: float = randf_range(0.70, 0.90)
 	visual_mesh.rotation.y = random_rot
 	visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 
@@ -49,15 +49,14 @@ func _perform_cut() -> void:
 	if GameManager != null:
 		GameManager.register_cut(plant_key, coin_reward)
 
-	# Efeito visual de colheita rápida
+	# Fatiamento ágil e imediato: corte seco sem sensação de balão murchando
 	var tween = create_tween()
-	tween.tween_property(visual_mesh, "scale", Vector3(1.3, 0.2, 1.3), 0.06)
-	tween.tween_property(visual_mesh, "scale", Vector3.ZERO, 0.08)
+	tween.tween_property(visual_mesh, "scale", visual_mesh.scale * Vector3(1.05, 0.05, 1.05), 0.04)
 	tween.tween_callback(func():
 		visual_mesh.visible = false
 	)
 
 	# Destrói o nó após o término das partículas
-	get_tree().create_timer(1.2).timeout.connect(func():
+	get_tree().create_timer(1.0).timeout.connect(func():
 		queue_free()
 	)

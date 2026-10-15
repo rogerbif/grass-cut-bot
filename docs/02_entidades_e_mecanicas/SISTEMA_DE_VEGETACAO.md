@@ -28,7 +28,7 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 - **Estrutura 3D Estilizada Low Poly:**
   - O tufo de grama básico (`grass_tuft.tscn`) utiliza o modelo 3D oficial `assets/models/grass_01.glb` (baseado na malha de 112 vértices e 80 faces `grass_varien_4_grass_0`).
   - O nó visual contém a cena instanciada `Grass01`, com suporte dinâmico no `plant.gd` via enum `@export var grass_variation: GrassVariation` (`GREEN`, `YELLOW`, `BLUE`, `PURPLE`, `RANDOM`), permitindo rápida personalização de biomas mantendo o verde clássico por padrão.
-  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma leve oscilação de escala (`0.85` a `1.15`), garantindo que o gramado pareça orgânico e variado por todo o cenário.
+  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma calibração compacta de escala (`0.70` a `0.90`), garantindo que o gramado fique na altura ideal e perfeitamente proporcional ao robô cortador.
 
 ---
 
@@ -39,13 +39,13 @@ Tuft (Node3D - grupo "plants", script plant.gd)
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal), dando feedback imediato de que a planta sofreu impacto mas resistiu.
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - O emissor `CutParticles` ejeta 30 pedaços de folhas partidas estilizadas (+50% de volume, `cut_leaf_piece.obj`) em cone contido e focado (`spread = 32.0`, velocidade calibrada de `2.4 ~ 3.8 m/s`), submetidas à gravidade física ágil (`gravity = -10.5 m/s²`), com tumbling 3D contínuo (`180° ~ 540°/s`), voo parabólico de `0.65s` e encolhimento suave a zero no solo.
+   - O emissor `CutParticles` ejeta 30 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) com tamanhos dinamicamente variáveis e ampliados em 50% (`scale_amount = 1.2 ~ 2.4`), em cone contido e focado (`spread = 32.0`, velocidade calibrada de `2.4 ~ 3.8 m/s`), submetidas à gravidade física ágil (`gravity = -10.5 m/s²`), com tumbling 3D contínuo (`180° ~ 540°/s`), voo parabólico de `0.65s` e encolhimento suave a zero no solo.
    - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
-   - O modelo 3D do tufo é achatado e encolhido a zero via Tween em 0.14s, revelando o piso limpo.
-   - O nó aguarda o término das partículas (1.2s) e executa `queue_free()`.
+   - O modelo 3D do tufo é fatiado e achatado instantaneamente via Tween em 0.04s (`scale * (1.05, 0.05, 1.05)`), gerando um corte seco e limpo sem sensação de murchar lentamente.
+   - O nó aguarda o término das partículas (1.0s) e executa `queue_free()`.
 
 ---
 
