@@ -20,7 +20,7 @@ Este documento detalha o desenho dos estágios, a progressão de dificuldade, a 
 ### Fase 1: MVP de Validação (Cena `scenes/levels/level_01.tscn`)
 - **Cena Própria no Godot:** Montada como cena autônoma `scenes/levels/level_01.tscn`, permitindo que o level designer selecione, mova, duplique ou exclua tufos diretamente no Viewport 3D da Godot.
 - **Área do Cenário:** Ilha com terreno próprio (`terrain.tscn`) e muretas limítrofes.
-- **Composição Inicial:** 56 tufos de grama verde estilizada 3D (`grass_tuft.tscn`), distribuídos em grid retangular ($10 \times 6$) com o centro livre para spawn do cortador (`CutterSpawn` em $(0, 0.1, 0)$).
+- **Composição Inicial:** 56 tufos de grama verde estilizada 3D (`grass_tuft.tscn`), distribuídos no padrão canônico de espaçamento denso (`0.80m` entre centros, $X \in [-3.6, 3.6]$, $Z \in [-2.0, 2.0]$ em grid $10 \times 6$), com diâmetro de folhagem garantindo sobreposição e zero folga livre entre folhas vizinhas, mantendo o centro livre para spawn do cortador (`CutterSpawn` em $(0, 0.1, 0)$).
 - **Detecção Automática de Metas:** O script `base_level.gd` varre o nó `$Plants` em tempo de execução e registra automaticamente as metas no `GameManager`. Qualquer tufo adicionado ou removido manualmente na cena tem sua meta sincronizada instantaneamente sem necessidade de alterar código.
 - **Cronômetro:** 90 segundos ($1:30$).
 - **Obstáculos Internos:** Nó `$Obstacles` preparado para futuras adições manuais.

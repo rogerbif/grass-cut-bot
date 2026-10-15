@@ -17,11 +17,20 @@ var is_cut: bool = false
 
 func _ready() -> void:
 	health = max_health
-	# Leve variação aleatória de escala e rotação proporcional Low Poly
+	# Variação proporcional de rotação e escala para gramado contínuo e denso sem folga livre
 	var random_rot: float = randf_range(0.0, TAU)
-	var random_scale: float = randf_range(0.70, 0.90)
 	visual_mesh.rotation.y = random_rot
-	visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
+
+	if type == PlantType.GRASS:
+		# Padrão de gramado contínuo: diâmetro horizontal (X/Z) calibrado (0.95 ~ 1.10m)
+		# para cobrir e entrelaçar com os tufos adjacentes na grade padrão (0.80m),
+		# eliminando qualquer folga livre entre as folhas e mantendo altura compacta (0.70 ~ 0.85m).
+		var scale_y: float = randf_range(0.70, 0.85)
+		var scale_xz: float = randf_range(0.95, 1.10)
+		visual_mesh.scale = Vector3(scale_xz, scale_y, scale_xz)
+	else:
+		var random_scale: float = randf_range(0.75, 0.95)
+		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 
 func cut(power: int) -> void:
 	if is_cut:

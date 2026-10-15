@@ -19,169 +19,170 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 [node name="Plants" type="Node3D" parent="."]
 
 [node name="GrassTuft_01" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, -2)
 
 [node name="GrassTuft_02" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, -1.2)
 
 [node name="GrassTuft_03" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, -0.4)
 
 [node name="GrassTuft_04" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, 0.4)
 
 [node name="GrassTuft_05" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, 1.2)
 
 [node name="GrassTuft_06" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, 2)
 
 [node name="GrassTuft_07" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -2)
 
 [node name="GrassTuft_08" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -1.2)
 
 [node name="GrassTuft_09" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -0.4)
 
 [node name="GrassTuft_10" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 0.4)
 
 [node name="GrassTuft_11" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 1.2)
 
 [node name="GrassTuft_12" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.85, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 2)
 
 [node name="GrassTuft_13" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
 
 [node name="GrassTuft_14" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -1.2)
 
 [node name="GrassTuft_15" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -0.4)
 
 [node name="GrassTuft_16" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0.4)
 
 [node name="GrassTuft_17" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1.2)
 
 [node name="GrassTuft_18" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
 
 [node name="GrassTuft_19" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, -2)
 
 [node name="GrassTuft_20" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, -1.2)
 
 [node name="GrassTuft_21" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, -0.4)
 
 [node name="GrassTuft_22" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 0.4)
 
 [node name="GrassTuft_23" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 1.2)
 
 [node name="GrassTuft_24" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 2)
 
 [node name="GrassTuft_25" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, -2)
 
 [node name="GrassTuft_26" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, -1.2)
 
 [node name="GrassTuft_27" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, 1.2)
 
 [node name="GrassTuft_28" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, 2)
 
 [node name="GrassTuft_29" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0, -2)
 
 [node name="GrassTuft_30" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0, -1.2)
 
 [node name="GrassTuft_31" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0, 1.2)
 
 [node name="GrassTuft_32" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0, 2)
 
 [node name="GrassTuft_33" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, -2)
 
 [node name="GrassTuft_34" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, -1.2)
 
 [node name="GrassTuft_35" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, -0.4)
 
 [node name="GrassTuft_36" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 0.4)
 
 [node name="GrassTuft_37" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 1.2)
 
 [node name="GrassTuft_38" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 2)
 
 [node name="GrassTuft_39" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
 
 [node name="GrassTuft_40" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1.2)
 
 [node name="GrassTuft_41" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -0.4)
 
 [node name="GrassTuft_42" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0.4)
 
 [node name="GrassTuft_43" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1.2)
 
 [node name="GrassTuft_44" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
 
 [node name="GrassTuft_45" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -2)
 
 [node name="GrassTuft_46" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -1.2)
 
 [node name="GrassTuft_47" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -0.4)
 
 [node name="GrassTuft_48" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 0.4)
 
 [node name="GrassTuft_49" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 1.2)
 
 [node name="GrassTuft_50" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 2)
 
 [node name="GrassTuft_51" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0, -2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, -2)
 
 [node name="GrassTuft_52" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0, -1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, -1.2)
 
 [node name="GrassTuft_53" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0, -0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, -0.4)
 
 [node name="GrassTuft_54" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, 0.4)
 
 [node name="GrassTuft_55" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0, 1.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, 1.2)
 
 [node name="GrassTuft_56" parent="Plants" instance=ExtResource("3_grass_tuft")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0, 2.75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, 2)
+

@@ -1,5 +1,8 @@
 extends Node3D
 
+# Espaçamento canônico padrão de vegetação: elimina folga livre entre folhas adjacentes
+const DEFAULT_VEGETATION_SPACING: float = 0.80
+
 @export var grass_scene: PackedScene = preload("res://scenes/plants/grass_tuft.tscn")
 @export var wheat_scene: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 @export var flower_scene: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
@@ -90,7 +93,7 @@ func _build_level_1_mvp() -> void:
 	# Sem obstáculos internos
 	var width_count: int = 10
 	var height_count: int = 6
-	var spacing: float = 1.1
+	var spacing: float = DEFAULT_VEGETATION_SPACING
 	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
 	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
@@ -99,7 +102,7 @@ func _build_level_1_mvp() -> void:
 		for z in range(height_count):
 			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
 			# Deixa o centro inicial livre para o cortador começar suave
-			if pos.length() < 1.0:
+			if pos.length() < 0.7:
 				continue
 			var tuft = grass_scene.instantiate()
 			tuft.position = pos
@@ -117,7 +120,7 @@ func _build_level_2() -> void:
 	# Fase 2: Introdução de Trigo e Rochas
 	var width_count: int = 11
 	var height_count: int = 8
-	var spacing: float = 1.1
+	var spacing: float = DEFAULT_VEGETATION_SPACING
 	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
 	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
@@ -138,7 +141,7 @@ func _build_level_2() -> void:
 			if grid_coord in rock_coords:
 				continue
 			var pos = Vector3(offset_x + float(x) * spacing, 0.0, offset_z + float(z) * spacing)
-			if pos.length() < 1.2:
+			if pos.length() < 0.7:
 				continue
 
 			if (x + z) % 4 == 0:
@@ -162,7 +165,7 @@ func _build_level_3() -> void:
 	# Fase 3: Introdução de Flores e mais obstáculos
 	var width_count: int = 12
 	var height_count: int = 10
-	var spacing: float = 1.1
+	var spacing: float = DEFAULT_VEGETATION_SPACING
 	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
 	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
@@ -183,7 +186,7 @@ func _build_level_3() -> void:
 			if grid_coord in rock_coords:
 				continue
 			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
-			if pos.length() < 1.2:
+			if pos.length() < 0.7:
 				continue
 
 			var rnd = randf()
@@ -212,7 +215,7 @@ func _build_level_3() -> void:
 func _build_procedural_level(level_num: int) -> void:
 	var width_count: int = mini(14, 10 + int(float(level_num) / 2.0))
 	var height_count: int = mini(12, 8 + int(float(level_num) / 2.0))
-	var spacing: float = 1.1
+	var spacing: float = DEFAULT_VEGETATION_SPACING
 	var offset_x: float = -(float(width_count) * spacing) / 2.0 + (spacing / 2.0)
 	var offset_z: float = -(float(height_count) * spacing) / 2.0 + (spacing / 2.0)
 
@@ -221,7 +224,7 @@ func _build_procedural_level(level_num: int) -> void:
 	for x in range(width_count):
 		for z in range(height_count):
 			var pos = Vector3(offset_x + x * spacing, 0.0, offset_z + z * spacing)
-			if pos.length() < 1.2:
+			if pos.length() < 0.7:
 				continue
 
 			var rnd = randf()

@@ -28,7 +28,7 @@ Tuft (Node3D - grupo "plants", script plant.gd)
 - **Estrutura 3D Estilizada Low Poly:**
   - O tufo de grama básico (`grass_tuft.tscn`) utiliza o modelo 3D oficial `assets/models/grass_01.glb` (baseado na malha de 112 vértices e 80 faces `grass_varien_4_grass_0`).
   - O nó visual contém a cena instanciada `Grass01`, com suporte dinâmico no `plant.gd` via enum `@export var grass_variation: GrassVariation` (`GREEN`, `YELLOW`, `BLUE`, `PURPLE`, `RANDOM`), permitindo rápida personalização de biomas mantendo o verde clássico por padrão.
-  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma calibração compacta de escala (`0.70` a `0.90`), garantindo que o gramado fique na altura ideal e perfeitamente proporcional ao robô cortador.
+  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma calibração proporcional de escala: altura compacta no eixo Y (`0.70` a `0.85`) e cobertura horizontal no plano XZ (`0.95` a `1.10`), garantindo que as folhas vizinhas se entrelacem sem nenhuma folga livre na grade padrão ($0.80\text{m}$), criando um tapete contínuo, farto e sem espaços vazios.
 
 ---
 
