@@ -78,7 +78,9 @@ func get_coin_multiplier() -> int:
 
 func get_blade_tier() -> int:
 	var max_lvl: int = maxi(radius_level, power_level)
-	if max_lvl >= 5:
+	if max_lvl >= 7:
+		return 4
+	elif max_lvl >= 5:
 		return 3
 	elif max_lvl >= 3:
 		return 2
@@ -86,7 +88,8 @@ func get_blade_tier() -> int:
 
 func get_blade_tier_name() -> String:
 	match get_blade_tier():
-		1: return "Lâmina Tripla de Aço"
-		2: return "Lâmina Quádrupla Ninja"
+		1: return "Lâmina Estelar Tripla"
+		2: return "Lâmina Estelar Quádrupla"
 		3: return "Lâmina Estelar de Titânio"
+		4: return "Lâmina Estelar Hexagonal"
 	return "Lâmina Básica"

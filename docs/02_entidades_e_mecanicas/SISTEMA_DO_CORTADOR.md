@@ -75,6 +75,17 @@ O chassi e suas peças reagem organicamente às forças de inércia e relevo do 
   - O raio da lâmina é calibrado dinamicamente: `raio = 1.18m + (nivel - 1) * 0.15m`.
   - A malha visual do disco e a área de interação com o shader de grama acompanham proporcionalmente o diâmetro da colisão.
 
+### Tiers Modulares da Lâmina Estelar (Família Geométrica de Aço)
+Todas as lâminas compartilham a mesma identidade visual: alcance radial idêntico ($R_{\text{tip}} = 1.66\text{m}$, resultando em $1.18\text{m}$ no jogo com escala de visual pivot $0.7$), furo central circular de montagem ($R_{\text{hole}} = 0.29\text{m}$), espessura de $0.042\text{m}$ com chanfro de corte e material uniforme em aço metálico cinza (`M_Aco_Lamina`):
+
+| Tier | Nome Canônico | Geometria | Alcance Base | Requisitos de Nível |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tier 1** | Lâmina Estelar Tripla | Estrela geométrica de 3 pontas com arestas retas | $R = 1.18\text{m}$ | Níveis 1 e 2 |
+| **Tier 2** | Lâmina Estelar Quádrupla | Estrela geométrica de 4 pontas (cruz ninja) com arestas retas | $R = 1.18\text{m}$ | Níveis 3 e 4 |
+| **Tier 3** | Lâmina Estelar de Titânio | Estrela geométrica de 5 pontas (pentagrama regular) com arestas retas | $R = 1.18\text{m}$ | Níveis 5 e 6 |
+| **Tier 4** | Lâmina Estelar Hexagonal | Estrela geométrica de 6 pontas (hexagrama) com arestas retas | $R = 1.18\text{m}$ | Níveis 7+ |
+
+
 ---
 
 ## 4. Estado de Choque e Ricochete (Obstáculos)

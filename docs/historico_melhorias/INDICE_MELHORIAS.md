@@ -30,6 +30,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`012_nova_lamina_tripla_tier_1.md`](./012_nova_lamina_tripla_tier_1.md) | Nova Lâmina Tripla de Aço (3 Pontas) para o Tier 1 | Modelagem da lâmina de 3 pontas inspirada em roçadeira/shuriken, substituindo a lâmina básica nos níveis 1 e 2. |
 | [`013_nova_lamina_quadrupla_tier_2.md`](./013_nova_lamina_quadrupla_tier_2.md) | Nova Lâmina Quádrupla Ninja (4 Pontas) para o Tier 2 | Modelagem da lâmina de 4 pontas em cruz com o mesmo alcance da Tier 1 e integração ao Tier 2 da Oficina. |
 | [`014_suspensao_procedural_e_inclinacao_dinamica_robo.md`](./014_suspensao_procedural_e_inclinacao_dinamica_robo.md) | Suspensão Procedural, Inclinação Dinâmica e Articulações do Robô | Suspensão vertical com bobbing reativo da roda, rotação compensatória dos braços em X, pitch/roll do chassi, estabilização do pescoço e antecipação de olhar da cabeça. |
+| [`015_familia_laminas_estreladas_e_amarelo_vibrante.md`](./015_familia_laminas_estreladas_e_amarelo_vibrante.md) | Família de Lâminas Estreladas Geométricas (3, 4, 5 e 6 Pontas) e Amarelo Vibrante | 4 lâminas estreladas com arestas retas, furo central e acabamento uniforme em aço cinza reflexivo, além de amarelo mais forte e saturado no robô. |
 
 ---
 

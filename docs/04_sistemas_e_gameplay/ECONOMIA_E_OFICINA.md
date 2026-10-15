@@ -43,12 +43,14 @@ Acessível a qualquer momento a partir dos menus de Pausa, Vitória ou Derrota:
 
 ## 4. Evolução Visual dos Modelos de Lâminas (Tiers)
 
-Conforme o jogador adquire upgrades de **Raio da Lâmina** e **Potência e Fio**, o modelo 3D do rotor de corte alojado no `blade_container` transita dinamicamente entre 3 patamares tecnológicos:
+Conforme o jogador adquire upgrades de **Raio da Lâmina** e **Potência e Fio**, o modelo 3D do rotor de corte alojado no `blade_container` transita dinamicamente entre 4 patamares tecnológicos da família de lâminas estreladas com arestas retas e acabamento em aço cinza:
 
 | Tier | Modelo Visual | Requisito de Nível | Descrição Estética |
 | :--- | :--- | :--- | :--- |
-| **Tier 1** | **Lâmina Tripla de Aço** | Nível 1 a 2 | Lâmina estampada estilizada de 3 pontas (estilo roçadeira/shuriken) com perfil aerodinâmico e alcance de $1.18\text{m}$. |
-| **Tier 2** | **Lâmina Quádrupla Ninja** | Nível 3 a 4 | Lâmina estilizada de 4 pontas em cruz com o mesmo alcance radial ($1.18\text{m}$) e 4 dentes afiados. |
-| **Tier 3** | **Lâmina Estelar de Titânio** | Nível 5 ou superior | 12 lâminas poligonais em diamante com bisel reforçado em liga de ouro/titânio. |
+| **Tier 1** | **Lâmina Estelar Tripla** | Nível 1 a 2 | Estrela geométrica de 3 pontas com arestas retas, furo central e acabamento em aço cinza. |
+| **Tier 2** | **Lâmina Estelar Quádrupla** | Nível 3 a 4 | Estrela geométrica de 4 pontas (cruz ninja) com arestas retas, furo central e aço cinza. |
+| **Tier 3** | **Lâmina Estelar de Titânio** | Nível 5 a 6 | Estrela geométrica regular de 5 pontas com arestas retas, furo central e aço cinza. |
+| **Tier 4** | **Lâmina Estelar Hexagonal** | Nível 7 ou superior | Estrela geométrica de 6 pontas (hexagrama) com arestas retas, furo central e aço cinza. |
 
 O modelo atualmente equipado é exibido em tempo real no cabeçalho da Oficina: `"Lâmina: [Nome do Tier]"`.
+

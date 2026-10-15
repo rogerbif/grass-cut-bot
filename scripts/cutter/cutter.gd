@@ -21,6 +21,7 @@ extends CharacterBody3D
 @onready var blade_tier_1: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_1 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_1") else null
 @onready var blade_tier_2: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_2 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_2") else null
 @onready var blade_tier_3: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3") else null
+@onready var blade_tier_4: MeshInstance3D = $VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_4 if has_node("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_4") else null
 
 @onready var head_node: Node3D = $VisualPivot/GrassBot/Robot/Body/head if has_node("VisualPivot/GrassBot/Robot/Body/head") else null
 @onready var neck_node: Node3D = $VisualPivot/GrassBot/Robot/Body/neck if has_node("VisualPivot/GrassBot/Robot/Body/neck") else null
@@ -119,6 +120,8 @@ func _update_blade_tier_visual() -> void:
 		blade_tier_2.visible = (tier == 2)
 	if blade_tier_3:
 		blade_tier_3.visible = (tier == 3)
+	if blade_tier_4:
+		blade_tier_4.visible = (tier == 4)
 
 func set_input_direction(dir: Vector2) -> void:
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
