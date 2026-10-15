@@ -3,22 +3,20 @@
 [ext_resource type="Script" path="res://scripts/plants/plant.gd" id="1_plant"]
 [ext_resource type="PackedScene" uid="uid://oow7pgxl0ues" path="res://assets/models/grass_01.glb" id="2_grass_model"]
 [ext_resource type="Material" uid="uid://interactive_grass_mat_01" path="res://shaders/interactive_grass_material.tres" id="3_grass_mat"]
+[ext_resource type="ArrayMesh" uid="uid://d3x861vy1fv4s" path="res://assets/models/cut_leaf_piece.obj" id="4_leaf_mesh"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_area"]
 height = 0.6
 radius = 0.35
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_particle"]
+cull_mode = 2
 roughness = 0.9
-albedo_color = Color(0.25, 0.72, 0.28, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_particle"]
-material = SubResource("StandardMaterial3D_particle")
-size = Vector3(0.08, 0.08, 0.08)
+albedo_color = Color(0.25, 0.75, 0.3, 1)
 
 [sub_resource type="Curve" id="Curve_scale"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.2, 0.0, 0, 0]
-point_count = 2
+_data = [Vector2(0, 0.8), 0.0, 0.0, 0, 0, Vector2(0.15, 1), 0.0, 0.0, 0, 0, Vector2(0.7, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.0, 0.0, 0, 0]
+point_count = 4
 
 [node name="GrassGreen" type="Node3D" groups=["plants"]]
 script = ExtResource("1_plant")
@@ -44,15 +42,22 @@ material_override = ExtResource("3_grass_mat")
 
 [node name="CutParticles" type="CPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+material_override = SubResource("StandardMaterial3D_particle")
 emitting = false
-amount = 16
-lifetime = 0.55
+amount = 20
+lifetime = 0.85
 one_shot = true
-explosiveness = 0.9
-mesh = SubResource("BoxMesh_particle")
+explosiveness = 0.92
+mesh = ExtResource("4_leaf_mesh")
 direction = Vector3(0, 1, 0)
-spread = 65.0
+spread = 50.0
 gravity = Vector3(0, -9.8, 0)
-initial_velocity_min = 3.2
-initial_velocity_max = 5.0
+initial_velocity_min = 3.8
+initial_velocity_max = 5.6
+angular_velocity_min = 180.0
+angular_velocity_max = 540.0
+angle_min = 0.0
+angle_max = 360.0
+scale_amount_min = 0.8
+scale_amount_max = 1.25
 scale_amount_curve = SubResource("Curve_scale")

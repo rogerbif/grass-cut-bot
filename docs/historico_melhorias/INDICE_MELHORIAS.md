@@ -37,6 +37,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`019_migracao_fases_para_cenas_godot_edicao_manual.md`](./019_migracao_fases_para_cenas_godot_edicao_manual.md) | Migração de Fases para Cenas Godot (.tscn) e Edição Manual da Fase 1 | Conversão das fases em cenas independentes (level_01.tscn), 56 tufos editáveis visualmente no Viewport 3D, detecção reativa de metas e carregador dinâmico com fallback procedural. |
 | [`020_modelo_unico_blender_variacoes_cenas_godot.md`](./020_modelo_unico_blender_variacoes_cenas_godot.md) | Consolidação de Modelo Único no Blender e Cenas Base Coloridas no Godot | Malha limpa e neutra no Blender sem sub-objetos, cenas base modulares no Godot para cada cor (verde, amarelo, azul, roxo) e redução de 75% na contagem de nós de malha. |
 | [`021_reimportacao_tufo_grama_392_vertices.md`](./021_reimportacao_tufo_grama_392_vertices.md) | Reimportação do Tufo de Grama Refinado do Blender (392 Vértices) | Enriquecimento da malha para 392 vértices e 280 faces (área de cobertura de 1m x 1m), preservação da ancoragem UV e recompilação do glTF. |
+| [`022_animacao_pendular_folhas_e_particulas_corte.md`](./022_animacao_pendular_folhas_e_particulas_corte.md) | Animação Pendular Independente de Folhas e Partículas de Corte em Pedaços | Balanço lateral e respiração independente por folha via atributos de vértice (COLOR) no Vertex Shader, malha estilizada de folhas partidas (cut_leaf_piece.obj), gravidade física e tumbling 3D. |
 
 
 ---
