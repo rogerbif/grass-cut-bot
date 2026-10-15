@@ -4,7 +4,7 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
 
 ---
 
-## ⚡ Os 10 Mandamentos Invariantes (Guardrails Críticos)
+## ⚡ Os 12 Mandamentos Invariantes (Guardrails Críticos)
 
 1. **Zero Warnings Estrito:** O console da Godot deve permanecer com 0 warnings a cada execução. Não permita divisões inteiras diretas, variáveis com nomes de métodos/propriedades da engine ou identificadores sombreados.
 2. **Terminal PowerShell & UTF-8 sem BOM:** Utilize exclusivamente ponto e vírgula `;` para encadear comandos no Windows PowerShell. Ao gravar/ler arquivos via script/terminal, force `-Encoding UTF8` (sem BOM). Em referências a nós Godot (`$Node`), utilize sempre aspas simples (`@' ... '@`) para impedir que o PowerShell interprete como variável.
@@ -21,6 +21,7 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
 9. **UI com Process Mode Always nos Modais:** O nó raiz do HUD e seus modais de pausa/vitória devem rodar com `process_mode = PROCESS_MODE_ALWAYS` (Node 3) para permitir interação contínua mesmo quando `get_tree().paused = true`.
 10. **Tipagem Estrita e GDScript 4 Defensivo:** Sempre utilize tipagem estática nos scripts (`var x: int`, `func foo() -> void:`). Nunca acesse dicionários internos sem verificação prévia ou métodos garantidores.
 11. **Protocolo Perpétuo de Changelog:** Toda melhoria concluída deve ter seu plano e relatório salvos em `docs/historico_melhorias/<nome_da_melhoria>.md` e indexada no `docs/historico_melhorias/INDICE_MELHORIAS.md`.
+12. **Pipeline 3D Blender -> Godot (Export glTF Seguro):** Ao exportar modelos 3D do Blender para Godot (`.glb`), force sempre `export_apply=True` e `export_yup=True`. Se o modelo contiver modificadores `Mirror` ou deformadores simétricos, o export sem apply descarta a metade espelhada. Ao ajustar pivôs anatômicos em peças espelhadas, mantenha o centro de simetria no eixo ($X=0$) ou compense os vértices no sentido oposto (`v.co -= offset`) para não deslocar a geometria de mundo.
 
 ---
 
