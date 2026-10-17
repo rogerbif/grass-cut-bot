@@ -59,10 +59,6 @@ func _connect_button(btn: Button, callback: Callable) -> void:
 	if btn == null:
 		return
 	btn.pressed.connect(callback)
-	btn.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventScreenTouch and event.pressed:
-			callback.call()
-	)
 
 var _is_restarting: bool = false
 

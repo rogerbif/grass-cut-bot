@@ -24,6 +24,7 @@ type = 0
 max_health = 1
 coin_reward = 1
 plant_key = "grass"
+custom_material = ExtResource("3_grass_mat")
 
 [node name="Area3D" type="Area3D" parent="." groups=["vegetation"]]
 collision_layer = 4

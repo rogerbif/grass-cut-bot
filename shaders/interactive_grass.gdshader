@@ -60,9 +60,11 @@ void vertex() {
 	// Deslocamento pendular individual da folha ancorado na base
 	vec3 leaf_sway = (dir_side * sway_side + dir_fwd * sway_fwd) * (wind_strength * bend_factor);
 
+	mat3 inv_model = mat3(inverse(MODEL_MATRIX));
+
 	// Brisa global sutil para coerência de campo
 	vec3 global_breeze = vec3(sin(TIME * 0.7 + world_vert.x * 0.25), 0.0, cos(TIME * 0.5 + world_vert.z * 0.25)) * (wind_strength * 0.35 * bend_factor);
-	vec3 model_breeze = mat3(inverse(MODEL_MATRIX)) * global_breeze;
+	vec3 model_breeze = inv_model * global_breeze;
 
 	// Aplica balanço suave das folhas
 	VERTEX += leaf_sway + model_breeze;
@@ -80,7 +82,7 @@ void vertex() {
 	float dist = distance(cutter_pos, world_vert);
 	float power = smoothstep(cutter_interact_radius, 0.0, dist);
 
-	vec3 model_dir = mat3(inverse(MODEL_MATRIX)) * dir_norm;
+	vec3 model_dir = inv_model * dir_norm;
 	VERTEX += model_dir * (power * interact_power * bend_factor);
 	VERTEX.y -= power * interact_power * 0.14 * bend_factor;
 }

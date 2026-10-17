@@ -26,11 +26,11 @@ func _on_shake_requested(intensity: float, duration: float) -> void:
 	shake_intensity = intensity
 	shake_duration = duration
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not target:
 		return
 
-	# Translada suavemente nos eixos X e Z sem qualquer rotacao
+	# Translada suavemente em sincronia com o physics_process do cortador para eliminar micro-travamentos
 	var follow_factor: float = clampf(follow_speed * delta, 0.0, 1.0)
 	var desired_x: float = target.global_position.x + offset.x
 	var desired_z: float = target.global_position.z + offset.z
@@ -38,7 +38,7 @@ func _process(delta: float) -> void:
 
 	var new_x: float = lerpf(global_position.x, desired_x, follow_factor)
 	var new_z: float = lerpf(global_position.z, desired_z, follow_factor)
-	var new_y: float = desired_y
+	var new_y: float = lerpf(global_position.y, desired_y, follow_factor)
 
 	# Aplica camera shake apenas como perturbacao de translacao
 	var shake_x: float = 0.0

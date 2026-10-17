@@ -6,6 +6,7 @@ enum PlantType { GRASS, WHEAT, FLOWER }
 @export var max_health: int = 1
 @export var coin_reward: int = 1
 @export var plant_key: String = "grass" # Usado para sincronizar com as metas do HUD
+@export var custom_material: Material
 
 var health: int = 1
 var is_cut: bool = false
@@ -21,6 +22,9 @@ func _ready() -> void:
 	var random_rot: float = randf_range(0.0, TAU)
 	visual_mesh.rotation.y = random_rot
 
+	# Garante que todo MeshInstance3D receba o material configurado ou fallback verde vivo
+	_apply_visual_material(visual_mesh)
+
 	if type == PlantType.GRASS:
 		# Padrão de gramado contínuo: diâmetro horizontal (X/Z) calibrado (0.95 ~ 1.10m)
 		# para cobrir e entrelaçar com os tufos adjacentes na grade padrão (0.80m),
@@ -31,6 +35,21 @@ func _ready() -> void:
 	else:
 		var random_scale: float = randf_range(0.75, 0.95)
 		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
+
+func _apply_visual_material(target: Node) -> void:
+	if target == null:
+		return
+	if target is MeshInstance3D:
+		var mi: MeshInstance3D = target as MeshInstance3D
+		if custom_material != null:
+			mi.material_override = custom_material
+		elif mi.material_override == null:
+			var fallback_mat: StandardMaterial3D = StandardMaterial3D.new()
+			fallback_mat.albedo_color = Color(0.22, 0.68, 0.24, 1.0)
+			fallback_mat.roughness = 0.9
+			mi.material_override = fallback_mat
+	for child in target.get_children():
+		_apply_visual_material(child)
 
 func cut(power: int) -> void:
 	if is_cut:

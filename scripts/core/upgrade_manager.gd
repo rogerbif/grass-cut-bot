@@ -67,8 +67,8 @@ func get_blade_radius() -> float:
 	return 1.18 + (radius_level - 1) * 0.15
 
 func get_cutter_speed() -> float:
-	# Velocidade base de 6.5m/s + 0.75m/s por nível
-	return 6.5 + (speed_level - 1) * 0.75
+	# Velocidade base de 3.25m/s (reduzida em 50% para controle touch preciso) + 0.45m/s por nível
+	return 3.25 + (speed_level - 1) * 0.45
 
 func get_cutter_power() -> int:
 	return power_level
