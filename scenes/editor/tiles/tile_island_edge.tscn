@@ -1,36 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://tile_island_edge_01"]
+[gd_scene load_steps=4 format=3 uid="uid://tile_island_edge_01"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grass_top"]
-roughness = 0.92
-albedo_color = Color(0.32, 0.64, 0.24, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_top"]
-material = SubResource("StandardMaterial3D_grass_top")
-size = Vector3(0.8, 0.08, 0.76)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grass_lip"]
-roughness = 0.92
-albedo_color = Color(0.26, 0.54, 0.2, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_lip"]
-material = SubResource("StandardMaterial3D_grass_lip")
-size = Vector3(0.8, 0.06, 0.08)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cliff"]
-roughness = 0.95
-albedo_color = Color(0.34, 0.23, 0.16, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_cliff"]
-material = SubResource("StandardMaterial3D_cliff")
-size = Vector3(0.8, 0.3, 0.78)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_foam"]
-roughness = 0.85
-albedo_color = Color(0.55, 0.86, 0.94, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_foam"]
-material = SubResource("StandardMaterial3D_foam")
-size = Vector3(0.82, 0.02, 0.16)
+[ext_resource type="PackedScene" path="res://assets/models/tiles/tile_island_edge.glb" id="1_model"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(0.8, 0.36, 0.8)
@@ -42,21 +12,7 @@ size = Vector3(0.8, 0.9, 0.08)
 collision_layer = 1
 collision_mask = 0
 
-[node name="TopMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0.02)
-mesh = SubResource("BoxMesh_top")
-
-[node name="NorthLipMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.37)
-mesh = SubResource("BoxMesh_lip")
-
-[node name="CliffMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.23, 0.01)
-mesh = SubResource("BoxMesh_cliff")
-
-[node name="FoamNorth" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.33, -0.42)
-mesh = SubResource("BoxMesh_foam")
+[node name="Model" parent="." instance=ExtResource("1_model")]
 
 [node name="FloorCollision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)

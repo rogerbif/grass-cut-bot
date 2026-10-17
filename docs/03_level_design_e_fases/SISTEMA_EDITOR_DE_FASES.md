@@ -21,9 +21,15 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
 
 ## 2. Camadas do Grid ($0.80\text{m} \times 0.80\text{m}$)
 
-- **Camada 0 — Terreno (Ilha 3D):**
-  - `auto_island`: Pincel inteligente Auto-Tile (`island_autotiler.gd`) que escolhe e rotaciona sozinho entre `island_center`, `island_edge`, `island_corner_out` e `island_corner_in`.
-  - Peças manuais com suporte a giro de $90^\circ$ (`R`): `island_center`, `island_dirt`, `island_edge`, `island_corner_out`, `island_corner_in`.
+- **Camada 0 — Terreno (Ilha 3D Modular com Modelos GLB):**
+  - Modelos 3D estilizados em `assets/models/tiles/*.glb` integrados nas cenas `scenes/editor/tiles/`:
+    - `auto_island`: Pincel inteligente Auto-Tile (`island_autotiler.gd`) que resolve automaticamente entre `island_center`, `island_edge`, `island_corner_out` e `island_corner_in`.
+    - `island_corner_out`: Canto convexo arredondado em arco cilíndrico ($R = 0.28\text{m}$) com acabamento macio (*smooth normals*).
+    - `island_corner_in`: Canto côncavo arredondado suave para reentrâncias e poços.
+    - `island_edge`: Borda de falésia reta com lábio superior de grama sobreposto e espuma ciano na base.
+    - `island_center`: Piso plano de grama verde esmeralda.
+    - `island_dirt`: Piso plano de terra/trilha alaranjada quente.
+  - Todas as peças manuais possuem suporte a giro de $90^\circ$ (`R`).
 - **Camada 1 — Objetos & Vegetação:**
   - 6 variações de plantas: `grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `wheat` e `flower`.
   - Obstáculos e Marcadores: `rock` (`Layer 4`) e `cutter_spawn` (único por fase).
