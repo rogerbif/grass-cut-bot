@@ -1,0 +1,53 @@
+[gd_scene load_steps=7 format=3 uid="uid://level_editor_scene_01"]
+
+[ext_resource type="Script" path="res://scripts/editor/level_editor.gd" id="1_editor"]
+[ext_resource type="PackedScene" uid="uid://water_ocean_01" path="res://scenes/level/water_ocean.tscn" id="2_water"]
+[ext_resource type="Script" path="res://scripts/editor/grid_overlay.gd" id="3_grid"]
+[ext_resource type="Script" path="res://scripts/editor/editor_camera.gd" id="4_cam"]
+[ext_resource type="PackedScene" uid="uid://level_editor_ui_01" path="res://scenes/editor/level_editor_ui.tscn" id="5_ui"]
+
+[sub_resource type="Environment" id="Environment_editor"]
+background_mode = 1
+background_color = Color(0.14, 0.56, 0.7, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.88, 0.94, 0.9, 1)
+ambient_light_energy = 0.88
+tonemap_mode = 2
+
+[node name="LevelEditor" type="Node3D"]
+script = ExtResource("1_editor")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_editor")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 55.0
+
+[node name="WaterOcean" parent="." instance=ExtResource("2_water")]
+
+[node name="IslandTilesContainer" type="Node3D" parent="."]
+
+[node name="CoastalLimitsBody" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="PlantsContainer" type="Node3D" parent="."]
+
+[node name="ObstaclesContainer" type="Node3D" parent="."]
+
+[node name="SpawnMarkerVisual" type="Node3D" parent="."]
+
+[node name="GridOverlay" type="Node3D" parent="."]
+script = ExtResource("3_grid")
+
+[node name="EditorCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.559193, 0.829038, 0, -0.829038, 0.559193, 0, 12, 8)
+current = true
+fov = 46.0
+script = ExtResource("4_cam")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="LevelEditorUI" parent="CanvasLayer" instance=ExtResource("5_ui")]

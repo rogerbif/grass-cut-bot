@@ -24,19 +24,23 @@ grass-cut-bot/
 │   ├── historico_melhorias/
 │   ├── MELHORIAS_FUTURAS.md
 │   └── PROJETO_GRASS_CUT_BOT.md
+├── data/                      # Dados serializados do jogo
+│   └── levels/                # Fases em formato JSON (level_01.json, etc.)
 ├── scenes/                    # Cenas montadas (.tscn)
 │   ├── cutter/                # Cortador robótico
-│   ├── level/                 # Terrenos e ilhas base
-│   ├── levels/                # Fases autorais editáveis (level_01.tscn, etc.)
+│   ├── editor/                # Editor de Fases PC Fullscreen e kit de tiles 3D de ilha
+│   ├── level/                 # Terrenos, oceano (water_ocean.tscn) e ilhas base
+│   ├── levels/                # Fases exportadas como cena Godot (level_01.tscn, etc.)
 │   ├── obstacles/             # Rochas e barreiras
-│   ├── plants/                # Tufos de grama, trigo e flores
+│   ├── plants/                # Tufos de grama (4 cores), trigo e flores
 │   ├── ui/                    # HUD, joystick virtual e modais
 │   └── main.tscn              # Cena mestre do jogo
 ├── scripts/                   # Código fonte GDScript (.gd)
 │   ├── camera/
 │   ├── core/                  # Autoloads e singletons (GameManager, UpgradeManager)
 │   ├── cutter/
-│   ├── level/                 # base_level.gd e level_controller.gd
+│   ├── editor/                # Scripts do Editor de Fases PC (autotiler, pincéis, UI)
+│   ├── level/                 # base_level.gd, level_controller.gd e level_json_loader.gd
 │   ├── plants/
 │   └── ui/
 ├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador de Diretrizes

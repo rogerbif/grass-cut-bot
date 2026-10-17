@@ -4,16 +4,16 @@ Este documento descreve a topografia dos gramados, a contenção física da ilha
 
 ---
 
-## 1. Topografia e Ilha de Gramado (`terrain.tscn`)
+## 1. Topografia de Ilhas 3D sobre o Oceano (Sem Cercas)
 
-Para proporcionar uma experiência focada e relaxante, cada nível ocorre sobre uma **ilha compacta delimitada**:
-- **Piso Principal (`GroundMesh`):**
-  - Malha `BoxMesh(18.0, 0.4, 16.0)` rebaixada em `Y = -0.2m`.
-  - Material verde profundo fosco (`albedo_color = Color(0.18, 0.44, 0.22)`, `roughness = 0.95`), simulando a grama recém-aparada sob os tufos altos.
-- **Paredes Limítrofes (Cercas de Contenção):**
-  - Quatro bordas nas extremidades (Norte, Sul, Leste e Oeste) construídas com `BoxShape3D` e malhas de madeira tratada fosca (`Color(0.48, 0.35, 0.26)`).
-  - Configuradas na Camada Física 1 (`Layer 1: Ground & Limits`).
-  - Função: Impedir que a inércia do cortador o projete para fora da área jogável, mantendo a navegação segura e fluida.
+Para proporcionar uma experiência limpa, solar e convidativa, cada nível ocorre sobre uma **Ilha 3D Modular sobre o Oceano (`water_ocean.tscn` e kit de tiles em `scenes/editor/tiles/`)**:
+- **Oceano Turquesa (`WaterOcean`):**
+  - Superfície azul turquesa fosca (`Color(0.18, 0.65, 0.78)`, `roughness = 0.88`) posicionada em `Y = -0.34m`.
+- **Blocos Modulares de Ilha ($0.80\text{m} \times 0.80\text{m}$):**
+  - Topo verde grama (`Color(0.32, 0.64, 0.24)`) ou trilha de terra (`Color(0.56, 0.41, 0.27)`), com paredão/falésia marrom escuro (`Color(0.34, 0.23, 0.16)`) nas faces costeiras e faixa de espuma azul-clara (`Color(0.55, 0.86, 0.94)`) na linha d'água.
+- **Contenção Física Costeira Invisível (Zero Cercas):**
+  - Todas as bordas da ilha voltadas para a água recebem colisores invisíveis na Camada Física 1 (`Layer 1: Ground & Limits`), gerados por `LevelJsonLoader.build_coastal_colliders_and_foam()`.
+  - Função: Impedir que o robô cortador caia na água sem necessitar de cercas ou muretas visuais.
 
 ---
 

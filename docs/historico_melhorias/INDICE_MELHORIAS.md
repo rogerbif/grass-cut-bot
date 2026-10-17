@@ -63,3 +63,4 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | Arquivo | Título da Melhoria | Destaques Técnicos |
 | :--- | :--- | :--- |
 | [`001_fundacao_mvp_fase_1.md`](./001_fundacao_mvp_fase_1.md) | Estruturação da Wiki e Arquitetura Canônica | Implantação da Central de Guardrails `GEMINI.md`, skill de governança contínua, Hub Mestre `PROJETO_GRASS_CUT_BOT.md` e os 5 Pilares Temáticos. |
+| [`028_editor_de_fases_pc_ilhas_3d_e_carimbos.md`](./028_editor_de_fases_pc_ilhas_3d_e_carimbos.md) | Editor de Fases In-Game para PC (Tela Cheia), Ilhas 3D e Carimbos | Editor de fases full-screen PC isolado do mobile, kit de Ilhas 3D sobre o oceano sem cercas com Auto-Tile e colisão costeira invisível, carimbos de formas (Coração, Estrela, Círculo, Quadrado), persistência JSON e Playtest via F1. |
