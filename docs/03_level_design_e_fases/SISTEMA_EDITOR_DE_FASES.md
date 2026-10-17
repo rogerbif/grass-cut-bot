@@ -1,14 +1,14 @@
 # Sistema do Editor de Fases In-Game para PC (Ilhas 3D) 🏝️🛠️🌿
 
-Este documento descreve a arquitetura, ferramentas, controles e fluxo de persistência do **Editor de Fases In-Game**, projetado para operar em **tela cheia no PC** (`1920x1080`) sem ser compilado nos pacotes de exportação mobile (Android).
+Este documento descreve a arquitetura, ferramentas, controles e fluxo de persistência do **Editor de Fases In-Game**, projetado para operar em **modo janela widescreen no PC** (`WINDOW_MODE_WINDOWED`, $1600 \times 900$ centralizada) sem ser compilado nos pacotes de exportação mobile (Android).
 
 ---
 
 ## 1. Visão Geral e Filosofia de Design
 
-1. **Execução Exclusiva em Desktop (Tela Cheia):**
+1. **Execução Exclusiva em Desktop (Modo Janela Widescreen):**
    - Acessível diretamente via **F6** na cena `res://scenes/editor/level_editor.tscn` ou pelo atalho **`F2` / botão `🛠️ Editor [F2]`** na tela principal quando executado no PC.
-   - Reconfigura dinamicamente a `Window` para `1920x1080` (`CONTENT_SCALE_ASPECT_EXPAND`) e `WINDOW_MODE_FULLSCREEN`, retornando automaticamente ao formato portrait mobile (`450x800` / `720x1280` `KEEP_WIDTH`) ao voltar ao jogo.
+   - Reconfigura dinamicamente a `Window` para `WINDOW_MODE_WINDOWED` ($1600 \times 900$ centralizada no monitor, com escala base `1920x1080` `CONTENT_SCALE_ASPECT_EXPAND`), retornando automaticamente ao formato portrait mobile (`450x800` / `720x1280` `KEEP_WIDTH`) ao voltar ao jogo.
 2. **Ilhas 3D Modulares sobre o Oceano (Zero Cercas):**
    - Os níveis são construídos como ilhas 3D sobre um oceano azul turquesa contínuo (`water_ocean.tscn`).
    - Cada bloco de ilha ($0.80\text{m} \times 0.80\text{m}$) possui topo de grama verde, paredão/falésia marrom escuro nas bordas costeiras e faixa de espuma clara na água.

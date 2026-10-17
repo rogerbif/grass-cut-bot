@@ -76,7 +76,7 @@ var _playtest_cutter: CharacterBody3D = null
 var _playtest_joystick: Control = null
 
 func _ready() -> void:
-	_setup_desktop_fullscreen()
+	_setup_desktop_window()
 	_build_spawn_marker_mesh()
 	_connect_ui_signals()
 
@@ -92,18 +92,35 @@ func _ready() -> void:
 	_load_or_init_level(start_lvl)
 	_sync_all_ui()
 
-func _setup_desktop_fullscreen() -> void:
+func _setup_desktop_window() -> void:
 	var win: Window = get_window()
 	if win != null:
 		win.content_scale_size = Vector2i(1920, 1080)
 		win.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
 	if not OS.has_feature("mobile") and not OS.has_feature("android"):
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		var screen_rect: Rect2i = DisplayServer.screen_get_usable_rect()
+		var target_w: int = mini(1600, int(float(screen_rect.size.x) * 0.90))
+		var target_h: int = mini(900, int(float(screen_rect.size.y) * 0.88))
+		var target_size: Vector2i = Vector2i(target_w, target_h)
+		DisplayServer.window_set_size(target_size)
+		var centered_pos: Vector2i = screen_rect.position + Vector2i(
+			int(float(screen_rect.size.x - target_size.x) / 2.0),
+			int(float(screen_rect.size.y - target_size.y) / 2.0)
+		)
+		DisplayServer.window_set_position(centered_pos)
 
 func _restore_mobile_window() -> void:
 	if not OS.has_feature("mobile") and not OS.has_feature("android"):
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-		DisplayServer.window_set_size(Vector2i(450, 800))
+		var mobile_size: Vector2i = Vector2i(450, 800)
+		DisplayServer.window_set_size(mobile_size)
+		var screen_rect: Rect2i = DisplayServer.screen_get_usable_rect()
+		var centered_pos: Vector2i = screen_rect.position + Vector2i(
+			int(float(screen_rect.size.x - mobile_size.x) / 2.0),
+			int(float(screen_rect.size.y - mobile_size.y) / 2.0)
+		)
+		DisplayServer.window_set_position(centered_pos)
 	var win: Window = get_window()
 	if win != null:
 		win.content_scale_size = Vector2i(720, 1280)
