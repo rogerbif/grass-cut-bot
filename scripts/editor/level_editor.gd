@@ -77,6 +77,7 @@ var _playtest_joystick: Control = null
 
 func _ready() -> void:
 	_setup_desktop_window()
+	_reset_grass_shader_interaction()
 	_build_spawn_marker_mesh()
 	_connect_ui_signals()
 
@@ -91,6 +92,22 @@ func _ready() -> void:
 	var start_lvl: int = GameManager.current_level if GameManager != null else 1
 	_load_or_init_level(start_lvl)
 	_sync_all_ui()
+
+func _reset_grass_shader_interaction() -> void:
+	var mat_paths: Array[String] = [
+		"res://shaders/interactive_grass_material.tres",
+		"res://shaders/interactive_grass_yellow_material.tres",
+		"res://shaders/interactive_grass_blue_material.tres",
+		"res://shaders/interactive_grass_purple_material.tres",
+		"res://shaders/interactive_wheat_material.tres",
+		"res://shaders/interactive_flower_material.tres"
+	]
+	for mp in mat_paths:
+		if ResourceLoader.exists(mp):
+			var mat: ShaderMaterial = load(mp) as ShaderMaterial
+			if mat != null:
+				mat.set_shader_parameter("cutter_pos", Vector3(0.0, -9999.0, 0.0))
+				mat.set_shader_parameter("cutter_interact_radius", 0.0)
 
 func _setup_desktop_window() -> void:
 	var win: Window = get_window()
@@ -912,6 +929,8 @@ func _stop_playtest() -> void:
 
 	if GameManager != null:
 		GameManager.current_state = GameManager.GameState.READY
+
+	_reset_grass_shader_interaction()
 
 	# Reconstrói todos os tufos e elementos cortados durante o teste!
 	_rebuild_3d_world()
