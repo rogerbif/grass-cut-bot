@@ -45,6 +45,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`027_rotacao_lenta_lamina_idle.md`](./027_rotacao_lenta_lamina_idle.md) | Rotação Suave em Marcha Lenta (Idle) da Lâmina | Rotação suave de 90°/s quando parado (idle), aceleração instantânea de corte em movimento e desaceleração inercial ao soltar o joystick. |
 | [`029_tileset_terreno_3d_e_cantos_arredondados.md`](./029_tileset_terreno_3d_e_cantos_arredondados.md) | 3D Terrain Tileset Modular com Cantos Arredondados e Aplicação no Editor | Criação de tileset 3D no Blender com quinas cilíndricas suaves (R=0.28m e R=0.80m), lábio de grama sobreposto, textura atlas GRADIENT, exportação GLB otimizada e integração nas 5 cenas do editor de fases com 0 warnings. |
 | [`030_ajustes_mobile_cor_grama_velocidade_camera_e_pausa.md`](./030_ajustes_mobile_cor_grama_velocidade_camera_e_pausa.md) | Ajustes Mobile: Cor da Grama, Velocidade (-50%), Câmera e Menu de Pausa | Resolução da grama branca com propagação e fallback verde garantido, velocidade base reduzida para 3.25m/s, câmera migrada para physics_process com interpolação e eliminação de duplo-clique no touch do menu de pausa. |
+| [`032_ajuste_raio_base_e_incremento_lamina.md`](./032_ajuste_raio_base_e_incremento_lamina.md) | Redução do Raio Base da Lâmina (0.90m) e Incremento por Upgrade (0.10m) | Calibração do raio inicial para 0.90m (diâmetro 1.80m) e incremento de +0.10m por nível, com redimensionamento proporcional da malha visual 3D e área de interação de shaders. |
 
 
 

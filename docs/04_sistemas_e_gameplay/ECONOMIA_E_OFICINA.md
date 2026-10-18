@@ -20,9 +20,9 @@ $$\text{Moedas Ganhas} = \text{Moedas Base da Planta} \times \text{Multiplicador
 
 | Atributo | Custo Base | Efeito por Nível | Impacto no Gameplay |
 | :--- | :--- | :--- | :--- |
-| **Raio da Lâmina** | 50 🪙 | $+0.15\text{m}$ no raio (base de $1.18\text{m}$) | Expande a área de corte radial, permitindo ceifar mais tufos simultaneamente em cada passada. |
+| **Raio da Lâmina** | 50 🪙 | $+0.10\text{m}$ no raio (base de $0.90\text{m}$) | Expande a área de corte radial, permitindo ceifar mais tufos simultaneamente em cada passada. |
 | **Potência e Fio** | 100 🪙 | $+1$ ponto de dano por golpe | Corta plantas resistentes (trigo e flores) em uma só passada em vez de duas. |
-| **Velocidade da Serra** | 60 🪙 | $+0.75\text{m/s}$ na velocidade linear | Acelera a translação do cortador pelo gramado, facilitando vencer os estágios contra o relógio. |
+| **Velocidade da Serra** | 60 🪙 | $+0.45\text{m/s}$ na velocidade linear (base de $3.25\text{m/s}$) | Acelera a translação do cortador pelo gramado, facilitando vencer os estágios contra o relógio. |
 | **Multiplicador de Moedas** | 150 🪙 | $+1\times$ no ganho de cada tufo | Aumenta exponencialmente a receita de moedas para financiar upgrades mais caros. |
 
 ### Curva de Custo Exponencial

@@ -78,7 +78,7 @@ const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_mater
 const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
 
 func _update_shader_globals() -> void:
-	var blade_radius: float = 1.18
+	var blade_radius: float = 0.90
 	if UpgradeManager != null:
 		blade_radius = UpgradeManager.get_blade_radius()
 	var interact_radius: float = blade_radius + 0.95
