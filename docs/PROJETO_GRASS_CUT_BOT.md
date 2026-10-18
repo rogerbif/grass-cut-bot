@@ -13,6 +13,9 @@ O núcleo do jogo combina:
 2. **Controle com Uma Mão (One-Thumb Play):** Joystick flutuante que surge em qualquer toque na metade inferior da tela, garantindo navegação natural sem fadiga motora.
 3. **Loop de Metas e Recompensas:** Contadores de colheita no HUD que decrescem em tempo real e moedas verdes acumuladas para evoluir a máquina na Oficina de Upgrades (Raio, Potência, Velocidade e Multiplicador).
 
+![Concept Art Oficial - Cutter Bit](./assets/cutter_bit_concept_art.jpg)
+*Figura: Concept Art canônico do robô cortador Cutter Bit.*
+
 ---
 
 ## 📚 Índice Mestre da Documentação Técnica (Os 5 Pilares)

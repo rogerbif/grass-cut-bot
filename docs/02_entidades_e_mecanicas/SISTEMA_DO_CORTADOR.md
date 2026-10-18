@@ -6,6 +6,9 @@ Este documento detalha a física, estrutura mecânica, lógica de movimentação
 
 ## 1. Estrutura do Cortador (`cutter.tscn`)
 
+![Concept Art Oficial - Cutter Bit](../assets/cutter_bit_concept_art.jpg)
+*Figura 1: Concept Art oficial do Cutter Bit com vistas em perspectiva, anatomia mecânica (carcaça de impacto amarela, mono-wheel, bateria e luzes de LED), lâmina tripla e expressões dinâmicas.*
+
 O cortador é instanciado a partir de um `CharacterBody3D` posicionado rente ao solo (`Y = 0.1m`), utilizando o modelo 3D oficial em glTF (`res://assets/models/grass_bot.glb`) modelado no Blender a partir do concept art ortogonal oficial, com acabamento fosco Low Poly (`roughness 0.85 ~ 0.95`):
 
 ```

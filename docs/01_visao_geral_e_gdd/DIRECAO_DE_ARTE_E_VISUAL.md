@@ -18,6 +18,9 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 ## 2. Paleta de Cores Canônica
 
+![Concept Art Canônico - Cutter Bit](../assets/cutter_bit_concept_art.jpg)
+*Figura: Concept Art canônico do robô cortador (Cutter Bit) demonstrando a aplicação dos materiais foscos, cores da carcaça amarela, placas brancas, lâmina de aço e sensores ciano emissivos.*
+
 | Elemento | Código HEX | Amostra | Função no Jogo |
 | :--- | :--- | :--- | :--- |
 | **Grama Alta (Intacta)** | `#43A047` / `#4CAF50` | 🟢 Verde Esmeralda | Alvo principal comum de corte. |
