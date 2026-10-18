@@ -1,4 +1,4 @@
-# Melhoria 034: Olhos de LED e Sistema de Expressões Emocionais do Cutter Bit [v0.7.0] 🌿🤖👁️
+# Melhoria 036: Olhos de LED e Sistema de Expressões Emocionais do Cutter Bit [v0.7.0] 🌿🤖👁️
 
 Este documento registra a implementação completa do sistema de **Olhos de LED com Expressões Digitais** na cabeça do robô cortador (*Cutter Bit*), baseado na arte conceitual oficial do projeto.
 

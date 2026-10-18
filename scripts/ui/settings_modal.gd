@@ -9,6 +9,7 @@ signal modal_closed
 @onready var save_local_btn: Button = $Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn
 @onready var google_btn: Button = $Panel/VBox/SaveSection/VBoxSave/GoogleBtn
 @onready var fb_btn: Button = $Panel/VBox/SaveSection/VBoxSave/FacebookBtn
+@onready var reset_btn: Button = $Panel/VBox/SaveSection/VBoxSave.get_node_or_null("ResetBtn") as Button
 
 @onready var support_btn: Button = $Panel/VBox/SupportSection/SupportBtn
 @onready var close_btn: Button = $Panel/Header/CloseBtn
@@ -17,9 +18,16 @@ signal modal_closed
 var music_enabled: bool = true
 var sfx_enabled: bool = true
 var vib_enabled: bool = true
+var _reset_confirmation_pending: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+
+	if SaveManager != null:
+		music_enabled = bool(SaveManager.get_setting("music_enabled", true))
+		sfx_enabled = bool(SaveManager.get_setting("sfx_enabled", true))
+		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
+
 	_update_toggle_visuals()
 
 	if close_btn != null:
@@ -37,6 +45,8 @@ func _ready() -> void:
 		google_btn.pressed.connect(_on_google_pressed)
 	if fb_btn != null:
 		fb_btn.pressed.connect(_on_fb_pressed)
+	if reset_btn != null:
+		reset_btn.pressed.connect(_on_reset_pressed)
 	if support_btn != null:
 		support_btn.pressed.connect(_on_support_pressed)
 
@@ -59,16 +69,22 @@ func close_modal() -> void:
 func _on_music_toggled() -> void:
 	music_enabled = not music_enabled
 	_update_toggle_visuals()
+	if SaveManager != null:
+		SaveManager.set_setting("music_enabled", music_enabled)
 	_show_toast("Música " + ("Ativada" if music_enabled else "Desativada"))
 
 func _on_sfx_toggled() -> void:
 	sfx_enabled = not sfx_enabled
 	_update_toggle_visuals()
+	if SaveManager != null:
+		SaveManager.set_setting("sfx_enabled", sfx_enabled)
 	_show_toast("Som FX " + ("Ativado" if sfx_enabled else "Desativado"))
 
 func _on_vib_toggled() -> void:
 	vib_enabled = not vib_enabled
 	_update_toggle_visuals()
+	if SaveManager != null:
+		SaveManager.set_setting("vib_enabled", vib_enabled)
 	if vib_enabled and GameManager != null:
 		GameManager.trigger_haptic_cut()
 	_show_toast("Vibração " + ("Ativada" if vib_enabled else "Desativada"))
@@ -82,7 +98,35 @@ func _update_toggle_visuals() -> void:
 		vib_btn.text = "📳 Vibração: " + ("ON" if vib_enabled else "OFF")
 
 func _on_save_local_pressed() -> void:
-	_show_toast("Progresso salvo com sucesso no dispositivo! 💾")
+	if SaveManager != null:
+		var ok: bool = SaveManager.save_game()
+		if ok:
+			_show_toast("Progresso salvo com sucesso no dispositivo! 💾")
+		else:
+			_show_toast("Erro ao gravar dados no armazenamento.")
+	else:
+		_show_toast("Progresso salvo com sucesso no dispositivo! 💾")
+
+func _on_reset_pressed() -> void:
+	if not _reset_confirmation_pending:
+		_reset_confirmation_pending = true
+		_show_toast("⚠️ Clique novamente para confirmar o reset!")
+		if reset_btn != null:
+			reset_btn.text = "⚠️ Confirmar Reset Geral?"
+		var tw: Tween = create_tween()
+		tw.tween_interval(4.0)
+		tw.tween_callback(func() -> void:
+			_reset_confirmation_pending = false
+			if reset_btn != null:
+				reset_btn.text = "🗑️ Resetar Progresso"
+		)
+	else:
+		_reset_confirmation_pending = false
+		if reset_btn != null:
+			reset_btn.text = "🗑️ Resetar Progresso"
+		if SaveManager != null:
+			SaveManager.reset_to_defaults()
+		_show_toast("Progresso reiniciado com sucesso! 🔄")
 
 func _on_google_pressed() -> void:
 	_show_toast("Google Play Games: Em breve!")

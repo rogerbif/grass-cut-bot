@@ -13,10 +13,10 @@ Este documento contém o planejamento de evolução do jogo organizado por impac
    - SFX de tique-taque tenso nos últimos 10 segundos do cronômetro.
    - Trilha sonora alegre e relaxante (música arcade lo-fi/casual em loop suave).
 
-2. **Persistência de Dados e SaveGame (`SaveManager`)**
-   - Criação de Autoload `SaveManager` serializando em JSON (`user://save_data.json`).
-   - Salvar progresso de fases liberadas, melhor tempo em cada estágio, moedas totais e níveis de melhorias da oficina.
-   - Backup automático de integridade e migração defensiva de versões.
+2. ~~**Persistência de Dados e SaveGame (`SaveManager`)**~~ *(Concluído na [Melhoria 037](historico_melhorias/037_sistema_de_savegame_e_persistencia_de_dados.md))*
+   - Criação de Autoload `SaveManager` serializando em JSON (`user://savegame.json`).
+   - Salvar progresso de fases liberadas, estrelas (1 a 3), melhor tempo em cada estágio, moedas totais e níveis de melhorias da oficina.
+   - Escrita atômica com backup automático de integridade (`savegame.bak`).
 
 3. **Efeito Visual de Solo Aparado (Gramado Ceifado)**
    - Adicionar decalque suave ou malha de piso mostrando a passagem da lâmina em faixas (estilo corte de gramado com faixas contrastantes).

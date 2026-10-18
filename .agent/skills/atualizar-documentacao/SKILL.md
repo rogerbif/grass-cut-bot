@@ -28,12 +28,13 @@ Ao finalizar melhorias, fases ou refatorações, execute os seguintes 5 passos o
 ## 4. Ciclo Game SemVer
 - Incremente a versão do projeto quando aplicável:
   - **PATCH (+1)**: Correções de bugs, balanceamento de cortes, ajustes de layout HUD.
-  - **MINOR (+1)**: Novas mecânicas (novas variedades vegetais, power-ups, mecânica de esteira, etc.) ou novos blocos de fases.
+  - **MINOR (+1)**: Novos subsistemas (Menu Inicial, Hub, etc.), novas variedades vegetais ou novos blocos de fases.
   - **MAJOR / STAGE**: Transição de MVP -> Alpha -> Beta -> Release.
-- Atualize `project.godot` e registre o changelog no histórico.
+- Sincronize a versão em `project.godot` (`config/version`) E em `export_presets.cfg` (`version/name` e `version/code`).
+- Registre o bloco correspondente no changelog histórico.
 
 ## 5. Validação e Checkpoint no Git
-- Execute `git status` e `git add .`
-- Caso ocorra erro de concorrência ou lock de arquivo do OneDrive (`.git/index.lock: Permission denied`), repita a operação liberando o lock ou com permissão estendida (`BypassSandbox: true`).
-- Crie o commit semântico (Exemplo: `git commit -m "docs: atualizacao da wiki e historico [vX.Y.Z]"`)
-- Envie com `git push origin main` (se configurado repositório remoto).
+- Execute `git status` para auditoria.
+- Execute `git add .` e `git commit` utilizando `BypassSandbox: true` para evitar falhas de criação de lock (`.git/index.lock: Permission denied`) ocasionadas pelo isolamento do sandbox em caminhos do OneDrive no Windows.
+- Crie o commit semântico padronizado (Exemplo: `git commit -m "docs: atualizacao da wiki e historico [vX.Y.Z]"`).
+- Verifique se há repositório remoto configurado (`git remote -v`) antes de tentar `git push`.

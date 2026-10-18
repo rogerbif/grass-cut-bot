@@ -109,3 +109,24 @@ Quando o estado do jogo transita para fora de `GameState.PLAYING` (abertura de m
 1. **Zerar Vetores:** `velocity` e `input_direction` são imediatamente forçados para `Vector3.ZERO`.
 2. **Interrupção de Física:** O loop `_physics_process()` retorna antecipadamente, cessando a rotação da serra (`rotate_y`), o deslocamento (`move_and_slide()`) e o corte de vegetação (`_process_cutting()`).
 3. **Imunidade a Entradas:** Quaisquer comandos do joystick ou teclado são descartados enquanto os modais estiverem abertos.
+
+---
+
+## 6. Sistema de Olhos de LED e Expressões Emocionais 👁️🤖
+
+A cabeça do cortador (`$VisualPivot/GrassBot/Robot/Body/head`) incorpora uma tela de exibição digital contínua (`screen_display`), gerenciada pelo controlador `RobotEyes` (`scripts/cutter/robot_eyes.gd`) em conjunto com o material `shaders/eye_display_material.tres` e o atlas vetorial `assets/textures/cutter/eyes_atlas.svg`:
+
+- **Visor Digital Octogonal:** Malha plana contínua com mapeamento UV desdobrado de $(0, 0)$ a $(1, 1)$, permitindo expressões simétricas e assimétricas (como `? @` e `★ ♥`).
+- **Shader de Matriz LED (`eye_display.gdshader`):** Renderiza scanlines horizontais digitais, efeito neon emissivo, piscar procedural suave via UV e deslocamento direcional da pupila (`look_offset`).
+- **As 10 Expressões Canônicas:**
+  1. `NORMAL`: Olhos circulares azuis/ciano, piscando de forma autônoma a cada 3~6s em idle.
+  2. `HAPPY`: Arcos para cima `^ ^` ativados em velocidade alta e combos de corte.
+  3. `SAD`: Arcos caídos com pálpebras em situações de perigo/dano.
+  4. `ANGRY`: **Modo de Ataque** em vermelho vivo disparado em choques contra obstáculos sólidos.
+  5. `ALERT`: Anéis vazados `O O` em amarelo.
+  6. `SLEEPING`: Traços horizontais `— —` ativados automaticamente após 5.5s de inatividade.
+  7. `GLITCH`: Interrogação e espiral `? @` com ruído elétrico durante o ricochete.
+  8. `WINK`: Piscada com um olho em círculo e o outro em traço.
+  9. `VICTORY`: Estrela e Coração `★ ♥` com pulso de brilho neon ao vencer a fase.
+  10. `OFF`: Display apagado mantendo apenas as scanlines do visor quando o jogo estiver pausado.
+

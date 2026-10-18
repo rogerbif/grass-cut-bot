@@ -22,6 +22,28 @@ const BASE_COST: Dictionary = {
 	"multiplier": 150
 }
 
+func _ready() -> void:
+	if SaveManager != null and SaveManager.save_data.has("upgrades"):
+		var up: Dictionary = SaveManager.save_data.get("upgrades", {}) as Dictionary
+		var pl: Dictionary = SaveManager.save_data.get("player", {}) as Dictionary
+		load_from_dict(up, int(pl.get("total_coins", 0)))
+
+func load_from_dict(upgrades: Dictionary, coins: int) -> void:
+	total_coins = coins
+	radius_level = maxi(1, int(upgrades.get("radius_level", 1)))
+	power_level = maxi(1, int(upgrades.get("power_level", 1)))
+	speed_level = maxi(1, int(upgrades.get("speed_level", 1)))
+	multiplier_level = maxi(1, int(upgrades.get("multiplier_level", 1)))
+	coins_changed.emit(total_coins)
+
+func export_to_dict() -> Dictionary:
+	return {
+		"radius_level": radius_level,
+		"power_level": power_level,
+		"speed_level": speed_level,
+		"multiplier_level": multiplier_level
+	}
+
 func add_coins(amount: int) -> void:
 	total_coins += amount
 
@@ -50,6 +72,8 @@ func buy_upgrade(upgrade_name: String) -> bool:
 			"speed": speed_level += 1
 			"multiplier": multiplier_level += 1
 		upgrade_purchased.emit(upgrade_name, get_level(upgrade_name))
+		if SaveManager != null:
+			SaveManager.save_game()
 		return true
 	return false
 

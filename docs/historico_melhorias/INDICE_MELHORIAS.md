@@ -48,8 +48,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`032_ajuste_raio_base_e_incremento_lamina.md`](./032_ajuste_raio_base_e_incremento_lamina.md) | Redução do Raio Base da Lâmina (0.90m) e Incremento por Upgrade (0.10m) | Calibração do raio inicial para 0.90m (diâmetro 1.80m) e incremento de +0.10m por nível, com redimensionamento proporcional da malha visual 3D e área de interação de shaders. |
 | [`033_inclusao_concept_art_cutter_bit.md`](./033_inclusao_concept_art_cutter_bit.md) | Inclusão do Concept Art Oficial do Cutter Bit na Documentação | Arquivamento do concept art oficial em alta resolução e vinculação a SISTEMA_DO_CORTADOR.md, DIRECAO_DE_ARTE_E_VISUAL.md e PROJETO_GRASS_CUT_BOT.md. |
 | [`034_criacao_20_fases_canonicas.md`](./034_criacao_20_fases_canonicas.md) | Criação das Primeiras 20 Fases Canônicas com Progressão de Dificuldade | 20 fases únicas em ilhas 3D flutuantes sem cercas com autotile, 5 tiers de maestria, introdução de trigo e flores, caminhos estreitos, labirintos rochosos e transição no HUD. |
-
-
+| [`036_olhos_led_expressoes_emocionais_cutter_bit.md`](./036_olhos_led_expressoes_emocionais_cutter_bit.md) | Olhos de LED e Sistema de Expressões Emocionais do Cutter Bit | Visor digital contínuo no Blender, atlas vetorial com 10 expressões canônicas, shader com scanlines e piscar procedural, reação a rochas em vermelho e tela desligada na pausa. |
 
 ---
 
@@ -72,3 +71,4 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | :--- | :--- | :--- |
 | [`001_fundacao_mvp_fase_1.md`](./001_fundacao_mvp_fase_1.md) | Estruturação da Wiki e Arquitetura Canônica | Implantação da Central de Guardrails `GEMINI.md`, skill de governança contínua, Hub Mestre `PROJETO_GRASS_CUT_BOT.md` e os 5 Pilares Temáticos. |
 | [`028_editor_de_fases_pc_ilhas_3d_e_carimbos.md`](./028_editor_de_fases_pc_ilhas_3d_e_carimbos.md) | Editor de Fases In-Game para PC (Tela Cheia), Ilhas 3D e Carimbos | Editor de fases full-screen PC isolado do mobile, kit de Ilhas 3D sobre o oceano sem cercas com Auto-Tile e colisão costeira invisível, carimbos de formas (Coração, Estrela, Círculo, Quadrado), persistência JSON e Playtest via F1. |
+| [`037_sistema_de_savegame_e_persistencia_de_dados.md`](./037_sistema_de_savegame_e_persistencia_de_dados.md) | Sistema de SaveGame, Persistência Resiliente e Avaliação de Estrelas | Autoload SaveManager desacoplado, escrita atômica anti-corrupção com backup .bak, curva de 1 a 3 estrelas (⭐), desbloqueio dinâmico do arquipélago 3D, persistência de áudio/vibração e botão com confirmação de reset. |

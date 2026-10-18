@@ -77,11 +77,15 @@ Configuradas em `project.godot` sob `[layer_names]`:
 
 ## 3. Arquitetura de Autoloads Globais
 
-1. **`GameManager` (`res://scripts/core/game_manager.gd`):**
+1. **`SaveManager` (`res://scripts/core/save_manager.gd`):**
+   - Camada mestre de persistência em disco (`user://savegame.json`) com escrita atômica e backup (`savegame.bak`).
+   - Gerenciamento de fases liberadas, histórico de recordes e avaliação de 1 a 3 estrelas (Star Rating).
+   - Persistência e restauração de moedas, níveis de melhoria e preferências de áudio/vibração.
+2. **`GameManager` (`res://scripts/core/game_manager.gd`):**
    - Estado global da partida (`READY`, `PLAYING`, `PAUSED`, `VICTORY`, `GAME_OVER`).
    - Gerenciamento de tempo decrescente e contagem de metas.
    - Disparo de sinais desacoplados para a UI e sistema de haptics.
-2. **`UpgradeManager` (`res://scripts/core/upgrade_manager.gd`):**
+3. **`UpgradeManager` (`res://scripts/core/upgrade_manager.gd`):**
    - Carteira persistente de moedas verdes.
    - Níveis de melhoria (Raio, Potência, Velocidade e Multiplicador).
    - Cálculo de custos e emissão de sinais de compra de upgrade.

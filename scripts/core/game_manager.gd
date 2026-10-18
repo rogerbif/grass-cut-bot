@@ -4,7 +4,7 @@ signal state_changed(new_state: int)
 signal time_updated(time_left: float)
 signal goal_updated(plant_type: String, remaining: int, target: int)
 signal goal_completed(plant_type: String)
-signal level_won(coins_earned: int)
+signal level_won(coins_earned: int, stars_earned: int)
 signal level_lost(reason: String)
 signal game_paused(is_paused: bool)
 signal camera_shake_requested(intensity: float, duration: float)
@@ -33,6 +33,9 @@ func _process(delta: float) -> void:
 
 func start_level(level_index: int, level_goals: Dictionary, duration_seconds: float) -> void:
 	current_level = level_index
+	if SaveManager != null:
+		SaveManager.set_last_played_level(current_level)
+
 	time_limit = duration_seconds
 	time_left = duration_seconds
 	level_coins = 0
@@ -89,7 +92,12 @@ func _check_victory() -> void:
 	current_state = GameState.VICTORY
 	if UpgradeManager != null:
 		UpgradeManager.add_coins(level_coins)
-	level_won.emit(level_coins)
+
+	var stars: int = 1
+	if SaveManager != null:
+		stars = SaveManager.record_level_victory(current_level, time_left, time_limit, level_coins)
+
+	level_won.emit(level_coins, stars)
 	state_changed.emit(current_state)
 
 func _check_game_over(reason: String) -> void:
@@ -121,15 +129,25 @@ func next_level() -> void:
 		current_level = 1
 	else:
 		current_level = next_idx
+
+	if SaveManager != null:
+		SaveManager.set_last_played_level(current_level)
+
 	get_tree().reload_current_scene()
 
 func trigger_haptic_cut() -> void:
-	# Vibração curta suave em dispositivos móveis compatíveis
-	if OS.has_feature("mobile") or OS.has_feature("android"):
+	var vib_enabled: bool = true
+	if SaveManager != null:
+		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
+
+	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android")):
 		Input.vibrate_handheld(15)
 
 func trigger_haptic_impact() -> void:
-	# Vibração de impacto seco ao bater em obstáculos
-	if OS.has_feature("mobile") or OS.has_feature("android"):
+	var vib_enabled: bool = true
+	if SaveManager != null:
+		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
+
+	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android")):
 		Input.vibrate_handheld(60)
 	camera_shake_requested.emit(0.35, 0.2)

@@ -7,7 +7,7 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
 ## ⚡ Os 12 Mandamentos Invariantes (Guardrails Críticos)
 
 1. **Zero Warnings Estrito:** O console da Godot deve permanecer com 0 warnings a cada execução. Não permita divisões inteiras diretas, variáveis com nomes de métodos/propriedades da engine ou identificadores sombreados.
-2. **Terminal PowerShell & UTF-8 sem BOM:** Utilize exclusivamente ponto e vírgula `;` para encadear comandos no Windows PowerShell. Ao gravar/ler arquivos via script/terminal, force `-Encoding UTF8` (sem BOM). Em referências a nós Godot (`$Node`), utilize sempre aspas simples (`@' ... '@`) para impedir que o PowerShell interprete como variável.
+2. **Terminal PowerShell, UTF-8 sem BOM & Git no OneDrive:** Utilize exclusivamente ponto e vírgula `;` para encadear comandos no Windows PowerShell. Ao gravar/ler arquivos via script/terminal, force `-Encoding UTF8` (sem BOM). Em referências a nós Godot (`$Node`), utilize sempre aspas simples (`@' ... '@`) para impedir que o PowerShell interprete como variável. Ao executar comandos que gravam no índice do Git (`git add`, `git commit`) em diretórios do OneDrive, utilize `BypassSandbox: true` para evitar erros de permissão em `.git/index.lock`.
 3. **Resolução e Orientação Mobile Portrait:** A janela base é configurada em `720x1280` (proporção 9:16 vertical), `window/stretch/mode="canvas_items"` e `window/stretch/aspect="keep_width"`. Todos os componentes de HUD devem respeitar a zona segura de celulares modernos.
 4. **Camadas de Física 3D Padronizadas:**
    - `Layer 1`: Terreno e Paredes Limítrofes (`collision_layer = 1`)

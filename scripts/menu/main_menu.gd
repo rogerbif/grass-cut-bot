@@ -42,6 +42,9 @@ func _ready() -> void:
 	if UpgradeManager != null:
 		UpgradeManager.coins_changed.connect(func(_new_amt: int) -> void: _update_top_bar())
 
+	if SaveManager != null:
+		SaveManager.save_reset.connect(_on_save_reset)
+
 	# Detecta fases e constrói o arquipélago 3D
 	_detect_levels_and_build_archipelago()
 
@@ -61,6 +64,10 @@ func _ready() -> void:
 
 	# Inicia na aba Home
 	_switch_tab(1)
+
+func _on_save_reset() -> void:
+	_update_top_bar()
+	_detect_levels_and_build_archipelago()
 
 func _detect_levels_and_build_archipelago() -> void:
 	# Limpa ilhas anteriores se houver
@@ -82,6 +89,8 @@ func _detect_levels_and_build_archipelago() -> void:
 
 	# Garante que selected_level e GameManager.current_level estejam em faixa válida
 	var cur_lvl: int = GameManager.current_level if GameManager != null else 1
+	if SaveManager != null:
+		cur_lvl = SaveManager.get_last_played_level()
 	selected_level = clampi(cur_lvl, 1, total_levels_count)
 
 	var z_spacing: float = 7.2
@@ -103,8 +112,15 @@ func _detect_levels_and_build_archipelago() -> void:
 		current_z = -float(i - 1) * z_spacing
 		island.position = Vector3(x_offset, 0.0, current_z)
 
-		var is_unlocked: bool = (i <= selected_level)
-		var stars: int = 3 if (i < selected_level) else 0
+		var is_unlocked: bool = true
+		var stars: int = 0
+		if SaveManager != null:
+			is_unlocked = SaveManager.is_level_unlocked(i)
+			stars = SaveManager.get_level_stars(i)
+		else:
+			is_unlocked = (i <= selected_level)
+			stars = 3 if (i < selected_level) else 0
+
 		if island.has_method("setup_island"):
 			island.setup_island(i, is_unlocked, stars)
 		if island.has_signal("island_selected"):
@@ -150,10 +166,16 @@ func _update_bot_position() -> void:
 
 func _on_island_clicked(lvl_num: int) -> void:
 	if lvl_num <= total_levels_count:
-		selected_level = lvl_num
-		_update_bot_position()
-		if GameManager != null:
-			GameManager.trigger_haptic_cut()
+		var can_select: bool = true
+		if SaveManager != null:
+			can_select = SaveManager.is_level_unlocked(lvl_num)
+		if can_select:
+			selected_level = lvl_num
+			if SaveManager != null:
+				SaveManager.set_last_played_level(selected_level)
+			_update_bot_position()
+			if GameManager != null:
+				GameManager.trigger_haptic_cut()
 
 func _on_toggle_view_requested() -> void:
 	if menu_camera != null:

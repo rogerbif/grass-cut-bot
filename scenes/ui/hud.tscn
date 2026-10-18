@@ -195,6 +195,12 @@ theme_override_font_sizes/font_size = 32
 text = "Fase Concluída!"
 horizontal_alignment = 1
 
+[node name="StarsLabel" type="Label" parent="VictoryModal/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "⭐⭐⭐"
+horizontal_alignment = 1
+
 [node name="CoinsEarnedLabel" type="Label" parent="VictoryModal/Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24

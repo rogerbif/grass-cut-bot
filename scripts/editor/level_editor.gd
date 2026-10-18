@@ -950,7 +950,7 @@ func _on_game_goal_updated(_p_type: String, _rem: int, _target: int) -> void:
 	if is_playtesting and GameManager != null:
 		ui.update_playtest_hud(GameManager.time_left, GameManager.goals)
 
-func _on_playtest_won(coins: int) -> void:
+func _on_playtest_won(coins: int, _stars: int = 1) -> void:
 	if is_playtesting:
 		ui.show_toast("🏆 Fase Concluída no Teste! (+%d moedas) — Pressione [F1] ou [ESC]" % coins, Color(1.0, 0.85, 0.2))
 

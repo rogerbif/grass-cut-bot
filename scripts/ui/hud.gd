@@ -12,6 +12,7 @@ extends Control
 
 # Elementos das janelas de fim de jogo e pausa
 @onready var victory_coins_label: Label = $VictoryModal/Panel/VBox/CoinsEarnedLabel
+@onready var victory_stars_label: Label = $VictoryModal/Panel/VBox.get_node_or_null("StarsLabel") as Label
 @onready var game_over_reason_label: Label = $GameOverModal/Panel/VBox/ReasonLabel
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
@@ -174,10 +175,18 @@ func _on_restart_pressed() -> void:
 func _on_next_level_pressed() -> void:
 	GameManager.next_level()
 
-func _on_level_won(coins_earned: int) -> void:
+func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 	victory_coins_label.text = "+ %d Moedas" % coins_earned
 	var title_lbl = $VictoryModal/Panel/VBox/Title as Label
 	var next_btn = $VictoryModal/Panel/VBox.get_node_or_null("NextBtn") as Button
+
+	if victory_stars_label != null:
+		var stars_str: String = ""
+		for s in range(clampi(stars_earned, 1, 3)):
+			stars_str += "⭐"
+		for s in range(3 - clampi(stars_earned, 1, 3)):
+			stars_str += "☆"
+		victory_stars_label.text = stars_str
 
 	if GameManager.current_level >= 20:
 		if title_lbl != null:
