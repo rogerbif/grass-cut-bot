@@ -42,15 +42,15 @@ A documentação técnica, artística e de engenharia de **Grass Cut Bot** está
 
 ### 🗺️ Pilar 3: Level Design e Estrutura de Fases
 6. **[Estrutura das Fases e Level Design](./03_level_design_e_fases/ESTRUTURA_DAS_FASES.md)**  
-   Fase 1 (MVP de Validação do corte e controles), Fases 2 e 3 (introdução de rochas e trigo), Fases 4 a 10 (múltiplas metas simultâneas, flores e layouts estreitos), e controlador de níveis.
+   Catálogo canônico das 20 fases em ilhas 3D flutuantes com geometrias únicas, progressão em 5 Tiers de maestria, introdução de trigo e flores, caminhos estreitos, labirintos rochosos e transição triunfal para o Ciclo Mestre.
 
 ---
 
 ### 🎮 Pilar 4: Sistemas, Interface, Controles e Metagame
 7. **[Sistema de Controles Touch (Joystick Flutuante)](./04_sistemas_e_gameplay/SISTEMA_DE_CONTROLES_TOUCH.md)**  
    Lógica do joystick flutuante ancorado na metade inferior da tela, cálculo do vetor de arrasto, zona morta contra microtoques e suporte transparente para mouse e teclado no PC.
-8. **[Sistema de Interface e HUD](./04_sistemas_e_gameplay/SISTEMA_DE_INTERFACE_HUD.md)**  
-   Top HUD durante a partida, anel circular de cronômetro regressivo com alerta visual, painel dinâmico de metas com contadores pop, modais de Pausa, Vitória e Derrota.
+8. **[Sistema de Interface, HUD e Menus](./04_sistemas_e_gameplay/SISTEMA_DE_INTERFACE_HUD.md)**  
+   Menu Inicial (Hub Principal) com Câmera Dual (Bot heróico e Mapa do Arquipélago com drag scroll), 4 abas inferiores (Garage, Home, Collection, Store), Modal de Configurações, Top HUD dinâmico e modais de Pausa, Vitória (com Próxima Fase) e Derrota.
 9. **[Economia e Oficina de Upgrades](./04_sistemas_e_gameplay/ECONOMIA_E_OFICINA.md)**  
    Moedas verdes por tufo ceifado, progressão dos 4 atributos centrais da oficina (Raio da Lâmina, Potência e Fio, Velocidade da Serra e Multiplicador de Moedas).
 10. **[Game Feel, Haptics e Câmera Isométrica](./04_sistemas_e_gameplay/GAME_FEEL_E_HAPTICS.md)**  

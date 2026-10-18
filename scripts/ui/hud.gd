@@ -43,17 +43,29 @@ func _ready() -> void:
 	_connect_button($PauseModal/Panel/VBox/ResumeBtn, _on_resume_pressed)
 	_connect_button($PauseModal/Panel/VBox/RestartBtn, _on_restart_pressed)
 	_connect_button($PauseModal/Panel/VBox/WorkshopBtn, _on_open_workshop_pressed)
+	if $PauseModal/Panel/VBox.has_node("MenuBtn"):
+		_connect_button($PauseModal/Panel/VBox/MenuBtn, _on_menu_pressed)
 
+	if $VictoryModal/Panel/VBox.has_node("NextBtn"):
+		_connect_button($VictoryModal/Panel/VBox/NextBtn, _on_next_level_pressed)
 	if $VictoryModal/Panel/VBox.has_node("RestartBtn"):
 		_connect_button($VictoryModal/Panel/VBox/RestartBtn, _on_restart_pressed)
+	if $VictoryModal/Panel/VBox.has_node("MenuBtn"):
+		_connect_button($VictoryModal/Panel/VBox/MenuBtn, _on_menu_pressed)
 
 	if $GameOverModal/Panel/VBox.has_node("RetryBtn"):
 		_connect_button($GameOverModal/Panel/VBox/RetryBtn, _on_restart_pressed)
+	if $GameOverModal/Panel/VBox.has_node("MenuBtn"):
+		_connect_button($GameOverModal/Panel/VBox/MenuBtn, _on_menu_pressed)
 
 	_connect_button($WorkshopModal/Panel/VBox/CloseBtn, _on_close_workshop_pressed)
 
 	# Setup dos botões de upgrade da oficina
 	_setup_workshop_buttons()
+
+func _on_menu_pressed() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
 func _connect_button(btn: Button, callback: Callable) -> void:
 	if btn == null:
@@ -164,6 +176,20 @@ func _on_next_level_pressed() -> void:
 
 func _on_level_won(coins_earned: int) -> void:
 	victory_coins_label.text = "+ %d Moedas" % coins_earned
+	var title_lbl = $VictoryModal/Panel/VBox/Title as Label
+	var next_btn = $VictoryModal/Panel/VBox.get_node_or_null("NextBtn") as Button
+
+	if GameManager.current_level >= 20:
+		if title_lbl != null:
+			title_lbl.text = "🏆 Campeão do Jardim! 🏆"
+		if next_btn != null:
+			next_btn.text = "Ciclo Mestre (Fase 1) 👑"
+	else:
+		if title_lbl != null:
+			title_lbl.text = "Fase %02d Concluída!" % GameManager.current_level
+		if next_btn != null:
+			next_btn.text = "Próxima Fase ➔"
+
 	victory_modal.visible = true
 
 func _on_level_lost(reason: String) -> void:

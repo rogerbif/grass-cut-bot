@@ -32,10 +32,12 @@ extends CharacterBody3D
 @onready var blade_area: Area3D = $BladeArea
 @onready var blade_shape: CollisionShape3D = $BladeArea/CollisionShape3D
 @onready var spark_particles: CPUParticles3D = $SparkParticles
+@onready var robot_eyes: RobotEyes = $RobotEyes if has_node("RobotEyes") else null
 
 var input_direction: Vector2 = Vector2.ZERO
 var is_stunned: bool = false
 var stun_timer: float = 0.0
+var idle_eyes_timer: float = 0.0
 var current_blade_speed: float = 90.0
 
 var current_pitch: float = 0.0
@@ -55,6 +57,7 @@ func _ready() -> void:
 		last_body_yaw = robot_body.rotation.y
 	if wheel_mesh:
 		initial_wheel_y = wheel_mesh.position.y
+	_setup_eyes()
 	update_upgrades()
 	_update_shader_globals()
 	if UpgradeManager != null:
@@ -62,10 +65,32 @@ func _ready() -> void:
 	if GameManager != null:
 		GameManager.state_changed.connect(_on_game_state_changed)
 
+func _setup_eyes() -> void:
+	if robot_eyes == null:
+		return
+	var screen_mesh: MeshInstance3D = null
+	if head_node:
+		screen_mesh = head_node.find_child("screen_display*", true, false) as MeshInstance3D
+	if screen_mesh == null and visual_pivot:
+		screen_mesh = visual_pivot.find_child("screen_display*", true, false) as MeshInstance3D
+
+	if screen_mesh:
+		var eye_mat: Material = preload("res://shaders/eye_display_material.tres")
+		screen_mesh.set_surface_override_material(0, eye_mat)
+		robot_eyes.screen_mesh = screen_mesh
+		robot_eyes._ready()
+
 func _on_game_state_changed(new_state: int) -> void:
 	if new_state != GameManager.GameState.PLAYING:
 		velocity = Vector3.ZERO
 		input_direction = Vector2.ZERO
+	if robot_eyes != null:
+		if new_state == GameManager.GameState.PAUSED:
+			robot_eyes.set_screen_off(true)
+		elif new_state == GameManager.GameState.LEVEL_WON:
+			robot_eyes.trigger_victory_reaction()
+		elif new_state == GameManager.GameState.PLAYING:
+			robot_eyes.set_screen_off(false)
 
 func _process(_delta: float) -> void:
 	_update_shader_globals()
@@ -161,6 +186,18 @@ func _physics_process(delta: float) -> void:
 
 	if blade_spinner:
 		blade_spinner.rotate_y(deg_to_rad(current_blade_speed * delta))
+
+	# Atualiza o olhar do robô e o ciclo de sono em idle
+	if robot_eyes:
+		robot_eyes.set_look_direction(input_direction)
+		if is_moving:
+			if idle_eyes_timer > 5.0 and robot_eyes.current_expression == RobotEyes.Expression.SLEEPING:
+				robot_eyes.set_expression(RobotEyes.Expression.NORMAL)
+			idle_eyes_timer = 0.0
+		else:
+			idle_eyes_timer += delta
+			if idle_eyes_timer > 5.5 and robot_eyes.current_expression == RobotEyes.Expression.NORMAL:
+				robot_eyes.set_expression(RobotEyes.Expression.SLEEPING)
 
 	var target_speed: float = base_speed
 	if UpgradeManager != null:
@@ -298,6 +335,10 @@ func _trigger_obstacle_shock(normal: Vector3) -> void:
 	velocity = normal * knockback_force
 	shock_compression = -0.045
 	
+	# Dispara expressão brava com olhos vermelhos e faíscas elétricas
+	if robot_eyes:
+		robot_eyes.trigger_obstacle_reaction()
+
 	# Efeito de faíscas
 	if spark_particles:
 		spark_particles.global_position = global_position - normal * 0.4

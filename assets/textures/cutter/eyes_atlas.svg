@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" width="2048" height="2048">
+  <defs>
+    <!-- Filtro sutil para dar acabamento suave aos vetores -->
+    <style>
+      .glow-shape { fill: #FFFFFF; }
+      .stroke-shape { stroke: #FFFFFF; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Fundo transparente para canal alfa do shader -->
+
+  <!-- ========================================== -->
+  <!-- LINHA 0                                     -->
+  <!-- ========================================== -->
+
+  <!-- FRAME 0: Padrão (Normal) - Coluna 0 (X: 0..512, Y: 0..512) -->
+  <g id="frame_0_normal">
+    <circle cx="116" cy="256" r="58" class="glow-shape" />
+    <circle cx="396" cy="256" r="58" class="glow-shape" />
+  </g>
+
+  <!-- FRAME 1: Feliz (Happy) - Coluna 1 (X: 512..1024, Y: 0..512) -->
+  <g id="frame_1_happy">
+    <!-- Olho Esquerdo: Arco para cima -->
+    <path d="M 576 290 Q 628 200 680 290" class="stroke-shape" stroke-width="26" />
+    <!-- Olho Direito: Arco para cima -->
+    <path d="M 856 290 Q 908 200 960 290" class="stroke-shape" stroke-width="26" />
+  </g>
+
+  <!-- FRAME 2: Triste / Danificado - Coluna 2 (X: 1024..1536, Y: 0..512) -->
+  <g id="frame_2_sad">
+    <!-- Olho Esquerdo: Semicírculo voltado para baixo com pálpebra caída -->
+    <path d="M 1088 230 C 1088 280 1192 280 1192 230 Z" class="glow-shape" />
+    <path d="M 1080 215 L 1200 235" class="stroke-shape" stroke-width="14" />
+    <!-- Olho Direito: Semicírculo simétrico -->
+    <path d="M 1368 230 C 1368 280 1472 280 1472 230 Z" class="glow-shape" />
+    <path d="M 1360 235 L 1480 215" class="stroke-shape" stroke-width="14" />
+  </g>
+
+  <!-- FRAME 3: Bravo / Modo de Ataque - Coluna 3 (X: 1536..2048, Y: 0..512) -->
+  <g id="frame_3_angry">
+    <!-- Olho Esquerdo: Retângulo chanfrado agressivo inclinado para dentro -->
+    <polygon points="1600,215 1710,248 1690,305 1600,305" class="glow-shape" />
+    <!-- Olho Direito: Simétrico inclinado para dentro -->
+    <polygon points="1874,248 1984,215 1984,305 1894,305" class="glow-shape" />
+  </g>
+
+  <!-- ========================================== -->
+  <!-- LINHA 1                                     -->
+  <!-- ========================================== -->
+
+  <!-- FRAME 4: Surpreso / Alerta - Coluna 0 (X: 0..512, Y: 512..1024) -->
+  <g id="frame_4_alert">
+    <circle cx="116" cy="768" r="54" class="stroke-shape" stroke-width="24" />
+    <circle cx="396" cy="768" r="54" class="stroke-shape" stroke-width="24" />
+  </g>
+
+  <!-- FRAME 5: Carregando / Dormindo - Coluna 1 (X: 512..1024, Y: 512..1024) -->
+  <g id="frame_5_sleeping">
+    <line x1="576" y1="768" x2="680" y2="768" class="stroke-shape" stroke-width="26" />
+    <line x1="856" y1="768" x2="960" y2="768" class="stroke-shape" stroke-width="26" />
+  </g>
+
+  <!-- FRAME 6: Confuso / Pane (Glitch) - Coluna 2 (X: 1024..1536, Y: 512..1024) -->
+  <g id="frame_6_glitch">
+    <!-- Olho Esquerdo: Ponto de Interrogação '?' estilizado -->
+    <path d="M 1110 730 C 1110 700 1170 700 1170 740 C 1170 770 1140 775 1140 805" class="stroke-shape" stroke-width="22" />
+    <circle cx="1140" cy="835" r="11" class="glow-shape" />
+    <!-- Olho Direito: Espiral '@' estilizada -->
+    <path d="M 1420 768 A 46 46 0 1 0 1420 770 A 28 28 0 1 0 1420 766" class="stroke-shape" stroke-width="18" />
+  </g>
+
+  <!-- FRAME 7: Piscando / Esperto (Wink) - Coluna 3 (X: 1536..2048, Y: 512..1024) -->
+  <g id="frame_7_wink">
+    <!-- Olho Esquerdo: Normal -->
+    <circle cx="1652" cy="768" r="58" class="glow-shape" />
+    <!-- Olho Direito: Fechado/Piscando -->
+    <line x1="1880" y1="768" x2="1980" y2="768" class="stroke-shape" stroke-width="26" />
+  </g>
+
+  <!-- ========================================== -->
+  <!-- LINHA 2                                     -->
+  <!-- ========================================== -->
+
+  <!-- FRAME 8: Vitória / Estrelas - Coluna 0 (X: 0..512, Y: 1024..1536) -->
+  <g id="frame_8_victory">
+    <!-- Olho Esquerdo: Estrela de 5 pontas centrada em (116, 1280) -->
+    <!-- Raio externo 64, interno 30 -->
+    <polygon points="
+      116,1216 134,1262 180,1262 144,1290 158,1336 
+      116,1308 74,1336 88,1290 52,1262 98,1262" 
+      class="glow-shape" />
+    <!-- Olho Direito: Coração estilizado centrado em (396, 1280) -->
+    <path d="
+      M 396 1326 
+      C 340 1280 336 1230 366 1220 
+      C 390 1210 396 1240 396 1240 
+      C 396 1240 402 1210 426 1220 
+      C 456 1230 452 1280 396 1326 Z" 
+      class="glow-shape" />
+  </g>
+
+  <!-- FRAME 9: Sem Bateria / Desligado - Coluna 1 (X: 512..1024, Y: 1024..1536) -->
+  <!-- Totalmente vazio/transparente (apenas o display e scanlines do shader aparecem) -->
+  <g id="frame_9_off">
+  </g>
+
+</svg>

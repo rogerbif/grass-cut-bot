@@ -1,0 +1,176 @@
+[gd_scene load_steps=6 format=3 uid="uid://tab_store_scene_01"]
+
+[ext_resource type="Script" path="res://scripts/menu/tabs/tab_store.gd" id="1_store"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.09, 0.12, 0.17, 0.94)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_special"]
+bg_color = Color(0.24, 0.18, 0.35, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.85, 0.3, 0.9)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.13, 0.17, 0.24, 0.85)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_gold"]
+bg_color = Color(0.9, 0.65, 0.15, 0.95)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="TabStore" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_store")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 104.0
+offset_right = -20.0
+offset_bottom = -112.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="Scroll" type="ScrollContainer" parent="Panel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Panel/Scroll/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "🏪 Loja do Arquipélago"
+horizontal_alignment = 1
+
+[node name="BannerPack" type="PanelContainer" parent="Panel/Scroll/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_special")
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Scroll/VBox/BannerPack"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="Label" parent="Panel/Scroll/VBox/BannerPack/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 18
+text = "⭐ Pacote de Boas-Vindas Grátis!"
+
+[node name="Desc" type="Label" parent="Panel/Scroll/VBox/BannerPack/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Colete 250 moedas para turbinar sua primeira lâmina na oficina!"
+
+[node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/BannerPack/VBox"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_gold")
+text = "RESGATAR GRÁTIS 🎁"
+
+[node name="CoinsSectionLabel" type="Label" parent="Panel/Scroll/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 16
+text = "Pacotes de Moedas Verdes"
+
+[node name="Pack1" type="PanelContainer" parent="Panel/Scroll/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/Pack1"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="Label" parent="Panel/Scroll/VBox/Pack1/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "💰"
+
+[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/Pack1/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Panel/Scroll/VBox/Pack1/HBox/Info"]
+layout_mode = 2
+text = "Bolsa de Moedas (1.000 🪙)"
+
+[node name="Btn" type="Button" parent="Panel/Scroll/VBox/Pack1/HBox"]
+custom_minimum_size = Vector2(95, 40)
+layout_mode = 2
+disabled = true
+text = "Em breve"
+
+[node name="Pack2" type="PanelContainer" parent="Panel/Scroll/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/Pack2"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="Label" parent="Panel/Scroll/VBox/Pack2/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "📦"
+
+[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/Pack2/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Panel/Scroll/VBox/Pack2/HBox/Info"]
+layout_mode = 2
+text = "Baú de Moedas (5.000 🪙)"
+
+[node name="Btn" type="Button" parent="Panel/Scroll/VBox/Pack2/HBox"]
+custom_minimum_size = Vector2(95, 40)
+layout_mode = 2
+disabled = true
+text = "Em breve"

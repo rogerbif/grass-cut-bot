@@ -115,7 +115,12 @@ func restart_level() -> void:
 
 func next_level() -> void:
 	get_tree().paused = false
-	current_level += 1
+	var next_idx: int = current_level + 1
+	var next_json: String = "res://data/levels/level_%02d.json" % next_idx
+	if not FileAccess.file_exists(next_json) and next_idx > 20:
+		current_level = 1
+	else:
+		current_level = next_idx
 	get_tree().reload_current_scene()
 
 func trigger_haptic_cut() -> void:

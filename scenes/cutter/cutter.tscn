@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/cutter/cutter.gd" id="1_cutter"]
 [ext_resource type="PackedScene" uid="uid://d23k7swpa0o3b" path="res://assets/models/grass_bot.glb" id="2_grass_bot"]
+[ext_resource type="Script" path="res://scripts/cutter/robot_eyes.gd" id="3_eyes"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pjecr"]
 height = 0.5
@@ -54,3 +55,7 @@ direction = Vector3(0, 1, 0)
 spread = 70.0
 initial_velocity_min = 3.0
 initial_velocity_max = 5.5
+
+[node name="RobotEyes" type="Node" parent="." unique_id=1982736451]
+script = ExtResource("3_eyes")
+

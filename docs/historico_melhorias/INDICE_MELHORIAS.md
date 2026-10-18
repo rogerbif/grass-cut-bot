@@ -47,6 +47,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`030_ajustes_mobile_cor_grama_velocidade_camera_e_pausa.md`](./030_ajustes_mobile_cor_grama_velocidade_camera_e_pausa.md) | Ajustes Mobile: Cor da Grama, Velocidade (-50%), Câmera e Menu de Pausa | Resolução da grama branca com propagação e fallback verde garantido, velocidade base reduzida para 3.25m/s, câmera migrada para physics_process com interpolação e eliminação de duplo-clique no touch do menu de pausa. |
 | [`032_ajuste_raio_base_e_incremento_lamina.md`](./032_ajuste_raio_base_e_incremento_lamina.md) | Redução do Raio Base da Lâmina (0.90m) e Incremento por Upgrade (0.10m) | Calibração do raio inicial para 0.90m (diâmetro 1.80m) e incremento de +0.10m por nível, com redimensionamento proporcional da malha visual 3D e área de interação de shaders. |
 | [`033_inclusao_concept_art_cutter_bit.md`](./033_inclusao_concept_art_cutter_bit.md) | Inclusão do Concept Art Oficial do Cutter Bit na Documentação | Arquivamento do concept art oficial em alta resolução e vinculação a SISTEMA_DO_CORTADOR.md, DIRECAO_DE_ARTE_E_VISUAL.md e PROJETO_GRASS_CUT_BOT.md. |
+| [`034_criacao_20_fases_canonicas.md`](./034_criacao_20_fases_canonicas.md) | Criação das Primeiras 20 Fases Canônicas com Progressão de Dificuldade | 20 fases únicas em ilhas 3D flutuantes sem cercas com autotile, 5 tiers de maestria, introdução de trigo e flores, caminhos estreitos, labirintos rochosos e transição no HUD. |
 
 
 
@@ -61,6 +62,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`005_camera_isometrica_translacao_pura_xz.md`](./005_camera_isometrica_translacao_pura_xz.md) | Câmera Isométrica com Translação Pura (X e Z) | Travamento estrito da orientação angular no `_ready()`, eliminação de `look_at()` a cada frame e translação suave exclusiva nos eixos horizontais. |
 | [`006_modal_fim_de_fase_e_desativacao_lamina.md`](./006_modal_fim_de_fase_e_desativacao_lamina.md) | Botão Exclusivo de Repetir Fase e Desativação da Lâmina | Botão único "Repetir Fase 🔄" nos modais de vitória e derrota, suporte híbrido a clique e touch, e desativação total de movimento/rotação da lâmina no fim de fase. |
 | [`031_remocao_botao_editor_e_exclusao_export_apk.md`](./031_remocao_botao_editor_e_exclusao_export_apk.md) | Remoção do Botão do Editor da UI e Exclusão no Export Mobile | Remoção definitiva do botão Dev do editor e do atalho F2 em `main.gd`, com exclusão das cenas/scripts de edição no `exclude_filter` do preset Android. |
+| [`035_menu_inicial_hub_principal_com_camera_dual_e_tabs.md`](./035_menu_inicial_hub_principal_com_camera_dual_e_tabs.md) | Menu Inicial (Hub Principal) com Câmera Dual (Bot & Mapa), 4 Abas e Modal de Configurações | Tela inicial completa estilo mobile casual: diorama 3D com robô heróico, visão de mapa overworld com drag scroll vertical, 4 abas (Garage, Home, Collection, Store) e modal amplo de configurações. |
 
 ---
 

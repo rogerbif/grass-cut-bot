@@ -1,6 +1,6 @@
-# Sistema de Interface e HUD 📊📱
+# Sistema de Interface, HUD e Menus 📊📱
 
-Este documento especifica a interface de usuário (HUD), os componentes visuais de status e o fluxo de telas modais em **Grass Cut Bot**.
+Este documento especifica a interface de usuário (HUD), os componentes visuais de status, o fluxo de telas modais e o **Menu Inicial (Hub Principal)** em **Grass Cut Bot**.
 
 ---
 
@@ -41,17 +41,46 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
   - `Continuar ▶`: Despausa o jogo e fecha o modal.
   - `Reiniciar Fase 🔄`: Recarrega o estágio restaurando a contagem de tempo e metas.
   - `Oficina ⚙`: Abre a oficina para compra de melhorias imediatas.
+  - `Menu Inicial 🏠`: Retorna ao Hub Principal preservando as moedas obtidas.
 
 ### 2.2 Modal de Vitória (`VictoryModal`)
 - Disparado automaticamente quando todas as metas chegam a zero antes do tempo expirar.
 - Desativa imediatamente a rotação, corte e movimentação da lâmina, além de ocultar e desativar o joystick virtual.
-- Exibe o título "Fase Concluída!" e o bônus de moedas obtidas na fase.
-- **Ação Exclusiva:**
-  - `Repetir Fase 🔄`: Botão único em destaque (altura 56px), com suporte nativo a clique de mouse e toque direto na tela touchscreen (`gui_input` + `pressed`). Recarrega o estágio instantaneamente.
+- Exibe o bônus de moedas obtidas na fase.
+- **Ações:**
+  - `Próxima Fase ➔`: Avança dinamicamente para o estágio seguinte (`GameManager.next_level()`). Na Fase 20, o botão se transforma em `"Ciclo Mestre (Fase 1) 👑"` e o título celebra `"🏆 Campeão do Jardim! 🏆"`.
+  - `Repetir Fase 🔄`: Permite rejogar o nível atual para farmar moedas adicionais.
+  - `Menu Inicial 🏠`: Retorna ao Hub Principal com visualização da ilha desbloqueada no mapa.
 
 ### 2.3 Modal de Derrota (`GameOverModal`)
 - Disparado caso o cronômetro atinja `0:00` antes de bater as cotas.
 - Desativa imediatamente a rotação, corte e movimentação da lâmina e oculta o joystick virtual.
 - Exibe mensagem explicativa de falha ("Tempo Esgotado!").
-- **Ação Exclusiva:**
-  - `Repetir Fase 🔄`: Botão único em destaque com suporte total a clique e toque na tela touchscreen. Reinicia a fase imediatamente.
+- **Ações:**
+  - `Tentar Novamente 🔄`: Reinicia a fase imediatamente.
+  - `Menu Inicial 🏠`: Retorna ao Hub Principal.
+
+---
+
+## 3. Menu Inicial / Hub Principal (`res://scenes/menu/main_menu.tscn`)
+
+Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Royal Match*), o Hub Principal é construído em formato vertical portrait ($720 \times 1280$) com iluminação tropical suave e duas perspectivas de câmera integradas:
+
+### 3.1 Câmera Dual (`scripts/menu/menu_camera.gd`)
+1. **Visão Bot (`BOT_VIEW` - Padrão):**
+   - Diorama 3D tropical com o robô cortador em pose de destaque heróica, flutuação procedural vertical suave (*hover bobbing*), rotação de lâmina em marcha lenta e olhar voltado frontalmente para o jogador.
+2. **Visão Mapa (`MAP_VIEW` - Overworld do Arquipélago):**
+   - Transição suave via botão `[ 🗺️ MAP ]` para uma câmera elevada com ângulo de $55^\circ$.
+   - Revela o arquipélago 3D com as 20 fases canônicas conectadas sobre o oceano, pinos com estrelas (fases concluídas), cadeados (fases futuras), robô posicionado sobre a fase atual e ilha final de nuvens com a placa *"Em breve mais fases..."*.
+   - Suporte completo a rolagem vertical (*drag scroll*) com inércia e limites de amortecimento elástico.
+
+### 3.2 Barra de Navegação Inferior de 4 Abas (`BottomNavBar`)
+- **`Garage` 🔧:** Acesso direto à Oficina de Upgrades do `UpgradeManager` (Raio, Potência, Velocidade e Multiplicador).
+- **`Home` 🏠:** Tela principal com botão em destaque `"Level X ▶"` e alternância de Câmera (`MAP` / `BOT`).
+- **`Collection` 🌿:** Herbário ilustrado com as espécies da ilha (Grama Verde, Amarela, Azul, Roxa, Trigo e Flores Nobres).
+- **`Store` 🏪:** Loja de pacotes de moedas e resgate de recompensas diárias.
+
+### 3.3 Modal de Configurações (`SettingsModal`)
+- Cobre ~85% da tela com fundo translúcido escuro.
+- Toggles independentes: Música, Som FX e Vibração Háptica.
+- Seção *Save Progress* e suporte ao jogador.

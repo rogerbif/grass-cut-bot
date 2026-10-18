@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://eye_display_material_01"]
+
+[ext_resource type="Shader" path="res://shaders/eye_display.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://eye_atlas_svg_01" path="res://assets/textures/cutter/eyes_atlas.svg" id="2_atlas"]
+
+[resource]
+render_priority = 1
+shader = ExtResource("1_shader")
+shader_parameter/atlas_grid = Vector2(4, 4)
+shader_parameter/expression_index = 0
+shader_parameter/eye_color = Color(0.17, 0.89, 1, 1)
+shader_parameter/emission_energy = 2.0
+shader_parameter/blink = 0.0
+shader_parameter/look_offset = Vector2(0, 0)
+shader_parameter/glitch_intensity = 0.0
+shader_parameter/background_color = Color(0.015, 0.022, 0.035, 1)
+shader_parameter/scanline_density = 160.0
+shader_parameter/scanline_strength = 0.25
+shader_parameter/eye_atlas = ExtResource("2_atlas")

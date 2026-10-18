@@ -39,6 +39,7 @@ grass-cut-bot/
 │   ├── editor/                # Editor de Fases PC Fullscreen e kit de tiles 3D de ilha
 │   ├── level/                 # Terrenos, oceano (water_ocean.tscn) e ilhas base
 │   ├── levels/                # Fases exportadas como cena Godot (level_01.tscn, etc.)
+│   ├── menu/                  # Menu Inicial (Hub Principal), Câmera Dual, Abas e Ilhas
 │   ├── obstacles/             # Rochas e barreiras
 │   ├── plants/                # Tufos de grama (4 cores), trigo e flores
 │   ├── ui/                    # HUD, joystick virtual e modais
@@ -49,7 +50,9 @@ grass-cut-bot/
 │   ├── cutter/
 │   ├── editor/                # Scripts do Editor de Fases PC (autotiler, pincéis, UI)
 │   ├── level/                 # base_level.gd, level_controller.gd e level_json_loader.gd
+│   ├── menu/                  # Scripts do Menu Inicial, câmera dual e navegação de abas
 │   ├── plants/
+│   ├── tools/                 # Geradores automatizados e validadores de fases
 │   └── ui/
 ├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador de Diretrizes
 ├── GDD.md                     # Espelho de referência rápida do GDD
