@@ -13,15 +13,15 @@ grass-cut-bot/
 ├── .agent/                    # Configurações e skills do agente de desenvolvimento
 │   └── skills/atualizar-documentacao/
 ├── assets/                    # Modelos 3D, texturas e materiais
-│   └── models/                # Modelos oficiais glTF (.glb)
-│       ├── grass_bot.glb      # Modelo oficial do robô e lâminas modulares
-│       ├── terrain_tileset.glb# Biblioteca mestre de tiles e props de terreno
-│       └── tiles/             # Modelos unitários (.glb) aplicados no Editor de Fases
-│           ├── tile_island_center.glb
-│           ├── tile_island_dirt.glb
-│           ├── tile_island_edge.glb
-│           ├── tile_island_corner_out.glb
-│           └── tile_island_corner_in.glb
+│   ├── models/                # Modelos oficiais glTF (.glb)
+│   │   ├── grass_bot.glb      # Modelo oficial do robô (com visor de tela LED) e lâminas
+│   │   ├── terrain_tileset.glb# Biblioteca mestre de tiles e props de terreno
+│   │   └── tiles/             # Modelos unitários (.glb) aplicados no Editor de Fases
+│   └── textures/              # Texturas, mapas e atlas
+│       └── cutter/            # eyes_atlas.svg (Atlas vetorial das 10 expressões de LED)
+├── shaders/                   # Shaders espaciais (.gdshader) e materiais (.tres)
+│   ├── eye_display.gdshader   # Shader do display de LED com scanlines e piscar procedural
+│   └── interactive_grass.gdshader
 ├── docs/                      # Hub Central da Wiki e documentação técnica canônica
 │   ├── .gdignore              # Instrução para Godot ignorar a pasta
 │   ├── 01_visao_geral_e_gdd/

@@ -47,3 +47,15 @@ Para evitar que o robô pareça uma estátua rígida sobre o terreno, um conjunt
 2. **Pitch de Aceleração e Frenagem:** Ao arrancar, o bico inclina para frente ($\pm 6^\circ$); ao soltar o joystick ou colidir, ele recua com amortecimento natural.
 3. **Bobbing e Absorção de Solo:** O corpo oscila sutilmente verticalmente ($\pm 0.022\text{m}$) enquanto o pneu e braços absorvem o relevo.
 4. **Vida na Cabeça e Pescoço:** Pequenos atrasos elásticos e micro-reações ao virar fazem o robô "olhar" na direção do corte.
+
+---
+
+## 5. Expressões Faciais e Reações Emocionais dos Olhos de LED 🤖✨
+
+As expressões digitais do robô complementam o *Game Feel* adicionando carisma, legibilidade imediata de estado e reforço sensorial:
+1. **Piscar Orgânico Autônomo:** Em estado de repouso ou deslocamento padrão, o robô pisca aleatoriamente a cada 3~6 segundos via interpolação do parâmetro `blink` no shader, quebrando a rigidez mecânica.
+2. **Reação Cômica a Choques (Modo Bravo):** Ao colidir contra uma rocha, o robô fecha os olhos em ângulo agressivo em vermelho vivo com ruído elétrico (*glitch*), acompanhado do tremor de câmera, estalo de faíscas e recuo de suspensão.
+3. **Sono em Inatividade (Idle):** Quando o jogador larga o joystick por mais de 5.5s, o robô entra em modo dormindo/descanso (`— —`), acordando imediatamente no primeiro toque na tela.
+4. **Olhar Direcional (Eye Tracking):** As pupilas deslizam suavemente na direção do vetor do joystick (`look_offset`), criando a percepção de que o robô está focalizando a grama que irá cortar.
+5. **Recompensa Eufórica de Vitória:** Ao zerar as metas da fase, o visor transita para Estrelas e Corações (`★ ♥`) com pulso luminoso de sobre-emissão.
+

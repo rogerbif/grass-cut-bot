@@ -67,6 +67,8 @@ A documentação técnica, artística e de engenharia de **Grass Cut Bot** está
     Padrões para PowerShell no Windows, codificação UTF-8 sem BOM, ciclo Game SemVer e commits semânticos.
 14. **[Portabilidade e Otimização para Android](./05_arquitetura_e_desenvolvimento/PORTABILIDADE_ANDROID.md)**  
     Parâmetros do preset de exportação Android, renderizador Mobile (Vulkan/GLES), renderização portrait e garantia de 60 FPS estáveis em telas mobile.
+15. **[Sistema de SaveGame e Persistência de Dados](./05_arquitetura_e_desenvolvimento/SISTEMA_DE_SAVE.md)**  
+    Persistência atômica e resiliente em `user://savegame.json`, backup `.bak` anti-corrupção, avaliação de 1 a 3 estrelas (⭐), auto-save em eventos críticos e reset de progresso.
 
 ---
 
