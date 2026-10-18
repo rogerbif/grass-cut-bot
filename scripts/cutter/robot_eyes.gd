@@ -4,7 +4,7 @@ extends Node
 ## Controlador de Expressões e Animação do Display de Olhos de LED (Cutter Bit)
 ## Gerencia as 10 expressões digitais, piscar procedural, reação a impactos e olhar dinâmico.
 
-enum Expression {
+enum EyeExpression {
 	NORMAL = 0,
 	HAPPY = 1,
 	SAD = 2,
@@ -26,8 +26,8 @@ const COLOR_YELLOW_ALERT: Color = Color(1.0, 0.82, 0.15, 1.0)
 @export var blink_min_interval: float = 3.0
 @export var blink_max_interval: float = 6.0
 
-var current_expression: Expression = Expression.NORMAL
-var default_expression: Expression = Expression.NORMAL
+var current_expression: EyeExpression = EyeExpression.NORMAL
+var default_expression: EyeExpression = EyeExpression.NORMAL
 
 var _material: ShaderMaterial
 var _blink_timer: float = 0.0
@@ -42,7 +42,7 @@ var _glitch_tween: Tween
 func _ready() -> void:
 	_init_screen_material()
 	_reset_blink_timer()
-	set_expression(Expression.NORMAL)
+	set_expression(EyeExpression.NORMAL)
 
 func _init_screen_material() -> void:
 	if screen_mesh == null:
@@ -74,7 +74,7 @@ func _process(delta: float) -> void:
 			set_expression(default_expression)
 
 	# Temporizador do piscar autônomo
-	if auto_blink_enabled and current_expression != Expression.SLEEPING and current_expression != Expression.OFF:
+	if auto_blink_enabled and current_expression != EyeExpression.SLEEPING and current_expression != EyeExpression.OFF:
 		_blink_timer -= delta
 		if _blink_timer <= 0.0 and not _is_blinking:
 			play_blink()
@@ -84,7 +84,7 @@ func _reset_blink_timer() -> void:
 	_blink_timer = randf_range(blink_min_interval, blink_max_interval)
 
 ## Altera a expressão atual dos olhos
-func set_expression(expr: Expression, custom_color: Color = Color.TRANSPARENT, duration: float = 0.0) -> void:
+func set_expression(expr: EyeExpression, custom_color: Color = Color.TRANSPARENT, duration: float = 0.0) -> void:
 	current_expression = expr
 	if duration > 0.0:
 		_temporary_timer = duration
@@ -101,9 +101,9 @@ func set_expression(expr: Expression, custom_color: Color = Color.TRANSPARENT, d
 	var target_color: Color = COLOR_CYAN
 	if custom_color != Color.TRANSPARENT:
 		target_color = custom_color
-	elif expr == Expression.ANGRY:
+	elif expr == EyeExpression.ANGRY:
 		target_color = COLOR_RED_ANGRY
-	elif expr == Expression.ALERT:
+	elif expr == EyeExpression.ALERT:
 		target_color = COLOR_YELLOW_ALERT
 
 	_animate_color(target_color, 0.15)
@@ -141,7 +141,7 @@ func trigger_obstacle_reaction() -> void:
 		return
 
 	# Expressão Bravo com modo de ataque em vermelho vivo
-	set_expression(Expression.ANGRY, COLOR_RED_ANGRY, 0.75)
+	set_expression(EyeExpression.ANGRY, COLOR_RED_ANGRY, 0.75)
 
 	# Efeito de tremor/glitch elétrico no display
 	if _glitch_tween != null and _glitch_tween.is_valid():
@@ -156,7 +156,7 @@ func trigger_obstacle_reaction() -> void:
 
 ## Dispara reação de vitória (Estrelas e Coração) com pulso de brilho
 func trigger_victory_reaction() -> void:
-	set_expression(Expression.VICTORY, COLOR_CYAN)
+	set_expression(EyeExpression.VICTORY, COLOR_CYAN)
 	if _material == null:
 		return
 	
@@ -173,9 +173,9 @@ func trigger_victory_reaction() -> void:
 ## Desliga a tela (para menu de pausa ou sem bateria)
 func set_screen_off(is_off: bool) -> void:
 	if is_off:
-		set_expression(Expression.OFF)
+		set_expression(EyeExpression.OFF)
 	else:
-		set_expression(Expression.NORMAL)
+		set_expression(EyeExpression.NORMAL)
 
 func _animate_color(new_color: Color, duration: float) -> void:
 	if _material == null:

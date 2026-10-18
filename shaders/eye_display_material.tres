@@ -1,7 +1,7 @@
 [gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://eye_display_material_01"]
 
 [ext_resource type="Shader" path="res://shaders/eye_display.gdshader" id="1_shader"]
-[ext_resource type="Texture2D" uid="uid://eye_atlas_svg_01" path="res://assets/textures/cutter/eyes_atlas.svg" id="2_atlas"]
+[ext_resource type="Texture2D" uid="uid://cdlje8s1lbxat" path="res://assets/textures/cutter/eyes_atlas.svg" id="2_atlas"]
 
 [resource]
 render_priority = 1

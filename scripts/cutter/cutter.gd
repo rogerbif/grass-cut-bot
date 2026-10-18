@@ -87,7 +87,7 @@ func _on_game_state_changed(new_state: int) -> void:
 	if robot_eyes != null:
 		if new_state == GameManager.GameState.PAUSED:
 			robot_eyes.set_screen_off(true)
-		elif new_state == GameManager.GameState.LEVEL_WON:
+		elif new_state == GameManager.GameState.VICTORY:
 			robot_eyes.trigger_victory_reaction()
 		elif new_state == GameManager.GameState.PLAYING:
 			robot_eyes.set_screen_off(false)
@@ -191,13 +191,13 @@ func _physics_process(delta: float) -> void:
 	if robot_eyes:
 		robot_eyes.set_look_direction(input_direction)
 		if is_moving:
-			if idle_eyes_timer > 5.0 and robot_eyes.current_expression == RobotEyes.Expression.SLEEPING:
-				robot_eyes.set_expression(RobotEyes.Expression.NORMAL)
+			if idle_eyes_timer > 5.0 and robot_eyes.current_expression == RobotEyes.EyeExpression.SLEEPING:
+				robot_eyes.set_expression(RobotEyes.EyeExpression.NORMAL)
 			idle_eyes_timer = 0.0
 		else:
 			idle_eyes_timer += delta
-			if idle_eyes_timer > 5.5 and robot_eyes.current_expression == RobotEyes.Expression.NORMAL:
-				robot_eyes.set_expression(RobotEyes.Expression.SLEEPING)
+			if idle_eyes_timer > 5.5 and robot_eyes.current_expression == RobotEyes.EyeExpression.NORMAL:
+				robot_eyes.set_expression(RobotEyes.EyeExpression.SLEEPING)
 
 	var target_speed: float = base_speed
 	if UpgradeManager != null:
