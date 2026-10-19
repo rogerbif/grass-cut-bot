@@ -8,6 +8,8 @@ const TILE_SCENES: Dictionary = {
 	"island_center": preload("res://scenes/editor/tiles/tile_island_center.tscn"),
 	"island_edge": preload("res://scenes/editor/tiles/tile_island_edge.tscn"),
 	"island_corner_out": preload("res://scenes/editor/tiles/tile_island_corner_out.tscn"),
+	"island_corner_in": preload("res://scenes/editor/tiles/tile_island_corner_in.tscn"),
+	"island_end": preload("res://scenes/editor/tiles/tile_island_end.tscn"),
 	"island_dirt": preload("res://scenes/editor/tiles/tile_island_dirt.tscn")
 }
 

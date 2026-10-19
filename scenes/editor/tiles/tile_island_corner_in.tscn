@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://tile_island_corner_in_01"]
+
+[ext_resource type="PackedScene" path="res://assets/models/tiles/tile_island_corner_in.glb" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(0.8, 0.36, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_corner_post"]
+size = Vector3(0.12, 0.9, 0.12)
+
+[node name="TileIslandCornerIn" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="FloorCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="CornerPostCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36, 0.45, -0.36)
+shape = SubResource("BoxShape3D_corner_post")

@@ -164,7 +164,7 @@
 		{
 			"gx": 7,
 			"gz": 4,
-			"tile_id": "island_center",
+			"tile_id": "island_corner_in",
 			"rot": 0,
 			"auto": true
 		},
@@ -304,8 +304,8 @@
 		{
 			"gx": 11,
 			"gz": 5,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 270,
 			"auto": true
 		},
 		{
@@ -332,7 +332,7 @@
 		{
 			"gx": 17,
 			"gz": 5,
-			"tile_id": "island_center",
+			"tile_id": "island_corner_in",
 			"rot": 0,
 			"auto": true
 		},
@@ -395,8 +395,8 @@
 		{
 			"gx": 5,
 			"gz": 6,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 180,
 			"auto": true
 		},
 		{
@@ -430,8 +430,8 @@
 		{
 			"gx": 10,
 			"gz": 6,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 90,
 			"auto": true
 		},
 		{
@@ -570,15 +570,15 @@
 		{
 			"gx": 15,
 			"gz": 7,
-			"tile_id": "island_center",
+			"tile_id": "island_corner_in",
 			"rot": 0,
 			"auto": true
 		},
 		{
 			"gx": 16,
 			"gz": 7,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 180,
 			"auto": true
 		},
 		{
@@ -887,7 +887,7 @@
 			"gx": 1,
 			"gz": 4,
 			"type": "rock",
-			"rot": 90
+			"rot": 180
 		},
 		{
 			"gx": 2,
@@ -1427,7 +1427,7 @@
 			"gx": 12,
 			"gz": 11,
 			"type": "rock",
-			"rot": 270
+			"rot": 0
 		},
 		{
 			"gx": 13,

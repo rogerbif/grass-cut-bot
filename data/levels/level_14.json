@@ -206,7 +206,7 @@
 		{
 			"gx": 3,
 			"gz": 3,
-			"tile_id": "island_center",
+			"tile_id": "island_corner_in",
 			"rot": 0,
 			"auto": true
 		},
@@ -290,8 +290,8 @@
 		{
 			"gx": 15,
 			"gz": 3,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 270,
 			"auto": true
 		},
 		{
@@ -948,8 +948,8 @@
 		{
 			"gx": 4,
 			"gz": 10,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 90,
 			"auto": true
 		},
 		{
@@ -1018,8 +1018,8 @@
 		{
 			"gx": 14,
 			"gz": 10,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 180,
 			"auto": true
 		},
 		{
@@ -1046,8 +1046,8 @@
 		{
 			"gx": 5,
 			"gz": 11,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 90,
 			"auto": true
 		},
 		{
@@ -1102,8 +1102,8 @@
 		{
 			"gx": 13,
 			"gz": 11,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 180,
 			"auto": true
 		},
 		{
@@ -1130,8 +1130,8 @@
 		{
 			"gx": 7,
 			"gz": 12,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 90,
 			"auto": true
 		},
 		{
@@ -1158,8 +1158,8 @@
 		{
 			"gx": 11,
 			"gz": 12,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 180,
 			"auto": true
 		},
 		{
@@ -1221,8 +1221,8 @@
 		{
 			"gx": 8,
 			"gz": 14,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 90,
 			"auto": true
 		},
 		{
@@ -1235,8 +1235,8 @@
 		{
 			"gx": 10,
 			"gz": 14,
-			"tile_id": "island_center",
-			"rot": 0,
+			"tile_id": "island_corner_in",
+			"rot": 180,
 			"auto": true
 		},
 		{
@@ -1531,7 +1531,7 @@
 			"gx": 4,
 			"gz": 4,
 			"type": "rock",
-			"rot": 180
+			"rot": 90
 		},
 		{
 			"gx": 5,
@@ -1651,7 +1651,7 @@
 			"gx": 9,
 			"gz": 5,
 			"type": "rock",
-			"rot": 90
+			"rot": 0
 		},
 		{
 			"gx": 10,
@@ -1879,7 +1879,7 @@
 			"gx": 2,
 			"gz": 8,
 			"type": "rock",
-			"rot": 0
+			"rot": 90
 		},
 		{
 			"gx": 3,

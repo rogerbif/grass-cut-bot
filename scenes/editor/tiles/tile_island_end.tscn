@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://tile_island_end_01"]
+
+[ext_resource type="PackedScene" path="res://assets/models/tiles/tile_island_end.glb" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(0.8, 0.36, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_barrier_n"]
+size = Vector3(0.8, 0.9, 0.08)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_barrier_s"]
+size = Vector3(0.8, 0.9, 0.08)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_barrier_e"]
+size = Vector3(0.08, 0.9, 0.8)
+
+[node name="TileIslandEnd" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+
+[node name="FloorCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="BarrierNorth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -0.38)
+shape = SubResource("BoxShape3D_barrier_n")
+
+[node name="BarrierSouth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.38)
+shape = SubResource("BoxShape3D_barrier_s")
+
+[node name="BarrierEast" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38, 0.45, 0)
+shape = SubResource("BoxShape3D_barrier_e")

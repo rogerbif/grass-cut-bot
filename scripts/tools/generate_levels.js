@@ -26,6 +26,12 @@ function computeTileForCell(cellKey, terrainMap) {
 	const hasE = terrainMap.has(`${x + 1},${z}`);
 	const hasW = terrainMap.has(`${x - 1},${z}`);
 
+	// Pontas de península (3 lados voltados para o mar)
+	if (hasW && !hasE && !hasN && !hasS) return { tile_id: 'island_end', rot: 0 };
+	if (hasN && !hasS && !hasE && !hasW) return { tile_id: 'island_end', rot: 90 };
+	if (hasE && !hasW && !hasN && !hasS) return { tile_id: 'island_end', rot: 180 };
+	if (hasS && !hasN && !hasE && !hasW) return { tile_id: 'island_end', rot: 270 };
+
 	// Quinas externas (2 lados adjacentes voltados para o mar)
 	if (!hasN && !hasE && hasS && hasW) return { tile_id: 'island_corner_out', rot: 0 };
 	if (!hasN && !hasW && hasS && hasE) return { tile_id: 'island_corner_out', rot: 90 };
@@ -37,6 +43,20 @@ function computeTileForCell(cellKey, terrainMap) {
 	if (!hasW && hasN && hasS && hasE) return { tile_id: 'island_edge', rot: 90 };
 	if (!hasS && hasN && hasE && hasW) return { tile_id: 'island_edge', rot: 180 };
 	if (!hasE && hasN && hasS && hasW) return { tile_id: 'island_edge', rot: 270 };
+
+	// Quinas internas côncavas (diagonais)
+	if (hasN && hasS && hasE && hasW) {
+		const hasNE = terrainMap.has(`${x + 1},${z - 1}`);
+		const hasNW = terrainMap.has(`${x - 1},${z - 1}`);
+		const hasSW = terrainMap.has(`${x - 1},${z + 1}`);
+		const hasSE = terrainMap.has(`${x + 1},${z + 1}`);
+
+		if (!hasNW && hasNE && hasSW && hasSE) return { tile_id: 'island_corner_in', rot: 0 };
+		if (!hasSW && hasNE && hasNW && hasSE) return { tile_id: 'island_corner_in', rot: 90 };
+		if (!hasSE && hasNE && hasNW && hasSW) return { tile_id: 'island_corner_in', rot: 180 };
+		if (!hasNE && hasNW && hasSW && hasSE) return { tile_id: 'island_corner_in', rot: 270 };
+	}
+
 	return { tile_id: 'island_center', rot: 0 };
 }
 

@@ -41,6 +41,22 @@ const TERRAIN_ITEMS: Array[Dictionary] = [
 		"color": Color(0.22, 0.52, 0.58),
 		"desc": "Canto convexo voltado ao mar [R para girar]",
 		"is_auto": false
+	},
+	{
+		"id": "island_corner_in",
+		"name": "Quina Interna (Curva L)",
+		"icon": "⤵️",
+		"color": Color(0.26, 0.60, 0.42),
+		"desc": "Canto côncavo interno da ilha [R para girar]",
+		"is_auto": false
+	},
+	{
+		"id": "island_end",
+		"name": "Ponta de Península",
+		"icon": "🧴",
+		"color": Color(0.20, 0.48, 0.52),
+		"desc": "Extremidade de caminho 1x1 [R para girar]",
+		"is_auto": false
 	}
 ]
 
