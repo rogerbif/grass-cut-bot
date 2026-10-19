@@ -82,18 +82,34 @@ static func build_coastal_colliders_and_foam(
 	height: int,
 	cell_size: float = DEFAULT_CELL_SIZE
 ) -> void:
-	# Garante contenção física invisível estanque (Layer 1)
+	# 1. Garante contenção física invisível estanque (Layer 1)
 	# em todas as faces onde um bloco de ilha faz fronteira com a água (vazio).
 	var dirs: Array[Dictionary] = [
-		{ "offset": Vector2i(0, -1), "pos": Vector3(0.0, 0.45, -cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06) },
-		{ "offset": Vector2i(0, 1),  "pos": Vector3(0.0, 0.45,  cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06) },
-		{ "offset": Vector2i(1, 0),  "pos": Vector3( cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size) },
-		{ "offset": Vector2i(-1, 0), "pos": Vector3(-cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size) }
+		{ "offset": Vector2i(0, -1), "pos": Vector3(0.0, 0.45, -cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06), "norm": Vector3(0.0, 0.0, -1.0) },
+		{ "offset": Vector2i(0, 1),  "pos": Vector3(0.0, 0.45,  cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06), "norm": Vector3(0.0, 0.0, 1.0) },
+		{ "offset": Vector2i(1, 0),  "pos": Vector3( cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size), "norm": Vector3(1.0, 0.0, 0.0) },
+		{ "offset": Vector2i(-1, 0), "pos": Vector3(-cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size), "norm": Vector3(-1.0, 0.0, 0.0) }
 	]
+
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	var half_s: float = cell_size * 0.5
+	var inner_r: float = cell_size * 0.32 # Rente à base da falésia
+	var outer_r: float = cell_size * 0.58 # Estende para a água
+	var foam_y: float = -0.695 # 1.5cm acima do plano da água (-0.71m)
 
 	for cell_key in occupied_cells:
 		var cell: Vector2i = cell_key as Vector2i
 		var cell_world: Vector3 = grid_to_world(cell.x, cell.y, width, height, cell_size)
+		var cx: float = cell_world.x
+		var cz: float = cell_world.z
+
+		var has_open_n: bool = not occupied_cells.has(cell + Vector2i(0, -1))
+		var has_open_s: bool = not occupied_cells.has(cell + Vector2i(0, 1))
+		var has_open_e: bool = not occupied_cells.has(cell + Vector2i(1, 0))
+		var has_open_w: bool = not occupied_cells.has(cell + Vector2i(-1, 0))
+
 		for d in dirs:
 			var neighbor: Vector2i = cell + (d["offset"] as Vector2i)
 			if not occupied_cells.has(neighbor):
@@ -104,4 +120,112 @@ static func build_coastal_colliders_and_foam(
 				col.shape = box
 				col.position = cell_world + (d["pos"] as Vector3)
 				parent_body.add_child(col)
+
+		# 2. Gera geometria da fita de espuma costeira nos lados abertos
+		if has_open_n:
+			_add_foam_quad(st,
+				Vector3(cx - half_s, foam_y, cz - inner_r),
+				Vector3(cx + half_s, foam_y, cz - inner_r),
+				Vector3(cx + half_s, foam_y, cz - outer_r),
+				Vector3(cx - half_s, foam_y, cz - outer_r),
+				Vector3(0.0, 0.0, -1.0)
+			)
+		if has_open_s:
+			_add_foam_quad(st,
+				Vector3(cx + half_s, foam_y, cz + inner_r),
+				Vector3(cx - half_s, foam_y, cz + inner_r),
+				Vector3(cx - half_s, foam_y, cz + outer_r),
+				Vector3(cx + half_s, foam_y, cz + outer_r),
+				Vector3(0.0, 0.0, 1.0)
+			)
+		if has_open_w:
+			_add_foam_quad(st,
+				Vector3(cx - inner_r, foam_y, cz + half_s),
+				Vector3(cx - inner_r, foam_y, cz - half_s),
+				Vector3(cx - outer_r, foam_y, cz - half_s),
+				Vector3(cx - outer_r, foam_y, cz + half_s),
+				Vector3(-1.0, 0.0, 0.0)
+			)
+		if has_open_e:
+			_add_foam_quad(st,
+				Vector3(cx + inner_r, foam_y, cz - half_s),
+				Vector3(cx + inner_r, foam_y, cz + half_s),
+				Vector3(cx + outer_r, foam_y, cz + half_s),
+				Vector3(cx + outer_r, foam_y, cz - half_s),
+				Vector3(1.0, 0.0, 0.0)
+			)
+
+		# Quinas externas diagonais para fechamento estanque contínuo
+		if has_open_n and has_open_w:
+			_add_foam_quad(st,
+				Vector3(cx - inner_r, foam_y, cz - inner_r),
+				Vector3(cx - half_s, foam_y, cz - inner_r),
+				Vector3(cx - outer_r, foam_y, cz - outer_r),
+				Vector3(cx - inner_r, foam_y, cz - half_s),
+				Vector3(-0.707, 0.0, -0.707)
+			)
+		if has_open_n and has_open_e:
+			_add_foam_quad(st,
+				Vector3(cx + half_s, foam_y, cz - inner_r),
+				Vector3(cx + inner_r, foam_y, cz - inner_r),
+				Vector3(cx + inner_r, foam_y, cz - half_s),
+				Vector3(cx + outer_r, foam_y, cz - outer_r),
+				Vector3(0.707, 0.0, -0.707)
+			)
+		if has_open_s and has_open_w:
+			_add_foam_quad(st,
+				Vector3(cx - inner_r, foam_y, cz + half_s),
+				Vector3(cx - outer_r, foam_y, cz + outer_r),
+				Vector3(cx - half_s, foam_y, cz + inner_r),
+				Vector3(cx - inner_r, foam_y, cz + inner_r),
+				Vector3(-0.707, 0.0, 0.707)
+			)
+		if has_open_s and has_open_e:
+			_add_foam_quad(st,
+				Vector3(cx + inner_r, foam_y, cz + inner_r),
+				Vector3(cx + half_s, foam_y, cz + inner_r),
+				Vector3(cx + outer_r, foam_y, cz + outer_r),
+				Vector3(cx + inner_r, foam_y, cz + half_s),
+				Vector3(0.707, 0.0, 0.707)
+			)
+
+	var foam_mesh: ArrayMesh = st.commit()
+	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
+		var foam_inst: MeshInstance3D = MeshInstance3D.new()
+		foam_inst.name = "CoastalFoamRibbon"
+		foam_inst.mesh = foam_mesh
+		var foam_shader: Shader = preload("res://shaders/coastal_foam.gdshader")
+		var foam_mat: ShaderMaterial = ShaderMaterial.new()
+		foam_mat.shader = foam_shader
+		foam_inst.material_override = foam_mat
+		parent_body.add_child(foam_inst)
+
+static func _add_foam_quad(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, p3: Vector3, norm: Vector3) -> void:
+	# p0 e p1: base rente à falésia (UV.y = 0.0)
+	# p2 e p3: ponta externa na água (UV.y = 1.0)
+	# Triângulo 1: p0, p1, p2
+	st.set_normal(norm)
+	st.set_uv(Vector2(0.0, 0.0))
+	st.add_vertex(p0)
+
+	st.set_normal(norm)
+	st.set_uv(Vector2(1.0, 0.0))
+	st.add_vertex(p1)
+
+	st.set_normal(norm)
+	st.set_uv(Vector2(1.0, 1.0))
+	st.add_vertex(p2)
+
+	# Triângulo 2: p0, p2, p3
+	st.set_normal(norm)
+	st.set_uv(Vector2(0.0, 0.0))
+	st.add_vertex(p0)
+
+	st.set_normal(norm)
+	st.set_uv(Vector2(1.0, 1.0))
+	st.add_vertex(p2)
+
+	st.set_normal(norm)
+	st.set_uv(Vector2(0.0, 1.0))
+	st.add_vertex(p3)
 
