@@ -10,7 +10,7 @@ Ao finalizar melhorias, fases ou refatorações, execute os seguintes 5 passos o
 
 ## 1. Auditoria de Alterações
 - Execute `git status` e `git diff` para mapear arquivos modificados e criados.
-- Se houverem assets 3D (.glb) alterados, garanta que foram exportados com `export_apply=True` e que o cache `.godot/imported/` foi devidamente regenerado.
+- Se houverem assets 3D (.glb) alterados, garanta que foram exportados com `export_apply=True`, `export_yup=True`, orientação canônica em rot=0 (falésia em -Z) e que o cache `.godot/imported/` foi regenerado via `godot --headless --import`.
 
 ## 2. Mapeamento e Atualização Canônica
 - Atualize os arquivos da pasta `docs/` de acordo com a Matriz do `GEMINI.md`:
