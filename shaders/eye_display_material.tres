@@ -6,7 +6,7 @@
 [resource]
 render_priority = 1
 shader = ExtResource("1_shader")
-shader_parameter/atlas_grid = Vector2(4, 4)
+shader_parameter/atlas_grid = Vector2(2, 6)
 shader_parameter/expression_index = 0
 shader_parameter/eye_color = Color(0.17, 0.89, 1, 1)
 shader_parameter/emission_energy = 2.0

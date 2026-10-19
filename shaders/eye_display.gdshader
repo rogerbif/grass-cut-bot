@@ -2,7 +2,7 @@ shader_type spatial;
 render_mode unshaded, cull_disabled;
 
 uniform sampler2D eye_atlas : filter_linear_mipmap;
-uniform vec2 atlas_grid = vec2(4.0, 4.0);
+uniform vec2 atlas_grid = vec2(2.0, 6.0);
 uniform int expression_index : hint_range(0, 15) = 0;
 
 uniform vec4 eye_color : source_color = vec4(0.17, 0.89, 1.0, 1.0);
