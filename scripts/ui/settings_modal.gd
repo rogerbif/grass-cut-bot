@@ -12,6 +12,7 @@ signal modal_closed
 @onready var reset_btn: Button = $Panel/VBox/SaveSection/VBoxSave.get_node_or_null("ResetBtn") as Button
 
 @onready var support_btn: Button = $Panel/VBox/SupportSection/SupportBtn
+@onready var version_label: Label = $Panel/VBox/SupportSection.get_node_or_null("VersionLabel") as Label
 @onready var close_btn: Button = $Panel/Header/CloseBtn
 @onready var toast_label: Label = $Panel/ToastLabel
 
@@ -22,6 +23,9 @@ var _reset_confirmation_pending: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+
+	if version_label != null:
+		version_label.text = "%s • Mobile Edition" % GameVersion.get_display_name()
 
 	if SaveManager != null:
 		music_enabled = bool(SaveManager.get_setting("music_enabled", true))

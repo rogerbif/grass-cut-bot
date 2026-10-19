@@ -14,13 +14,16 @@ Este documento define os protocolos operacionais para desenvolvimento com termin
 
 ## 2. Padrão de Versionamento (Game SemVer)
 
-O projeto segue versionamento semântico adaptado para jogos móveis:
+O projeto segue versionamento semântico adaptado para jogos móveis (*Game SemVer*):
 
-$$\text{v}\text{MAJOR}.\text{MINOR}.\text{PATCH}$$
+$$\text{v}\text{MAJOR}.\text{MINOR}.\text{PATCH}-\text{STAGE}$$
 
-- **PATCH (+1):** Correções de bugs, polimento de física, ajustes cosméticos em UI e balanceamento de números.
+- **PATCH (+1):** Correções de bugs, polimento de física/shaders, ajustes visuais em UI e balanceamento de números.
 - **MINOR (+1):** Novas variedades de vegetação, novas mecânicas de corte, blocos adicionais de fases ou novos modos de jogo.
-- **MAJOR (+1):** Transição de ciclo de maturidade (MVP -> Beta -> 1.0 Release).
+- **MAJOR (+1):** Transição de ciclo de maturidade (MVP $\to$ Beta $\to$ 1.0 Release Gold Master).
+- **STAGE:** Identificador de ciclo de maturidade (`pre-alpha`, `alpha`, `beta`, `rc`, `release`).
+
+> Para diretrizes detalhadas de transição de maturidade, arquitetura da classe `GameVersion` e automação com `bump_version.gd`, consulte o documento canônico [Sistema de Versionamento](./SISTEMA_DE_VERSIONAMENTO.md).
 
 ---
 

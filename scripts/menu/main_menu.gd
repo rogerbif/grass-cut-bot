@@ -21,12 +21,16 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 @onready var tab_collection: Control = $CanvasLayer/TabViews/TabCollection
 @onready var tab_store: Control = $CanvasLayer/TabViews/TabStore
 @onready var fade_rect: ColorRect = $CanvasLayer/FadeRect
+@onready var version_badge: Label = $CanvasLayer.get_node_or_null("VersionBadge") as Label
 
 var total_levels_count: int = 3
 var island_nodes: Array[Node3D] = []
 var selected_level: int = 1
 
 func _ready() -> void:
+	if version_badge != null:
+		version_badge.text = GameVersion.get_version_string()
+
 	if fade_rect != null:
 		fade_rect.visible = true
 		fade_rect.modulate.a = 1.0

@@ -26,6 +26,8 @@ func _notification(what: int) -> void:
 func get_default_save() -> Dictionary:
 	return {
 		"version": CURRENT_SAVE_VERSION,
+		"game_version": GameVersion.get_version_string(),
+		"game_version_code": GameVersion.get_version_code(),
 		"saved_at": int(Time.get_unix_time_from_system()),
 		"settings": {
 			"music_enabled": true,
@@ -103,6 +105,10 @@ func _merge_with_defaults(loaded: Dictionary) -> Dictionary:
 
 	if loaded.has("version"):
 		merged["version"] = loaded["version"]
+	if loaded.has("game_version"):
+		merged["game_version"] = loaded["game_version"]
+	if loaded.has("game_version_code"):
+		merged["game_version_code"] = loaded["game_version_code"]
 	if loaded.has("saved_at"):
 		merged["saved_at"] = loaded["saved_at"]
 
@@ -150,6 +156,8 @@ func save_game() -> bool:
 		save_data = get_default_save()
 
 	save_data["saved_at"] = int(Time.get_unix_time_from_system())
+	save_data["game_version"] = GameVersion.get_version_string()
+	save_data["game_version_code"] = GameVersion.get_version_code()
 
 	# Sincroniza estado ativo dos singletons se existirem
 	if UpgradeManager != null:
