@@ -63,6 +63,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`006_modal_fim_de_fase_e_desativacao_lamina.md`](./006_modal_fim_de_fase_e_desativacao_lamina.md) | Botão Exclusivo de Repetir Fase e Desativação da Lâmina | Botão único "Repetir Fase 🔄" nos modais de vitória e derrota, suporte híbrido a clique e touch, e desativação total de movimento/rotação da lâmina no fim de fase. |
 | [`031_remocao_botao_editor_e_exclusao_export_apk.md`](./031_remocao_botao_editor_e_exclusao_export_apk.md) | Remoção do Botão do Editor da UI e Exclusão no Export Mobile | Remoção definitiva do botão Dev do editor e do atalho F2 em `main.gd`, com exclusão das cenas/scripts de edição no `exclude_filter` do preset Android. |
 | [`035_menu_inicial_hub_principal_com_camera_dual_e_tabs.md`](./035_menu_inicial_hub_principal_com_camera_dual_e_tabs.md) | Menu Inicial (Hub Principal) com Câmera Dual (Bot & Mapa), 4 Abas e Modal de Configurações | Tela inicial completa estilo mobile casual: diorama 3D com robô heróico, visão de mapa overworld com drag scroll vertical, 4 abas (Garage, Home, Collection, Store) e modal amplo de configurações. |
+| [`039_animacao_home_aspect_olhos_e_refinamento_hud.md`](./039_animacao_home_aspect_olhos_e_refinamento_hud.md) | Animação Autônoma na Home, Olhos LED 3:1 e Refinamento de UI | Robô com locomoção autônoma (+0.5m, ré, curvas e articulação da cabeça) no solo da Home, proporção 3:1 nos olhos sem achatamento, vão da capa inferior fechado rente à lâmina (4.5cm) e ícones da Navbar ampliados com texto rebaixado. |
 
 ---
 

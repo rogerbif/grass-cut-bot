@@ -66,19 +66,27 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
 
 Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Royal Match*), o Hub Principal é construído em formato vertical portrait ($720 \times 1280$) com iluminação tropical suave e duas perspectivas de câmera integradas:
 
-### 3.1 Câmera Dual (`scripts/menu/menu_camera.gd`)
+### 3.1 Câmera Dual e Robô Autônomo (`scripts/menu/menu_camera.gd` & `menu_bot.gd`)
 1. **Visão Bot (`BOT_VIEW` - Padrão):**
-   - Diorama 3D tropical com o robô cortador em pose de destaque heróica, flutuação procedural vertical suave (*hover bobbing*), rotação de lâmina em marcha lenta e olhar voltado frontalmente para o jogador.
+   - Diorama 3D tropical com o robô cortador assentado com a mono-wheel no solo da ilha (sem flutuação artificial).
+   - **Locomoção Autônoma:** O robô avança suavemente meio metro (+0.50m) com rotação física da roda e inclinação inercial frontal (`pitch`), faz curvas suaves exploratórias ($\pm 22^\circ$) e recua de marcha à ré para a base.
+   - **Cabeça Expressiva e Olhos de LED:** Articulação autônoma da cabeça (olhar para os lados, cima e baixo), piscar orgânico e alternância randômica de humores (`NORMAL`, `HAPPY`, `ALERT`, `WINK`, `VICTORY`).
 2. **Visão Mapa (`MAP_VIEW` - Overworld do Arquipélago):**
    - Transição suave via botão `[ 🗺️ MAP ]` para uma câmera elevada com ângulo de $55^\circ$.
    - Revela o arquipélago 3D com as 20 fases canônicas conectadas sobre o oceano, pinos com estrelas (fases concluídas), cadeados (fases futuras), robô posicionado sobre a fase atual e ilha final de nuvens com a placa *"Em breve mais fases..."*.
    - Suporte completo a rolagem vertical (*drag scroll*) com inércia e limites de amortecimento elástico.
 
-### 3.2 Barra de Navegação Inferior de 4 Abas (`BottomNavBar`)
-- **`Garage` 🔧:** Acesso direto à Oficina de Upgrades do `UpgradeManager` (Raio, Potência, Velocidade e Multiplicador).
-- **`Home` 🏠:** Tela principal com botão em destaque `"Level X ▶"` e alternância de Câmera (`MAP` / `BOT`).
-- **`Collection` 🌿:** Herbário ilustrado com as espécies da ilha (Grama Verde, Amarela, Azul, Roxa, Trigo e Flores Nobres).
-- **`Store` 🏪:** Loja de pacotes de moedas e resgate de recompensas diárias.
+### 3.2 Top Bar e Barra de Navegação Inferior (`BottomNavBar`)
+- **Top Bar do Hub:** Exibe moedas, energia e o título da fase atual ("Ilha Tropical") com alinhamento à direita (`alignment = 2`, `horizontal_alignment = 2`), encostado elegantemente junto ao botão de configurações `[⚙️]`.
+- **Barra de Navegação de 4 Abas (`BottomNavBar`):**
+  - Altura expandida para $104\text{px}$ com cantos arredondados ($r=22\text{px}$) e fundo translúcido escuro.
+  - **Ícones Grandes em Destaque:** Emojis ampliados com `font_size = 28` centralizados em nós dedicados `IconLabel`.
+  - **Legendas Rebaixadas:** Textos com `font_size = 13` rebaixados com espaçamento vertical confortável (`separation = 4`).
+  - **Abas:**
+    - `Garage` 🔧: Acesso direto à Oficina de Upgrades do `UpgradeManager` (Raio, Potência, Velocidade e Multiplicador).
+    - `Home` 🏠: Tela principal com botão em destaque `"Level X ▶"` e alternância de Câmera (`MAP` / `BOT`).
+    - `Collection` 🌿: Herbário ilustrado com as espécies da ilha (Grama Verde, Amarela, Azul, Roxa, Trigo e Flores Nobres).
+    - `Store` 🏪: Loja de pacotes de moedas e resgate de recompensas diárias.
 
 ### 3.3 Modal de Configurações (`SettingsModal`)
 - Cobre ~85% da tela com fundo translúcido escuro.

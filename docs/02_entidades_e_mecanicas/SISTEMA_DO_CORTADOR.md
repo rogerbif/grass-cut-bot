@@ -89,6 +89,9 @@ Todas as lâminas compartilham a mesma identidade visual: alcance radial idênti
 | **Tier 3** | Lâmina Estelar de Titânio | Estrela geométrica de 5 pontas (pentagrama regular) com arestas retas | $R = 1.18\text{m}$ | Níveis 5 e 6 |
 | **Tier 4** | Lâmina Estelar Hexagonal | Estrela geométrica de 6 pontas (hexagrama) com arestas retas | $R = 1.18\text{m}$ | Níveis 7+ |
 
+### Capa Protetora da Serra (`blade_container`)
+- O disco de corte é abraçado por um container protetor amarelo com interior em borracha grafite (`blade_container`), espelhado em Z via modificador `Mirror`.
+- **Calibração Cirúrgica do Vão:** A fenda interna de passagem da lâmina possui abertura de **$0.045\text{m}$** ($z = \pm 0.0225\text{m}$), abraçando a lâmina de $0.042\text{m}$ ($z = \pm 0.0210\text{m}$) com folga mecânica limpa de apenas $1.5\text{mm}$ em cima e embaixo, eliminando vazios e conferindo encaixe aerodinâmico e realista.
 
 ---
 
