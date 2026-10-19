@@ -41,14 +41,6 @@ const TERRAIN_ITEMS: Array[Dictionary] = [
 		"color": Color(0.22, 0.52, 0.58),
 		"desc": "Canto convexo voltado ao mar [R para girar]",
 		"is_auto": false
-	},
-	{
-		"id": "island_corner_in",
-		"name": "Quina Interna (Curva L)",
-		"icon": "⤵️",
-		"color": Color(0.26, 0.60, 0.42),
-		"desc": "Canto côncavo interno da ilha [R para girar]",
-		"is_auto": false
 	}
 ]
 

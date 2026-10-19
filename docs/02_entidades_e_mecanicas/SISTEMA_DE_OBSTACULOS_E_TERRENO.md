@@ -12,7 +12,6 @@ Para proporcionar uma experiência limpa, solar e convidativa, cada nível ocorr
 - **Blocos Modulares de Ilha em GLB ($0.80\text{m} \times 0.80\text{m} \times 0.36\text{m}$):**
   - Modelos 3D estilizados exportados do Blender (`assets/models/tiles/`) utilizando a paleta de texturas atlas `GRADIENT` compartilhada:
     - **Quinas Externas Arredondadas (`tile_island_corner_out.glb`):** Curvatura cilíndrica suave ($R = 0.28\text{m}$) com 6 subdivisões angulares e *smooth shading*, eliminando cantos pontudos.
-    - **Quinas Internas Côncavas (`tile_island_corner_in.glb`):** Transição em arco suave para baías e reentrâncias.
     - **Bordas Retas (`tile_island_edge.glb`):** Falésia vertical com lábio superior de grama arredondado e faixa de espuma d'água na base.
     - **Piso Central (`tile_island_center.glb` e `tile_island_dirt.glb`):** Grama esmeralda ou terra/trilha alaranjada no topo.
 - **Contenção Física Costeira Invisível (Zero Cercas):**

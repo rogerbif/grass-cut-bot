@@ -37,20 +37,6 @@ function computeTileForCell(cellKey, terrainMap) {
 	if (!hasW && hasN && hasS && hasE) return { tile_id: 'island_edge', rot: 90 };
 	if (!hasS && hasN && hasE && hasW) return { tile_id: 'island_edge', rot: 180 };
 	if (!hasE && hasN && hasS && hasW) return { tile_id: 'island_edge', rot: 270 };
-
-	// Quinas internas côncavas (diagonais)
-	if (hasN && hasS && hasE && hasW) {
-		const hasNE = terrainMap.has(`${x + 1},${z - 1}`);
-		const hasNW = terrainMap.has(`${x - 1},${z - 1}`);
-		const hasSW = terrainMap.has(`${x - 1},${z + 1}`);
-		const hasSE = terrainMap.has(`${x + 1},${z + 1}`);
-
-		if (!hasNE && hasNW && hasSW && hasSE) return { tile_id: 'island_corner_in', rot: 0 };
-		if (!hasNW && hasNE && hasSW && hasSE) return { tile_id: 'island_corner_in', rot: 90 };
-		if (!hasSW && hasNE && hasNW && hasSE) return { tile_id: 'island_corner_in', rot: 180 };
-		if (!hasSE && hasNE && hasNW && hasSW) return { tile_id: 'island_corner_in', rot: 270 };
-	}
-
 	return { tile_id: 'island_center', rot: 0 };
 }
 

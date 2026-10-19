@@ -23,9 +23,8 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
 
 - **Camada 0 — Terreno (Ilha 3D Modular com Modelos GLB):**
   - Modelos 3D estilizados em `assets/models/tiles/*.glb` integrados nas cenas `scenes/editor/tiles/`:
-    - `auto_island`: Pincel inteligente Auto-Tile (`island_autotiler.gd`) que resolve automaticamente entre `island_center`, `island_edge`, `island_corner_out` e `island_corner_in`.
+    - `auto_island`: Pincel inteligente Auto-Tile (`island_autotiler.gd`) que resolve automaticamente entre `island_center`, `island_edge` e `island_corner_out`.
     - `island_corner_out`: Canto convexo arredondado em arco cilíndrico ($R = 0.28\text{m}$) com acabamento macio (*smooth normals*).
-    - `island_corner_in`: Canto côncavo arredondado suave para reentrâncias e poços.
     - `island_edge`: Borda de falésia reta com lábio superior de grama sobreposto e espuma ciano na base.
     - `island_center`: Piso plano de grama verde esmeralda.
     - `island_dirt`: Piso plano de terra/trilha alaranjada quente.
