@@ -91,7 +91,7 @@ func _load_level_json(path: String, level_num: int) -> bool:
 			var t_id: String = String(td.get("tile_id", "island_center"))
 			var t_rot: int = int(td.get("rot", 0))
 			var cell: Vector2i = Vector2i(gx, gz)
-			occupied_cells[cell] = true
+			occupied_cells[cell] = { "tile_id": t_id, "rot": t_rot }
 			var t_node: Node3D = LevelJsonLoader.instantiate_tile_node(t_id, t_rot)
 			if t_node != null:
 				t_node.position = LevelJsonLoader.grid_to_world(gx, gz, width, height, cell_size)
