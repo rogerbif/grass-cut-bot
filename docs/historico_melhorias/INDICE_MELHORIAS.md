@@ -49,6 +49,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`033_inclusao_concept_art_cutter_bit.md`](./033_inclusao_concept_art_cutter_bit.md) | Inclusão do Concept Art Oficial do Cutter Bit na Documentação | Arquivamento do concept art oficial em alta resolução e vinculação a SISTEMA_DO_CORTADOR.md, DIRECAO_DE_ARTE_E_VISUAL.md e PROJETO_GRASS_CUT_BOT.md. |
 | [`034_criacao_20_fases_canonicas.md`](./034_criacao_20_fases_canonicas.md) | Criação das Primeiras 20 Fases Canônicas com Progressão de Dificuldade | 20 fases únicas em ilhas 3D flutuantes sem cercas com autotile, 5 tiers de maestria, introdução de trigo e flores, caminhos estreitos, labirintos rochosos e transição no HUD. |
 | [`036_olhos_led_expressoes_emocionais_cutter_bit.md`](./036_olhos_led_expressoes_emocionais_cutter_bit.md) | Olhos de LED e Sistema de Expressões Emocionais do Cutter Bit | Visor digital contínuo no Blender, atlas vetorial com 10 expressões canônicas, shader com scanlines e piscar procedural, reação a rochas em vermelho e tela desligada na pausa. |
+| [`038_correcao_largura_passagens_2_tiles_e_exclusao_tile_amarelo.md`](./038_correcao_largura_passagens_2_tiles_e_exclusao_tile_amarelo.md) | Correção de Largura Mínima de Passagem ($\ge 2$ Tiles), Exclusão do Tile Amarelo e Calibração Física | Largura mínima de 2 tiles ($1.60\text{m}$) nas 20 fases, colisor do robô otimizado para $R=0.30\text{m}$ (escala $0.62$), colisor de rocha para $R=0.36\text{m}$, e substituição definitiva do tile amarelo por gramado verde esmeralda. |
 
 ---
 

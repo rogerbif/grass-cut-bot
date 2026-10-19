@@ -108,9 +108,9 @@
 		{
 			"gx": 8,
 			"gz": 3,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 9,
@@ -178,9 +178,9 @@
 		{
 			"gx": 8,
 			"gz": 4,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 9,
@@ -248,9 +248,9 @@
 		{
 			"gx": 8,
 			"gz": 5,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 9,
@@ -318,9 +318,9 @@
 		{
 			"gx": 8,
 			"gz": 6,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 9,
@@ -388,9 +388,9 @@
 		{
 			"gx": 8,
 			"gz": 7,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 9,
@@ -458,9 +458,9 @@
 		{
 			"gx": 8,
 			"gz": 8,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 9,
@@ -612,7 +612,7 @@
 			"gx": 5,
 			"gz": 3,
 			"type": "rock",
-			"rot": 0
+			"rot": 270
 		},
 		{
 			"gx": 6,
@@ -629,71 +629,71 @@
 		{
 			"gx": 8,
 			"gz": 3,
+			"type": "grass_green",
+			"rot": 0
+		},
+		{
+			"gx": 9,
+			"gz": 3,
+			"type": "wheat",
+			"rot": 0
+		},
+		{
+			"gx": 10,
+			"gz": 3,
+			"type": "wheat",
+			"rot": 0
+		},
+		{
+			"gx": 11,
+			"gz": 3,
+			"type": "wheat",
+			"rot": 0
+		},
+		{
+			"gx": 12,
+			"gz": 3,
+			"type": "wheat",
+			"rot": 0
+		},
+		{
+			"gx": 3,
+			"gz": 4,
+			"type": "grass_green",
+			"rot": 0
+		},
+		{
+			"gx": 4,
+			"gz": 4,
+			"type": "grass_green",
+			"rot": 0
+		},
+		{
+			"gx": 5,
+			"gz": 4,
+			"type": "grass_green",
+			"rot": 0
+		},
+		{
+			"gx": 6,
+			"gz": 4,
+			"type": "grass_green",
+			"rot": 0
+		},
+		{
+			"gx": 7,
+			"gz": 4,
+			"type": "grass_green",
+			"rot": 0
+		},
+		{
+			"gx": 8,
+			"gz": 4,
 			"type": "rock",
 			"rot": 270
 		},
 		{
 			"gx": 9,
-			"gz": 3,
-			"type": "wheat",
-			"rot": 0
-		},
-		{
-			"gx": 10,
-			"gz": 3,
-			"type": "wheat",
-			"rot": 0
-		},
-		{
-			"gx": 11,
-			"gz": 3,
-			"type": "wheat",
-			"rot": 0
-		},
-		{
-			"gx": 12,
-			"gz": 3,
-			"type": "wheat",
-			"rot": 0
-		},
-		{
-			"gx": 3,
-			"gz": 4,
-			"type": "grass_green",
-			"rot": 0
-		},
-		{
-			"gx": 4,
-			"gz": 4,
-			"type": "grass_green",
-			"rot": 0
-		},
-		{
-			"gx": 5,
-			"gz": 4,
-			"type": "grass_green",
-			"rot": 0
-		},
-		{
-			"gx": 6,
-			"gz": 4,
-			"type": "grass_green",
-			"rot": 0
-		},
-		{
-			"gx": 7,
-			"gz": 4,
-			"type": "grass_green",
-			"rot": 0
-		},
-		{
-			"gx": 8,
-			"gz": 4,
-			"type": "grass_green",
-			"rot": 0
-		},
-		{
-			"gx": 9,
 			"gz": 4,
 			"type": "wheat",
 			"rot": 0
@@ -864,7 +864,7 @@
 			"gx": 8,
 			"gz": 7,
 			"type": "rock",
-			"rot": 0
+			"rot": 90
 		},
 		{
 			"gx": 9,
@@ -942,7 +942,7 @@
 			"gx": 11,
 			"gz": 8,
 			"type": "rock",
-			"rot": 0
+			"rot": 270
 		},
 		{
 			"gx": 12,

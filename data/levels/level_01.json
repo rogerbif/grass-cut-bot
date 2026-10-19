@@ -255,9 +255,9 @@
 		{
 			"gx": 6,
 			"gz": 5,
-			"tile_id": "island_dirt",
+			"tile_id": "island_center",
 			"rot": 0,
-			"auto": false
+			"auto": true
 		},
 		{
 			"gx": 7,

@@ -49,9 +49,13 @@ for (let i = 1; i <= 20; i++) {
 		allPassed = false;
 	}
 
-	// Mapeia células de terreno
+	// Mapeia células de terreno e garante ausência total do tile amarelo bugado
 	const terrainSet = new Set();
 	for (const t of terrain) {
+		if (t.tile_id === 'island_dirt') {
+			console.error(`❌ Fase ${i}: Tile amarelo bugado (island_dirt) encontrado em (${t.gx},${t.gz})!`);
+			allPassed = false;
+		}
 		terrainSet.add(`${t.gx},${t.gz}`);
 	}
 
