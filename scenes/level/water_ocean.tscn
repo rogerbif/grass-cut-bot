@@ -19,9 +19,9 @@ size = Vector2(160, 160)
 [node name="WaterOcean" type="Node3D"]
 
 [node name="SurfaceWater" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.34, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.71, 0)
 mesh = SubResource("PlaneMesh_ocean")
 
 [node name="DeepWater" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.1, 0)
 mesh = SubResource("PlaneMesh_deep")

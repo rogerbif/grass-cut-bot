@@ -78,7 +78,7 @@ func handle_camera_input(event: InputEvent, ui_has_focus: bool, mouse_over_ui: b
 
 func _process(delta: float) -> void:
 	if follow_target != null and is_instance_valid(follow_target):
-		var play_offset: Vector3 = Vector3(0.0, 11.0, 7.5)
+		var play_offset: Vector3 = Vector3(0.0, 7.2, 8.5)
 		var desired_pos: Vector3 = follow_target.global_position + play_offset
 		global_position = global_position.lerp(desired_pos, clampf(8.0 * delta, 0.0, 1.0))
 		look_at_from_position(global_position, follow_target.global_position, Vector3.UP)
@@ -110,7 +110,7 @@ func _process(delta: float) -> void:
 
 func _update_camera_transform(delta: float) -> void:
 	current_distance = lerpf(current_distance, target_distance, clampf(12.0 * delta, 0.0, 1.0))
-	var pitch_rad: float = deg_to_rad(86.0 if is_top_down else 56.0)
+	var pitch_rad: float = deg_to_rad(86.0 if is_top_down else 42.0)
 	var offset_y: float = sin(pitch_rad) * current_distance
 	var offset_z: float = cos(pitch_rad) * current_distance
 	var cam_pos: Vector3 = focus_point + Vector3(0.0, offset_y, offset_z)

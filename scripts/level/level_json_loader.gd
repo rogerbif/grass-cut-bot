@@ -80,21 +80,13 @@ static func build_coastal_colliders_and_foam(
 	height: int,
 	cell_size: float = DEFAULT_CELL_SIZE
 ) -> void:
-	# Garante contenção física invisível estanque (Layer 1) e espuma costeira
+	# Garante contenção física invisível estanque (Layer 1)
 	# em todas as faces onde um bloco de ilha faz fronteira com a água (vazio).
-	var foam_mat: StandardMaterial3D = StandardMaterial3D.new()
-	foam_mat.roughness = 0.85
-	foam_mat.albedo_color = Color(0.55, 0.86, 0.94, 1.0)
-
-	var lip_mat: StandardMaterial3D = StandardMaterial3D.new()
-	lip_mat.roughness = 0.92
-	lip_mat.albedo_color = Color(0.26, 0.54, 0.20, 1.0)
-
 	var dirs: Array[Dictionary] = [
-		{ "offset": Vector2i(0, -1), "pos": Vector3(0.0, 0.45, -cell_size * 0.48), "size": Vector3(cell_size, 0.9, 0.06), "foam_pos": Vector3(0.0, -0.328, -cell_size * 0.53), "foam_size": Vector3(cell_size + 0.08, 0.02, 0.14), "lip_pos": Vector3(0.0, -0.035, -cell_size * 0.46), "lip_size": Vector3(cell_size, 0.05, 0.07) },
-		{ "offset": Vector2i(0, 1),  "pos": Vector3(0.0, 0.45,  cell_size * 0.48), "size": Vector3(cell_size, 0.9, 0.06), "foam_pos": Vector3(0.0, -0.328,  cell_size * 0.53), "foam_size": Vector3(cell_size + 0.08, 0.02, 0.14), "lip_pos": Vector3(0.0, -0.035,  cell_size * 0.46), "lip_size": Vector3(cell_size, 0.05, 0.07) },
-		{ "offset": Vector2i(1, 0),  "pos": Vector3( cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 0.9, cell_size), "foam_pos": Vector3( cell_size * 0.53, -0.328, 0.0), "foam_size": Vector3(0.14, 0.02, cell_size + 0.08), "lip_pos": Vector3( cell_size * 0.46, -0.035, 0.0), "lip_size": Vector3(0.07, 0.05, cell_size) },
-		{ "offset": Vector2i(-1, 0), "pos": Vector3(-cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 0.9, cell_size), "foam_pos": Vector3(-cell_size * 0.53, -0.328, 0.0), "foam_size": Vector3(0.14, 0.02, cell_size + 0.08), "lip_pos": Vector3(-cell_size * 0.46, -0.035, 0.0), "lip_size": Vector3(0.07, 0.05, cell_size) }
+		{ "offset": Vector2i(0, -1), "pos": Vector3(0.0, 0.45, -cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06) },
+		{ "offset": Vector2i(0, 1),  "pos": Vector3(0.0, 0.45,  cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06) },
+		{ "offset": Vector2i(1, 0),  "pos": Vector3( cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size) },
+		{ "offset": Vector2i(-1, 0), "pos": Vector3(-cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size) }
 	]
 
 	for cell_key in occupied_cells:
@@ -111,20 +103,3 @@ static func build_coastal_colliders_and_foam(
 				col.position = cell_world + (d["pos"] as Vector3)
 				parent_body.add_child(col)
 
-				# Espuma costeira contínua na linha d'água
-				var foam_mesh_inst: MeshInstance3D = MeshInstance3D.new()
-				var foam_box: BoxMesh = BoxMesh.new()
-				foam_box.size = d["foam_size"] as Vector3
-				foam_box.material = foam_mat
-				foam_mesh_inst.mesh = foam_box
-				foam_mesh_inst.position = cell_world + (d["foam_pos"] as Vector3)
-				parent_body.add_child(foam_mesh_inst)
-
-				# Borda de acabamento gramado no topo da falésia
-				var lip_mesh_inst: MeshInstance3D = MeshInstance3D.new()
-				var lip_box: BoxMesh = BoxMesh.new()
-				lip_box.size = d["lip_size"] as Vector3
-				lip_box.material = lip_mat
-				lip_mesh_inst.mesh = lip_box
-				lip_mesh_inst.position = cell_world + (d["lip_pos"] as Vector3)
-				parent_body.add_child(lip_mesh_inst)

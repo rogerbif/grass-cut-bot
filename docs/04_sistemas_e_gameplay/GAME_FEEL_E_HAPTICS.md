@@ -29,9 +29,9 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 ## 3. Câmera Isométrica Elevada com Translação Pura (X e Z)
 
 - **Posicionamento e Orientação Fixa:**
-  - Câmera 3D em perspectiva inclinada com ângulo zenital elevado ($Y = +11.0\text{m}$, $Z = +7.5\text{m}$ relativo ao cortador).
+  - Câmera 3D em perspectiva isométrica clássica ($Y = +7.2\text{m}$, $Z = +8.5\text{m}$ relativo ao cortador, resultando em inclinação de pitch de $40.2^\circ$).
   - **Rotação Travada:** A orientação angular é fixada estritamente no `_ready()` (sem chamada de `look_at()` no `_process()`), eliminando qualquer oscilação ou giro dinâmico quando o cortador manobra.
-  - FOV de $48^\circ$, proporcionando excelente amplitude e profundidade da ilha sem distorção excessiva de perspectiva em telas verticais (Portrait).
+  - FOV de $48^\circ$, proporcionando excelente amplitude, destaque vertical para as falésias de terra marrom e profundidade da ilha sem distorção excessiva de perspectiva em telas verticais (Portrait).
 - **Amortecimento com Interpolação Linear (`lerp`) Exclusivo em X e Z:**
   - A câmera translada suavemente acompanhando a coordenada do cortador apenas nos eixos $X$ e $Z$ com `follow_speed = 8.0 * delta`, mantendo a altura $Y$ constante e a imagem perfeitamente estável.
 - **Camera Shake Procedural Translacional:**
