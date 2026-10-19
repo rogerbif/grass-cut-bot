@@ -1,0 +1,94 @@
+[gd_scene load_steps=10 format=3 uid="uid://icon_photo_studio_01"]
+
+[ext_resource type="Script" path="res://scripts/tools/take_icon_photo.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/icon_backdrop.gdshader" id="2_backdrop_shader"]
+[ext_resource type="PackedScene" uid="uid://menu_bot_scene_01" path="res://scenes/menu/menu_bot.tscn" id="3_menu_bot"]
+[ext_resource type="PackedScene" uid="uid://grass_green_01" path="res://scenes/plants/grass_green.tscn" id="4_grass"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_backdrop"]
+render_priority = -1
+shader = ExtResource("2_backdrop_shader")
+shader_parameter/sun_color = Color(0.65, 0.95, 1, 1)
+shader_parameter/sky_color = Color(0.15, 0.65, 0.92, 1)
+shader_parameter/deep_blue = Color(0.02, 0.32, 0.65, 1)
+shader_parameter/sun_center = Vector2(0.5, 0.56)
+
+[sub_resource type="QuadMesh" id="QuadMesh_backdrop"]
+material = SubResource("ShaderMaterial_backdrop")
+size = Vector2(8, 8)
+
+[sub_resource type="Environment" id="Environment_icon"]
+background_mode = 1
+background_color = Color(0.12, 0.58, 0.85, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.92, 0.98, 1)
+ambient_light_energy = 0.8
+tonemap_mode = 2
+tonemap_exposure = 1.05
+glow_enabled = true
+glow_intensity = 0.5
+glow_bloom = 0.12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_turf"]
+roughness = 0.92
+albedo_color = Color(0.24, 0.72, 0.32, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
+material = SubResource("StandardMaterial3D_turf")
+top_radius = 2.0
+bottom_radius = 2.2
+height = 0.5
+radial_segments = 48
+
+[node name="IconPhotoStudio" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_icon")
+
+[node name="BackdropMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -2.2)
+mesh = SubResource("QuadMesh_backdrop")
+
+[node name="KeySunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.286788, 0.409576, 0, 0.819152, 0.573576, -0.5, -0.496732, 0.709406, 0, 8, 0)
+light_color = Color(1, 0.97, 0.9, 1)
+light_energy = 1.45
+shadow_enabled = true
+directional_shadow_max_distance = 10.0
+directional_shadow_bias = 0.04
+
+[node name="RimBackLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.707107, 0.353553, -0.612372, 0, 0.866025, 0.5, 0.707107, 0.353553, -0.612372, 0, 8, 0)
+light_color = Color(0.9, 0.98, 1, 1)
+light_energy = 1.2
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 0, -5, 0)
+light_color = Color(0.4, 0.82, 1, 1)
+light_energy = 0.55
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="Grass1" parent="." instance=ExtResource("4_grass")]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, -0.65, 0, 0.25)
+
+[node name="Grass2" parent="." instance=ExtResource("4_grass")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0.65, 0, 0.3)
+
+[node name="Grass3" parent="." instance=ExtResource("4_grass")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -0.45, 0, -0.4)
+
+[node name="Grass4" parent="." instance=ExtResource("4_grass")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0.5, 0, -0.35)
+
+[node name="MenuBot" parent="." instance=ExtResource("3_menu_bot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.999048, -0.007584, 0.042958, 0, 0.984808, 0.173648, -0.043619, -0.173483, 0.98387, 0.06, 0.56, 1.25)
+fov = 32.0
+near = 0.05
+far = 20.0
