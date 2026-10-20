@@ -6,6 +6,7 @@ extends Node
 ##         G = liga/desliga toda a vegetação (baseline sem grama)
 ##         S = liga/desliga sombras
 ##         R = alterna scaling_3d (1.0 / 0.85 / 0.7 / 0.5)
+##         V = liga/desliga VSync (desligado mostra o FPS máximo real, sem o teto do monitor)
 
 const PerfProbeScript = preload("res://scripts/tools/perf_probe.gd")
 const MAIN_SCENE: PackedScene = preload("res://scenes/main.tscn")
@@ -80,6 +81,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			var light: DirectionalLight3D = _main_node.get_node_or_null("DirectionalLight3D") as DirectionalLight3D
 			if light != null:
 				light.shadow_enabled = not light.shadow_enabled
+		KEY_V:
+			var vs: int = DisplayServer.window_get_vsync_mode()
+			if vs == DisplayServer.VSYNC_DISABLED:
+				DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
+			else:
+				DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 		KEY_R:
 			_scale_index = (_scale_index + 1) % SCALE_STEPS.size()
 			get_viewport().scaling_3d_scale = SCALE_STEPS[_scale_index]
@@ -100,7 +107,7 @@ func _refresh_extra() -> void:
 		return
 	var light: DirectionalLight3D = _main_node.get_node_or_null("DirectionalLight3D") as DirectionalLight3D
 	var shadows: bool = light != null and light.shadow_enabled
-	_probe.set("extra_text", "Fase %d | load %.0f ms | tufos %d | dens 1/%d | veg %s | sombra %s | escala %.2f\n[1/2/3] densidade [G] grama [S] sombra [R] escala 3D" % [
+	_probe.set("extra_text", "Fase %d | load %.0f ms | tufos %d | dens 1/%d | veg %s | sombra %s | escala %.2f\n[1/2/3] densidade [G] grama [S] sombra [R] escala 3D [V] vsync" % [
 		test_level, _load_ms, _plants.size(), _density_step,
 		"ON" if _vegetation_on else "OFF", "ON" if shadows else "OFF", SCALE_STEPS[_scale_index]
 	])
