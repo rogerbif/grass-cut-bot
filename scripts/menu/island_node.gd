@@ -11,6 +11,17 @@ const TILE_MODELS: Dictionary = {
 	"island_end": preload("res://assets/models/tiles/tile_island_end.glb")
 }
 
+const GRASS_MODEL: PackedScene = preload("res://assets/models/grass_01.glb")
+const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
+const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
+const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
+
+static var _mat_grass_green: StandardMaterial3D = null
+static var _mat_grass_yellow: StandardMaterial3D = null
+static var _mat_grass_blue: StandardMaterial3D = null
+static var _mat_grass_purple: StandardMaterial3D = null
+static var _mat_rock: StandardMaterial3D = null
+
 @export var level_number: int = 1
 @export var is_unlocked: bool = true
 @export var stars_earned: int = 0 # 0 a 3
@@ -38,6 +49,76 @@ func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	stars_earned = stars
 	build_miniature_from_json(lvl)
 	update_visuals()
+
+static func _init_materials() -> void:
+	if _mat_grass_green == null:
+		_mat_grass_green = StandardMaterial3D.new()
+		_mat_grass_green.albedo_color = Color(0.25, 0.72, 0.28, 1.0)
+		_mat_grass_green.roughness = 0.92
+
+		_mat_grass_yellow = StandardMaterial3D.new()
+		_mat_grass_yellow.albedo_color = Color(0.92, 0.82, 0.22, 1.0)
+		_mat_grass_yellow.roughness = 0.92
+
+		_mat_grass_blue = StandardMaterial3D.new()
+		_mat_grass_blue.albedo_color = Color(0.24, 0.58, 0.88, 1.0)
+		_mat_grass_blue.roughness = 0.92
+
+		_mat_grass_purple = StandardMaterial3D.new()
+		_mat_grass_purple.albedo_color = Color(0.68, 0.35, 0.85, 1.0)
+		_mat_grass_purple.roughness = 0.92
+
+		_mat_rock = StandardMaterial3D.new()
+		_mat_rock.albedo_color = Color(0.42, 0.46, 0.50, 1.0)
+		_mat_rock.roughness = 0.95
+
+static func _clear_node_owners(node: Node) -> void:
+	node.owner = null
+	for c in node.get_children():
+		_clear_node_owners(c)
+
+static func _strip_visual_mesh(inst: Node3D) -> Node3D:
+	var visual: Node3D = inst.get_node_or_null("VisualMesh") as Node3D
+	if visual != null:
+		inst.remove_child(visual)
+		_clear_node_owners(visual)
+		inst.queue_free()
+		return visual
+	_clear_node_owners(inst)
+	return inst
+
+static func create_miniature_object(otype: String) -> Node3D:
+	_init_materials()
+	if otype == "rock":
+		var r_inst: Node3D = ROCK_MODEL.instantiate() as Node3D
+		for child in r_inst.get_children():
+			if child is MeshInstance3D:
+				(child as MeshInstance3D).material_override = _mat_rock
+		return r_inst
+
+	elif otype == "wheat":
+		var w_inst: Node3D = WHEAT_SCENE.instantiate() as Node3D
+		return _strip_visual_mesh(w_inst)
+
+	elif otype == "flower":
+		var f_inst: Node3D = FLOWER_SCENE.instantiate() as Node3D
+		return _strip_visual_mesh(f_inst)
+
+	else:
+		# grass_green, grass_yellow, grass_blue, grass_purple (ou fallback)
+		var g_inst: Node3D = GRASS_MODEL.instantiate() as Node3D
+		var target_mat: StandardMaterial3D = _mat_grass_green
+		if otype == "grass_yellow":
+			target_mat = _mat_grass_yellow
+		elif otype == "grass_blue":
+			target_mat = _mat_grass_blue
+		elif otype == "grass_purple":
+			target_mat = _mat_grass_purple
+
+		for child in g_inst.get_children():
+			if child is MeshInstance3D:
+				(child as MeshInstance3D).material_override = target_mat
+		return g_inst
 
 func build_miniature_from_json(lvl: int) -> void:
 	if miniature_container == null:
@@ -114,6 +195,28 @@ func build_miniature_from_json(lvl: int) -> void:
 
 		miniature_container.add_child(tile_inst)
 
+	# Instancia os elementos/objetos sobre a ilha (vegetação, rochas, trigo, flores)
+	var objects_arr: Array = data.get("objects", []) as Array
+	for obj_item in objects_arr:
+		if not (obj_item is Dictionary):
+			continue
+		var od: Dictionary = obj_item as Dictionary
+		var ogx: int = int(od.get("gx", 0))
+		var ogz: int = int(od.get("gz", 0))
+		var otype: String = String(od.get("type", "grass_green"))
+		var orot: int = int(od.get("rot", 0))
+
+		var visual: Node3D = create_miniature_object(otype)
+		if visual == null:
+			continue
+
+		var local_ox: float = offset_x + float(ogx) * cell_size
+		var local_oz: float = offset_z + float(ogz) * cell_size
+		visual.position = Vector3(local_ox, 0.0, local_oz)
+		visual.rotation_degrees.y = float(orot)
+
+		miniature_container.add_child(visual)
+
 func update_visuals() -> void:
 	if level_label == null or stars_label == null:
 		return
@@ -158,7 +261,7 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 
 	if is_map_mode:
 		# Na visão do mapa: repousa sobre o chão voltada para cima (-58° para a câmera)
-		target_pos = Vector3(0.0, 0.08, 0.5)
+		target_pos = Vector3(0.0, 0.18, 0.5)
 		target_rot = Vector3(-58.0, 0.0, 0.0)
 		target_vis = true
 		if plaque_post != null:
@@ -172,7 +275,7 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 			if plaque_post != null:
 				plaque_post.visible = true # Estaca visível fincada no chão
 		else:
-			target_pos = Vector3(0.0, 0.08, 0.5)
+			target_pos = Vector3(0.0, 0.18, 0.5)
 			target_rot = Vector3(-58.0, 0.0, 0.0)
 			target_vis = false # Oculta placas de ilhas de fundo para foco total no robô
 

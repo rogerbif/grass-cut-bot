@@ -84,9 +84,9 @@ func _input(event: InputEvent) -> void:
 			else:
 				_end_drag()
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
-			snap_to_level(current_snapped_level - 1)
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:
 			snap_to_level(current_snapped_level + 1)
+		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:
+			snap_to_level(current_snapped_level - 1)
 
 	elif event is InputEventMouseMotion and is_dragging:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
@@ -116,14 +116,14 @@ func _process_drag(current_screen_pos: Vector2) -> void:
 	var dt: float = maxf(0.001, now - last_touch_time)
 	var delta_y: float = current_screen_pos.y - last_touch_pos.y
 
-	# Cálculo de tracking 1:1 com o deslocamento do dedo
+	# Cálculo de tracking 1:1 rigoroso com o dedo no plano do solo
 	var ratio: float = get_pixel_to_ground_ratio()
-	var movement_z: float = delta_y * ratio
+	var movement_z: float = -delta_y * ratio
 
 	target_scroll_z += movement_z
 	current_scroll_z = clampf(target_scroll_z, min_z - 1.5, max_z + 1.5)
 
-	# Atualiza estimativa de velocidade de flick
+	# Atualiza estimativa de velocidade de flick (positivo = puxada para cima / avanço)
 	var instant_v: float = movement_z / dt
 	flick_velocity = lerp(flick_velocity, instant_v, 0.45)
 
@@ -137,7 +137,7 @@ func _end_drag() -> void:
 
 	# Detecção de gesto rápido (swap / flick) para próxima ou anterior
 	if abs(flick_velocity) > swipe_velocity_threshold:
-		if flick_velocity < 0: # Deslizada para cima -> avança para próxima fase
+		if flick_velocity > 0: # Deslizada para cima -> avança para próxima fase
 			snap_to_level(current_snapped_level + 1)
 		else: # Deslizada para baixo -> retorna para fase anterior
 			snap_to_level(current_snapped_level - 1)
