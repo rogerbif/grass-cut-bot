@@ -23,15 +23,16 @@ var _density_step: int = 1
 var _vegetation_on: bool = true
 var _scale_index: int = 0
 
-func _enter_tree() -> void:
-	# Define a fase de teste ANTES do LevelController (filho de main.tscn) ficar pronto.
+func _ready() -> void:
+	# Quando esta cena é a principal, os _ready dos autoloads (SaveManager restaura a última fase)
+	# rodam depois do _enter_tree dela. Por isso a fase de teste é definida aqui, ANTES de
+	# instanciar main.tscn (cujo LevelController lê GameManager.current_level no seu _ready).
 	if GameManager != null:
 		_prev_current_level = GameManager.current_level
 		GameManager.current_level = test_level
 	if SaveManager != null:
 		_prev_last_played = SaveManager.get_last_played_level()
 
-func _ready() -> void:
 	var t0: int = Time.get_ticks_usec()
 	_main_node = MAIN_SCENE.instantiate() as Node3D
 	add_child(_main_node)
