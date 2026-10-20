@@ -38,6 +38,7 @@ static var _mat_rock: StandardMaterial3D = null
 
 var is_map_mode: bool = true
 var is_active_island: bool = false
+var map_plaque_pos: Vector3 = Vector3(1.3, 0.18, 0.9)
 var plaque_tween: Tween = null
 
 func _ready() -> void:
@@ -49,6 +50,7 @@ func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	stars_earned = stars
 	build_miniature_from_json(lvl)
 	update_visuals()
+	set_view_mode(is_map_mode, is_active_island, false)
 
 static func _init_materials() -> void:
 	if _mat_grass_green == null:
@@ -171,6 +173,11 @@ func build_miniature_from_json(lvl: int) -> void:
 	# Escala canônica da miniatura de 0.38x
 	miniature_container.scale = Vector3(0.38, 0.38, 0.38)
 
+	var half_w: float = (float(width) * cell_size * 0.38) / 2.0
+	var half_h: float = (float(height) * cell_size * 0.38) / 2.0
+	# Posiciona a placa no canto inferior direito da ilha (área demarcada)
+	map_plaque_pos = Vector3(half_w - 0.70, 0.18, half_h - 0.45)
+
 	for item in terrain_arr:
 		if not (item is Dictionary):
 			continue
@@ -260,8 +267,8 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 	var target_vis: bool = true
 
 	if is_map_mode:
-		# Na visão do mapa: repousa sobre o chão voltada para cima (-58° para a câmera)
-		target_pos = Vector3(0.0, 0.18, 0.5)
+		# Na visão do mapa: repousa no canto inferior direito sobre o chão voltada para cima (-58° para a câmera)
+		target_pos = map_plaque_pos
 		target_rot = Vector3(-58.0, 0.0, 0.0)
 		target_vis = true
 		if plaque_post != null:
@@ -275,7 +282,7 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 			if plaque_post != null:
 				plaque_post.visible = true # Estaca visível fincada no chão
 		else:
-			target_pos = Vector3(0.0, 0.18, 0.5)
+			target_pos = map_plaque_pos
 			target_rot = Vector3(-58.0, 0.0, 0.0)
 			target_vis = false # Oculta placas de ilhas de fundo para foco total no robô
 

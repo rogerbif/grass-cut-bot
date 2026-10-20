@@ -18,7 +18,7 @@ Esta melhoria refinou expressivamente a experiência visual e a usabilidade do M
    - Rodinha do mouse alinhada ao visual do mapa: rolar para cima avança para as próximas fases (ao norte); rolar para baixo recua para as fases anteriores (ao sul).
    - Preservados os gestos de swipe rápido (flick) para avançar/voltar de fase e o snap magnético suave.
 4. **Placa Informativa Adaptativa:** A placa de madeira com o número do estágio e as estrelas (⭐) adapta sua pose e orientação conforme o modo de câmera ativo:
-   - **Na Visão Mapa (`MAP_VIEW`):** A placa repousa deitada a $Y=0.18\text{m}$ sobre o solo da ilha, inclinada em $-58^\circ$ (perpendicular ao vetor focal da câmera aérea), permitindo leitura límpida sem obstruir a visão da geometria do mapa.
+   - **Na Visão Mapa (`MAP_VIEW`):** A placa repousa deitada a $Y=0.18\text{m}$ no canto inferior direito de cada ilha ($+X$, $+Z$, calculado pelas dimensões da fase), inclinada em $-58^\circ$ (perpendicular ao vetor focal da câmera aérea), desobstruindo o centro da fase e permitindo leitura límpida sem ocultar a vegetação e o layout geométrico.
    - **Na Visão Robô (`BOT_VIEW`):** A placa ergue-se em pé através de sua estaca fincada no chão, posicionada à frente e à esquerda do robô (`x = -1.15m`, `z = 0.85m`, rotação $15^\circ$), criando uma composição de diorama tridimensional orgânica.
 
 ---
