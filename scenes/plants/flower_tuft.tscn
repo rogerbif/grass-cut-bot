@@ -5,8 +5,8 @@
 [ext_resource type="Material" uid="uid://interactive_flower_mat_01" path="res://shaders/interactive_flower_material.tres" id="3_flower_mat"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_area"]
-height = 0.75
-radius = 0.35
+height = 0.55
+radius = 0.18
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_stem"]
 material = ExtResource("2_grass_mat")
@@ -47,7 +47,7 @@ collision_layer = 4
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
 shape = SubResource("CylinderShape3D_area")
 
 [node name="VisualMesh" type="Node3D" parent="."]

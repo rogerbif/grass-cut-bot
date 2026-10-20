@@ -16,19 +16,21 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ## 2. Estrutura do Nó de Vegetação (`plant.tscn`)
 
-Cada tufo possui a seguinte árvore:
+Each tufo possui a seguinte árvore:
 ```
 Tuft (Node3D - grupo "plants", script plant.gd)
 ├── Area3D (Layer 4, Mask 0, grupo "vegetation")
-│   └── CollisionShape3D (Cylinder r=0.35m, h=0.6m)
+│   └── CollisionShape3D (Cylinder r=0.18m, h=0.45m)
 ├── VisualMesh (Node3D - malha Low Poly das folhas/espigas)
-└── CutParticles (CPUParticles3D - emissão explosiva em arco)
+└── CutParticles (CPUParticles3D - emissão explosiva em arco, r=0.18m)
 ```
 
-- **Estrutura 3D Estilizada Low Poly:**
+- **Estrutura 3D Estilizada Low Poly e Gramado Condensado:**
   - O tufo de grama básico (`grass_tuft.tscn`) utiliza o modelo 3D oficial `assets/models/grass_01.glb` (baseado na malha de 112 vértices e 80 faces `grass_varien_4_grass_0`).
-  - O nó visual contém a cena instanciada `Grass01`, com suporte dinâmico no `plant.gd` via enum `@export var grass_variation: GrassVariation` (`GREEN`, `YELLOW`, `BLUE`, `PURPLE`, `RANDOM`), permitindo rápida personalização de biomas mantendo o verde clássico por padrão.
-  - No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma calibração proporcional de escala: altura compacta no eixo Y (`0.70` a `0.85`) e cobertura horizontal no plano XZ (`0.95` a `1.10`), garantindo que as folhas vizinhas se entrelacem sem nenhuma folga livre na grade padrão ($0.80\text{m}$), criando um tapete contínuo, farto e sem espaços vazios.
+  - **Calibração de Escala Condensada:** No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma calibração proporcional precisa: altura compacta no eixo Y reduzida em 25% (`0.53` a `0.64`) e diâmetro horizontal reduzido em 50% (`0.40` a `0.45m`).
+  - **Grade de Célula Reduzida (0.40m):** A célula de vegetação passa a medir exatamente $0.40\text{m} \times 0.40\text{m}$, coincidindo com o diâmetro do tufo. Cada bloco de terreno de $0.80\text{m} \times 0.80\text{m}$ acomoda perfeitamente uma subgrade $2 \times 2$ com 4 células de vegetação, garantindo um gramado contínuo, farto, denso e condensado.
+  - **Flores e Trigo em Slots de Tufo:** Flores e trigo ocupam 1 célula de $0.40\text{m}$ na mesma cota do tufo de grama, com as demais células do bloco preenchidas por grama.
+  - **Rochas Livres de Grama:** As rochas mantêm seu tamanho físico original (raio $0.36\text{m}$) e onde há rocha nenhuma grama é gerada sob ou dentro da sua área.
 
 ---
 

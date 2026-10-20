@@ -239,6 +239,15 @@ func build_miniature_from_json(lvl: int) -> void:
 
 	# Instancia os elementos/objetos sobre a ilha (vegetação, rochas, trigo, flores)
 	var objects_arr: Array = data.get("objects", []) as Array
+
+	# Subgrade 2x2 de células de 0.40m por bloco de terreno de 0.80m
+	var sub_offsets: Array[Vector3] = [
+		Vector3(-0.20, 0.0, -0.20),
+		Vector3(0.20, 0.0, -0.20),
+		Vector3(-0.20, 0.0, 0.20),
+		Vector3(0.20, 0.0, 0.20)
+	]
+
 	for obj_item in objects_arr:
 		if not (obj_item is Dictionary):
 			continue
@@ -248,29 +257,64 @@ func build_miniature_from_json(lvl: int) -> void:
 		var otype: String = String(od.get("type", "grass_green"))
 		var orot: int = int(od.get("rot", 0))
 
-		var visual: Node3D = create_miniature_object(otype)
-		if visual == null:
-			continue
-
 		var local_ox: float = offset_x + float(ogx) * cell_size
 		var local_oz: float = offset_z + float(ogz) * cell_size
-		visual.position = Vector3(local_ox, 0.0, local_oz)
+		var base_pos: Vector3 = Vector3(local_ox, 0.0, local_oz)
 
-		# Entrelaçamento orgânico idêntico ao gameplay para gramas
-		if otype.begins_with("grass_"):
-			var seed_val: float = float(ogx * 73 + ogz * 19)
-			visual.rotation.y = fmod(seed_val, TAU)
-			var s_y: float = 0.72 + fmod(seed_val * 0.13, 0.13)
-			var s_xz: float = 0.96 + fmod(seed_val * 0.27, 0.14)
-			visual.scale = Vector3(s_xz, s_y, s_xz)
+		if otype == "rock":
+			# Rocha no tamanho original sem nenhuma grama naquele bloco
+			var r_visual: Node3D = create_miniature_object("rock")
+			if r_visual != null:
+				r_visual.position = base_pos
+				r_visual.rotation_degrees.y = float(orot)
+				miniature_container.add_child(r_visual)
+			continue
 
-			for child in visual.get_children():
-				if child is MeshInstance3D:
-					grass_mesh_records.append({"mesh": child, "type": otype})
+		elif otype == "flower" or otype == "wheat":
+			# Flor ou trigo ocupa uma das células de 0.40m
+			var p_visual: Node3D = create_miniature_object(otype)
+			if p_visual != null:
+				p_visual.position = base_pos + sub_offsets[0]
+				p_visual.rotation_degrees.y = float(orot)
+				p_visual.scale = Vector3(0.50, 0.50, 0.50)
+				miniature_container.add_child(p_visual)
+
+			# Preenche as outras 3 subcélulas de 0.40m com grama verde condensada
+			for s_idx in range(1, 4):
+				var g_sub: Node3D = create_miniature_object("grass_green")
+				if g_sub != null:
+					g_sub.position = base_pos + sub_offsets[s_idx]
+					var sub_seed: float = float(ogx * 73 + ogz * 19 + s_idx * 31)
+					g_sub.rotation.y = fmod(sub_seed, TAU)
+					var s_y: float = (0.72 + fmod(sub_seed * 0.13, 0.13)) * 0.75
+					var s_xz: float = (0.96 + fmod(sub_seed * 0.27, 0.14)) * 0.42
+					g_sub.scale = Vector3(s_xz, s_y, s_xz)
+					for child in g_sub.get_children():
+						if child is MeshInstance3D:
+							grass_mesh_records.append({"mesh": child, "type": "grass_green"})
+					miniature_container.add_child(g_sub)
+
+		elif otype.begins_with("grass_"):
+			# Preenche as 4 células de 0.40m com grama condensada
+			for s_idx in range(4):
+				var g_visual: Node3D = create_miniature_object(otype)
+				if g_visual != null:
+					g_visual.position = base_pos + sub_offsets[s_idx]
+					var sub_seed: float = float(ogx * 73 + ogz * 19 + s_idx * 31)
+					g_visual.rotation.y = fmod(sub_seed, TAU)
+					var s_y: float = (0.72 + fmod(sub_seed * 0.13, 0.13)) * 0.75
+					var s_xz: float = (0.96 + fmod(sub_seed * 0.27, 0.14)) * 0.42
+					g_visual.scale = Vector3(s_xz, s_y, s_xz)
+					for child in g_visual.get_children():
+						if child is MeshInstance3D:
+							grass_mesh_records.append({"mesh": child, "type": otype})
+					miniature_container.add_child(g_visual)
 		else:
-			visual.rotation_degrees.y = float(orot)
-
-		miniature_container.add_child(visual)
+			var visual: Node3D = create_miniature_object(otype)
+			if visual != null:
+				visual.position = base_pos
+				visual.rotation_degrees.y = float(orot)
+				miniature_container.add_child(visual)
 
 	# Atualiza o estado da animação de vento conforme o modo e atividade da ilha
 	set_grass_animated(not is_map_mode and is_active_island)

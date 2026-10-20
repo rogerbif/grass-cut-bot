@@ -26,14 +26,15 @@ func _ready() -> void:
 	_apply_visual_material(visual_mesh)
 
 	if type == PlantType.GRASS:
-		# Padrão de gramado contínuo: diâmetro horizontal (X/Z) calibrado (0.95 ~ 1.10m)
-		# para cobrir e entrelaçar com os tufos adjacentes na grade padrão (0.80m),
-		# eliminando qualquer folga livre entre as folhas e mantendo altura compacta (0.70 ~ 0.85m).
-		var scale_y: float = randf_range(0.70, 0.85)
-		var scale_xz: float = randf_range(0.95, 1.10)
+		# Padrão de gramado condensado: diâmetro horizontal (X/Z) calibrado em 50% (0.40 ~ 0.45m)
+		# para corresponder ao diâmetro exato da célula reduzida (0.40m),
+		# eliminando qualquer folga livre entre as folhas e mantendo altura compacta (-25%: 0.53 ~ 0.64m).
+		var scale_y: float = randf_range(0.53, 0.64)
+		var scale_xz: float = randf_range(0.40, 0.45)
 		visual_mesh.scale = Vector3(scale_xz, scale_y, scale_xz)
 	else:
-		var random_scale: float = randf_range(0.75, 0.95)
+		# Flores e trigo proporcionais ao slot de célula de 0.40m
+		var random_scale: float = randf_range(0.48, 0.58)
 		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 
 func _apply_visual_material(target: Node) -> void:

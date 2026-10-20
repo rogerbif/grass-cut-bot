@@ -2,8 +2,8 @@ extends Node3D
 
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 
-# Espaçamento canônico padrão de vegetação: elimina folga livre entre folhas adjacentes
-const DEFAULT_VEGETATION_SPACING: float = 0.80
+# Espaçamento canônico padrão de vegetação: 0.40m para corresponder ao diâmetro do tufo
+const DEFAULT_VEGETATION_SPACING: float = 0.40
 
 @export var grass_scene: PackedScene = preload("res://scenes/plants/grass_tuft.tscn")
 @export var wheat_scene: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
@@ -106,6 +106,15 @@ func _load_level_json(path: String, level_num: int) -> bool:
 
 	var goals: Dictionary = {}
 	var objects_arr: Array = data.get("objects", []) as Array
+
+	# Subgrade 2x2 de células de 0.40m por bloco de terreno de 0.80m
+	var sub_offsets: Array[Vector3] = [
+		Vector3(-0.20, 0.0, -0.20),
+		Vector3(0.20, 0.0, -0.20),
+		Vector3(-0.20, 0.0, 0.20),
+		Vector3(0.20, 0.0, 0.20)
+	]
+
 	for item in objects_arr:
 		if item is Dictionary:
 			var od: Dictionary = item as Dictionary
@@ -113,17 +122,47 @@ func _load_level_json(path: String, level_num: int) -> bool:
 			var gz: int = int(od.get("gz", 0))
 			var o_type: String = String(od.get("type", ""))
 			var o_rot: int = int(od.get("rot", 0))
-			var inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
-			if inst == null:
-				continue
-			inst.position = LevelJsonLoader.grid_to_world(gx, gz, width, height, cell_size)
+			var base_pos: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, width, height, cell_size)
+
 			if o_type == "rock":
-				obstacles_container.add_child(inst)
+				var rock_inst: Node3D = LevelJsonLoader.instantiate_object_node("rock", o_rot)
+				if rock_inst != null:
+					rock_inst.position = base_pos
+					obstacles_container.add_child(rock_inst)
+				# Onde tem rocha, NENHUMA grama é gerada sob ou dentro dela
+				continue
+
+			elif o_type == "flower" or o_type == "wheat":
+				# Flor ou trigo ocupa uma das células de 0.40m
+				var plant_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
+				if plant_inst != null:
+					plant_inst.position = base_pos + sub_offsets[0]
+					plants_container.add_child(plant_inst)
+					if "plant_key" in plant_inst:
+						var p_key: String = String(plant_inst.get("plant_key"))
+						goals[p_key] = int(goals.get(p_key, 0)) + 1
+
+				# As outras 3 células do bloco recebem tufos de grama verde para manter o gramado condensado
+				for s_idx in range(1, 4):
+					var g_sub: Node3D = LevelJsonLoader.instantiate_object_node("grass_green", 0)
+					if g_sub != null:
+						g_sub.position = base_pos + sub_offsets[s_idx]
+						plants_container.add_child(g_sub)
+						if "plant_key" in g_sub:
+							var g_key: String = String(g_sub.get("plant_key"))
+							goals[g_key] = int(goals.get(g_key, 0)) + 1
+
 			else:
-				plants_container.add_child(inst)
-				if "plant_key" in inst:
-					var p_key: String = String(inst.get("plant_key"))
-					goals[p_key] = int(goals.get(p_key, 0)) + 1
+				# Tufos de grama (grass_green, grass_yellow, grass_blue, grass_purple)
+				# Preenche as 4 células de 0.40m do bloco com o tipo correspondente
+				for offset in sub_offsets:
+					var g_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
+					if g_inst != null:
+						g_inst.position = base_pos + offset
+						plants_container.add_child(g_inst)
+						if "plant_key" in g_inst:
+							var p_key: String = String(g_inst.get("plant_key"))
+							goals[p_key] = int(goals.get(p_key, 0)) + 1
 
 	var spawn_dict: Dictionary = data.get("spawn", {}) as Dictionary
 	var sp_x: int = int(spawn_dict.get("gx", int(float(width) / 2.0)))
