@@ -75,7 +75,10 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
    - **Cabeça Expressiva e Olhos de LED:** Articulação autônoma da cabeça (olhar para os lados, cima e baixo), piscar orgânico e alternância randômica de humores (`NORMAL`, `HAPPY`, `ALERT`, `WINK`, `VICTORY`).
 2. **Visão Mapa (`MAP_VIEW` - Overworld do Arquipélago):**
    - Transição suave via botão `[ 🗺️ MAP ]` para uma câmera aérea elevada com ângulo de pitch de $58^\circ$.
-   - **Janela Deslizante de 3 Ilhas (Culling Reativo):** Mostra **somente a ilha atual focada, a próxima e a anterior** ($[foco - 1, foco, foco + 1]$). Todas as outras 17 ilhas distantes são ocultadas automaticamente (`visible = false`) conforme o jogador rola o mapa.
+   - **Janela Deslizante de 3 Ilhas e Lazy Loading Inteligente:**
+     - **Carregamento Inicial sob Demanda:** No boot do menu, são construídas apenas a ilha selecionada e suas vizinhas imediatas ($[foco - 1, foco, foco + 1]$). As demais ilhas têm apenas seus metadados de dimensões lidos instantaneamente sem instanciar nós 3D, garantindo boot ultra-rápido sem travamentos.
+     - **Persistência em Memória (Sem Recarregar):** Uma vez que uma ilha é carregada via `ensure_content_loaded()`, ela **permanece viva em memória (`is_built = true`)** e nunca é destruída nem recarregada. Ao sair do campo de visão, ela é apenas ocultada (`visible = false`), eliminando qualquer engasgo ou latência ao rolar de volta.
+     - **Culling Reativo:** Mostra **somente a ilha atual focada, a próxima e a anterior** ($[foco - 1, foco, foco + 1]$). Todas as outras ilhas distantes permanecem ocultas (`visible = false`).
    - **Grama Estática (Sem Shader de Vento):** Na visão mapa, nenhuma ilha executa a animação de vento (`wind_strength = 0.0`), poupando ciclos de GPU para garantir 60 FPS estáveis mesmo com grande densidade de tufos.
    - **Ilhas em Escala Real (1:1), Grama Oficial com Shaders & Animação Seletiva de Vento:**
      - O arquipélago 3D gera as 20 fases canônicas em **escala física real ($1.0\times$)** idêntica à do gameplay, preservando as dimensões exatas de cada ilha e o robô cortador em escala $0.62\times$ (idêntico ao `Cutter`), eliminando qualquer discrepância visual ou desproporção.

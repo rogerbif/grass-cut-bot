@@ -160,6 +160,9 @@ func _detect_levels_and_build_archipelago() -> void:
 		dimensions.append(Vector2(20.0, 14.0))
 		menu_camera.set_island_waypoints(waypoints, dimensions)
 
+	# Lazy loading inicial: constrói apenas a ilha selecionada e suas vizinhas imediatas
+	_load_surrounding_islands(selected_level)
+
 	# Posiciona o robô na ilha da fase atual
 	_update_bot_position()
 
@@ -235,7 +238,12 @@ func _on_camera_view_mode_changed(is_map: bool) -> void:
 
 func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 	if not is_map:
-		# VISÃO BOT: Oculta todas as outras ilhas, renderiza exclusivamente a atual
+		# VISÃO BOT: Garante carregamento da ilha atual, oculta todas as outras
+		if selected_level >= 1 and selected_level <= island_nodes.size():
+			var active_isl: Node3D = island_nodes[selected_level - 1]
+			if active_isl != null and active_isl.has_method("ensure_content_loaded"):
+				active_isl.ensure_content_loaded()
+
 		for isl in island_nodes:
 			if isl == null:
 				continue
@@ -246,8 +254,9 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 		if clouds_end_node != null:
 			clouds_end_node.visible = false
 	else:
-		# VISÃO MAP: Mostra somente a atual, a próxima e a anterior (janela deslizante de 3 ilhas)
-		# Grama NÃO precisa animar na visão mapa
+		# VISÃO MAP: Lazy loading da atual, anterior e próxima (permanecem carregadas, apenas ocultas fora da janela)
+		_load_surrounding_islands(focal_level)
+
 		var min_vis: int = focal_level - 1
 		var max_vis: int = focal_level + 1
 		for isl in island_nodes:
@@ -260,6 +269,14 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 
 		if clouds_end_node != null:
 			clouds_end_node.visible = (focal_level >= total_levels_count - 1)
+
+func _load_surrounding_islands(focal_lvl: int) -> void:
+	var targets: Array[int] = [focal_lvl - 1, focal_lvl, focal_lvl + 1]
+	for t in targets:
+		if t >= 1 and t <= island_nodes.size():
+			var isl: Node3D = island_nodes[t - 1]
+			if isl != null and isl.has_method("ensure_content_loaded"):
+				isl.ensure_content_loaded()
 
 func _update_plaques_view_mode(is_map: bool, animated: bool = true) -> void:
 	for island in island_nodes:

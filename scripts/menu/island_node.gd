@@ -48,6 +48,7 @@ var island_dimensions: Vector2 = Vector2(12.0, 10.0)
 var map_plaque_pos: Vector3 = Vector3(4.5, 0.25, 3.5)
 var plaque_tween: Tween = null
 var grass_mesh_records: Array[Dictionary] = []
+var is_built: bool = false
 
 func _ready() -> void:
 	update_visuals()
@@ -56,8 +57,36 @@ func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	level_number = lvl
 	is_unlocked = unlocked
 	stars_earned = stars
-	build_miniature_from_json(lvl)
+	read_island_metadata(lvl)
 	update_visuals()
+	set_view_mode(is_map_mode, is_active_island, false)
+
+func read_island_metadata(lvl: int) -> void:
+	var json_path: String = "res://data/levels/level_%02d.json" % lvl
+	if not FileAccess.file_exists(json_path):
+		return
+	var file: FileAccess = FileAccess.open(json_path, FileAccess.READ)
+	if file == null:
+		return
+	var text: String = file.get_as_text()
+	file.close()
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed is Dictionary:
+		var data: Dictionary = parsed as Dictionary
+		var grid_info: Dictionary = data.get("grid", {}) as Dictionary
+		var width: int = int(grid_info.get("width", 12))
+		var height: int = int(grid_info.get("height", 8))
+		var cell_size: float = float(grid_info.get("cell_size", 0.8))
+		island_dimensions = Vector2(float(width) * cell_size, float(height) * cell_size)
+		var half_w: float = island_dimensions.x / 2.0
+		var half_h: float = island_dimensions.y / 2.0
+		map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
+
+func ensure_content_loaded() -> void:
+	if is_built:
+		return
+	is_built = true
+	build_miniature_from_json(level_number)
 	set_view_mode(is_map_mode, is_active_island, false)
 
 static func _init_materials() -> void:
