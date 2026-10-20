@@ -190,6 +190,7 @@ func _on_island_clicked(lvl_num: int) -> void:
 					_update_bot_position()
 			if tab_home != null and tab_home.has_method("update_level_display"):
 				tab_home.update_level_display(selected_level)
+			_update_plaques_view_mode(menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else false, true)
 			if GameManager != null:
 				GameManager.trigger_haptic_cut()
 
@@ -197,6 +198,7 @@ func _on_camera_island_snapped(snapped_lvl: int) -> void:
 	selected_level = snapped_lvl
 	if tab_home != null and tab_home.has_method("update_level_display"):
 		tab_home.update_level_display(selected_level)
+	_update_plaques_view_mode(menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else true, false)
 
 func _on_toggle_view_requested() -> void:
 	if menu_camera != null:

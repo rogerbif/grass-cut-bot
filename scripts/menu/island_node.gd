@@ -16,10 +16,16 @@ const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
 
-static var _mat_grass_green: StandardMaterial3D = null
-static var _mat_grass_yellow: StandardMaterial3D = null
-static var _mat_grass_blue: StandardMaterial3D = null
-static var _mat_grass_purple: StandardMaterial3D = null
+# Shaders oficiais da grama com gradiente vertical (raiz -> topo) e balanço de vento
+const MAT_ACTIVE_GRASS_GREEN: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
+const MAT_ACTIVE_GRASS_YELLOW: ShaderMaterial = preload("res://shaders/interactive_grass_yellow_material.tres")
+const MAT_ACTIVE_GRASS_BLUE: ShaderMaterial = preload("res://shaders/interactive_grass_blue_material.tres")
+const MAT_ACTIVE_GRASS_PURPLE: ShaderMaterial = preload("res://shaders/interactive_grass_purple_material.tres")
+
+static var _mat_static_green: ShaderMaterial = null
+static var _mat_static_yellow: ShaderMaterial = null
+static var _mat_static_blue: ShaderMaterial = null
+static var _mat_static_purple: ShaderMaterial = null
 static var _mat_rock: StandardMaterial3D = null
 
 @export var level_number: int = 1
@@ -40,6 +46,7 @@ var is_map_mode: bool = true
 var is_active_island: bool = false
 var map_plaque_pos: Vector3 = Vector3(1.3, 0.18, 0.9)
 var plaque_tween: Tween = null
+var grass_mesh_records: Array[Dictionary] = []
 
 func _ready() -> void:
 	update_visuals()
@@ -53,22 +60,19 @@ func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	set_view_mode(is_map_mode, is_active_island, false)
 
 static func _init_materials() -> void:
-	if _mat_grass_green == null:
-		_mat_grass_green = StandardMaterial3D.new()
-		_mat_grass_green.albedo_color = Color(0.25, 0.72, 0.28, 1.0)
-		_mat_grass_green.roughness = 0.92
+	if _mat_static_green == null:
+		# Duplica os shaders e zera o vento para as ilhas de fundo / visão mapa (máxima performance mobile)
+		_mat_static_green = MAT_ACTIVE_GRASS_GREEN.duplicate() as ShaderMaterial
+		_mat_static_green.set_shader_parameter("wind_strength", 0.0)
 
-		_mat_grass_yellow = StandardMaterial3D.new()
-		_mat_grass_yellow.albedo_color = Color(0.92, 0.82, 0.22, 1.0)
-		_mat_grass_yellow.roughness = 0.92
+		_mat_static_yellow = MAT_ACTIVE_GRASS_YELLOW.duplicate() as ShaderMaterial
+		_mat_static_yellow.set_shader_parameter("wind_strength", 0.0)
 
-		_mat_grass_blue = StandardMaterial3D.new()
-		_mat_grass_blue.albedo_color = Color(0.24, 0.58, 0.88, 1.0)
-		_mat_grass_blue.roughness = 0.92
+		_mat_static_blue = MAT_ACTIVE_GRASS_BLUE.duplicate() as ShaderMaterial
+		_mat_static_blue.set_shader_parameter("wind_strength", 0.0)
 
-		_mat_grass_purple = StandardMaterial3D.new()
-		_mat_grass_purple.albedo_color = Color(0.68, 0.35, 0.85, 1.0)
-		_mat_grass_purple.roughness = 0.92
+		_mat_static_purple = MAT_ACTIVE_GRASS_PURPLE.duplicate() as ShaderMaterial
+		_mat_static_purple.set_shader_parameter("wind_strength", 0.0)
 
 		_mat_rock = StandardMaterial3D.new()
 		_mat_rock.albedo_color = Color(0.42, 0.46, 0.50, 1.0)
@@ -109,26 +113,55 @@ static func create_miniature_object(otype: String) -> Node3D:
 	else:
 		# grass_green, grass_yellow, grass_blue, grass_purple (ou fallback)
 		var g_inst: Node3D = GRASS_MODEL.instantiate() as Node3D
-		var target_mat: StandardMaterial3D = _mat_grass_green
+		var target_mat: ShaderMaterial = _mat_static_green
 		if otype == "grass_yellow":
-			target_mat = _mat_grass_yellow
+			target_mat = _mat_static_yellow
 		elif otype == "grass_blue":
-			target_mat = _mat_grass_blue
+			target_mat = _mat_static_blue
 		elif otype == "grass_purple":
-			target_mat = _mat_grass_purple
+			target_mat = _mat_static_purple
 
 		for child in g_inst.get_children():
 			if child is MeshInstance3D:
 				(child as MeshInstance3D).material_override = target_mat
 		return g_inst
 
+func set_grass_animated(enabled: bool) -> void:
+	_init_materials()
+	for rec in grass_mesh_records:
+		var mi: MeshInstance3D = rec.get("mesh", null) as MeshInstance3D
+		if mi == null or not is_instance_valid(mi):
+			continue
+		var gtype: String = String(rec.get("type", "grass_green"))
+		if enabled:
+			match gtype:
+				"grass_yellow":
+					mi.material_override = MAT_ACTIVE_GRASS_YELLOW
+				"grass_blue":
+					mi.material_override = MAT_ACTIVE_GRASS_BLUE
+				"grass_purple":
+					mi.material_override = MAT_ACTIVE_GRASS_PURPLE
+				_:
+					mi.material_override = MAT_ACTIVE_GRASS_GREEN
+		else:
+			match gtype:
+				"grass_yellow":
+					mi.material_override = _mat_static_yellow
+				"grass_blue":
+					mi.material_override = _mat_static_blue
+				"grass_purple":
+					mi.material_override = _mat_static_purple
+				_:
+					mi.material_override = _mat_static_green
+
 func build_miniature_from_json(lvl: int) -> void:
 	if miniature_container == null:
 		return
 
-	# Limpa tiles anteriores da miniatura
+	# Limpa tiles anteriores da miniatura e registros de grama
 	for c in miniature_container.get_children():
 		c.queue_free()
+	grass_mesh_records.clear()
 
 	var json_path: String = "res://data/levels/level_%02d.json" % lvl
 	if not FileAccess.file_exists(json_path):
@@ -220,9 +253,25 @@ func build_miniature_from_json(lvl: int) -> void:
 		var local_ox: float = offset_x + float(ogx) * cell_size
 		var local_oz: float = offset_z + float(ogz) * cell_size
 		visual.position = Vector3(local_ox, 0.0, local_oz)
-		visual.rotation_degrees.y = float(orot)
+
+		# Entrelaçamento orgânico idêntico ao gameplay para gramas
+		if otype.begins_with("grass_"):
+			var seed_val: float = float(ogx * 73 + ogz * 19)
+			visual.rotation.y = fmod(seed_val, TAU)
+			var s_y: float = 0.72 + fmod(seed_val * 0.13, 0.13)
+			var s_xz: float = 0.96 + fmod(seed_val * 0.27, 0.14)
+			visual.scale = Vector3(s_xz, s_y, s_xz)
+
+			for child in visual.get_children():
+				if child is MeshInstance3D:
+					grass_mesh_records.append({"mesh": child, "type": otype})
+		else:
+			visual.rotation_degrees.y = float(orot)
 
 		miniature_container.add_child(visual)
+
+	# Atualiza o estado da animação de vento conforme o modo e atividade da ilha
+	set_grass_animated(not is_map_mode and is_active_island)
 
 func update_visuals() -> void:
 	if level_label == null or stars_label == null:
@@ -258,6 +307,9 @@ func update_visuals() -> void:
 func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -> void:
 	is_map_mode = map_view
 	is_active_island = active_island
+
+	# Animação de vento da grama ativa EXCLUSIVAMENTE na ilha onde o robô estiver na visão do bot
+	set_grass_animated(not is_map_mode and is_active_island)
 
 	if plaque_root == null:
 		return
