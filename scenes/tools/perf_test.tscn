@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tools/perf_test.gd" id="1_perf"]
+
+[node name="PerfTest" type="Node"]
+script = ExtResource("1_perf")
+test_level = 20
