@@ -1,12 +1,13 @@
 extends Node
 ## Cena de benchmark: carrega uma fase real (padrão: fase 20) pelo mesmo caminho do jogo (main.tscn).
-## Uso: abrir scenes/tools/perf_test.tscn no editor e apertar F6.
+## Uso no PC: abrir scenes/tools/perf_test.tscn no editor e apertar F6.
+## Uso no Celular: tocar nos botões de debug no topo da tela (ou iniciar pelo botão no Menu).
 ##
-## Teclas: 1/2/3 = densidade de tufos visíveis (100% / 50% / 25%)
-##         G = liga/desliga toda a vegetação (baseline sem grama)
-##         S = liga/desliga sombras
-##         R = alterna scaling_3d (1.0 / 0.85 / 0.7 / 0.5)
-##         V = liga/desliga VSync (desligado mostra o FPS máximo real, sem o teto do monitor)
+## Teclas (PC): 1/2/3 = densidade de tufos visíveis (100% / 50% / 25%)
+##              G = liga/desliga toda a vegetação (baseline sem grama)
+##              L ou F = liga/desliga sombras (evita conflito com S do WASD)
+##              R = alterna scaling_3d (1.0 / 0.85 / 0.7 / 0.5)
+##              V = liga/desliga VSync (desligado mostra o FPS máximo real, sem o teto do monitor)
 
 const PerfProbeScript = preload("res://scripts/tools/perf_probe.gd")
 const MAIN_SCENE: PackedScene = preload("res://scenes/main.tscn")
@@ -53,6 +54,8 @@ func _ready() -> void:
 
 	_probe = PerfProbeScript.new() as CanvasLayer
 	add_child(_probe)
+	if _probe.has_signal("action_triggered"):
+		_probe.connect("action_triggered", _on_probe_action)
 	_refresh_extra()
 	print("[perf_test] fase %d carregada em %.1f ms | tufos: %d" % [test_level, _load_ms, _plants.size()])
 
@@ -69,27 +72,49 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	match key_event.keycode:
 		KEY_1:
-			_set_density(1)
+			_on_probe_action("dens_1")
 		KEY_2:
-			_set_density(2)
+			_on_probe_action("dens_2")
 		KEY_3:
-			_set_density(4)
+			_on_probe_action("dens_4")
 		KEY_G:
+			_on_probe_action("toggle_veg")
+		KEY_L, KEY_F:
+			_on_probe_action("toggle_shadow")
+		KEY_V:
+			_on_probe_action("toggle_vsync")
+		KEY_R:
+			_on_probe_action("cycle_scale")
+		KEY_M:
+			_on_probe_action("back_menu")
+
+func _on_probe_action(action_id: String) -> void:
+	match action_id:
+		"dens_1":
+			_set_density(1)
+		"dens_2":
+			_set_density(2)
+		"dens_4":
+			_set_density(4)
+		"toggle_veg":
 			_vegetation_on = not _vegetation_on
 			_apply_visibility()
-		KEY_S:
+		"toggle_shadow":
 			var light: DirectionalLight3D = _main_node.get_node_or_null("DirectionalLight3D") as DirectionalLight3D
 			if light != null:
 				light.shadow_enabled = not light.shadow_enabled
-		KEY_V:
+		"toggle_vsync":
 			var vs: int = DisplayServer.window_get_vsync_mode()
 			if vs == DisplayServer.VSYNC_DISABLED:
 				DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
 			else:
 				DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-		KEY_R:
+		"cycle_scale":
 			_scale_index = (_scale_index + 1) % SCALE_STEPS.size()
 			get_viewport().scaling_3d_scale = SCALE_STEPS[_scale_index]
+		"back_menu":
+			get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
+			return
 	_refresh_extra()
 
 func _set_density(step: int) -> void:
@@ -107,7 +132,9 @@ func _refresh_extra() -> void:
 		return
 	var light: DirectionalLight3D = _main_node.get_node_or_null("DirectionalLight3D") as DirectionalLight3D
 	var shadows: bool = light != null and light.shadow_enabled
-	_probe.set("extra_text", "Fase %d | load %.0f ms | tufos %d | dens 1/%d | veg %s | sombra %s | escala %.2f\n[1/2/3] densidade [G] grama [S] sombra [R] escala 3D [V] vsync" % [
+	var vs_on: bool = DisplayServer.window_get_vsync_mode() != DisplayServer.VSYNC_DISABLED
+	_probe.set("extra_text", "Fase %d | load %.0f ms | tufos %d | dens 1/%d | veg %s | sombra %s | esc %.2f | vsync %s" % [
 		test_level, _load_ms, _plants.size(), _density_step,
-		"ON" if _vegetation_on else "OFF", "ON" if shadows else "OFF", SCALE_STEPS[_scale_index]
+		"ON" if _vegetation_on else "OFF", "ON" if shadows else "OFF", SCALE_STEPS[_scale_index],
+		"ON" if vs_on else "OFF"
 	])

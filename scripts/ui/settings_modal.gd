@@ -20,12 +20,15 @@ var music_enabled: bool = true
 var sfx_enabled: bool = true
 var vib_enabled: bool = true
 var _reset_confirmation_pending: bool = false
+var _version_tap_count: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	if version_label != null:
 		version_label.text = "%s • Mobile Edition" % GameVersion.get_display_name()
+		version_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		version_label.gui_input.connect(_on_version_gui_input)
 
 	if SaveManager != null:
 		music_enabled = bool(SaveManager.get_setting("music_enabled", true))
@@ -140,6 +143,24 @@ func _on_fb_pressed() -> void:
 
 func _on_support_pressed() -> void:
 	_show_toast("Abrindo suporte ao jogador...")
+
+func _on_version_gui_input(event: InputEvent) -> void:
+	var pressed: bool = false
+	if event is InputEventMouseButton:
+		var mb: InputEventMouseButton = event as InputEventMouseButton
+		pressed = mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT
+	elif event is InputEventScreenTouch:
+		var st: InputEventScreenTouch = event as InputEventScreenTouch
+		pressed = st.pressed
+	if not pressed:
+		return
+	_version_tap_count += 1
+	if _version_tap_count >= 3:
+		_version_tap_count = 0
+		get_tree().paused = false
+		get_tree().change_scene_to_file("res://scenes/tools/perf_test.tscn")
+	else:
+		_show_toast("Benchmark Fase 20: mais %d toque(s)..." % (3 - _version_tap_count))
 
 func _show_toast(msg: String) -> void:
 	if toast_label == null:
