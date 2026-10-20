@@ -74,7 +74,8 @@ O chassi e suas peças reagem organicamente às forças de inércia e relevo do 
 
 - O cortador opera com corte omnidirecional: o disco corta uniformemente em 360° em qualquer sentido de condução.
 - A detecção é executada por um `Area3D` dedicado (`BladeArea`) com camada de colisão configurada para monitorar a vegetação (`collision_mask = 4`).
-- A cada frame de física, o cortador varre as áreas sobrepostas pertencentes ao grupo `"vegetation"` e dispara `plant.cut(power)`.
+- O cortador opera de forma reativa via sinais `area_entered` / `area_exited` combinados a uma lista enxuta `_overlapping_vegetation` apenas para plantas resistentes (`max_health > 1`), eliminando alocações de `get_overlapping_areas()` a cada tick de física.
+- Os parâmetros de upgrade (`_cached_blade_radius`, `_cached_cutter_speed`, `_cached_cutter_power`) ficam em cache e os uniforms de shader (`cutter_pos`, `cutter_interact_radius`) só são atualizados quando o cortador efetivamente se desloca (`distance_squared_to > 0.0004`).
 - **Evolução por Upgrade:**
   - O raio da lâmina é calibrado dinamicamente: `raio = 0.90m + (nivel - 1) * 0.10m`.
   - A malha visual do disco e a área de interação com o shader de grama acompanham proporcionalmente o diâmetro da colisão.

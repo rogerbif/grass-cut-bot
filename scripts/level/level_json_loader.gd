@@ -82,14 +82,12 @@ static func build_coastal_colliders_and_foam(
 	height: int,
 	cell_size: float = DEFAULT_CELL_SIZE
 ) -> void:
-	# 1. Garante contenção física invisível estanque (Layer 1)
-	# em todas as faces onde um bloco de ilha faz fronteira com a água (vazio).
-	var dirs: Array[Dictionary] = [
-		{ "offset": Vector2i(0, -1), "pos": Vector3(0.0, 0.45, -cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06), "norm": Vector3(0.0, 0.0, -1.0) },
-		{ "offset": Vector2i(0, 1),  "pos": Vector3(0.0, 0.45,  cell_size * 0.48), "size": Vector3(cell_size, 1.2, 0.06), "norm": Vector3(0.0, 0.0, 1.0) },
-		{ "offset": Vector2i(1, 0),  "pos": Vector3( cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size), "norm": Vector3(1.0, 0.0, 0.0) },
-		{ "offset": Vector2i(-1, 0), "pos": Vector3(-cell_size * 0.48, 0.45, 0.0), "size": Vector3(0.06, 1.2, cell_size), "norm": Vector3(-1.0, 0.0, 0.0) }
-	]
+	# 1. Garante contenção física invisível estanque (Layer 1) com mesclagem gulosa (greedy merge)
+	# de segmentos colineares onde blocos de ilha fazem fronteira com a água (vazio).
+	var north_by_z: Dictionary = {}
+	var south_by_z: Dictionary = {}
+	var east_by_x: Dictionary = {}
+	var west_by_x: Dictionary = {}
 
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -100,16 +98,26 @@ static func build_coastal_colliders_and_foam(
 		var cell: Vector2i = cell_key as Vector2i
 		var cell_world: Vector3 = grid_to_world(cell.x, cell.y, width, height, cell_size)
 
-		for d in dirs:
-			var neighbor: Vector2i = cell + (d["offset"] as Vector2i)
-			if not occupied_cells.has(neighbor):
-				# Colisor invisível de costa (impede queda na água sem cerca)
-				var col: CollisionShape3D = CollisionShape3D.new()
-				var box: BoxShape3D = BoxShape3D.new()
-				box.size = d["size"] as Vector3
-				col.shape = box
-				col.position = cell_world + (d["pos"] as Vector3)
-				parent_body.add_child(col)
+		if not occupied_cells.has(cell + Vector2i(0, -1)):
+			if not north_by_z.has(cell.y):
+				var arr_n: Array[int] = []
+				north_by_z[cell.y] = arr_n
+			(north_by_z[cell.y] as Array[int]).append(cell.x)
+		if not occupied_cells.has(cell + Vector2i(0, 1)):
+			if not south_by_z.has(cell.y):
+				var arr_s: Array[int] = []
+				south_by_z[cell.y] = arr_s
+			(south_by_z[cell.y] as Array[int]).append(cell.x)
+		if not occupied_cells.has(cell + Vector2i(1, 0)):
+			if not east_by_x.has(cell.x):
+				var arr_e: Array[int] = []
+				east_by_x[cell.x] = arr_e
+			(east_by_x[cell.x] as Array[int]).append(cell.y)
+		if not occupied_cells.has(cell + Vector2i(-1, 0)):
+			if not west_by_x.has(cell.x):
+				var arr_w: Array[int] = []
+				west_by_x[cell.x] = arr_w
+			(west_by_x[cell.x] as Array[int]).append(cell.y)
 
 		var tile_id: String = "island_center"
 		var tile_rot: int = 0
@@ -132,6 +140,11 @@ static func build_coastal_colliders_and_foam(
 			if not occupied_cells.has(cell + Vector2i(-1, 0)):
 				_add_tile_foam_curve(st, "island_edge", 90, cell_world, foam_y, cell_size)
 
+	_add_merged_horizontal_colliders(parent_body, north_by_z, -cell_size * 0.48, width, height, cell_size)
+	_add_merged_horizontal_colliders(parent_body, south_by_z, cell_size * 0.48, width, height, cell_size)
+	_add_merged_vertical_colliders(parent_body, east_by_x, cell_size * 0.48, width, height, cell_size)
+	_add_merged_vertical_colliders(parent_body, west_by_x, -cell_size * 0.48, width, height, cell_size)
+
 	var foam_mesh: ArrayMesh = st.commit()
 	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
 		var foam_inst: MeshInstance3D = MeshInstance3D.new()
@@ -142,6 +155,100 @@ static func build_coastal_colliders_and_foam(
 		foam_mat.shader = foam_shader
 		foam_inst.material_override = foam_mat
 		parent_body.add_child(foam_inst)
+
+static func _add_merged_horizontal_colliders(
+	parent_body: StaticBody3D,
+	edges_by_z: Dictionary,
+	z_offset: float,
+	width: int,
+	height: int,
+	cell_size: float
+) -> void:
+	for z_key in edges_by_z:
+		var gz: int = int(z_key)
+		var xs: Array[int] = edges_by_z[z_key] as Array[int]
+		if xs.is_empty():
+			continue
+		xs.sort()
+		var run_start: int = xs[0]
+		var run_end: int = xs[0]
+		for i in range(1, xs.size()):
+			var x_val: int = xs[i]
+			if x_val == run_end + 1:
+				run_end = x_val
+			else:
+				_create_horizontal_collider_segment(parent_body, run_start, run_end, gz, z_offset, width, height, cell_size)
+				run_start = x_val
+				run_end = x_val
+		_create_horizontal_collider_segment(parent_body, run_start, run_end, gz, z_offset, width, height, cell_size)
+
+static func _create_horizontal_collider_segment(
+	parent_body: StaticBody3D,
+	x_start: int,
+	x_end: int,
+	gz: int,
+	z_offset: float,
+	width: int,
+	height: int,
+	cell_size: float
+) -> void:
+	var run_len: int = x_end - x_start + 1
+	var p_start: Vector3 = grid_to_world(x_start, gz, width, height, cell_size)
+	var p_end: Vector3 = grid_to_world(x_end, gz, width, height, cell_size)
+	var center_world: Vector3 = (p_start + p_end) * 0.5
+	var col: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(float(run_len) * cell_size, 1.2, 0.06)
+	col.shape = box
+	col.position = center_world + Vector3(0.0, 0.45, z_offset)
+	parent_body.add_child(col)
+
+static func _add_merged_vertical_colliders(
+	parent_body: StaticBody3D,
+	edges_by_x: Dictionary,
+	x_offset: float,
+	width: int,
+	height: int,
+	cell_size: float
+) -> void:
+	for x_key in edges_by_x:
+		var gx: int = int(x_key)
+		var zs: Array[int] = edges_by_x[x_key] as Array[int]
+		if zs.is_empty():
+			continue
+		zs.sort()
+		var run_start: int = zs[0]
+		var run_end: int = zs[0]
+		for i in range(1, zs.size()):
+			var z_val: int = zs[i]
+			if z_val == run_end + 1:
+				run_end = z_val
+			else:
+				_create_vertical_collider_segment(parent_body, gx, run_start, run_end, x_offset, width, height, cell_size)
+				run_start = z_val
+				run_end = z_val
+		_create_vertical_collider_segment(parent_body, gx, run_start, run_end, x_offset, width, height, cell_size)
+
+static func _create_vertical_collider_segment(
+	parent_body: StaticBody3D,
+	gx: int,
+	z_start: int,
+	z_end: int,
+	x_offset: float,
+	width: int,
+	height: int,
+	cell_size: float
+) -> void:
+	var run_len: int = z_end - z_start + 1
+	var p_start: Vector3 = grid_to_world(gx, z_start, width, height, cell_size)
+	var p_end: Vector3 = grid_to_world(gx, z_end, width, height, cell_size)
+	var center_world: Vector3 = (p_start + p_end) * 0.5
+	var col: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(0.06, 1.2, float(run_len) * cell_size)
+	col.shape = box
+	col.position = center_world + Vector3(x_offset, 0.45, 0.0)
+	parent_body.add_child(col)
 
 static func _add_tile_foam_curve(
 	st: SurfaceTool,

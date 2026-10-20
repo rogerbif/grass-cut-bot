@@ -27,7 +27,9 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
 1. **Baixo Número de Draw Calls (Batching):**
    - Os materiais compartilham parâmetros padronizados de sombreamento.
    - Os tufos de vegetação utilizam malhas simples de prismas e caixas, mantendo a contagem total de polígonos da cena abaixo de 30.000 triângulos.
-2. **Sombra Direcional Limitada:**
-   - O alcance da sombra é delimitado a $40\text{m}$ (`directional_shadow_max_distance = 40.0`), evitando cálculos de matriz de sombra além dos limites da ilha.
-3. **Gerenciamento de Memória de Partículas:**
-   - Emissores `CPUParticles3D` com emissão por explosão e vida útil curta ($\le 0.6\text{s}$) garantem reciclagem imediata de memória sem picos de garbage collector.
+2. **Sombra Direcional Ortogonal e Seletiva:**
+   - A `DirectionalLight3D` utiliza `directional_shadow_mode = SHADOW_ORTHOGONAL` (1 única cascata em vez de 4 splits PSSM), `directional_shadow_max_distance = 28.0`, mapa `1024x1024` e `soft_shadow_filter_quality = 0`.
+   - As malhas de vegetação operam com `cast_shadow = SHADOW_CASTING_SETTING_OFF` (mantendo sombras nítidas no robô, rochas e falésias da ilha), reduzindo as primitivas de 654k para 159k e os draw calls de 2.077 para 815 na Fase 20.
+3. **Pool Compartilhado de Partículas e Shader sem Inverse Matrix:**
+   - Um pool estático de 16 `CPUParticles3D` em `plant.gd` atende a todos os cortes da fase sem instanciar emissores ociosos por tufo.
+   - O `interactive_grass.gdshader` projeta vetores de mundo usando as colunas XZ da `MODEL_MATRIX` (sem `inverse()` por vértice) e aplica *early-out* por distância ao quadrado (`dist_sq < r_sq`).

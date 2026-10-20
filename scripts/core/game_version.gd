@@ -7,7 +7,7 @@ extends RefCounted
 
 const MAJOR: int = 0
 const MINOR: int = 7
-const PATCH: int = 13
+const PATCH: int = 14
 const STAGE: String = "ALPHA" # "PRE-ALPHA", "ALPHA", "BETA", "RC", "RELEASE"
 const BUILD_TYPE: String = "dev" # "dev", "nightly", "public"
 

@@ -2,17 +2,26 @@ extends Node3D
 
 enum PlantType { GRASS, WHEAT, FLOWER }
 
+const POOL_SIZE: int = 16
+const LEAF_MESH: ArrayMesh = preload("res://assets/models/cut_leaf_piece.obj")
+
+static var _particle_pool: Array[CPUParticles3D] = []
+static var _pool_idx: int = 0
+static var _particle_materials: Dictionary = {}
+static var _scale_curve: Curve = null
+static var _fallback_material: StandardMaterial3D = null
+
 @export var type: PlantType = PlantType.GRASS
 @export var max_health: int = 1
 @export var coin_reward: int = 1
 @export var plant_key: String = "grass" # Usado para sincronizar com as metas do HUD
 @export var custom_material: Material
+@export var particle_color: Color = Color(0.25, 0.75, 0.3, 1.0)
 
 var health: int = 1
 var is_cut: bool = false
 
 @onready var visual_mesh: Node3D = $VisualMesh
-@onready var cut_particles: CPUParticles3D = $CutParticles
 @onready var area: Area3D = $Area3D
 @onready var area_shape: CollisionShape3D = $Area3D/CollisionShape3D
 
@@ -22,7 +31,7 @@ func _ready() -> void:
 	var random_rot: float = randf_range(0.0, TAU)
 	visual_mesh.rotation.y = random_rot
 
-	# Garante que todo MeshInstance3D receba o material configurado ou fallback verde vivo
+	# Garante que todo MeshInstance3D tenha sombra desligada e receba o material configurado
 	_apply_visual_material(visual_mesh)
 
 	if type == PlantType.GRASS:
@@ -42,13 +51,16 @@ func _apply_visual_material(target: Node) -> void:
 		return
 	if target is MeshInstance3D:
 		var mi: MeshInstance3D = target as MeshInstance3D
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if custom_material != null:
-			mi.material_override = custom_material
-		elif mi.material_override == null:
-			var fallback_mat: StandardMaterial3D = StandardMaterial3D.new()
-			fallback_mat.albedo_color = Color(0.22, 0.68, 0.24, 1.0)
-			fallback_mat.roughness = 0.9
-			mi.material_override = fallback_mat
+			if mi.material_override != custom_material:
+				mi.material_override = custom_material
+		elif mi.material_override == null and mi.get_active_material(0) == null:
+			if _fallback_material == null:
+				_fallback_material = StandardMaterial3D.new()
+				_fallback_material.albedo_color = Color(0.22, 0.68, 0.24, 1.0)
+				_fallback_material.roughness = 0.9
+			mi.material_override = _fallback_material
 	for child in target.get_children():
 		_apply_visual_material(child)
 
@@ -61,7 +73,7 @@ func cut(power: int) -> void:
 		_perform_cut()
 	else:
 		# Feedback de dano para plantas resistentes
-		var tween = create_tween()
+		var tween: Tween = create_tween()
 		tween.tween_property(visual_mesh, "scale", visual_mesh.scale * 1.25, 0.05)
 		tween.tween_property(visual_mesh, "scale", visual_mesh.scale, 0.05)
 
@@ -70,22 +82,99 @@ func _perform_cut() -> void:
 	if area_shape:
 		area_shape.set_deferred("disabled", true)
 
-	# Lança partículas em arco parabólico
-	if cut_particles:
-		cut_particles.restart()
+	# Lança partículas em arco parabólico via Pool Estático Compartilhado
+	_spawn_cut_particles()
 
 	# Notifica o GameManager
 	if GameManager != null:
 		GameManager.register_cut(plant_key, coin_reward)
 
-	# Fatiamento ágil e imediato: corte seco sem sensação de balão murchando
-	var tween = create_tween()
+	# Fatiamento ágil e imediato: corte seco e destruição imediata do nó
+	var tween: Tween = create_tween()
 	tween.tween_property(visual_mesh, "scale", visual_mesh.scale * Vector3(1.05, 0.05, 1.05), 0.04)
-	tween.tween_callback(func():
-		visual_mesh.visible = false
-	)
+	tween.tween_callback(queue_free)
 
-	# Destrói o nó após o término das partículas
-	get_tree().create_timer(1.0).timeout.connect(func():
-		queue_free()
-	)
+func _resolve_particle_color() -> Color:
+	if custom_material is ShaderMaterial:
+		var sm: ShaderMaterial = custom_material as ShaderMaterial
+		var col_variant: Variant = sm.get_shader_parameter("color_top")
+		if col_variant is Color:
+			return col_variant as Color
+	if type == PlantType.WHEAT:
+		return Color(0.96, 0.75, 0.15, 1.0)
+	if type == PlantType.FLOWER:
+		return Color(0.95, 0.35, 0.65, 1.0)
+	return particle_color
+
+func _spawn_cut_particles() -> void:
+	var scene_root: Node = get_tree().current_scene
+	if scene_root == null:
+		return
+
+	if _particle_pool.is_empty() or not is_instance_valid(_particle_pool[0]) or not _particle_pool[0].is_inside_tree():
+		_init_particle_pool(scene_root)
+
+	var emitter: CPUParticles3D = _particle_pool[_pool_idx]
+	_pool_idx = (_pool_idx + 1) % POOL_SIZE
+
+	var col: Color = _resolve_particle_color()
+	emitter.material_override = _get_or_create_particle_material(col)
+	emitter.global_position = global_position + Vector3(0.0, 0.15, 0.0)
+	emitter.restart()
+
+static func _get_or_create_particle_material(col: Color) -> StandardMaterial3D:
+	var key: String = col.to_html(false)
+	if _particle_materials.has(key):
+		return _particle_materials[key] as StandardMaterial3D
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.roughness = 0.9
+	mat.albedo_color = col
+	_particle_materials[key] = mat
+	return mat
+
+static func _init_particle_pool(scene_root: Node) -> void:
+	_particle_pool.clear()
+	_pool_idx = 0
+
+	if _scale_curve == null:
+		_scale_curve = Curve.new()
+		_scale_curve.add_point(Vector2(0.0, 0.8))
+		_scale_curve.add_point(Vector2(0.15, 1.0))
+		_scale_curve.add_point(Vector2(0.65, 1.0))
+		_scale_curve.add_point(Vector2(1.0, 0.0), -3.0, 0.0)
+
+	for i: int in range(POOL_SIZE):
+		var p: CPUParticles3D = CPUParticles3D.new()
+		p.name = "PooledCutParticles_%d" % i
+		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		p.emitting = false
+		p.amount = 14
+		p.lifetime = 0.55
+		p.one_shot = true
+		p.explosiveness = 0.92
+		p.mesh = LEAF_MESH
+		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_RING
+		p.emission_ring_axis = Vector3(0.0, 1.0, 0.0)
+		p.emission_ring_height = 0.08
+		p.emission_ring_radius = 0.18
+		p.emission_ring_inner_radius = 0.0
+		p.particle_flag_rotate_y = true
+		p.direction = Vector3(0.0, 1.0, 0.0)
+		p.spread = 85.0
+		p.gravity = Vector3(0.0, -9.8, 0.0)
+		p.initial_velocity_min = 1.8
+		p.initial_velocity_max = 3.6
+		p.angular_velocity_min = -540.0
+		p.angular_velocity_max = 540.0
+		p.angle_min = -180.0
+		p.angle_max = 180.0
+		p.tangential_accel_min = -3.0
+		p.tangential_accel_max = 3.0
+		p.damping_min = 1.0
+		p.damping_max = 2.5
+		p.scale_amount_min = 0.8
+		p.scale_amount_max = 1.5
+		p.scale_amount_curve = _scale_curve
+		scene_root.add_child(p)
+		_particle_pool.append(p)

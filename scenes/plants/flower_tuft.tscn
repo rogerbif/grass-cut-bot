@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://flower_tuft_01"]
+[gd_scene load_steps=9 format=3 uid="uid://flower_tuft_01"]
 
 [ext_resource type="Script" path="res://scripts/plants/plant.gd" id="1_flower"]
 [ext_resource type="Material" uid="uid://interactive_grass_mat_01" path="res://shaders/interactive_grass_material.tres" id="2_grass_mat"]
@@ -31,10 +31,6 @@ top_radius = 0.07
 bottom_radius = 0.07
 height = 0.1
 
-[sub_resource type="Curve" id="Curve_scale"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.2, 0.0, 0, 0]
-point_count = 2
-
 [node name="FlowerTuft" type="Node3D" groups=["plants"]]
 script = ExtResource("1_flower")
 type = 2
@@ -54,27 +50,15 @@ shape = SubResource("CylinderShape3D_area")
 
 [node name="Stem" type="MeshInstance3D" parent="VisualMesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0)
+cast_shadow = 0
 mesh = SubResource("CylinderMesh_stem")
 
 [node name="Petals" type="MeshInstance3D" parent="VisualMesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_petal")
 
 [node name="Center" type="MeshInstance3D" parent="VisualMesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48, 0)
+cast_shadow = 0
 mesh = SubResource("CylinderMesh_center")
-
-[node name="CutParticles" type="CPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-emitting = false
-amount = 16
-lifetime = 0.6
-one_shot = true
-explosiveness = 0.95
-mesh = SubResource("BoxMesh_petal")
-direction = Vector3(0, 1, 0)
-spread = 70.0
-gravity = Vector3(0, -9.8, 0)
-initial_velocity_min = 3.2
-initial_velocity_max = 5.2
-scale_amount_curve = SubResource("Curve_scale")

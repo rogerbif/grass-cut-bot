@@ -16,13 +16,12 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ## 2. Estrutura do Nó de Vegetação (`plant.tscn`)
 
-Each tufo possui a seguinte árvore:
+Cada tufo possui a seguinte árvore enxuta (as partículas de corte operam em um Pool Estático Compartilhado de 16 emissores em `plant.gd`, evitando instanciar milhares de `CPUParticles3D` ociosos):
 ```
 Tuft (Node3D - grupo "plants", script plant.gd)
 ├── Area3D (Layer 4, Mask 0, grupo "vegetation")
 │   └── CollisionShape3D (Cylinder r=0.18m, h=0.45m)
-├── VisualMesh (Node3D - malha Low Poly das folhas/espigas)
-└── CutParticles (CPUParticles3D - emissão explosiva em arco, r=0.18m)
+└── VisualMesh (Node3D - malha Low Poly das folhas/espigas com cast_shadow = OFF)
 ```
 
 - **Estrutura 3D Estilizada Low Poly e Gramado Condensado:**
@@ -41,13 +40,12 @@ Tuft (Node3D - grupo "plants", script plant.gd)
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal), dando feedback imediato de que a planta sofreu impacto mas resistiu.
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - O emissor `CutParticles` ejeta 30 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por toda a área do tufo (`emission_shape = RING`, raio $0.35\text{m}$), com tamanhos dinamicamente variáveis (`scale_amount = 1.2 ~ 2.4`), rotação no ar ativa (`particle_flag_rotate_y = true`, giro de $-540^\circ$ a $+540^\circ/\text{s}$), espalhamento multidirecional caótico (`spread = 85.0°`, velocidade `2.0 ~ 4.5 m/s`), aceleração tangencial (`-3.0 ~ 3.0`) e arrasto aerodinâmico sob gravidade natural (`gravity = -9.8 m/s²`), com voo orgânico de `0.70s` e encolhimento suave ao tocar o solo.
+   - Um emissor do **Pool Estático Compartilhado (`_particle_pool`, 16 instâncias)** em `plant.gd` é posicionado no tufo e ejeta 14 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por anel (`emission_shape = RING`, raio $0.18\text{m}$), com cor sincronizada ao `color_top` do material da planta e giro 3D sob gravidade natural (`gravity = -9.8 m/s²`, voo de `0.55s`).
    - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
-   - O modelo 3D do tufo é fatiado e achatado instantaneamente via Tween em 0.04s (`scale * (1.05, 0.05, 1.05)`), gerando um corte seco e limpo sem sensação de murchar lentamente.
-   - O nó aguarda o término das partículas (1.0s) e executa `queue_free()`.
+   - O modelo 3D do tufo é fatiado e achatado instantaneamente via Tween em 0.04s (`scale * (1.05, 0.05, 1.05)`), gerando um corte seco e limpo e executando `queue_free()` imediatamente ao final do Tween (0.04s).
 
 ---
 

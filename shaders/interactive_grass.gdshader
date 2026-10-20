@@ -41,9 +41,8 @@ void vertex() {
 		blade_angle = (COLOR.g - 0.5) * 6.2831853;
 		blade_freq = mix(0.85, 1.15, COLOR.b);
 	} else {
-		// Fallback gracioso baseado na posição radial do vértice no tufo
-		blade_angle = atan(VERTEX.z, VERTEX.x);
-		blade_phase = fract(sin(floor((blade_angle + 3.14159) * 9.0) * 43758.5453)) * 6.2831853;
+		blade_angle = 0.0;
+		blade_phase = world_vert.x * 1.7 + world_vert.z * 2.3;
 		blade_freq = 1.0;
 	}
 
@@ -60,11 +59,14 @@ void vertex() {
 	// Deslocamento pendular individual da folha ancorado na base
 	vec3 leaf_sway = (dir_side * sway_side + dir_fwd * sway_fwd) * (wind_strength * bend_factor);
 
-	mat3 inv_model = mat3(inverse(MODEL_MATRIX));
+	// Conversão rápida mundo -> modelo para vetores horizontais (sem inverse() por vértice)
+	vec3 col_x = MODEL_MATRIX[0].xyz;
+	vec3 col_z = MODEL_MATRIX[2].xyz;
+	float inv_scale_sq = 1.0 / max(dot(col_x, col_x), 0.0001);
 
 	// Brisa global sutil para coerência de campo
 	vec3 global_breeze = vec3(sin(TIME * 0.7 + world_vert.x * 0.25), 0.0, cos(TIME * 0.5 + world_vert.z * 0.25)) * (wind_strength * 0.35 * bend_factor);
-	vec3 model_breeze = inv_model * global_breeze;
+	vec3 model_breeze = vec3(dot(global_breeze, col_x), 0.0, dot(global_breeze, col_z)) * inv_scale_sq;
 
 	// Aplica balanço suave das folhas
 	VERTEX += leaf_sway + model_breeze;
@@ -73,18 +75,22 @@ void vertex() {
 	float sway_displacement = length(leaf_sway.xz);
 	VERTEX.y -= sway_displacement * 0.22;
 
-	// --- Interação com a lâmina do cortador ---
-	vec3 direction = world_vert - cutter_pos;
-	direction.y = 0.0;
-	float len = length(direction);
-	vec3 dir_norm = (len > 0.001) ? (direction / len) : vec3(0.0, 0.0, 1.0);
+	// --- Interação com a lâmina do cortador (com early-out fora do raio) ---
+	vec3 diff = world_vert - cutter_pos;
+	float dist_sq = dot(diff, diff);
+	float r_sq = cutter_interact_radius * cutter_interact_radius;
+	if (dist_sq < r_sq) {
+		vec3 direction = vec3(diff.x, 0.0, diff.z);
+		float len = length(direction);
+		vec3 dir_norm = (len > 0.001) ? (direction / len) : vec3(0.0, 0.0, 1.0);
 
-	float dist = distance(cutter_pos, world_vert);
-	float power = smoothstep(cutter_interact_radius, 0.0, dist);
+		float dist = sqrt(dist_sq);
+		float power = smoothstep(cutter_interact_radius, 0.0, dist);
 
-	vec3 model_dir = inv_model * dir_norm;
-	VERTEX += model_dir * (power * interact_power * bend_factor);
-	VERTEX.y -= power * interact_power * 0.14 * bend_factor;
+		vec3 model_dir = vec3(dot(dir_norm, col_x), 0.0, dot(dir_norm, col_z)) * inv_scale_sq;
+		VERTEX += model_dir * (power * interact_power * bend_factor);
+		VERTEX.y -= power * interact_power * 0.14 * bend_factor;
+	}
 }
 
 void fragment() {

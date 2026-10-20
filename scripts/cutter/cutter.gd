@@ -49,14 +49,28 @@ var head_yaw_lag: float = 0.0
 var initial_body_y: float = 0.0
 var initial_wheel_y: float = 0.0
 
+var _cached_blade_radius: float = 0.90
+var _cached_cutter_speed: float = 3.25
+var _cached_cutter_power: int = 1
+var _last_shader_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
+var _last_shader_radius: float = -1.0
+var _overlapping_vegetation: Array[Area3D] = []
+
 func _ready() -> void:
 	current_blade_speed = idle_rotation_speed
+	_cached_cutter_speed = base_speed
 	if robot_body:
 		robot_body.rotation.y = PI
 		initial_body_y = robot_body.position.y
 		last_body_yaw = robot_body.rotation.y
 	if wheel_mesh:
 		initial_wheel_y = wheel_mesh.position.y
+	if blade_area != null:
+		if not blade_area.area_entered.is_connected(_on_blade_area_entered):
+			blade_area.area_entered.connect(_on_blade_area_entered)
+		if not blade_area.area_exited.is_connected(_on_blade_area_exited):
+			blade_area.area_exited.connect(_on_blade_area_exited)
+		call_deferred("_sync_initial_overlaps")
 	_setup_eyes()
 	update_upgrades()
 	_update_shader_globals()
@@ -92,9 +106,6 @@ func _on_game_state_changed(new_state: int) -> void:
 		elif new_state == GameManager.GameState.PLAYING:
 			robot_eyes.set_screen_off(false)
 
-func _process(_delta: float) -> void:
-	_update_shader_globals()
-
 const GRASS_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
 const GRASS_YELLOW_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_yellow_material.tres")
 const GRASS_BLUE_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_blue_material.tres")
@@ -103,10 +114,11 @@ const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_mater
 const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
 
 func _update_shader_globals() -> void:
-	var blade_radius: float = 0.90
-	if UpgradeManager != null:
-		blade_radius = UpgradeManager.get_blade_radius()
-	var interact_radius: float = blade_radius + 0.95
+	var interact_radius: float = _cached_blade_radius + 0.95
+	if global_position.distance_squared_to(_last_shader_pos) <= 0.0004 and absf(interact_radius - _last_shader_radius) <= 0.001:
+		return
+	_last_shader_pos = global_position
+	_last_shader_radius = interact_radius
 
 	if GRASS_MAT:
 		GRASS_MAT.set_shader_parameter("cutter_pos", global_position)
@@ -133,10 +145,17 @@ func _on_upgrade_purchased(upgrade_name: String, _level: int) -> void:
 
 func update_upgrades() -> void:
 	if UpgradeManager == null:
+		_cached_blade_radius = 0.90
+		_cached_cutter_speed = base_speed
+		_cached_cutter_power = 1
 		return
 	
+	_cached_blade_radius = UpgradeManager.get_blade_radius()
+	_cached_cutter_speed = UpgradeManager.get_cutter_speed()
+	_cached_cutter_power = UpgradeManager.get_cutter_power()
+
 	# Atualiza raio da área física de corte
-	var radius: float = UpgradeManager.get_blade_radius()
+	var radius: float = _cached_blade_radius
 	if blade_shape.shape is CylinderShape3D:
 		blade_shape.shape.radius = radius
 	elif blade_shape.shape is SphereShape3D:
@@ -148,6 +167,7 @@ func update_upgrades() -> void:
 		blade_spinner.scale = Vector3(visual_scale, 1.0, visual_scale)
 	
 	_update_blade_tier_visual()
+	_update_shader_globals()
 
 func _update_blade_tier_visual() -> void:
 	var tier: int = 1
@@ -199,9 +219,7 @@ func _physics_process(delta: float) -> void:
 			if idle_eyes_timer > 5.5 and robot_eyes.current_expression == RobotEyes.EyeExpression.NORMAL:
 				robot_eyes.set_expression(RobotEyes.EyeExpression.SLEEPING)
 
-	var target_speed: float = base_speed
-	if UpgradeManager != null:
-		target_speed = UpgradeManager.get_cutter_speed()
+	var target_speed: float = _cached_cutter_speed
 
 	# Gerenciamento de choque / ricochete
 	if is_stunned:
@@ -213,6 +231,7 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		_process_procedural_motion(delta, target_speed)
 		_check_obstacle_collisions()
+		_update_shader_globals()
 		return
 
 	# Movimento omnidirecional responsivo baseado na entrada
@@ -241,6 +260,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_check_obstacle_collisions()
 	_process_cutting()
+	_update_shader_globals()
 
 func _process_procedural_motion(delta: float, target_speed: float) -> void:
 	if robot_body == null:
@@ -348,17 +368,47 @@ func _trigger_obstacle_shock(normal: Vector3) -> void:
 	if GameManager != null:
 		GameManager.trigger_haptic_impact()
 
-func _process_cutting() -> void:
+func _sync_initial_overlaps() -> void:
 	if blade_area == null:
 		return
-	
-	var cutting_power: int = 1
-	if UpgradeManager != null:
-		cutting_power = UpgradeManager.get_cutter_power()
+	var initial_areas: Array[Area3D] = blade_area.get_overlapping_areas()
+	for area in initial_areas:
+		_on_blade_area_entered(area)
 
-	var overlapping_areas: Array[Area3D] = blade_area.get_overlapping_areas()
-	for area in overlapping_areas:
-		if area.is_in_group("vegetation"):
-			var plant: Node = area.get_parent()
-			if plant and plant.has_method("cut"):
-				plant.cut(cutting_power)
+func _on_blade_area_entered(area: Area3D) -> void:
+	if area == null or not is_instance_valid(area) or not area.is_in_group("vegetation"):
+		return
+	var fully_cut: bool = _cut_vegetation_area(area)
+	if not fully_cut and not _overlapping_vegetation.has(area):
+		_overlapping_vegetation.append(area)
+
+func _on_blade_area_exited(area: Area3D) -> void:
+	var idx: int = _overlapping_vegetation.find(area)
+	if idx != -1:
+		_overlapping_vegetation.remove_at(idx)
+
+func _cut_vegetation_area(area: Area3D) -> bool:
+	if area == null or not is_instance_valid(area):
+		return true
+	var plant: Node = area.get_parent()
+	if plant == null or not is_instance_valid(plant):
+		return true
+	if bool(plant.get("is_cut")):
+		return true
+	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		return false
+	if plant.has_method("cut"):
+		plant.call("cut", _cached_cutter_power)
+	return bool(plant.get("is_cut"))
+
+func _process_cutting() -> void:
+	if _overlapping_vegetation.is_empty():
+		return
+	for i in range(_overlapping_vegetation.size() - 1, -1, -1):
+		var area: Area3D = _overlapping_vegetation[i]
+		if area == null or not is_instance_valid(area):
+			_overlapping_vegetation.remove_at(i)
+			continue
+		var fully_cut: bool = _cut_vegetation_area(area)
+		if fully_cut:
+			_overlapping_vegetation.remove_at(i)
