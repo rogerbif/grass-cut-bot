@@ -16,8 +16,8 @@ Esta melhoria refinou expressivamente a experiência visual e a usabilidade do M
    - A velocidade do arrasto foi geometricamente calibrada com o plano do solo ($Y=0$) através da projeção de raios de câmera (`project_ray_origin` / `project_ray_normal`), garantindo que o terreno sob o dedo acompanhe com precisão milimétrica o movimento do toque em qualquer resolução.
    - **Centralização Automática em X:** À medida que a tela rola pelo arquipélago em ziguezague, a câmera calcula continuamente sua coordenada $X$ interpolando os waypoints dos centros das ilhas através de uma curva cúbica Hermite (`smoothstep`), centralizando perfeitamente no eixo horizontal qualquer fase que esteja no foco da tela.
    - Sentido de arraste corrigido para a convenção natural: arrastar o dedo para baixo puxa o mapa para baixo na tela; arrastar para cima puxa o mapa para cima.
-   - Rodinha do mouse alinhada ao visual do mapa: rolar para cima avança para as próximas fases (ao norte); rolar para baixo recua para as fases anteriores (ao sul).
-   - Preservados os gestos de swipe rápido (flick) para avançar/voltar de fase e o snap magnético suave.
+   - Rodinha do mouse e swap/flick gestural na direção do movimento: swap/scroll para baixo avança para a próxima fase; swap/scroll para cima volta para a fase anterior.
+   - Preservado o snap magnético suave para a ilha mais próxima na soltura lenta.
 4. **Placa Informativa Adaptativa:** A placa de madeira com o número do estágio e as estrelas (⭐) adapta sua pose e orientação conforme o modo de câmera ativo:
    - **Na Visão Mapa (`MAP_VIEW`):** A placa repousa deitada a $Y=0.18\text{m}$ no canto inferior direito de cada ilha ($+X$, $+Z$, calculado pelas dimensões da fase), inclinada em $-58^\circ$ (perpendicular ao vetor focal da câmera aérea), desobstruindo o centro da fase e permitindo leitura límpida sem ocultar a vegetação e o layout geométrico.
    - **Na Visão Robô (`BOT_VIEW`):** A placa ergue-se em pé através de sua estaca fincada no chão, posicionada à frente e à esquerda do robô (`x = -1.15m`, `z = 0.85m`, rotação $15^\circ$), criando uma composição de diorama tridimensional orgânica.

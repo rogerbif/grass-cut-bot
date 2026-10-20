@@ -119,9 +119,9 @@ func _input(event: InputEvent) -> void:
 			else:
 				_end_drag()
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
-			snap_to_level(current_snapped_level + 1)
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:
 			snap_to_level(current_snapped_level - 1)
+		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:
+			snap_to_level(current_snapped_level + 1)
 
 	elif event is InputEventMouseMotion and is_dragging:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
@@ -170,12 +170,12 @@ func _end_drag() -> void:
 		return
 	is_dragging = false
 
-	# Detecção de gesto rápido (swap / flick) para próxima ou anterior
+	# Detecção de gesto rápido (swap / flick) na direção do movimento
 	if abs(flick_velocity) > swipe_velocity_threshold:
-		if flick_velocity > 0: # Deslizada para cima -> avança para próxima fase
-			snap_to_level(current_snapped_level + 1)
-		else: # Deslizada para baixo -> retorna para fase anterior
+		if flick_velocity > 0: # Deslizada para cima -> volta para fase anterior
 			snap_to_level(current_snapped_level - 1)
+		else: # Deslizada para baixo -> avança para próxima fase
+			snap_to_level(current_snapped_level + 1)
 	else:
 		# Soltura lenta -> encaixe magnético na ilha mais próxima
 		var closest_lvl: int = find_closest_level(current_scroll_z)

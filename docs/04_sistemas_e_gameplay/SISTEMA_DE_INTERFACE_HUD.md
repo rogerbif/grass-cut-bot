@@ -80,9 +80,9 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
    - **Rolagem Touch/Mouse Calibrada 1:1, Centralização Automática em X & Gesto de Swipe:**
      - **Centralização Automática em X na Reta:** A câmera interpola continuamente sua coordenada horizontal ($X$) através dos waypoints de cada ilha ao longo do ziguezague tropical via curva cúbica Hermite (`smoothstep`), de modo que cada fase que entra na mira/reta do scroll fique perfeitamente centralizada no meio da tela portrait.
      - O deslocamento acompanha o sentido natural: arrastar para baixo faz o mapa descer acompanhando o dedo; arrastar para cima faz o mapa subir.
-     - Roda do mouse no sentido visual natural: rolagem para cima avança para as próximas fases ao norte do mapa; rolagem para baixo recua para as fases anteriores.
+     - Roda do mouse no sentido visual natural: rolagem para baixo avança para a próxima fase; rolagem para cima recua para a fase anterior.
      - A taxa de deslocamento é calculada diretamente pela interseção geométrica do raio da câmera com o plano do solo ($Y=0$), garantindo que a ilha sob o dedo se mova exatamente na mesma velocidade do toque, sem acelerações ou descompassos.
-     - Suporte a gesto de swipe/flick vertical rápido para avançar ou retornar fases com facilidade, além de snap magnético suave para a ilha mais próxima ao soltar o dedo lentamente.
+     - Suporte a gesto de swipe/flick vertical na direção do movimento (swap para baixo avança para a próxima fase; swap para cima volta para a anterior), com snap magnético suave para a ilha mais próxima na soltura lenta.
    - Revela as 20 fases com estrelas (concluídas), robô posicionado sobre a fase atual e ilha final de nuvens com a placa *"Em breve mais fases..."*.
 
 ### 3.2 Top Bar e Barra de Navegação Inferior (`BottomNavBar`)
