@@ -33,8 +33,8 @@ Ao finalizar melhorias, fases ou refatorações, execute os seguintes 5 passos o
 - Sincronize a versão em `project.godot` (`config/version`) E em `export_presets.cfg` (`version/name` e `version/code`).
 - Registre o bloco correspondente no changelog histórico.
 
-## 5. Validação e Checkpoint no Git
+## 5. Validação e Sincronização Obrigatória no GitHub
 - Execute `git status` para auditoria.
-- Execute `git add .` e `git commit` utilizando `BypassSandbox: true` para evitar falhas de criação de lock (`.git/index.lock: Permission denied`) ocasionadas pelo isolamento do sandbox em caminhos do OneDrive no Windows.
+- Execute `git add -A` e `git commit` utilizando `BypassSandbox: true` para evitar falhas de criação de lock (`.git/index.lock: Permission denied`) ocasionadas pelo isolamento do sandbox em caminhos do OneDrive no Windows.
 - Crie o commit semântico padronizado (Exemplo: `git commit -m "docs: atualizacao da wiki e historico [vX.Y.Z]"`).
-- Verifique se há repositório remoto configurado (`git remote -v`) antes de tentar `git push`.
+- **Push Obrigatório:** Execute obrigatoriamente `git push origin main` a cada nova versão atualizada (bump de versão) ou melhoria finalizada, mantendo o repositório remoto (`https://github.com/rogerbif/grass-cut-bot.git`) 100% sincronizado.

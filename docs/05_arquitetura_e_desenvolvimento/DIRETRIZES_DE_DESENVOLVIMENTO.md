@@ -27,7 +27,7 @@ $$\text{v}\text{MAJOR}.\text{MINOR}.\text{PATCH}-\text{STAGE}$$
 
 ---
 
-## 3. Padrão de Mensagens Semânticas de Commit (Git)
+## 3. Padrão de Mensagens Semânticas de Commit e Sincronização Obrigatória no GitHub
 
 Todas as alterações no repositório devem seguir commits semânticos padronizados:
 - `feat:` Nova mecânica, entidade, fase ou tela adicionada.
@@ -36,6 +36,10 @@ Todas as alterações no repositório devem seguir commits semânticos padroniza
 - `style:` Ajustes puramente visuais em materiais, cores ou layout.
 - `refactor:` Reorganização de código sem alteração no comportamento externo do jogo.
 - `perf:` Otimizações de renderização, draw calls ou uso de memória mobile.
+
+### Sincronização Contínua com o Repositório Remoto (GitHub)
+- **Repositório Oficial:** `https://github.com/rogerbif/grass-cut-bot.git` (Branch principal: `main`).
+- **Obrigatoriedade de Push:** A cada nova versão concluída (incremento de Game SemVer), correção ou refatoração finalizada, é obrigatório executar `git push origin main`, garantindo que o progresso nunca fique restrito apenas ao ambiente local.
 
 ---
 

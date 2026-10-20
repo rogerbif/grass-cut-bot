@@ -57,4 +57,4 @@ Antes de planejar ou executar alterações em qualquer subsistema, o agente DEVE
 2. **Preservação de Documentação:** Mantenha a wiki 100% atualizada a cada modificação na base de código.
 3. **Protocolo Perpétuo de Changelog:** Toda melhoria concluída deve consolidar o plano e a entrega em `docs/historico_melhorias/<nome_da_melhoria>.md`.
 4. **Ciclo Game SemVer:** Incremente a versão do projeto em `project.godot` e registre o novo bloco no changelog histórico.
-5. **Checkpoints no Git:** Valide a integridade do código (0 warnings / sem erros) e realize commits semânticos a cada etapa concluída.
+5. **Checkpoints e Sincronização Obrigatória no GitHub:** Valide a integridade do código (0 warnings / sem erros), realize commits semânticos a cada etapa concluída e execute obrigatoriamente `git push origin main` a cada nova versão atualizada (SemVer bump / término de melhoria), mantendo o repositório remoto (`https://github.com/rogerbif/grass-cut-bot.git`) 100% atualizado e sincronizado.
