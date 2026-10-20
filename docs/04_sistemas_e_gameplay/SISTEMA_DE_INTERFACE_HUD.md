@@ -72,9 +72,15 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
    - **Locomoção Autônoma:** O robô avança suavemente meio metro (+0.50m) com rotação física da roda e inclinação inercial frontal (`pitch`), faz curvas suaves exploratórias ($\pm 22^\circ$) e recua de marcha à ré para a base.
    - **Cabeça Expressiva e Olhos de LED:** Articulação autônoma da cabeça (olhar para os lados, cima e baixo), piscar orgânico e alternância randômica de humores (`NORMAL`, `HAPPY`, `ALERT`, `WINK`, `VICTORY`).
 2. **Visão Mapa (`MAP_VIEW` - Overworld do Arquipélago):**
-   - Transição suave via botão `[ 🗺️ MAP ]` para uma câmera elevada com ângulo de $55^\circ$.
-   - Revela o arquipélago 3D com as 20 fases canônicas conectadas sobre o oceano, pinos com estrelas (fases concluídas), cadeados (fases futuras), robô posicionado sobre a fase atual e ilha final de nuvens com a placa *"Em breve mais fases..."*.
-   - Suporte completo a rolagem vertical (*drag scroll*) com inércia e limites de amortecimento elástico.
+   - Transição suave via botão `[ 🗺️ MAP ]` para uma câmera aérea elevada com ângulo de pitch de $58^\circ$.
+   - **Miniaturas Fiéis das Fases:** O arquipélago 3D gera miniaturas geométricas reais para cada uma das 20 fases canônicas lendo os arquivos JSON (`data/levels/level_XX.json`) e instanciando os tiles 3D reais (`tile_island_center`, `edge`, `corner_out`, `corner_in`, etc.) a uma escala reduzida de $0.38\times$, preservando o formato e contorno idênticos aos estágios jogáveis.
+   - **Placas de Fase Adaptativas:**
+     - **Na Visão Mapa:** A placa repousa plana sobre o chão da ilha, com inclinação de $-58^\circ$ (perpendicular à linha de visão da câmera aérea), tornando o número do nível e a contagem de estrelas (⭐) perfeitamente legíveis do alto sem ocultar os tiles.
+     - **Na Visão Bot:** A placa ergue-se em pé fincada no solo através de sua estaca de madeira, posicionada à frente e à esquerda do robô (`x = -1.15m`, `z = 0.85m`, rotação $15^\circ$), integrando-se naturalmente ao cenário.
+   - **Rolagem Touch/Mouse Calibrada 1:1 & Gesto de Swipe:**
+     - A taxa de deslocamento é calculada diretamente pela interseção geométrica do raio da câmera com o plano do solo ($Y=0$), garantindo que a ilha sob o dedo se mova exatamente na mesma velocidade do toque, sem acelerações ou descompassos.
+     - Suporte a gesto de swipe/flick vertical rápido para avançar ou retornar fases com facilidade, além de snap magnético suave para a ilha mais próxima ao soltar o dedo lentamente.
+   - Revela as 20 fases com estrelas (concluídas), robô posicionado sobre a fase atual e ilha final de nuvens com a placa *"Em breve mais fases..."*.
 
 ### 3.2 Top Bar e Barra de Navegação Inferior (`BottomNavBar`)
 - **Top Bar do Hub:** Exibe moedas, energia e o título da fase atual ("Ilha Tropical") com alinhamento à direita (`alignment = 2`, `horizontal_alignment = 2`), encostado elegantemente junto ao botão de configurações `[⚙️]`.

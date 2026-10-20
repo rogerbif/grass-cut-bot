@@ -35,49 +35,50 @@ material = SubResource("StandardMaterial3D_sand")
 size = Vector3(1.8, 0.02, 1.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_click"]
-size = Vector3(4.0, 1.5, 3.6)
+size = Vector3(4.5, 1.5, 4.0)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_stick"]
-roughness = 0.8
-albedo_color = Color(0.95, 0.95, 0.95, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_post"]
+roughness = 0.9
+albedo_color = Color(0.32, 0.2, 0.12, 1)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_stick"]
-material = SubResource("StandardMaterial3D_stick")
+[sub_resource type="CylinderMesh" id="CylinderMesh_post"]
+material = SubResource("StandardMaterial3D_post")
 top_radius = 0.04
 bottom_radius = 0.04
-height = 0.8
+height = 0.65
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_badge"]
-roughness = 0.7
-albedo_color = Color(0.2, 0.6, 0.95, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_board"]
+roughness = 0.88
+albedo_color = Color(0.22, 0.48, 0.76, 1)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_badge"]
-material = SubResource("StandardMaterial3D_badge")
-top_radius = 0.38
-bottom_radius = 0.38
-height = 0.12
+[sub_resource type="BoxMesh" id="BoxMesh_board"]
+material = SubResource("StandardMaterial3D_board")
+size = Vector3(1.2, 0.65, 0.08)
 
 [node name="IslandNode" type="Node3D"]
 script = ExtResource("1_island")
 
-[node name="FoamRim" type="MeshInstance3D" parent="."]
+[node name="MiniatureContainer" type="Node3D" parent="."]
+
+[node name="FallbackMesh" type="Node3D" parent="."]
+
+[node name="FoamRim" type="MeshInstance3D" parent="FallbackMesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.32, 0)
 mesh = SubResource("BoxMesh_foam")
 
-[node name="CliffMesh" type="MeshInstance3D" parent="."]
+[node name="CliffMesh" type="MeshInstance3D" parent="FallbackMesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
 mesh = SubResource("BoxMesh_cliff")
 
-[node name="GroundMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="GroundMesh" type="MeshInstance3D" parent="FallbackMesh"]
 mesh = SubResource("BoxMesh_ground")
 
-[node name="SandPatch" type="MeshInstance3D" parent="."]
+[node name="SandPatch" type="MeshInstance3D" parent="FallbackMesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.201, 0)
 mesh = SubResource("BoxMesh_sand")
 
 [node name="BotAnchor" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
 
 [node name="ClickArea" type="Area3D" parent="."]
 
@@ -85,31 +86,29 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_click")
 
-[node name="PinPoint" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 1.35, -0.6)
+[node name="Plaque" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, 0, 0.08, 0.5)
 
-[node name="StickMesh" type="MeshInstance3D" parent="PinPoint"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
-mesh = SubResource("CylinderMesh_stick")
+[node name="PostMesh" type="MeshInstance3D" parent="Plaque"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)
+mesh = SubResource("CylinderMesh_post")
 
-[node name="BadgeMesh" type="MeshInstance3D" parent="PinPoint"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-mesh = SubResource("CylinderMesh_badge")
+[node name="BoardMesh" type="MeshInstance3D" parent="Plaque"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+mesh = SubResource("BoxMesh_board")
 
-[node name="LevelLabel" type="Label3D" parent="PinPoint"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.08)
-billboard = 1
+[node name="LevelLabel" type="Label3D" parent="Plaque"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0.05)
 double_sided = false
 text = "1"
-font_size = 48
-outline_size = 12
+font_size = 42
+outline_size = 10
 
-[node name="StarsLabel" type="Label3D" parent="PinPoint"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
-billboard = 1
+[node name="StarsLabel" type="Label3D" parent="Plaque"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48, 0.05)
 double_sided = false
 text = "⭐⭐⭐"
-font_size = 32
-outline_size = 8
+font_size = 22
+outline_size = 6
 
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]

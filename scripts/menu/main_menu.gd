@@ -23,7 +23,7 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 @onready var fade_rect: ColorRect = $CanvasLayer/FadeRect
 @onready var version_badge: Label = $CanvasLayer.get_node_or_null("VersionBadge") as Label
 
-var total_levels_count: int = 3
+var total_levels_count: int = 20
 var island_nodes: Array[Node3D] = []
 var selected_level: int = 1
 
@@ -65,9 +65,11 @@ func _ready() -> void:
 
 	if menu_camera != null:
 		menu_camera.view_mode_changed.connect(_on_camera_view_mode_changed)
+		menu_camera.island_snapped.connect(_on_camera_island_snapped)
 
-	# Inicia na aba Home
+	# Inicia na aba Home e visão do Bot
 	_switch_tab(1)
+	_update_plaques_view_mode(false, false)
 
 func _on_save_reset() -> void:
 	_update_top_bar()
@@ -79,17 +81,15 @@ func _detect_levels_and_build_archipelago() -> void:
 		c.queue_free()
 	island_nodes.clear()
 
-	# Identifica quantidade de fases existentes
+	# Identifica quantidade de fases existentes (cobre as 20 fases canônicas)
 	var level_count: int = 0
-	for lvl in range(1, 20):
+	for lvl in range(1, 21):
 		var json_path: String = "res://data/levels/level_%02d.json" % lvl
 		var scene_path: String = "res://scenes/levels/level_%02d.tscn" % lvl
 		if FileAccess.file_exists(json_path) or ResourceLoader.exists(scene_path):
 			level_count = lvl
-		elif lvl <= 3: # Garante ao menos 3 fases no arquipélago
-			level_count = lvl
 
-	total_levels_count = maxi(level_count, 3)
+	total_levels_count = maxi(level_count, 20)
 
 	# Garante que selected_level e GameManager.current_level estejam em faixa válida
 	var cur_lvl: int = GameManager.current_level if GameManager != null else 1
@@ -138,23 +138,24 @@ func _detect_levels_and_build_archipelago() -> void:
 	var end_z: float = current_z - 7.5
 	clouds_end.position = Vector3(0.0, 0.0, end_z)
 
-	# Configura limites da rolagem da câmera
+	# Configura limites da rolagem e parâmetros da câmera
 	if menu_camera != null:
+		menu_camera.total_levels = total_levels_count
+		menu_camera.z_spacing = z_spacing
 		menu_camera.set_scroll_bounds(0.0, end_z)
 
 	# Posiciona o robô na ilha da fase atual
 	_update_bot_position()
-	_set_pins_visible(false)
 
 func _update_bot_position() -> void:
 	var idx: int = selected_level - 1
 	if idx >= 0 and idx < island_nodes.size():
 		var island: Node3D = island_nodes[idx]
-		var bot_target: Vector3 = Vector3(0, 0.2, 0)
+		var bot_target: Vector3 = Vector3(0, 0.15, 0)
 		if island.has_method("get_bot_position"):
 			bot_target = island.get_bot_position()
 		else:
-			bot_target = island.global_position + Vector3(0, 0.2, 0)
+			bot_target = island.global_position + Vector3(0, 0.15, 0)
 
 		if menu_bot != null:
 			if menu_bot.has_method("set_base_position"):
@@ -177,9 +178,20 @@ func _on_island_clicked(lvl_num: int) -> void:
 			selected_level = lvl_num
 			if SaveManager != null:
 				SaveManager.set_last_played_level(selected_level)
-			_update_bot_position()
+			if menu_camera != null:
+				if menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
+					menu_camera.snap_to_level(selected_level, true)
+				else:
+					_update_bot_position()
+			if tab_home != null and tab_home.has_method("update_level_display"):
+				tab_home.update_level_display(selected_level)
 			if GameManager != null:
 				GameManager.trigger_haptic_cut()
+
+func _on_camera_island_snapped(snapped_lvl: int) -> void:
+	selected_level = snapped_lvl
+	if tab_home != null and tab_home.has_method("update_level_display"):
+		tab_home.update_level_display(selected_level)
 
 func _on_toggle_view_requested() -> void:
 	if menu_camera != null:
@@ -190,12 +202,13 @@ func _on_camera_view_mode_changed(is_map: bool) -> void:
 		tab_home.set_view_mode(is_map)
 	if title_label != null:
 		title_label.text = "Mapa de Fases" if is_map else "Ilha Tropical"
-	_set_pins_visible(is_map)
+	_update_plaques_view_mode(is_map, true)
 
-func _set_pins_visible(is_vis: bool) -> void:
+func _update_plaques_view_mode(is_map: bool, animated: bool = true) -> void:
 	for island in island_nodes:
-		if island != null and island.has_method("set_pin_visible"):
-			island.set_pin_visible(is_vis)
+		if island != null and island.has_method("set_view_mode"):
+			var is_active: bool = (island.level_number == selected_level)
+			island.set_view_mode(is_map, is_active, animated)
 
 func _on_tab_changed(tab_idx: int) -> void:
 	_switch_tab(tab_idx)
