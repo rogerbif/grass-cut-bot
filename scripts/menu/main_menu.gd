@@ -143,6 +143,11 @@ func _detect_levels_and_build_archipelago() -> void:
 		menu_camera.total_levels = total_levels_count
 		menu_camera.z_spacing = z_spacing
 		menu_camera.set_scroll_bounds(0.0, end_z)
+		var waypoints: Array[Vector3] = []
+		for isl in island_nodes:
+			waypoints.append(isl.position)
+		waypoints.append(clouds_end.position)
+		menu_camera.set_island_positions(waypoints)
 
 	# Posiciona o robô na ilha da fase atual
 	_update_bot_position()

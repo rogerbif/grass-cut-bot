@@ -77,7 +77,8 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
    - **Placas de Fase Adaptativas:**
      - **Na Visão Mapa:** A placa repousa plana no canto inferior direito da ilha sobre o chão ($+X$, $+Z$, cota $Y=0.18\text{m}$), com inclinação de $-58^\circ$ (perpendicular à linha de visão da câmera aérea), desobstruindo totalmente o centro do mapa e tornando o número do nível e as estrelas (⭐) límpidos e elegantes.
      - **Na Visão Bot:** A placa ergue-se em pé fincada no solo através de sua estaca de madeira, posicionada à frente e à esquerda do robô (`x = -1.15m`, `z = 0.85m`, rotação $15^\circ$), integrando-se naturalmente ao cenário.
-   - **Rolagem Touch/Mouse Calibrada 1:1 no Sentido Natural & Gesto de Swipe:**
+   - **Rolagem Touch/Mouse Calibrada 1:1, Centralização Automática em X & Gesto de Swipe:**
+     - **Centralização Automática em X na Reta:** A câmera interpola continuamente sua coordenada horizontal ($X$) através dos waypoints de cada ilha ao longo do ziguezague tropical via curva cúbica Hermite (`smoothstep`), de modo que cada fase que entra na mira/reta do scroll fique perfeitamente centralizada no meio da tela portrait.
      - O deslocamento acompanha o sentido natural: arrastar para baixo faz o mapa descer acompanhando o dedo; arrastar para cima faz o mapa subir.
      - Roda do mouse no sentido visual natural: rolagem para cima avança para as próximas fases ao norte do mapa; rolagem para baixo recua para as fases anteriores.
      - A taxa de deslocamento é calculada diretamente pela interseção geométrica do raio da câmera com o plano do solo ($Y=0$), garantindo que a ilha sob o dedo se mova exatamente na mesma velocidade do toque, sem acelerações ou descompassos.

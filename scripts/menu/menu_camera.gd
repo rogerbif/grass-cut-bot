@@ -18,6 +18,7 @@ enum CameraMode { BOT_VIEW, MAP_VIEW }
 
 var current_mode: CameraMode = CameraMode.BOT_VIEW
 var target_bot_pos: Vector3 = Vector3.ZERO
+var island_waypoints: Array[Vector3] = []
 
 # Limites do mapa
 var min_z: float = -144.0 # Fim das nuvens
@@ -51,8 +52,42 @@ func _process(delta: float) -> void:
 			# Decaimento suave da velocidade
 			flick_velocity = lerp(flick_velocity, 0.0, delta * 8.0)
 
-		global_position = Vector3(0, map_height, current_scroll_z + map_z_offset)
+		# Centraliza a câmera no X da ilha que estiver na reta
+		var cam_x: float = get_camera_x_at_z(current_scroll_z)
+		global_position = Vector3(cam_x, map_height, current_scroll_z + map_z_offset)
 		rotation_degrees = Vector3(map_pitch_deg, 0, 0)
+
+func set_island_positions(positions: Array[Vector3]) -> void:
+	island_waypoints = positions.duplicate()
+
+func get_camera_x_at_z(scroll_z: float) -> float:
+	if island_waypoints.is_empty():
+		return 0.0
+
+	# Se estiver antes da primeira ilha
+	if scroll_z >= island_waypoints[0].z:
+		return island_waypoints[0].x
+
+	# Se estiver depois da última
+	var last_idx: int = island_waypoints.size() - 1
+	if scroll_z <= island_waypoints[last_idx].z:
+		return island_waypoints[last_idx].x
+
+	# Encontra os dois waypoints vizinhos
+	for i in range(last_idx):
+		var p_curr: Vector3 = island_waypoints[i]
+		var p_next: Vector3 = island_waypoints[i + 1]
+		# Z é estritamente decrescente
+		if scroll_z <= p_curr.z and scroll_z >= p_next.z:
+			var seg_len: float = p_curr.z - p_next.z
+			if seg_len < 0.001:
+				return p_curr.x
+			var t: float = (p_curr.z - scroll_z) / seg_len
+			# Curva cúbica suave (Hermite / Smoothstep) para serpenteamento elegante
+			var s: float = t * t * (3.0 - 2.0 * t)
+			return lerpf(p_curr.x, p_next.x, s)
+
+	return 0.0
 
 func get_ground_z(screen_pos: Vector2) -> float:
 	var ray_from: Vector3 = project_ray_origin(screen_pos)
@@ -192,7 +227,8 @@ func switch_to_map_view() -> void:
 	target_scroll_z = -float(current_snapped_level - 1) * z_spacing
 	current_scroll_z = target_scroll_z
 
-	var dest_pos: Vector3 = Vector3(0, map_height, current_scroll_z + map_z_offset)
+	var cam_x: float = get_camera_x_at_z(current_scroll_z)
+	var dest_pos: Vector3 = Vector3(cam_x, map_height, current_scroll_z + map_z_offset)
 	var dest_rot: Vector3 = Vector3(map_pitch_deg, 0, 0)
 
 	if active_tween != null and active_tween.is_valid():
