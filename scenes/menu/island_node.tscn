@@ -87,6 +87,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_click")
 
 [node name="Plaque" type="Node3D" parent="."]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, 0, 0.08, 0.5)
 
 [node name="PostMesh" type="MeshInstance3D" parent="Plaque"]

@@ -20,7 +20,7 @@ Esta melhoria refinou expressivamente a experiência visual e a usabilidade do M
    - Preservado o snap magnético suave para a ilha mais próxima na soltura lenta.
 4. **Placa Informativa Adaptativa:** A placa de madeira com o número do estágio e as estrelas (⭐) adapta sua pose e orientação conforme o modo de câmera ativo:
    - **Na Visão Mapa (`MAP_VIEW`):** A placa repousa deitada a $Y=0.18\text{m}$ no canto inferior direito de cada ilha ($+X$, $+Z$, calculado pelas dimensões da fase), inclinada em $-58^\circ$ (perpendicular ao vetor focal da câmera aérea), desobstruindo o centro da fase e permitindo leitura límpida sem ocultar a vegetação e o layout geométrico.
-   - **Na Visão Robô (`BOT_VIEW`):** A placa ergue-se em pé através de sua estaca fincada no chão, posicionada à frente e à esquerda do robô (`x = -1.15m`, `z = 0.85m`, rotação $15^\circ$), criando uma composição de diorama tridimensional orgânica.
+   - **Na Visão Robô (`BOT_VIEW`):** A placa permanece oculta (`visible = false`) para garantir um visual limpo e foco absoluto no robô cortador no diorama da Home.
 
 ---
 

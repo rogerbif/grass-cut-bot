@@ -274,17 +274,12 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 		if plaque_post != null:
 			plaque_post.visible = false # Oculta a estaca para virar um marco no chão
 	else:
-		# Na visão do bot: se for a ilha ativa, ergue-se em pé na frente do robô à esquerda
-		if is_active_island:
-			target_pos = Vector3(-1.15, 0.0, 0.85)
-			target_rot = Vector3(0.0, 15.0, 0.0)
-			target_vis = true
-			if plaque_post != null:
-				plaque_post.visible = true # Estaca visível fincada no chão
-		else:
-			target_pos = map_plaque_pos
-			target_rot = Vector3(-58.0, 0.0, 0.0)
-			target_vis = false # Oculta placas de ilhas de fundo para foco total no robô
+		# Na visão do bot: placa oculta para foco total no robô cortador
+		target_pos = map_plaque_pos
+		target_rot = Vector3(-58.0, 0.0, 0.0)
+		target_vis = false
+		if plaque_post != null:
+			plaque_post.visible = false
 
 	if animated:
 		if plaque_tween != null and plaque_tween.is_valid():
