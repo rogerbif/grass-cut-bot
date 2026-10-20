@@ -26,6 +26,7 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 var total_levels_count: int = 20
 var island_nodes: Array[Node3D] = []
 var selected_level: int = 1
+var clouds_end_node: Node3D = null
 
 func _ready() -> void:
 	if version_badge != null:
@@ -66,10 +67,12 @@ func _ready() -> void:
 	if menu_camera != null:
 		menu_camera.view_mode_changed.connect(_on_camera_view_mode_changed)
 		menu_camera.island_snapped.connect(_on_camera_island_snapped)
+		menu_camera.scroll_focus_changed.connect(_on_camera_scroll_focus_changed)
 
 	# Inicia na aba Home e visão do Bot
 	_switch_tab(1)
 	_update_plaques_view_mode(false, false)
+	_update_islands_visibility(false, selected_level)
 
 func _on_save_reset() -> void:
 	_update_top_bar()
@@ -135,6 +138,7 @@ func _detect_levels_and_build_archipelago() -> void:
 	# Instancia o banco terminal de nuvens 3D com "Em breve mais fases..."
 	var clouds_end: Node3D = CLOUDS_END_SCENE.instantiate() as Node3D
 	islands_container.add_child(clouds_end)
+	clouds_end_node = clouds_end
 	var end_z: float = current_z - 16.0
 	clouds_end.position = Vector3(0.0, 0.0, end_z)
 	clouds_end.scale = Vector3(2.5, 2.5, 2.5)
@@ -178,6 +182,8 @@ func _update_bot_position() -> void:
 		if menu_camera != null:
 			menu_camera.set_bot_target(bot_target)
 
+	_update_islands_visibility(menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else false, selected_level)
+
 	if tab_home != null and tab_home.has_method("update_level_display"):
 		tab_home.update_level_display(selected_level)
 
@@ -190,14 +196,16 @@ func _on_island_clicked(lvl_num: int) -> void:
 			selected_level = lvl_num
 			if SaveManager != null:
 				SaveManager.set_last_played_level(selected_level)
+			var is_map: bool = menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else false
 			if menu_camera != null:
-				if menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
+				if is_map:
 					menu_camera.snap_to_level(selected_level, true)
 				else:
 					_update_bot_position()
 			if tab_home != null and tab_home.has_method("update_level_display"):
 				tab_home.update_level_display(selected_level)
-			_update_plaques_view_mode(menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else false, true)
+			_update_plaques_view_mode(is_map, true)
+			_update_islands_visibility(is_map, selected_level)
 			if GameManager != null:
 				GameManager.trigger_haptic_cut()
 
@@ -205,7 +213,13 @@ func _on_camera_island_snapped(snapped_lvl: int) -> void:
 	selected_level = snapped_lvl
 	if tab_home != null and tab_home.has_method("update_level_display"):
 		tab_home.update_level_display(selected_level)
-	_update_plaques_view_mode(menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else true, false)
+	var is_map: bool = menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else true
+	_update_plaques_view_mode(is_map, false)
+	_update_islands_visibility(is_map, snapped_lvl)
+
+func _on_camera_scroll_focus_changed(focused_lvl: int) -> void:
+	if menu_camera != null and menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
+		_update_islands_visibility(true, focused_lvl)
 
 func _on_toggle_view_requested() -> void:
 	if menu_camera != null:
@@ -217,6 +231,35 @@ func _on_camera_view_mode_changed(is_map: bool) -> void:
 	if title_label != null:
 		title_label.text = "Mapa de Fases" if is_map else "Ilha Tropical"
 	_update_plaques_view_mode(is_map, true)
+	_update_islands_visibility(is_map, selected_level)
+
+func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
+	if not is_map:
+		# VISÃO BOT: Oculta todas as outras ilhas, renderiza exclusivamente a atual
+		for isl in island_nodes:
+			if isl == null:
+				continue
+			var is_current: bool = (isl.level_number == selected_level)
+			isl.visible = is_current
+			if isl.has_method("set_grass_animated"):
+				isl.set_grass_animated(is_current) # Grama animada SOMENTE na visão bot na ilha atual
+		if clouds_end_node != null:
+			clouds_end_node.visible = false
+	else:
+		# VISÃO MAP: Mostra somente a atual, a próxima e a anterior (janela deslizante de 3 ilhas)
+		# Grama NÃO precisa animar na visão mapa
+		var min_vis: int = focal_level - 1
+		var max_vis: int = focal_level + 1
+		for isl in island_nodes:
+			if isl == null:
+				continue
+			var in_window: bool = (isl.level_number >= min_vis and isl.level_number <= max_vis)
+			isl.visible = in_window
+			if isl.has_method("set_grass_animated"):
+				isl.set_grass_animated(false) # Visão map não anima a grama
+
+		if clouds_end_node != null:
+			clouds_end_node.visible = (focal_level >= total_levels_count - 1)
 
 func _update_plaques_view_mode(is_map: bool, animated: bool = true) -> void:
 	for island in island_nodes:

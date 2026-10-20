@@ -68,11 +68,15 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
 
 ### 3.1 Câmera Dual e Robô Autônomo (`scripts/menu/menu_camera.gd` & `menu_bot.gd`)
 1. **Visão Bot (`BOT_VIEW` - Padrão):**
-   - Diorama 3D tropical com o robô cortador rigorosamente assentado com o fundo da mono-wheel na cota exata da linha do solo ($Y = -0.059\text{m}$, tocando a superfície plana em $Y = 0.0$ e imerso na base do gramado sem flutuações).
+   - Diorama 3D tropical com o robô cortador rigorosamente assentado com o fundo da mono-wheel na cota exata da linha do solo ($Y = -0.052\text{m}$, tocando a superfície plana em $Y = 0.0$ e imerso na base do gramado sem flutuações).
+   - **Culling Total e Performance 60 FPS:** Na visão do bot, **todas as outras 19 ilhas e nuvens finais ficam ocultas (`visible = false`)**, renderizando exclusivamente a ilha atual onde o robô se encontra. Isso elimina 95% das draw calls e nós de cena.
+   - **Animação Seletiva de Vento:** O shader espacial de vento interativo roda **exclusivamente na ilha atual na visão do bot**.
    - **Locomoção Autônoma:** O robô avança suavemente meio metro (+0.50m) com rotação física da roda e inclinação inercial frontal (`pitch`), faz curvas suaves exploratórias ($\pm 22^\circ$) e recua de marcha à ré para a base.
    - **Cabeça Expressiva e Olhos de LED:** Articulação autônoma da cabeça (olhar para os lados, cima e baixo), piscar orgânico e alternância randômica de humores (`NORMAL`, `HAPPY`, `ALERT`, `WINK`, `VICTORY`).
 2. **Visão Mapa (`MAP_VIEW` - Overworld do Arquipélago):**
    - Transição suave via botão `[ 🗺️ MAP ]` para uma câmera aérea elevada com ângulo de pitch de $58^\circ$.
+   - **Janela Deslizante de 3 Ilhas (Culling Reativo):** Mostra **somente a ilha atual focada, a próxima e a anterior** ($[foco - 1, foco, foco + 1]$). Todas as outras 17 ilhas distantes são ocultadas automaticamente (`visible = false`) conforme o jogador rola o mapa.
+   - **Grama Estática (Sem Shader de Vento):** Na visão mapa, nenhuma ilha executa a animação de vento (`wind_strength = 0.0`), poupando ciclos de GPU para garantir 60 FPS estáveis mesmo com grande densidade de tufos.
    - **Ilhas em Escala Real (1:1), Grama Oficial com Shaders & Animação Seletiva de Vento:**
      - O arquipélago 3D gera as 20 fases canônicas em **escala física real ($1.0\times$)** idêntica à do gameplay, preservando as dimensões exatas de cada ilha e o robô cortador em escala $0.62\times$ (idêntico ao `Cutter`), eliminando qualquer discrepância visual ou desproporção.
      - **Visual 100% Equalizado com o Gameplay:** Todos os tufos de grama utilizam os shaders espaciais oficiais (`interactive_grass_*.tres`), com gradiente vertical contínuo da raiz ao topo (base escura e topo vibrante) e entrelaçamento orgânico de folhas (rotação randômica e escala horizontal $0.96 \sim 1.10\times$ e vertical $0.72 \sim 0.85\times$), criando o mesmo tapete contínuo e denso do jogo.

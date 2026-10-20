@@ -2,6 +2,7 @@ extends Camera3D
 
 signal view_mode_changed(is_map_view: bool)
 signal island_snapped(level_number: int)
+signal scroll_focus_changed(focused_level: int)
 
 enum CameraMode { BOT_VIEW, MAP_VIEW }
 
@@ -35,6 +36,7 @@ var flick_velocity: float = 0.0
 var is_transitioning: bool = false
 var active_tween: Tween = null
 var snap_tween: Tween = null
+var last_focused_level: int = -1
 
 func _ready() -> void:
 	current_scroll_z = target_bot_pos.z
@@ -52,6 +54,12 @@ func _process(delta: float) -> void:
 		else:
 			# Decaimento suave da velocidade
 			flick_velocity = lerp(flick_velocity, 0.0, delta * 8.0)
+
+		# Detecta mudança de foco no scroll para culling reativo das ilhas
+		var current_focus: int = find_closest_level(current_scroll_z)
+		if current_focus != last_focused_level:
+			last_focused_level = current_focus
+			scroll_focus_changed.emit(current_focus)
 
 		# Centraliza a câmera no X da ilha e enquadra dinamicamente na altura ideal
 		var cam_x: float = get_camera_x_at_z(current_scroll_z)
@@ -238,6 +246,8 @@ func snap_to_level(lvl: int, animated: bool = true) -> void:
 		current_scroll_z = target_z
 
 	island_snapped.emit(current_snapped_level)
+	last_focused_level = current_snapped_level
+	scroll_focus_changed.emit(current_snapped_level)
 
 func set_bot_target(bot_pos: Vector3) -> void:
 	target_bot_pos = bot_pos
@@ -264,6 +274,8 @@ func switch_to_map_view() -> void:
 	current_snapped_level = find_closest_level(target_bot_pos.z)
 	target_scroll_z = -float(current_snapped_level - 1) * z_spacing
 	current_scroll_z = target_scroll_z
+	last_focused_level = current_snapped_level
+	scroll_focus_changed.emit(current_snapped_level)
 
 	var cam_x: float = get_camera_x_at_z(current_scroll_z)
 	var cam_y: float = get_camera_height_at_z(current_scroll_z)
