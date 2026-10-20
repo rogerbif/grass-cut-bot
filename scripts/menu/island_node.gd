@@ -44,7 +44,8 @@ static var _mat_rock: StandardMaterial3D = null
 
 var is_map_mode: bool = true
 var is_active_island: bool = false
-var map_plaque_pos: Vector3 = Vector3(1.3, 0.18, 0.9)
+var island_dimensions: Vector2 = Vector2(12.0, 10.0)
+var map_plaque_pos: Vector3 = Vector3(4.5, 0.25, 3.5)
 var plaque_tween: Tween = null
 var grass_mesh_records: Array[Dictionary] = []
 
@@ -203,13 +204,14 @@ func build_miniature_from_json(lvl: int) -> void:
 	if fallback_mesh != null:
 		fallback_mesh.visible = false
 
-	# Escala canônica da miniatura de 0.38x
-	miniature_container.scale = Vector3(0.38, 0.38, 0.38)
+	# Escala real 1.0x (idêntica ao gameplay)
+	miniature_container.scale = Vector3(1.0, 1.0, 1.0)
+	island_dimensions = Vector2(float(width) * cell_size, float(height) * cell_size)
 
-	var half_w: float = (float(width) * cell_size * 0.38) / 2.0
-	var half_h: float = (float(height) * cell_size * 0.38) / 2.0
-	# Posiciona a placa no canto inferior direito da ilha (área demarcada)
-	map_plaque_pos = Vector3(half_w - 0.70, 0.18, half_h - 0.45)
+	var half_w: float = island_dimensions.x / 2.0
+	var half_h: float = island_dimensions.y / 2.0
+	# Posiciona a placa no canto inferior direito da ilha (escala real 1.0x)
+	map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
 	for item in terrain_arr:
 		if not (item is Dictionary):
@@ -349,10 +351,13 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 		plaque_root.rotation_degrees = target_rot
 		plaque_root.visible = target_vis
 
+func get_island_dimensions() -> Vector2:
+	return island_dimensions
+
 func get_bot_position() -> Vector3:
 	if bot_anchor != null:
 		return bot_anchor.global_position
-	return global_position + Vector3(0, -0.059, 0)
+	return global_position + Vector3(0, -0.052, 0)
 
 func _on_click_area_input_event(_camera: Camera3D, event: InputEvent, _event_position: Vector3, _normal: Vector3, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:

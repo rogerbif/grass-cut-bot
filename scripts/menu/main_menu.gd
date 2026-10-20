@@ -97,21 +97,21 @@ func _detect_levels_and_build_archipelago() -> void:
 		cur_lvl = SaveManager.get_last_played_level()
 	selected_level = clampi(cur_lvl, 1, total_levels_count)
 
-	var z_spacing: float = 7.2
+	var z_spacing: float = 18.5
 	var current_z: float = 0.0
 
 	for i in range(1, total_levels_count + 1):
 		var island: Node3D = ISLAND_SCENE.instantiate() as Node3D
 		islands_container.add_child(island)
 
-		# Padrão em ziguezague no arquipélago tropical
+		# Padrão em ziguezague no arquipélago tropical em escala real
 		var x_offset: float = 0.0
 		if i == 1:
 			x_offset = 0.0
 		elif i % 2 == 0:
-			x_offset = 2.4
+			x_offset = 5.5
 		else:
-			x_offset = -2.2
+			x_offset = -5.0
 
 		current_z = -float(i - 1) * z_spacing
 		island.position = Vector3(x_offset, 0.0, current_z)
@@ -135,8 +135,9 @@ func _detect_levels_and_build_archipelago() -> void:
 	# Instancia o banco terminal de nuvens 3D com "Em breve mais fases..."
 	var clouds_end: Node3D = CLOUDS_END_SCENE.instantiate() as Node3D
 	islands_container.add_child(clouds_end)
-	var end_z: float = current_z - 7.5
+	var end_z: float = current_z - 16.0
 	clouds_end.position = Vector3(0.0, 0.0, end_z)
+	clouds_end.scale = Vector3(2.5, 2.5, 2.5)
 
 	# Configura limites da rolagem e parâmetros da câmera
 	if menu_camera != null:
@@ -144,10 +145,16 @@ func _detect_levels_and_build_archipelago() -> void:
 		menu_camera.z_spacing = z_spacing
 		menu_camera.set_scroll_bounds(0.0, end_z)
 		var waypoints: Array[Vector3] = []
+		var dimensions: Array[Vector2] = []
 		for isl in island_nodes:
 			waypoints.append(isl.position)
+			if isl.has_method("get_island_dimensions"):
+				dimensions.append(isl.get_island_dimensions())
+			else:
+				dimensions.append(Vector2(12.0, 10.0))
 		waypoints.append(clouds_end.position)
-		menu_camera.set_island_positions(waypoints)
+		dimensions.append(Vector2(20.0, 14.0))
+		menu_camera.set_island_waypoints(waypoints, dimensions)
 
 	# Posiciona o robô na ilha da fase atual
 	_update_bot_position()
@@ -156,11 +163,11 @@ func _update_bot_position() -> void:
 	var idx: int = selected_level - 1
 	if idx >= 0 and idx < island_nodes.size():
 		var island: Node3D = island_nodes[idx]
-		var bot_target: Vector3 = Vector3(0, -0.059, 0)
+		var bot_target: Vector3 = Vector3(0, -0.052, 0)
 		if island.has_method("get_bot_position"):
 			bot_target = island.get_bot_position()
 		else:
-			bot_target = island.global_position + Vector3(0, -0.059, 0)
+			bot_target = island.global_position + Vector3(0, -0.052, 0)
 
 		if menu_bot != null:
 			if menu_bot.has_method("set_base_position"):

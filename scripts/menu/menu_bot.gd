@@ -93,7 +93,7 @@ func _process(delta: float) -> void:
 func _process_locomotion(delta: float) -> void:
 	_state_timer -= delta
 
-	var effective_wheel_radius: float = 0.45 * 0.70 # Raio com a escala visual 0.70x
+	var effective_wheel_radius: float = 0.45 * 0.62 # Raio com a escala visual 0.62x
 	var previous_offset: float = current_drive_offset
 
 	match current_state:

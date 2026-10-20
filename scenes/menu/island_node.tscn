@@ -35,7 +35,7 @@ material = SubResource("StandardMaterial3D_sand")
 size = Vector3(1.8, 0.02, 1.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_click"]
-size = Vector3(4.5, 1.5, 4.0)
+size = Vector3(14.0, 2.0, 12.0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_post"]
 roughness = 0.9
@@ -43,9 +43,9 @@ albedo_color = Color(0.32, 0.2, 0.12, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_post"]
 material = SubResource("StandardMaterial3D_post")
-top_radius = 0.04
-bottom_radius = 0.04
-height = 0.65
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.9
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_board"]
 roughness = 0.88
@@ -53,7 +53,7 @@ albedo_color = Color(0.22, 0.48, 0.76, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_board"]
 material = SubResource("StandardMaterial3D_board")
-size = Vector3(1.2, 0.65, 0.08)
+size = Vector3(2.0, 1.1, 0.12)
 
 [node name="IslandNode" type="Node3D"]
 script = ExtResource("1_island")
@@ -78,7 +78,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.201, 0)
 mesh = SubResource("BoxMesh_sand")
 
 [node name="BotAnchor" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.059, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.052, 0)
 
 [node name="ClickArea" type="Area3D" parent="."]
 
@@ -88,28 +88,28 @@ shape = SubResource("BoxShape3D_click")
 
 [node name="Plaque" type="Node3D" parent="."]
 visible = false
-transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, 0, 0.08, 0.5)
+transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, 0, 0.25, 0.5)
 
 [node name="PostMesh" type="MeshInstance3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
 mesh = SubResource("CylinderMesh_post")
 
 [node name="BoardMesh" type="MeshInstance3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
 mesh = SubResource("BoxMesh_board")
 
 [node name="LevelLabel" type="Label3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0.05)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0.08)
 double_sided = false
 text = "1"
-font_size = 42
-outline_size = 10
+font_size = 64
+outline_size = 14
 
 [node name="StarsLabel" type="Label3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48, 0.05)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0.08)
 double_sided = false
 text = "⭐⭐⭐"
-font_size = 22
-outline_size = 6
+font_size = 34
+outline_size = 8
 
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]

@@ -5,20 +5,21 @@ signal island_snapped(level_number: int)
 
 enum CameraMode { BOT_VIEW, MAP_VIEW }
 
-@export var bot_offset: Vector3 = Vector3(0, 1.15, 3.8)
-@export var bot_pitch_deg: float = -6.0
+@export var bot_offset: Vector3 = Vector3(0, 1.25, 4.0)
+@export var bot_pitch_deg: float = -8.0
 
-@export var map_height: float = 16.5
-@export var map_z_offset: float = 9.8
+@export var map_height: float = 28.0
+@export var map_z_offset: float = 17.5
 @export var map_pitch_deg: float = -58.0
 
-@export var z_spacing: float = 7.2
+@export var z_spacing: float = 18.5
 @export var total_levels: int = 20
 @export var swipe_velocity_threshold: float = 6.0
 
 var current_mode: CameraMode = CameraMode.BOT_VIEW
 var target_bot_pos: Vector3 = Vector3.ZERO
 var island_waypoints: Array[Vector3] = []
+var island_dimensions: Array[Vector2] = []
 
 # Limites do mapa
 var min_z: float = -144.0 # Fim das nuvens
@@ -52,13 +53,50 @@ func _process(delta: float) -> void:
 			# Decaimento suave da velocidade
 			flick_velocity = lerp(flick_velocity, 0.0, delta * 8.0)
 
-		# Centraliza a câmera no X da ilha que estiver na reta
+		# Centraliza a câmera no X da ilha e enquadra dinamicamente na altura ideal
 		var cam_x: float = get_camera_x_at_z(current_scroll_z)
-		global_position = Vector3(cam_x, map_height, current_scroll_z + map_z_offset)
+		var cam_y: float = get_camera_height_at_z(current_scroll_z)
+		var pitch_rad: float = deg_to_rad(absf(map_pitch_deg))
+		var cam_z_offset: float = cam_y / tan(pitch_rad) if pitch_rad > 0.001 else map_z_offset
+		global_position = Vector3(cam_x, cam_y, current_scroll_z + cam_z_offset)
 		rotation_degrees = Vector3(map_pitch_deg, 0, 0)
+
+func set_island_waypoints(waypoints: Array[Vector3], dimensions: Array[Vector2] = []) -> void:
+	island_waypoints = waypoints.duplicate()
+	island_dimensions = dimensions.duplicate()
 
 func set_island_positions(positions: Array[Vector3]) -> void:
 	island_waypoints = positions.duplicate()
+
+func calculate_island_target_height(dim: Vector2) -> float:
+	var effective_span: float = maxf(dim.x * 1.65, dim.y * 1.25)
+	return clampf(effective_span * 1.45, 25.0, 36.0)
+
+func get_camera_height_at_z(scroll_z: float) -> float:
+	if island_dimensions.is_empty() or island_waypoints.is_empty():
+		return map_height
+
+	if scroll_z >= island_waypoints[0].z:
+		return calculate_island_target_height(island_dimensions[0])
+
+	var last_idx: int = mini(island_waypoints.size(), island_dimensions.size()) - 1
+	if scroll_z <= island_waypoints[last_idx].z:
+		return calculate_island_target_height(island_dimensions[last_idx])
+
+	for i in range(last_idx):
+		var p_curr: Vector3 = island_waypoints[i]
+		var p_next: Vector3 = island_waypoints[i + 1]
+		if scroll_z <= p_curr.z and scroll_z >= p_next.z:
+			var seg_len: float = p_curr.z - p_next.z
+			if seg_len < 0.001:
+				return calculate_island_target_height(island_dimensions[i])
+			var t: float = (p_curr.z - scroll_z) / seg_len
+			var s: float = t * t * (3.0 - 2.0 * t)
+			var h_curr: float = calculate_island_target_height(island_dimensions[i])
+			var h_next: float = calculate_island_target_height(island_dimensions[i + 1])
+			return lerpf(h_curr, h_next, s)
+
+	return map_height
 
 func get_camera_x_at_z(scroll_z: float) -> float:
 	if island_waypoints.is_empty():
@@ -228,7 +266,10 @@ func switch_to_map_view() -> void:
 	current_scroll_z = target_scroll_z
 
 	var cam_x: float = get_camera_x_at_z(current_scroll_z)
-	var dest_pos: Vector3 = Vector3(cam_x, map_height, current_scroll_z + map_z_offset)
+	var cam_y: float = get_camera_height_at_z(current_scroll_z)
+	var pitch_rad: float = deg_to_rad(absf(map_pitch_deg))
+	var cam_z_offset: float = cam_y / tan(pitch_rad) if pitch_rad > 0.001 else map_z_offset
+	var dest_pos: Vector3 = Vector3(cam_x, cam_y, current_scroll_z + cam_z_offset)
 	var dest_rot: Vector3 = Vector3(map_pitch_deg, 0, 0)
 
 	if active_tween != null and active_tween.is_valid():
