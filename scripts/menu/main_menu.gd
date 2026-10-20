@@ -156,11 +156,11 @@ func _update_bot_position() -> void:
 	var idx: int = selected_level - 1
 	if idx >= 0 and idx < island_nodes.size():
 		var island: Node3D = island_nodes[idx]
-		var bot_target: Vector3 = Vector3(0, 0.15, 0)
+		var bot_target: Vector3 = Vector3(0, -0.059, 0)
 		if island.has_method("get_bot_position"):
 			bot_target = island.get_bot_position()
 		else:
-			bot_target = island.global_position + Vector3(0, 0.15, 0)
+			bot_target = island.global_position + Vector3(0, -0.059, 0)
 
 		if menu_bot != null:
 			if menu_bot.has_method("set_base_position"):

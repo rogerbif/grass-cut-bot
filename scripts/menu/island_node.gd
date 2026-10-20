@@ -352,7 +352,7 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 func get_bot_position() -> Vector3:
 	if bot_anchor != null:
 		return bot_anchor.global_position
-	return global_position + Vector3(0, 0.15, 0)
+	return global_position + Vector3(0, -0.059, 0)
 
 func _on_click_area_input_event(_camera: Camera3D, event: InputEvent, _event_position: Vector3, _normal: Vector3, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:

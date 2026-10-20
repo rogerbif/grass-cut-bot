@@ -21,6 +21,7 @@ Esta melhoria refinou expressivamente a experiência visual e a usabilidade do M
 4. **Placa Informativa Adaptativa:** A placa de madeira com o número do estágio e as estrelas (⭐) adapta sua pose e orientação conforme o modo de câmera ativo:
    - **Na Visão Mapa (`MAP_VIEW`):** A placa repousa deitada a $Y=0.18\text{m}$ no canto inferior direito de cada ilha ($+X$, $+Z$, calculado pelas dimensões da fase), inclinada em $-58^\circ$ (perpendicular ao vetor focal da câmera aérea), desobstruindo o centro da fase e permitindo leitura límpida sem ocultar a vegetação e o layout geométrico.
    - **Na Visão Robô (`BOT_VIEW`):** A placa permanece oculta (`visible = false`) para garantir um visual limpo e foco absoluto no robô cortador no diorama da Home.
+5. **Assentamento Físico no Solo (Eliminação da Flutuação):** Calibração métrica rigorosa da mono-wheel do robô no diorama da Home. Como a base da roda ficava $+0.059\text{m}$ acima da origem do modelo 3D e o ponto de ancoragem estava a $+0.15\text{m}$ do solo, o robô flutuava $21\text{cm}$ no ar. O `BotAnchor` foi calibrado para $Y = -0.059\text{m}$, garantindo que o ponto de contato do pneu toque exatamente a linha do solo ($Y = 0.0$), com as folhas de grama cobrindo a base da roda de forma natural.
 
 ---
 

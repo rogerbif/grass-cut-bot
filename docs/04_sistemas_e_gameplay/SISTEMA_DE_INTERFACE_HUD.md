@@ -68,7 +68,7 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
 
 ### 3.1 Câmera Dual e Robô Autônomo (`scripts/menu/menu_camera.gd` & `menu_bot.gd`)
 1. **Visão Bot (`BOT_VIEW` - Padrão):**
-   - Diorama 3D tropical com o robô cortador assentado com a mono-wheel no solo da ilha (sem flutuação artificial).
+   - Diorama 3D tropical com o robô cortador rigorosamente assentado com o fundo da mono-wheel na cota exata da linha do solo ($Y = -0.059\text{m}$, tocando a superfície plana em $Y = 0.0$ e imerso na base do gramado sem flutuações).
    - **Locomoção Autônoma:** O robô avança suavemente meio metro (+0.50m) com rotação física da roda e inclinação inercial frontal (`pitch`), faz curvas suaves exploratórias ($\pm 22^\circ$) e recua de marcha à ré para a base.
    - **Cabeça Expressiva e Olhos de LED:** Articulação autônoma da cabeça (olhar para os lados, cima e baixo), piscar orgânico e alternância randômica de humores (`NORMAL`, `HAPPY`, `ALERT`, `WINK`, `VICTORY`).
 2. **Visão Mapa (`MAP_VIEW` - Overworld do Arquipélago):**
