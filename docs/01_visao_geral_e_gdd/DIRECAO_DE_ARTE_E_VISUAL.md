@@ -35,7 +35,7 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 | **Sensores & Visor** | `#18D8F0` / `#00E5FF` | 🔵 Ciano Emissivo | Lentes duplas de visão computacional da cabeça. |
 | **LED Indicador de Status** | `#FF4400` / `#FF5722` | 🔴 Laranja/Vermelho | LED traseiro de telemetria e status. |
 | **Rochas / Obstáculos** | `#546E7A` / `#455A64` | 🪨 Cinza Ardósia | Indica bloqueio físico imediato e risco de choque. |
-| **Oceano Tropical Limpo** | `#2EA6D1` / `#1F7BAE` | 🌊 Azul Turquesa Fosco | Mar minimalista arcade fosco contínuo com espuma costeira animada (CoastalFoamRibbon) nas bordas das ilhas. |
+| **Oceano Toon (Wind Waker Calibrado)** | `#2EA6D1` / `#1485BF` / `#E0FAFF` | 🌊 Azul Turquesa & Ondas Finas | Shader procedural espacial (zeludtnecniv) com ondas azuis e anéis de espuma suaves sem texturas. |
 | **Céu / Fundo** | `#B3E5FC` / `#81D4FA` | 🟦 Azul Pastel Suave | Fundo limpo que não distrai os olhos durante a partida. |
 
 ---

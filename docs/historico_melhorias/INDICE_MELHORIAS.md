@@ -69,6 +69,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`061_filtro_camadas_painel_direito_e_contabilizacao_trigo.md`](./061_filtro_camadas_painel_direito_e_contabilizacao_trigo.md) | Filtro Contextual de Camadas no Painel Direito do Editor e Contabilização do Trigo | Exibição seletiva do painel direito baseada na camada ativa (oculta itens não pertencentes à camada), contagem defensiva e precisa de trigo nas metas e conversão das formas na Fase 02. |
 | [`063_oceano_infinito_e_shader_agua_wind_waker.md`](./063_oceano_infinito_e_shader_agua_wind_waker.md) | Oceano Infinito com Camera Tracking e Shader de Água Toon (Wind Waker) | Camera tracking do plano de oceano no mapa (eliminando corte após a fase 5), e novo shader espacial toon procedural sem texturas estilo The Wind Waker aplicado tanto no mapa quanto no jogo. |
 | [`064_restauracao_mar_tropical_limpo_e_oceano_infinito.md`](./064_restauracao_mar_tropical_limpo_e_oceano_infinito.md) | Restauração do Mar Tropical Limpo e Preservação do Oceano Infinito | Remoção do shader com manchas brancas caóticas e restauração da água limpa fosca canônica, preservando o oceano infinito com camera-tracking em todas as fases do mapa. |
+| [`065_shader_agua_wind_waker_calibrado.md`](./065_shader_agua_wind_waker_calibrado.md) | Calibração Fina do Shader de Água Toon Wind Waker | Port da referência 2D (zeludtnecniv) para spatial 3D com coordenadas de mundo, mar azul turquesa 90% predominante, espuma fina contida (10%) e oscilações trigonométricas leves a 60 FPS. |
 
 ---
 
