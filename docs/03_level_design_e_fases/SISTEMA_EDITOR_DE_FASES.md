@@ -56,6 +56,18 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`.
   - **Blindagem Defensiva contra Sobrescrita:** A rotina de exportação `bake_to_tscn` recebe e repassa `vector_field` obrigatoriamente; caso `vector_field` seja nulo mas o arquivo existente em disco já contenha `"grass_vectors"`, o serializador preserva os dados existentes sem reverter para `version: 2` vazia.
 
+- **Painel Direito Contextual e Contagem de Metas:**
+  - **Filtro Contextual por Camada:** O painel lateral direito adapta seus componentes dinamicamente à camada selecionada no painel esquerdo:
+    - *Camada 0 (Terreno):* Exibe exclusivamente a paleta de blocos de ilha (`auto_island`, `island_center`, `island_dirt`, `island_edge`, etc.), ocultando gramas e objetos.
+    - *Camada 1 (Grama):* Exibe exclusivamente a paleta de vegetação orgânica (7 cores de grama + Trigo Maduro `wheat`), ocultando terreno e objetos.
+    - *Camada 2 (Objetos):* Exibe exclusivamente a paleta de objetos discretos no tile (Rocha `rock`, Flor `flower`, Spawn `cutter_spawn`), ocultando terreno e gramas.
+  - **Resumo Automático de Metas:** Fixado no rodapé do painel direito, contabiliza em tempo real:
+    - 🌿 Grama: Total de tufos de grama amostrados no campo vetorial.
+    - 🌾 Trigo: Total de tufos de trigo (`wheat`) amostrados no campo vetorial ou presentes no grid de objetos.
+    - 🌸 Flores: Quantidade de flores nobres (`flower`).
+    - 🪨 Rochas: Quantidade de rochas sólidas (`rock`).
+    - 🏝️ Tiles Ilha: Contagem total de blocos de solo construídos.
+
 ---
 
 ## 3. Pincéis e Carimbos de Formas Analíticas (`brush_patterns.gd`)

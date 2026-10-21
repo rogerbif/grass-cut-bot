@@ -47,6 +47,10 @@ var btn_cam_view: Button
 var lbl_goals_summary: Label
 var lbl_status: Label
 
+var section_terrain: VBoxContainer
+var section_grass: VBoxContainer
+var section_objects: VBoxContainer
+
 var editor_panels_root: Control
 var playtest_bar: PanelContainer
 var lbl_playtest_info: Label
@@ -410,18 +414,22 @@ func _build_right_panel() -> void:
 	vbox.add_theme_constant_override("separation", 6)
 	right_panel.add_child(vbox)
 
-	# 1. Paleta de Terreno (0.80m)
+	# 1. Seção de Terreno (0.80m)
+	section_terrain = VBoxContainer.new()
+	section_terrain.add_theme_constant_override("separation", 6)
+	vbox.add_child(section_terrain)
+
 	var lbl_t_pal: Label = Label.new()
 	lbl_t_pal.text = "🏝️ BLOCOS DE ILHA (TERRENO 0.8m)"
 	lbl_t_pal.add_theme_font_size_override("font_size", 12)
 	lbl_t_pal.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
-	vbox.add_child(lbl_t_pal)
+	section_terrain.add_child(lbl_t_pal)
 
 	var grid_terrain: GridContainer = GridContainer.new()
 	grid_terrain.columns = 2
 	grid_terrain.add_theme_constant_override("h_separation", 6)
 	grid_terrain.add_theme_constant_override("v_separation", 4)
-	vbox.add_child(grid_terrain)
+	section_terrain.add_child(grid_terrain)
 
 	for item in TilePaletteDB.TERRAIN_ITEMS:
 		var t_id: String = String(item["id"])
@@ -433,20 +441,22 @@ func _build_right_panel() -> void:
 		grid_terrain.add_child(b)
 		terrain_buttons[t_id] = b
 
-	vbox.add_child(HSeparator.new())
+	# 2. Seção de Grama Orgânica (0.20m)
+	section_grass = VBoxContainer.new()
+	section_grass.add_theme_constant_override("separation", 6)
+	vbox.add_child(section_grass)
 
-	# 2. Paleta de Grama Orgânica (0.20m)
 	var lbl_g_pal: Label = Label.new()
 	lbl_g_pal.text = "🌿 GRAMA & TRIGO (CAMPO 0.2m)"
 	lbl_g_pal.add_theme_font_size_override("font_size", 12)
 	lbl_g_pal.add_theme_color_override("font_color", Color(0.35, 0.90, 1.0))
-	vbox.add_child(lbl_g_pal)
+	section_grass.add_child(lbl_g_pal)
 
 	var grid_grass: GridContainer = GridContainer.new()
 	grid_grass.columns = 2
 	grid_grass.add_theme_constant_override("h_separation", 6)
 	grid_grass.add_theme_constant_override("v_separation", 4)
-	vbox.add_child(grid_grass)
+	section_grass.add_child(grid_grass)
 
 	for item in TilePaletteDB.GRASS_ITEMS:
 		var g_id: String = String(item["id"])
@@ -457,18 +467,20 @@ func _build_right_panel() -> void:
 		grid_grass.add_child(b)
 		grass_buttons[g_id] = b
 
-	vbox.add_child(HSeparator.new())
+	# 3. Seção de Objetos no Tile (0.80m)
+	section_objects = VBoxContainer.new()
+	section_objects.add_theme_constant_override("separation", 6)
+	vbox.add_child(section_objects)
 
-	# 3. Paleta de Objetos no Tile (0.80m)
 	var lbl_o_pal: Label = Label.new()
 	lbl_o_pal.text = "🪨 OBJETOS NO TILE (0.8m)"
 	lbl_o_pal.add_theme_font_size_override("font_size", 12)
 	lbl_o_pal.add_theme_color_override("font_color", Color(1.0, 0.75, 0.35))
-	vbox.add_child(lbl_o_pal)
+	section_objects.add_child(lbl_o_pal)
 
 	var hbox_objects: HBoxContainer = HBoxContainer.new()
 	hbox_objects.add_theme_constant_override("separation", 6)
-	vbox.add_child(hbox_objects)
+	section_objects.add_child(hbox_objects)
 
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var o_id: String = String(item["id"])
@@ -571,6 +583,14 @@ func show_toast(message: String, border_color: Color = Color(0.3, 0.9, 0.55)) ->
 	tw.tween_property(panel, "modulate:a", 0.0, 0.3)
 	tw.tween_callback(panel.queue_free)
 
+func set_active_layer(layer_idx: int) -> void:
+	if section_terrain != null:
+		section_terrain.visible = (layer_idx == 0)
+	if section_grass != null:
+		section_grass.visible = (layer_idx == 1)
+	if section_objects != null:
+		section_objects.visible = (layer_idx == 2)
+
 func sync_state(
 	active_layer: int,
 	active_tool: int,
@@ -582,6 +602,8 @@ func sync_state(
 	active_object_id: String,
 	is_top_down: bool
 ) -> void:
+	set_active_layer(active_layer)
+
 	_set_button_selected(btn_layer_terrain, active_layer == 0, Color(0.28, 0.78, 0.45))
 	_set_button_selected(btn_layer_grass, active_layer == 1, Color(0.30, 0.82, 0.95))
 	_set_button_selected(btn_layer_objects, active_layer == 2, Color(0.85, 0.65, 0.35))
@@ -673,6 +695,8 @@ func update_goals_summary(
 		var t: String = String(entry.get("type", ""))
 		if t == "flower":
 			flower_c += 1
+		elif t == "wheat":
+			wheat_tufts += 1
 		elif t == "rock":
 			rock_c += 1
 

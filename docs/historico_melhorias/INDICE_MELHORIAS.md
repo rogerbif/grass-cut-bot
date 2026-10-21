@@ -66,6 +66,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`058_efeito_grama_cortada_tocos_aparados.md`](./058_efeito_grama_cortada_tocos_aparados.md) | Efeito Visual de Grama Cortada no Chão (Tocos 3D Aparados / Stubble) | Redução instantânea de escala vertical (Y x 0.15, ~4.5cm) nos tufos cortados mantendo o gramado aparado no chão, sem nós extras e com custo zero de draw calls. |
 | [`059_correcao_corte_playtest_editor.md`](./059_correcao_corte_playtest_editor.md) | Correção da Conexão de Corte no Modo Playtest do Editor | Eliminação de nós zumbis com remove_child imediato e referência forte _active_veg_grid, garantindo corte funcional no Playtest in-editor. |
 | [`060_aparas_grama_cortada_deitada_no_chao.md`](./060_aparas_grama_cortada_deitada_no_chao.md) | Aparas de Grama Cortada Deitadas no Solo (Estilo Referência) | Substituição de tocos verticais por 6 lâminas fatiadas deitadas no plano XZ em tom verde escuro contrastante, espalhadas fielmente como aparas no chão da referência. |
+| [`061_filtro_camadas_painel_direito_e_contabilizacao_trigo.md`](./061_filtro_camadas_painel_direito_e_contabilizacao_trigo.md) | Filtro Contextual de Camadas no Painel Direito do Editor e Contabilização do Trigo | Exibição seletiva do painel direito baseada na camada ativa (oculta itens não pertencentes à camada), contagem defensiva e precisa de trigo nas metas e conversão das formas na Fase 02. |
 
 ---
 

@@ -9,7 +9,6 @@ var island_origin: Vector2 = Vector2.ZERO
 var island_size: Vector2 = Vector2(10.0, 10.0)
 var _last_painted_world: Vector2 = Vector2(99999.0, 99999.0)
 var _brush_radius_uv: float = 0.05
-var _paint_active: bool = false
 var _points_to_draw: Array[Vector2] = []
 
 func _init(w_origin: Vector2, w_size: Vector2) -> void:

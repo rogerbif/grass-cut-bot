@@ -521,7 +521,7 @@
 					1.0
 				]
 			],
-			"type": "grass_yellow"
+			"type": "wheat"
 		},
 		{
 			"holes": [],
@@ -568,7 +568,7 @@
 					1.087
 				]
 			],
-			"type": "grass_yellow"
+			"type": "wheat"
 		},
 		{
 			"holes": [],
@@ -615,7 +615,7 @@
 					-4.858
 				]
 			],
-			"type": "grass_yellow"
+			"type": "wheat"
 		},
 		{
 			"holes": [],
@@ -662,7 +662,7 @@
 					-5.058
 				]
 			],
-			"type": "grass_yellow"
+			"type": "wheat"
 		}
 	],
 	"grid": {

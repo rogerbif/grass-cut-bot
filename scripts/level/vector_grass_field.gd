@@ -423,7 +423,7 @@ func from_dict_list(arr: Array) -> void:
 			add_shape(t_name, poly, holes_list)
 
 ## Conversor Retrocompatível: Converte células de grid (0.20m ou 0.80m) em polígonos vetoriais contornados
-func convert_from_legacy_field(field: RefCounted, width_blocks: int, height_blocks: int, block_cell_size: float = 0.80) -> void:
+func convert_from_legacy_field(field: RefCounted, _width_blocks: int, _height_blocks: int, block_cell_size: float = 0.80) -> void:
 	clear()
 	if field == null:
 		return

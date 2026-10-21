@@ -601,8 +601,8 @@ func _build_from_vector_field(
 				var sf: float = 0.52 * scale_factor
 				scale_vec = Vector3(sf, sf, sf)
 
-			var basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
-			var xform: Transform3D = Transform3D(basis, pos)
+			var inst_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
+			var xform: Transform3D = Transform3D(inst_basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
 			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
@@ -657,8 +657,8 @@ func _build_from_vegetation_field(
 			var t_id: int = int(field.call("get_cell", c, r))
 			if t_id == 0:
 				continue
-			var lx: int = c / 2
-			var lz: int = r / 2
+			var lx: int = c >> 1
+			var lz: int = r >> 1
 			var lkey: Vector2i = Vector2i(lx, lz)
 			if not logical_subcells.has(lkey):
 				var list_new: Array[Vector2i] = []
@@ -860,8 +860,8 @@ func _build_from_vegetation_field(
 				var sf: float = 0.52
 				scale_vec = Vector3(sf, sf, sf)
 
-			var basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
-			var xform: Transform3D = Transform3D(basis, pos)
+			var inst_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
+			var xform: Transform3D = Transform3D(inst_basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
 			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
