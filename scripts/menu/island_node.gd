@@ -10,11 +10,17 @@ const MAT_ACTIVE_GRASS_GREEN: ShaderMaterial = preload("res://shaders/interactiv
 const MAT_ACTIVE_GRASS_YELLOW: ShaderMaterial = preload("res://shaders/interactive_grass_yellow_material.tres")
 const MAT_ACTIVE_GRASS_BLUE: ShaderMaterial = preload("res://shaders/interactive_grass_blue_material.tres")
 const MAT_ACTIVE_GRASS_PURPLE: ShaderMaterial = preload("res://shaders/interactive_grass_purple_material.tres")
+const MAT_ACTIVE_GRASS_WHITE: ShaderMaterial = preload("res://shaders/interactive_grass_white_material.tres")
+const MAT_ACTIVE_GRASS_RED: ShaderMaterial = preload("res://shaders/interactive_grass_red_material.tres")
+const MAT_ACTIVE_GRASS_BLACK: ShaderMaterial = preload("res://shaders/interactive_grass_black_material.tres")
 
 static var _mat_static_green: ShaderMaterial = null
 static var _mat_static_yellow: ShaderMaterial = null
 static var _mat_static_blue: ShaderMaterial = null
 static var _mat_static_purple: ShaderMaterial = null
+static var _mat_static_white: ShaderMaterial = null
+static var _mat_static_red: ShaderMaterial = null
+static var _mat_static_black: ShaderMaterial = null
 static var _mat_rock: StandardMaterial3D = null
 
 @export var level_number: int = 1
@@ -98,6 +104,15 @@ static func _init_materials() -> void:
 		_mat_static_purple = MAT_ACTIVE_GRASS_PURPLE.duplicate() as ShaderMaterial
 		_mat_static_purple.set_shader_parameter("wind_strength", 0.0)
 
+		_mat_static_white = MAT_ACTIVE_GRASS_WHITE.duplicate() as ShaderMaterial
+		_mat_static_white.set_shader_parameter("wind_strength", 0.0)
+
+		_mat_static_red = MAT_ACTIVE_GRASS_RED.duplicate() as ShaderMaterial
+		_mat_static_red.set_shader_parameter("wind_strength", 0.0)
+
+		_mat_static_black = MAT_ACTIVE_GRASS_BLACK.duplicate() as ShaderMaterial
+		_mat_static_black.set_shader_parameter("wind_strength", 0.0)
+
 		_mat_rock = StandardMaterial3D.new()
 		_mat_rock.albedo_color = Color(0.42, 0.46, 0.50, 1.0)
 		_mat_rock.roughness = 0.95
@@ -118,6 +133,12 @@ func set_grass_animated(enabled: bool) -> void:
 					gi.material_override = MAT_ACTIVE_GRASS_BLUE
 				"grass_purple":
 					gi.material_override = MAT_ACTIVE_GRASS_PURPLE
+				"grass_white":
+					gi.material_override = MAT_ACTIVE_GRASS_WHITE
+				"grass_red":
+					gi.material_override = MAT_ACTIVE_GRASS_RED
+				"grass_black":
+					gi.material_override = MAT_ACTIVE_GRASS_BLACK
 				_:
 					gi.material_override = MAT_ACTIVE_GRASS_GREEN
 		else:
@@ -128,6 +149,12 @@ func set_grass_animated(enabled: bool) -> void:
 					gi.material_override = _mat_static_blue
 				"grass_purple":
 					gi.material_override = _mat_static_purple
+				"grass_white":
+					gi.material_override = _mat_static_white
+				"grass_red":
+					gi.material_override = _mat_static_red
+				"grass_black":
+					gi.material_override = _mat_static_black
 				_:
 					gi.material_override = _mat_static_green
 

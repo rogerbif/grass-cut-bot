@@ -99,6 +99,9 @@ func _reset_grass_shader_interaction() -> void:
 		"res://shaders/interactive_grass_yellow_material.tres",
 		"res://shaders/interactive_grass_blue_material.tres",
 		"res://shaders/interactive_grass_purple_material.tres",
+		"res://shaders/interactive_grass_white_material.tres",
+		"res://shaders/interactive_grass_red_material.tres",
+		"res://shaders/interactive_grass_black_material.tres",
 		"res://shaders/interactive_wheat_material.tres",
 		"res://shaders/interactive_flower_material.tres"
 	]

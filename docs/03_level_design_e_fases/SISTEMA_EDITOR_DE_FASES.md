@@ -32,7 +32,7 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
     - `island_dirt`: Piso plano de terra/trilha alaranjada quente.
   - Todas as peças manuais possuem suporte a giro de $90^\circ$ (`R`).
 - **Camada 1 — Objetos & Vegetação:**
-  - 6 variações de plantas: `grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `wheat` e `flower`.
+  - 9 variações de plantas: `grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`.
   - Obstáculos e Marcadores: `rock` (`Layer 4`) e `cutter_spawn` (único por fase).
 
 ---

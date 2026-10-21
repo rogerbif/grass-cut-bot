@@ -11,7 +11,10 @@ const GRASS_MATERIALS: Dictionary = {
 	"grass_green": preload("res://shaders/interactive_grass_material.tres"),
 	"grass_yellow": preload("res://shaders/interactive_grass_yellow_material.tres"),
 	"grass_blue": preload("res://shaders/interactive_grass_blue_material.tres"),
-	"grass_purple": preload("res://shaders/interactive_grass_purple_material.tres")
+	"grass_purple": preload("res://shaders/interactive_grass_purple_material.tres"),
+	"grass_white": preload("res://shaders/interactive_grass_white_material.tres"),
+	"grass_red": preload("res://shaders/interactive_grass_red_material.tres"),
+	"grass_black": preload("res://shaders/interactive_grass_black_material.tres")
 }
 
 const TILE_MODELS: Dictionary = {
@@ -28,6 +31,9 @@ const VEG_TYPES: Array[String] = [
 	"grass_yellow",
 	"grass_blue",
 	"grass_purple",
+	"grass_white",
+	"grass_red",
+	"grass_black",
 	"wheat",
 	"flower"
 ]

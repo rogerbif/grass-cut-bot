@@ -18,7 +18,7 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e os blocos visuais de terreno operam em lote via **`VegetationGrid` (`res://scripts/plants/vegetation_grid.gd`)**:
 - **GPU Instancing (`MultiMeshInstance3D`):**
-  - Os tufos de vegetação são agrupados em até 6 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
+  - Os tufos de vegetação são agrupados em até 9 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
   - Para `wheat` e `flower`, as sub-malhas originais são combinadas uma única vez em cache estático (`ArrayMesh` multi-superfície via `SurfaceTool`), preservando todos os materiais e shaders em um único draw call por espécie.
 - **Grade Espacial Discreta 2D (`0.40m x 0.40m`):**
   - Em vez de instanciar milhares de nós `Area3D`, o `VegetationGrid` particiona a ilha em células de `0.40m` (`_grid: Dictionary` mapeando `Vector2i -> PackedInt32Array` de índices em arrays SoA `PackedVector3Array`, `PackedInt32Array`, `PackedByteArray`).
@@ -91,6 +91,9 @@ No Godot, cada tipo vegetal é encapsulado em uma cena própria que instancia a 
 | **Grama Amarela** | `grass_yellow.tscn` | `interactive_grass_yellow_material.tres` | Dourado (`#f2c726`) | Pastagem seca e campos ensolarados |
 | **Grama Azul** | `grass_blue.tscn` | `interactive_grass_blue_material.tres` | Azul celeste (`#33a6f2`) | Bioma místico / flora gélida |
 | **Grama Roxa** | `grass_purple.tscn` | `interactive_grass_purple_material.tres` | Magenta/Roxo (`#ad40f2`) | Vegetação exótica e mágica |
+| **Grama Branca** | `grass_white.tscn` | `interactive_grass_white_material.tres` | Branco gelo (`#f5f7ff`) | Flora alpina / contraste luminoso |
+| **Grama Vermelha** | `grass_red.tscn` | `interactive_grass_red_material.tres` | Vermelho rubi (`#f22e33`) | Flora carmesim vibrante |
+| **Grama Preta (90%)** | `grass_black.tscn` | `interactive_grass_black_material.tres` | Cinza antracite escuro (`#1c1c21`) | Contraste escuro fosco (90% preto) |
 
 ### C. Animação de Vento e Interatividade com o Cortador no Modelo 3D
 Conectamos a geometria única ao shader espacial `interactive_grass.gdshader`:

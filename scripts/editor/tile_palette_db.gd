@@ -95,6 +95,30 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"category": "plant"
 	},
 	{
+		"id": "grass_white",
+		"name": "Grama Branca",
+		"icon": "🤍",
+		"color": Color(0.92, 0.94, 0.98),
+		"goal_key": "grass",
+		"category": "plant"
+	},
+	{
+		"id": "grass_red",
+		"name": "Grama Vermelha",
+		"icon": "❤️",
+		"color": Color(0.95, 0.22, 0.24),
+		"goal_key": "grass",
+		"category": "plant"
+	},
+	{
+		"id": "grass_black",
+		"name": "Grama Preta",
+		"icon": "🖤",
+		"color": Color(0.28, 0.28, 0.34),
+		"goal_key": "grass",
+		"category": "plant"
+	},
+	{
 		"id": "wheat",
 		"name": "Trigo Maduro (2x)",
 		"icon": "🌾",

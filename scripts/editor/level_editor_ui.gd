@@ -426,12 +426,19 @@ func _build_right_panel() -> void:
 	lbl_o_pal.add_theme_color_override("font_color", Color(0.55, 0.90, 1.0))
 	vbox.add_child(lbl_o_pal)
 
+	var grid_objects: GridContainer = GridContainer.new()
+	grid_objects.columns = 2
+	grid_objects.add_theme_constant_override("h_separation", 6)
+	grid_objects.add_theme_constant_override("v_separation", 6)
+	vbox.add_child(grid_objects)
+
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var o_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s  %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(0, 34))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 32))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 12)
 		b.pressed.connect(func() -> void: object_item_selected.emit(o_id))
-		vbox.add_child(b)
+		grid_objects.add_child(b)
 		object_buttons[o_id] = b
 
 	vbox.add_child(HSeparator.new())
