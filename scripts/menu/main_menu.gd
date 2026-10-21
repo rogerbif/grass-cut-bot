@@ -6,6 +6,7 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 @onready var menu_camera: Camera3D = $MenuCamera3D
 @onready var islands_container: Node3D = $World/IslandsContainer
 @onready var menu_bot: Node3D = $World/MenuBot
+@onready var ocean_mesh: MeshInstance3D = $World.get_node_or_null("OceanMesh") as MeshInstance3D
 
 # Top Bar
 @onready var coins_label: Label = $CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
@@ -73,6 +74,11 @@ func _ready() -> void:
 	_switch_tab(1)
 	_update_plaques_view_mode(false, false)
 	_update_islands_visibility(false, selected_level)
+
+func _process(_delta: float) -> void:
+	if ocean_mesh != null and menu_camera != null:
+		ocean_mesh.global_position.x = menu_camera.global_position.x
+		ocean_mesh.global_position.z = menu_camera.global_position.z
 
 func _on_save_reset() -> void:
 	_update_top_bar()

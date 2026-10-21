@@ -35,7 +35,7 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 | **Sensores & Visor** | `#18D8F0` / `#00E5FF` | 🔵 Ciano Emissivo | Lentes duplas de visão computacional da cabeça. |
 | **LED Indicador de Status** | `#FF4400` / `#FF5722` | 🔴 Laranja/Vermelho | LED traseiro de telemetria e status. |
 | **Rochas / Obstáculos** | `#546E7A` / `#455A64` | 🪨 Cinza Ardósia | Indica bloqueio físico imediato e risco de choque. |
-| **Cercas Limítrofes** | `#6D4C41` / `#5D4037` | 🪵 Madeira Fosca | Delimitação acolhedora da ilha de corte. |
+| **Oceano Toon (Wind Waker)** | `#2EA6D1` / `#1F7BAE` / `#D9FAFF` | 🌊 Azul Turquesa & Espuma Procedural | Mar estilizado contínuo com anéis e ondas procedurais (Zelda Wind Waker) sem texturas. |
 | **Céu / Fundo** | `#B3E5FC` / `#81D4FA` | 🟦 Azul Pastel Suave | Fundo limpo que não distrai os olhos durante a partida. |
 
 ---

@@ -67,6 +67,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`059_correcao_corte_playtest_editor.md`](./059_correcao_corte_playtest_editor.md) | Correção da Conexão de Corte no Modo Playtest do Editor | Eliminação de nós zumbis com remove_child imediato e referência forte _active_veg_grid, garantindo corte funcional no Playtest in-editor. |
 | [`060_aparas_grama_cortada_deitada_no_chao.md`](./060_aparas_grama_cortada_deitada_no_chao.md) | Aparas de Grama Cortada Deitadas no Solo (Estilo Referência) | Substituição de tocos verticais por 6 lâminas fatiadas deitadas no plano XZ em tom verde escuro contrastante, espalhadas fielmente como aparas no chão da referência. |
 | [`061_filtro_camadas_painel_direito_e_contabilizacao_trigo.md`](./061_filtro_camadas_painel_direito_e_contabilizacao_trigo.md) | Filtro Contextual de Camadas no Painel Direito do Editor e Contabilização do Trigo | Exibição seletiva do painel direito baseada na camada ativa (oculta itens não pertencentes à camada), contagem defensiva e precisa de trigo nas metas e conversão das formas na Fase 02. |
+| [`063_oceano_infinito_e_shader_agua_wind_waker.md`](./063_oceano_infinito_e_shader_agua_wind_waker.md) | Oceano Infinito com Camera Tracking e Shader de Água Toon (Wind Waker) | Camera tracking do plano de oceano no mapa (eliminando corte após a fase 5), e novo shader espacial toon procedural sem texturas estilo The Wind Waker aplicado tanto no mapa quanto no jogo. |
 
 ---
 
