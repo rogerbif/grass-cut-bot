@@ -1,8 +1,10 @@
 extends Node3D
 
 const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
+const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const LawnCutTrailScript = preload("res://scripts/level/lawn_cut_trail.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const PlantScript = preload("res://scripts/plants/plant.gd")
 
 const GRASS_MODEL: PackedScene = preload("res://assets/models/grass_01.glb")
@@ -83,6 +85,7 @@ var _veg_mmi_nodes: Array[MultiMeshInstance3D] = []
 # Decalque de solo orgânico e trilha
 var _lawn_decal_mesh: MeshInstance3D = null
 var _lawn_cut_trail: Node3D = null
+var _ground_mesh_instances: Array[MeshInstance3D] = []
 
 # Grade espacial discreta 2D: Vector2i(cx, cz) -> PackedInt32Array de p_idx
 var _grid: Dictionary = {}
@@ -195,6 +198,7 @@ func _clear_state() -> void:
 	_cell_is_completed.clear()
 	_lawn_decal_mesh = null
 	_lawn_cut_trail = null
+	_ground_mesh_instances.clear()
 	_veg_multimeshes.clear()
 	_veg_mmi_nodes.clear()
 	_grid.clear()
@@ -310,30 +314,49 @@ func build_from_level_json(
 			elif o_type == "flower":
 				flower_cells[Vector2i(gx, gz)] = o_rot
 
-	# 4. Campo de Vegetação fino (0.20m): carrega do JSON v2 ou converte de objects v1
-	var veg_field: RefCounted = null
-	if data.has("vegetation") and data["vegetation"] is Dictionary:
-		var vdict: Dictionary = data["vegetation"] as Dictionary
-		var rows_arr: Array = vdict.get("rows", []) as Array
-		veg_field = VegetationFieldScript.new(width, height)
-		veg_field.call("from_rows", rows_arr)
+	# 4. Campo de Vegetação Vetorial v3 ou legado convertido
+	var vector_field: RefCounted = null
+	if data.has("grass_vectors") and data["grass_vectors"] is Array:
+		vector_field = VectorGrassFieldScript.new()
+		vector_field.from_dict_list(data["grass_vectors"] as Array)
 	else:
-		veg_field = VegetationFieldScript.new(width, height)
-		veg_field.call("from_legacy_objects", objects_arr, width, height)
+		# Modo Legado v1/v2: carrega o campo discreto e converte para polígonos vetoriais
+		var veg_field: RefCounted = null
+		if data.has("vegetation") and data["vegetation"] is Dictionary:
+			var vdict: Dictionary = data["vegetation"] as Dictionary
+			var rows_arr: Array = vdict.get("rows", []) as Array
+			veg_field = VegetationFieldScript.new(width, height)
+			veg_field.call("from_rows", rows_arr)
+		else:
+			veg_field = VegetationFieldScript.new(width, height)
+			veg_field.call("from_legacy_objects", objects_arr, width, height)
 
-	# Remove vegetação sob células ocupadas por rochas
+		# Remove vegetação sob células ocupadas por rochas
+		for r_cell: Vector2i in rock_cells.keys():
+			var base_cx: int = r_cell.x * 4
+			var base_cz: int = r_cell.y * 4
+			for dz: int in range(4):
+				for dx: int in range(4):
+					veg_field.call("set_cell", base_cx + dx, base_cz + dz, 0)
+
+		vector_field = VectorGrassFieldScript.new()
+		vector_field.convert_from_legacy_field(veg_field, width, height, cell_size)
+
+	# Remove polígonos sob rochas no campo vetorial (se houver rochas)
 	for r_cell: Vector2i in rock_cells.keys():
-		var base_cx: int = r_cell.x * 4
-		var base_cz: int = r_cell.y * 4
-		for dz: int in range(4):
-			for dx: int in range(4):
-				veg_field.call("set_cell", base_cx + dx, base_cz + dz, 0)
+		var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width, height, cell_size)
+		var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+			BrushPatterns.ShapeType.CIRCLE,
+			1,
+			Vector2(r_pos.x, r_pos.z)
+		)
+		vector_field.clip_shapes(rock_clip_poly)
 
-	# Constrói MultiMeshes e grade espacial a partir do campo fino 0.20m e flores de tile
-	goals = _build_from_vegetation_field(veg_field, width, height, cell_size, flower_cells)
+	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
+	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells)
 
-	# Constrói decal de solo orgânico e trilha de corte
-	_setup_lawn_decal_and_trail(veg_field, width, height, cell_size)
+	# Constrói malhas planas trianguladas rente ao piso
+	_setup_vector_ground_meshes(vector_field)
 
 	# 5. Posiciona o cortador no spawn
 	var spawn_dict: Dictionary = data.get("spawn", {}) as Dictionary
@@ -347,6 +370,207 @@ func build_from_level_json(
 
 	if goals.is_empty():
 		goals = { "grass": 1 }
+
+	return goals
+
+
+func _resolve_ground_color(t_name: String) -> Color:
+	match t_name:
+		"grass_yellow":
+			return Color(0.65, 0.58, 0.15, 1.0)
+		"grass_blue":
+			return Color(0.18, 0.42, 0.58, 1.0)
+		"grass_purple":
+			return Color(0.45, 0.22, 0.52, 1.0)
+		"grass_white":
+			return Color(0.78, 0.82, 0.76, 1.0)
+		"grass_red":
+			return Color(0.65, 0.22, 0.20, 1.0)
+		"grass_black":
+			return Color(0.20, 0.22, 0.20, 1.0)
+		"wheat":
+			return Color(0.68, 0.52, 0.18, 1.0)
+		_:
+			return Color(0.24, 0.48, 0.16, 1.0)
+
+
+func _setup_vector_ground_meshes(vector_field: RefCounted) -> void:
+	if vector_field == null:
+		return
+	var meshes: Dictionary = vector_field.call("generate_ground_meshes") as Dictionary
+	for t_name_var: Variant in meshes.keys():
+		var t_name: String = String(t_name_var)
+		var mesh_res: ArrayMesh = meshes[t_name] as ArrayMesh
+		if mesh_res == null or mesh_res.get_surface_count() == 0:
+			continue
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "GroundMesh_%s" % t_name
+		mi.mesh = mesh_res
+		var mat: StandardMaterial3D = StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+		mat.albedo_color = _resolve_ground_color(t_name)
+		mat.roughness = 0.90
+		mi.material_override = mat
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi.position = Vector3(0.0, 0.005, 0.0)
+		add_child(mi)
+		_ground_mesh_instances.append(mi)
+
+
+func _build_from_vector_field(
+	vector_field: RefCounted,
+	width_blocks: int,
+	height_blocks: int,
+	block_cell_size: float,
+	tile_flowers: Dictionary = {}
+) -> Dictionary:
+	var goals: Dictionary = {}
+	if vector_field == null:
+		return goals
+
+	var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
+	var tufts: Array[Dictionary] = []
+	for item: Variant in sampled_tufts:
+		if item is Dictionary:
+			tufts.append(item as Dictionary)
+
+	# Adiciona flores de tile caso existam no JSON
+	for f_cell: Vector2i in tile_flowers.keys():
+		var f_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
+		tufts.append({
+			"pos": f_pos,
+			"type": "flower",
+			"scale_factor": 1.0,
+			"seed": float(f_cell.x * 79 + f_cell.y * 31)
+		})
+
+	# Agrupa por célula lógica de 0.40m para manter metas consistentes e pontuação justa
+	var logical_cells_map: Dictionary = {}
+	for t_dict: Dictionary in tufts:
+		var pos: Vector3 = t_dict["pos"] as Vector3
+		var lx: int = roundi(pos.x / 0.40)
+		var lz: int = roundi(pos.z / 0.40)
+		var lkey: Vector2i = Vector2i(lx, lz)
+		if not logical_cells_map.has(lkey):
+			var new_cell_idx: int = _cell_keys.size()
+			var v_type: String = String(t_dict.get("type", "grass_green"))
+			var g_key: String = "grass"
+			var r_coins: int = 1
+			if v_type == "wheat":
+				g_key = "wheat"
+				r_coins = 3
+			elif v_type == "flower":
+				g_key = "flower"
+				r_coins = 5
+
+			logical_cells_map[lkey] = new_cell_idx
+			_cell_keys.append(g_key)
+			_cell_rewards.append(r_coins)
+			_cell_remaining_tufts.append(0)
+			_cell_is_completed.append(0)
+			goals[g_key] = goals.get(g_key, 0) + 1
+
+		var c_idx: int = int(logical_cells_map[lkey])
+		t_dict["cell_idx"] = c_idx
+
+	# Agrupa por tipo de vegetação para alimentar os MultiMeshes
+	var tufts_by_type: Dictionary = {}
+	for vt: String in VEG_TYPES:
+		var empty_list: Array[Dictionary] = []
+		tufts_by_type[vt] = empty_list
+
+	for t_dict: Dictionary in tufts:
+		var vt: String = String(t_dict.get("type", "grass_green"))
+		if not tufts_by_type.has(vt):
+			vt = "grass_green"
+		(tufts_by_type[vt] as Array[Dictionary]).append(t_dict)
+		var c_idx: int = int(t_dict["cell_idx"])
+		_cell_remaining_tufts[c_idx] = _cell_remaining_tufts[c_idx] + 1
+
+	# Constrói MultiMeshes por tipo
+	_veg_multimeshes.resize(VEG_TYPES.size())
+	_veg_mmi_nodes.resize(VEG_TYPES.size())
+
+	for mmi_idx: int in range(VEG_TYPES.size()):
+		var v_type: String = VEG_TYPES[mmi_idx]
+		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
+		var count: int = entry_list.size()
+
+		var mm: MultiMesh = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		if v_type == "wheat":
+			mm.mesh = _wheat_mesh
+		elif v_type == "flower":
+			mm.mesh = _flower_mesh
+		else:
+			mm.mesh = _grass_mesh
+		mm.instance_count = count
+
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "VegMMI_%s" % v_type
+		mmi.multimesh = mm
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		if GRASS_MATERIALS.has(v_type):
+			mmi.material_override = GRASS_MATERIALS[v_type] as Material
+		add_child(mmi)
+
+		_veg_multimeshes[mmi_idx] = mm
+		_veg_mmi_nodes[mmi_idx] = mmi
+
+		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
+		var max_hp: int = 1 if is_grass else 2
+		var p_col: Color = _resolve_type_particle_color(v_type)
+
+		for inst_idx: int in range(count):
+			var entry: Dictionary = entry_list[inst_idx]
+			var pos: Vector3 = entry["pos"] as Vector3
+			var cell_idx: int = int(entry["cell_idx"])
+			var s_seed: float = float(entry["seed"])
+			var scale_factor: float = float(entry.get("scale_factor", 1.0))
+
+			var random_rot: float = fmod(s_seed * 1.618, TAU)
+
+			var scale_vec: Vector3
+			if is_grass:
+				var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+			elif v_type == "wheat":
+				var sw: float = lerpf(0.38, 0.52, scale_factor)
+				scale_vec = Vector3(sw, sw, sw)
+			else:
+				var sf: float = 0.52 * scale_factor
+				scale_vec = Vector3(sf, sf, sf)
+
+			var basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
+			var xform: Transform3D = Transform3D(basis, pos)
+			mm.set_instance_transform(inst_idx, xform)
+
+			var p_idx: int = _positions.size()
+			_positions.append(pos)
+			_initial_transforms.append(xform)
+			_mmi_indices.append(mmi_idx)
+			_instance_indices.append(inst_idx)
+			_health.append(max_hp)
+			_max_health.append(max_hp)
+			_coin_rewards.append(1)
+			_is_cut.append(0)
+			_is_hidden_by_density.append(0)
+			_last_hit_time.append(-10.0)
+			_plant_keys.append(_cell_keys[cell_idx])
+			_particle_colors.append(p_col)
+			_tuft_logical_cell.append(cell_idx)
+
+			# Adiciona à grade de colisão 0.40m
+			var cell_key: Vector2i = Vector2i(roundi(pos.x / GRID_STEP), roundi(pos.z / GRID_STEP))
+			if not _grid.has(cell_key):
+				var bucket_new: PackedInt32Array = PackedInt32Array()
+				bucket_new.append(p_idx)
+				_grid[cell_key] = bucket_new
+			else:
+				var bucket: PackedInt32Array = _grid[cell_key] as PackedInt32Array
+				bucket.append(p_idx)
+				_grid[cell_key] = bucket
 
 	return goals
 

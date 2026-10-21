@@ -25,7 +25,8 @@ static func save_level_json(
 	spawn_rot: int,
 	terrain_grid: Dictionary,
 	object_grid: Dictionary,
-	veg_field: RefCounted = null
+	veg_field: RefCounted = null,
+	vector_field: RefCounted = null
 ) -> bool:
 	var global_dir: String = ProjectSettings.globalize_path(LEVELS_JSON_DIR)
 	if not DirAccess.dir_exists_absolute(global_dir):
@@ -54,7 +55,7 @@ static func save_level_json(
 		var cell: Vector2i = k as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var obj_type: String = String(entry.get("type", ""))
-		# Em v2, rochas e flores ficam em objects (discretos por tile de 0.80m)
+		# Em v2/v3, rochas e flores ficam em objects (discretos por tile de 0.80m)
 		if obj_type == "rock" or obj_type == "flower":
 			objects_list.append({
 				"gx": cell.x,
@@ -63,8 +64,10 @@ static func save_level_json(
 				"rot": int(entry.get("rot", 0))
 			})
 
+	var version_num: int = 3 if (vector_field != null and vector_field.has_method("to_dict_list")) else 2
+
 	var payload: Dictionary = {
-		"version": 2,
+		"version": version_num,
 		"level_id": level_id,
 		"name": level_name,
 		"time_limit": time_limit,
@@ -82,7 +85,9 @@ static func save_level_json(
 		"objects": objects_list
 	}
 
-	if veg_field != null and veg_field.has_method("to_rows"):
+	if vector_field != null and vector_field.has_method("to_dict_list"):
+		payload["grass_vectors"] = vector_field.call("to_dict_list")
+	elif veg_field != null and veg_field.has_method("to_rows"):
 		payload["vegetation"] = {
 			"res": 0.20,
 			"rows": veg_field.call("to_rows")

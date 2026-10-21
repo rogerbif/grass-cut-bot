@@ -86,8 +86,9 @@ func _perform_cut() -> void:
 	_spawn_cut_particles()
 
 	# Notifica o GameManager
-	if GameManager != null:
-		GameManager.register_cut(plant_key, coin_reward)
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null and gm.has_method("register_cut"):
+		gm.call("register_cut", plant_key, coin_reward)
 
 	# Fatiamento ágil e imediato: corte seco e destruição imediata do nó
 	var tween: Tween = create_tween()

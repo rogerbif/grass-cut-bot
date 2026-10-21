@@ -1,4 +1,132 @@
 {
+	"grass_vectors": [
+		{
+			"holes": [],
+			"id": 1,
+			"polygon": [
+				[
+					3.601,
+					-2.801
+				],
+				[
+					-3.601,
+					-2.801
+				],
+				[
+					-3.601,
+					2.801
+				],
+				[
+					1.001,
+					2.801
+				],
+				[
+					1.001,
+					1.199
+				],
+				[
+					-1.199,
+					1.199
+				],
+				[
+					-1.199,
+					-1.199
+				],
+				[
+					1.199,
+					-1.199
+				],
+				[
+					1.199,
+					2.801
+				],
+				[
+					3.601,
+					2.801
+				]
+			],
+			"type": "grass_green"
+		},
+		{
+			"holes": [],
+			"id": 2,
+			"polygon": [
+				[
+					3.601,
+					1.199
+				],
+				[
+					0.999,
+					1.199
+				],
+				[
+					0.999,
+					1.399
+				],
+				[
+					0.799,
+					1.399
+				],
+				[
+					0.799,
+					1.599
+				],
+				[
+					0.599,
+					1.599
+				],
+				[
+					0.599,
+					1.799
+				],
+				[
+					0.399,
+					1.799
+				],
+				[
+					0.399,
+					1.999
+				],
+				[
+					0.199,
+					1.999
+				],
+				[
+					0.199,
+					2.199
+				],
+				[
+					-0.001,
+					2.199
+				],
+				[
+					-0.001,
+					2.399
+				],
+				[
+					-0.201,
+					2.399
+				],
+				[
+					-0.201,
+					2.599
+				],
+				[
+					-0.401,
+					2.599
+				],
+				[
+					-0.401,
+					2.801
+				],
+				[
+					3.601,
+					2.801
+				]
+			],
+			"type": "grass_green"
+		}
+	],
 	"grid": {
 		"cell_size": 0.8,
 		"height": 11,
@@ -6,332 +134,7 @@
 	},
 	"level_id": 1,
 	"name": "Fase 01",
-	"objects": [
-		{
-			"gx": 2,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 2,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 2,
-			"gz": 4,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 2,
-			"gz": 5,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 2,
-			"gz": 6,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 2,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 2,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 4,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 5,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 6,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 3,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 4,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 5,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 6,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 4,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 5,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 5,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 5,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 5,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 6,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 6,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 6,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 6,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 7,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 7,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 7,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 7,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 4,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 5,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 6,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 8,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 4,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 5,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 6,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 9,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 2,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 3,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 4,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 5,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 6,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 7,
-			"rot": 0,
-			"type": "grass_green"
-		},
-		{
-			"gx": 10,
-			"gz": 8,
-			"rot": 0,
-			"type": "grass_green"
-		}
-	],
+	"objects": [],
 	"spawn": {
 		"gx": 6,
 		"gz": 5,
@@ -1033,5 +836,5 @@
 		}
 	],
 	"time_limit": 90.0,
-	"version": 1
+	"version": 3
 }

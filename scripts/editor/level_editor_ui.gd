@@ -632,12 +632,32 @@ func update_level_header(level_id: int, width: int, height: int, time_limit: flo
 	if spin_time != null:
 		spin_time.set_value_no_signal(time_limit)
 
-func update_goals_summary(terrain_count: int, object_grid: Dictionary, veg_field: RefCounted = null) -> void:
+func update_goals_summary(
+	terrain_count: int,
+	object_grid: Dictionary,
+	veg_field: RefCounted = null,
+	vector_field: RefCounted = null
+) -> void:
 	if lbl_goals_summary == null:
 		return
 	var grass_tufts: int = 0
 	var wheat_tufts: int = 0
-	if veg_field != null:
+	var flower_c: int = 0
+	var rock_c: int = 0
+
+	if vector_field != null and vector_field.has_method("sample_all_tufts"):
+		var tufts: Array = vector_field.call("sample_all_tufts") as Array
+		for item: Variant in tufts:
+			if item is Dictionary:
+				var td: Dictionary = item as Dictionary
+				var t_type: String = String(td.get("type", "grass_green"))
+				if t_type == "wheat":
+					wheat_tufts += 1
+				elif t_type == "flower":
+					flower_c += 1
+				else:
+					grass_tufts += 1
+	elif veg_field != null:
 		var cols: int = int(veg_field.get("cols"))
 		var rows: int = int(veg_field.get("rows"))
 		for r: int in range(rows):
@@ -648,9 +668,7 @@ func update_goals_summary(terrain_count: int, object_grid: Dictionary, veg_field
 				elif tid == 8:
 					wheat_tufts += 1
 
-	var flower_c: int = 0
-	var rock_c: int = 0
-	for k in object_grid:
+	for k: Variant in object_grid:
 		var entry: Dictionary = object_grid[k] as Dictionary
 		var t: String = String(entry.get("type", ""))
 		if t == "flower":

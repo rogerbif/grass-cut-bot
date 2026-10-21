@@ -244,3 +244,96 @@ static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 			offsets.append(Vector2i.ZERO)
 
 	return offsets
+
+## Gera polígono vetorial analítico fechado para carimbos no plano XZ
+static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector2) -> PackedVector2Array:
+	var poly: PackedVector2Array = PackedVector2Array()
+	var clamped_size: int = clampi(brush_size, 1, 4)
+	var r: float = float(clamped_size) * 0.35 + 0.15
+
+	match shape:
+		ShapeType.SINGLE, ShapeType.CIRCLE:
+			var segments: int = 24
+			for i: int in range(segments):
+				var a: float = float(i) * TAU / float(segments)
+				poly.append(center + Vector2(cos(a), sin(a)) * r)
+
+		ShapeType.SQUARE:
+			var h: float = r * 0.95
+			poly.append(center + Vector2(-h, -h))
+			poly.append(center + Vector2(h, -h))
+			poly.append(center + Vector2(h, h))
+			poly.append(center + Vector2(-h, h))
+
+		ShapeType.DIAMOND:
+			var d: float = r * 1.25
+			poly.append(center + Vector2(0.0, -d))
+			poly.append(center + Vector2(d, 0.0))
+			poly.append(center + Vector2(0.0, d))
+			poly.append(center + Vector2(-d, 0.0))
+
+		ShapeType.HEART:
+			var steps: int = 28
+			var scale_cardioid: float = r / 16.0
+			for i: int in range(steps):
+				var t: float = float(i) * TAU / float(steps)
+				var st: float = sin(t)
+				var ct: float = cos(t)
+				var px: float = 16.0 * (st * st * st)
+				var pz: float = -(13.0 * ct - 5.0 * cos(2.0 * t) - 2.0 * cos(3.0 * t) - cos(4.0 * t))
+				poly.append(center + Vector2(px, pz) * scale_cardioid)
+
+		ShapeType.STAR:
+			var points: int = 10
+			var r_out: float = r * 1.30
+			var r_in: float = r * 0.52
+			for i: int in range(points):
+				var a: float = -PI * 0.5 + float(i) * PI / 5.0
+				var cur_rad: float = r_out if (i % 2 == 0) else r_in
+				poly.append(center + Vector2(cos(a), sin(a)) * cur_rad)
+
+		ShapeType.CROSS:
+			var arm_w: float = r * 0.35
+			var arm_l: float = r * 1.15
+			poly.append(center + Vector2(-arm_w, -arm_l))
+			poly.append(center + Vector2(arm_w, -arm_l))
+			poly.append(center + Vector2(arm_w, -arm_w))
+			poly.append(center + Vector2(arm_l, -arm_w))
+			poly.append(center + Vector2(arm_l, arm_w))
+			poly.append(center + Vector2(arm_w, arm_w))
+			poly.append(center + Vector2(arm_w, arm_l))
+			poly.append(center + Vector2(-arm_w, arm_l))
+			poly.append(center + Vector2(-arm_w, arm_w))
+			poly.append(center + Vector2(-arm_l, arm_w))
+			poly.append(center + Vector2(-arm_l, -arm_w))
+			poly.append(center + Vector2(-arm_w, -arm_w))
+
+		_:
+			var segs: int = 20
+			for i: int in range(segs):
+				var a: float = float(i) * TAU / float(segs)
+				poly.append(center + Vector2(cos(a), sin(a)) * r)
+
+	return poly
+
+## Gera polígonos inflados (ribbon) com pontas arredondadas a partir de um traço livre contínuo
+static func create_ribbon_polygon(stroke_points: Array[Vector2], width_m: float) -> Array[PackedVector2Array]:
+	if stroke_points.size() < 2:
+		if stroke_points.size() == 1:
+			var c: Vector2 = stroke_points[0]
+			var rad: float = width_m * 0.5
+			var disc: PackedVector2Array = PackedVector2Array()
+			for i: int in range(16):
+				var a: float = float(i) * TAU / 16.0
+				disc.append(c + Vector2(cos(a), sin(a)) * rad)
+			return [disc]
+		return []
+
+	var polyline: PackedVector2Array = PackedVector2Array(stroke_points)
+	var offset_res: Array[PackedVector2Array] = Geometry2D.offset_polyline(
+		polyline,
+		width_m * 0.5,
+		Geometry2D.JOIN_ROUND,
+		Geometry2D.END_ROUND
+	)
+	return offset_res

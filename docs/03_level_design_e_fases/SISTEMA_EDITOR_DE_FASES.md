@@ -35,22 +35,24 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - Todas as peças manuais possuem suporte a giro de $90^\circ$ (`R`).
   - **Borracha / Clique Direito:** Remove o bloco de terreno (transforma em mar aberto) e apaga automaticamente qualquer objeto ou vegetação contida naquela célula.
 
-- **Camada 1 — Grama Orgânica em Campo Fino ($0.20\text{m} \times 0.20\text{m}$):**
-  - Cada bloco de $0.80\text{m}$ possui $4 \times 4 = 16$ micro-células de $0.20\text{m}$.
-  - A pintura de plantas ocorre diretamente no campo analítico `VegetationField`, permitindo traços suaves, curvas detalhadas e formas livres.
-  - **Auto-Geração de Terreno:** Ao pintar grama sobre células de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
+- **Camada 1 — Grama Orgânica por Coordenadas Vetoriais 2D (`VectorGrassField`):**
+  - Desenho vetorial contínuo no plano $XZ$ em metros, sem qualquer amarração a matrizes quadriculadas de grid.
+  - **Pincel Livre (Freehand Ribbon):** Arrastar o mouse gera uma fita poligonal suave com cantos e pontas arredondadas (`create_ribbon_polygon`), unindo-se automaticamente a outras manchas da mesma cor via Clipper C++ (`Geometry2D.merge_polygons`).
+  - **Largura Dinâmica do Traço:** As teclas `[` e `]` ajustam em tempo real o diâmetro do pincel (de 1 a 4, correspondendo a $0.30\text{m} \dots 1.00\text{m}$ de largura).
+  - **Auto-Geração de Terreno:** Ao pintar grama sobre áreas de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
+  - **Amostragem Orgânica Poisson Disk:** A densidade foliar é gerada por algoritmo de Poisson Disk ($r = 0.22\text{m}$), conferindo visual vivo e uniforme sem artefatos de grade.
   - **Variedades Suportadas:** As 7 cores de grama (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`) e `wheat` (trigo maduro).
-  - **Borracha / Clique Direito:** Apaga a grama/trigo em resolução de $0.20\text{m}$ sem afetar os blocos de terreno ou objetos posicionados.
+  - **Borracha / Clique Direito:** Recorta e subtrai qualquer polígono vetorial via `Geometry2D.clip_polygons()`.
 
 - **Camada 2 — Objetos & Obstáculos no Tile ($0.80\text{m} \times 0.80\text{m}$):**
   - Itens discretos centralizados por bloco de terreno:
-    - **`rock` (Rocha Sólida):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo fino para não atravessar a pedra.
+    - **`rock` (Rocha Sólida):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo vetorial com corte circular para não atravessar a pedra.
     - **`flower` (Flor Nobre):** Vegetação de alto valor econômico (2 hits, 5 moedas) posicionada no centro do tile de $0.80\text{m}$.
     - **`cutter_spawn` (Spawn do Robô):** Marcador de início do robô cortador (único por fase).
   - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra/flor em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar pedras e flores instantaneamente!
 
-- **Persistência Híbrida JSON v2:**
-  - O formato JSON salva a grama em bloco compacto `"vegetation": { "res": 0.2, "width": W, "height": H, "rows": [...] }` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`.
+- **Persistência Híbrida JSON v3:**
+  - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`, mantendo compatibilidade total com fases legadas v1 e v2.
 
 ---
 

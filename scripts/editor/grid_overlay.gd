@@ -108,6 +108,47 @@ func update_field_preview(
 	preview_fill_inst.mesh = im_fill
 	preview_line_inst.mesh = im_line
 
+## Atualiza a visualização holográfica de um polígono vetorial analítico no chão da ilha
+func update_vector_preview(
+	poly: PackedVector2Array,
+	line_color: Color,
+	fill_color: Color
+) -> void:
+	if preview_fill_inst == null or preview_line_inst == null:
+		return
+
+	if poly.size() < 3:
+		preview_fill_inst.mesh = null
+		preview_line_inst.mesh = null
+		return
+
+	_preview_fill_mat.albedo_color = fill_color
+	_preview_line_mat.albedo_color = line_color
+
+	var y_h: float = 0.040
+	var indices: PackedInt32Array = Geometry2D.triangulate_polygon(poly)
+	if not indices.is_empty():
+		var im_fill: ImmediateMesh = ImmediateMesh.new()
+		im_fill.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+		for idx: int in indices:
+			var pt: Vector2 = poly[idx]
+			im_fill.surface_add_vertex(Vector3(pt.x, y_h, pt.y))
+		im_fill.surface_end()
+		preview_fill_inst.mesh = im_fill
+	else:
+		preview_fill_inst.mesh = null
+
+	var im_line: ImmediateMesh = ImmediateMesh.new()
+	im_line.surface_begin(Mesh.PRIMITIVE_LINES)
+	var n: int = poly.size()
+	for i: int in range(n):
+		var p0: Vector2 = poly[i]
+		var p1: Vector2 = poly[(i + 1) % n]
+		im_line.surface_add_vertex(Vector3(p0.x, y_h + 0.002, p0.y))
+		im_line.surface_add_vertex(Vector3(p1.x, y_h + 0.002, p1.y))
+	im_line.surface_end()
+	preview_line_inst.mesh = im_line
+
 func rebuild_grid(width: int, height: int, c_size: float = 0.80) -> void:
 	current_width = width
 	current_height = height

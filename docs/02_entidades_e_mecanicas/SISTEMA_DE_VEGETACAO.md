@@ -14,20 +14,22 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ---
 
-## 2. Arquitetura de Renderização e Corte em Lote (`VegetationGrid` & `VegetationField`)
+## 2. Arquitetura de Renderização e Corte em Lote (`VegetationGrid` & `VectorGrassField`)
 
-Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e os blocos visuais de terreno operam em lote via **`VegetationGrid` (`res://scripts/plants/vegetation_grid.gd`)** integrado ao campo analítico fino **`VegetationField` (`res://scripts/level/vegetation_field.gd`)**:
-- **Campo de Vegetação Fino (`0.20m x 0.20m`):**
-  - A ilha é mapeada em sub-células de $0.20\text{m} \times 0.20\text{m}$ ($4 \times 4$ por bloco de $0.80\text{m}$).
-  - Permite formas curvas orgânicas analíticas (círculos perfeitos, corações, estrelas, losangos e traços livres) sem aspecto serrilhado ou em cruz.
-  - **Afinamento de Borda por SDF:** A distância de cada micro-tufo até a borda vazia é calculada via SDF Chamfer 2-pass. Tufos periféricos sofrem atenuação proporcional de escala ($0.55 \dots 1.0$), conferindo um contorno natural e suave à vegetação.
-  - **Decalque de Solo Orgânico & Trilha de Corte:** Um plano horizontal rente ao piso (`lawn_base_decal.gdshader`) amostra a textura de densidade filtrada linearmente e o buffer dinâmico de corte (`lawn_cut_trail.gd`), revelando o tom de gramado aparado por onde a serra circular passa.
+Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e os blocos visuais de terreno operam em lote via **`VegetationGrid` (`res://scripts/plants/vegetation_grid.gd`)** integrado ao campo vetorial contínuo **`VectorGrassField` (`res://scripts/level/vector_grass_field.gd`)**:
+- **Campo de Vegetação Vetorial 2D (Coordenadas Contínuas em Metros):**
+  - A grama é definida por polígonos fechados contínuos (`PackedVector2Array`) no plano $XZ$, sem restrições de matriz ou células mínimas de grid.
+  - **Operações Booleanas com Clipper C++:** União automática (`Geometry2D.merge_polygons`) ao desenhar novas áreas e recorte analítico (`Geometry2D.clip_polygons`) com a borracha ou sobreposição de rochas.
+  - **Amostragem Poisson Disk (Algoritmo de Bridson Otimizado):** Geração de tufos orgânicos com distribuição Blue Noise uniforme ($r = 0.22\text{m}$) acelerada por grade espacial, executando níveis densos em apenas $2\text{ ms} \dots 5\text{ ms}$.
+  - **Afinamento Suave de Borda:** A distância de cada tufo amostrado até as arestas do polígono é mensurada por `Geometry2D.get_closest_point_to_segment()`, atenuando a escala dos tufos de borda ($0.50 \dots 1.0$) de forma gradual e orgânica.
+  - **Malhas Planas Trianguladas de Piso:** Triangulação direta dos polígonos vetoriais via `Geometry2D.triangulate_polygon()`, gerando superfícies planas rente ao solo ($Y = 0.005$) com materiais foscos sólidos (`roughness = 0.90`) que desenham a base verde/dourada sob a vegetação.
 - **GPU Instancing (`MultiMeshInstance3D`):**
   - Os tufos de vegetação são agrupados em até 9 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
   - Micro-tufos otimizados com 14 folhas e 98 vértices mantêm a densidade foliar em ~350 folhas/m² com orçamento gráfico idêntico ao modelo anterior.
 - **Grade Espacial Lógica e Corte Circular Preciso:**
   - O corte ocorre por proximidade radial de micro-tufo sob o raio da lâmina da serra, conferindo uma borda de corte perfeitamente circular.
   - A contagem de colheita e premiação econômica é consolidada por célula lógica de $0.40\text{m}$, garantindo que nunca restem tufos órfãos visíveis sem contabilização da vitória.
+- **Formato JSON v3:** As fases armazenam `grass_vectors` (lista de polígonos fechados e furos), com retrocompatibilidade automática com os formatos legados v2 (`vegetation.rows`) e v1 (`objects`).
 
 ---
 

@@ -6,6 +6,7 @@ const IslandAutotiler = preload("res://scripts/editor/island_autotiler.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const LevelSerializer = preload("res://scripts/editor/level_serializer.gd")
 const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
+const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
@@ -58,12 +59,14 @@ var terrain_grid: Dictionary = {}
 # object_grid: Vector2i -> { "type": String, "rot": int }
 var object_grid: Dictionary = {}
 var veg_field: RefCounted = null
+var vector_grass: RefCounted = null
 var spawn_cell: Vector2i = Vector2i(6, 4)
 var spawn_rot: int = 0
 
 var hovered_cell: Vector2i = Vector2i(-1, -1)
 var is_hover_in_bounds: bool = false
 var last_world_hit: Vector3 = Vector3.ZERO
+var _freehand_points: Array[Vector2] = []
 
 var is_painting_lmb: bool = false
 var is_erasing_rmb: bool = false
@@ -75,6 +78,7 @@ var _stroke_modified: bool = false
 
 var _undo_stack: Array[Dictionary] = []
 var _redo_stack: Array[Dictionary] = []
+var _last_editor_goals: Dictionary = {}
 
 var is_playtesting: bool = false
 var _playtest_cutter: CharacterBody3D = null
@@ -280,7 +284,7 @@ func _sync_all_ui() -> void:
 		editor_camera.is_top_down if editor_camera != null else false
 	)
 	ui.update_level_header(current_level_id, grid_width, grid_height, time_limit)
-	ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field)
+	ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 
 func _input(event: InputEvent) -> void:
 	# Ignora eventos sintéticos de touch gerados pelo emulate_touch_from_mouse no modo Edição
@@ -374,10 +378,16 @@ func _input(event: InputEvent) -> void:
 			rmb_dragged = true
 		_update_hovered_cell(mm.position)
 		if is_painting_lmb and not over_ui:
-			if active_tool == ToolMode.BRUSH:
-				_apply_brush_at(hovered_cell, false)
-			elif active_tool == ToolMode.ERASER:
-				_apply_brush_at(hovered_cell, true)
+			if active_layer == EditLayer.GRASS:
+				var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
+				if _freehand_points.is_empty() or _freehand_points[-1].distance_to(hit_2d) >= 0.08:
+					_freehand_points.append(hit_2d)
+					_refresh_hover_preview()
+			else:
+				if active_tool == ToolMode.BRUSH:
+					_apply_brush_at(hovered_cell, false)
+				elif active_tool == ToolMode.ERASER:
+					_apply_brush_at(hovered_cell, true)
 
 	elif event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
@@ -401,12 +411,22 @@ func _input(event: InputEvent) -> void:
 					_push_undo_snapshot()
 					is_painting_lmb = true
 					_stroke_modified = false
-					_apply_brush_at(hovered_cell, false)
+					if active_layer == EditLayer.GRASS:
+						_freehand_points.clear()
+						_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
+						_refresh_hover_preview()
+					else:
+						_apply_brush_at(hovered_cell, false)
 				elif active_tool == ToolMode.ERASER:
 					_push_undo_snapshot()
 					is_painting_lmb = true
 					_stroke_modified = false
-					_apply_brush_at(hovered_cell, true)
+					if active_layer == EditLayer.GRASS:
+						_freehand_points.clear()
+						_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
+						_refresh_hover_preview()
+					else:
+						_apply_brush_at(hovered_cell, true)
 			elif not mb.pressed:
 				if is_box_dragging:
 					is_box_dragging = false
@@ -414,7 +434,12 @@ func _input(event: InputEvent) -> void:
 					_refresh_hover_preview()
 				if is_painting_lmb:
 					is_painting_lmb = false
-					if _stroke_modified:
+					if active_layer == EditLayer.GRASS:
+						var is_erase: bool = (active_tool == ToolMode.ERASER)
+						_apply_brush_at(hovered_cell, is_erase)
+						_freehand_points.clear()
+						_refresh_hover_preview()
+					elif _stroke_modified:
 						_rebuild_3d_world()
 						_sync_all_ui()
 
@@ -434,7 +459,11 @@ func _input(event: InputEvent) -> void:
 						object_grid.erase(hovered_cell)
 						_stroke_modified = true
 					if not _stroke_modified or active_layer != EditLayer.OBJECTS:
+						if active_layer == EditLayer.GRASS:
+							_freehand_points.clear()
+							_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
 						_apply_brush_at(hovered_cell, true)
+						_freehand_points.clear()
 					if _stroke_modified:
 						_rebuild_3d_world()
 						_sync_all_ui()
@@ -461,6 +490,20 @@ func _update_hovered_cell(screen_pos: Vector2) -> void:
 		ui.update_status_bar(hovered_cell, is_hover_in_bounds, last_world_hit)
 	_refresh_hover_preview()
 
+func _compute_aabb_2d(poly: PackedVector2Array) -> Rect2:
+	if poly.is_empty():
+		return Rect2()
+	var min_p: Vector2 = poly[0]
+	var max_p: Vector2 = poly[0]
+	for i: int in range(1, poly.size()):
+		var p: Vector2 = poly[i]
+		min_p.x = minf(min_p.x, p.x)
+		min_p.y = minf(min_p.y, p.y)
+		max_p.x = maxf(max_p.x, p.x)
+		max_p.y = maxf(max_p.y, p.y)
+	return Rect2(min_p, max_p - min_p)
+
+
 func _refresh_hover_preview() -> void:
 	if grid_overlay == null or is_playtesting:
 		return
@@ -468,37 +511,37 @@ func _refresh_hover_preview() -> void:
 	var preview_cells: Array[Vector2i] = []
 	if not is_hover_in_bounds or (ui != null and ui.is_mouse_over_ui(mouse_pos)):
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
-		grid_overlay.call("update_field_preview", preview_cells, Color.TRANSPARENT, Color.TRANSPARENT)
+		grid_overlay.call("update_vector_preview", PackedVector2Array(), Color.TRANSPARENT, Color.TRANSPARENT)
 		return
 
 	var fill_col: Color = Color(0.2, 1.0, 0.55, 0.38)
 	var line_col: Color = Color(0.4, 1.0, 0.75, 0.95)
 
 	if active_layer == EditLayer.GRASS and active_tool != ToolMode.SPAWN:
-		# Camada de Grama com preview fino de 0.20m
+		# Camada de Grama com preview holográfico vetorial
 		fill_col = Color(0.25, 0.85, 1.0, 0.38)
 		line_col = Color(0.55, 0.95, 1.0, 0.95)
-		if active_tool == ToolMode.ERASER:
+		if active_tool == ToolMode.ERASER or is_erasing_rmb:
 			fill_col = Color(1.0, 0.28, 0.28, 0.42)
 			line_col = Color(1.0, 0.55, 0.55, 0.95)
 
-		var field_cells: Array[Vector2i] = []
-		if veg_field != null:
-			var center_sub: Vector2i = veg_field.call("world_to_cell", last_world_hit, CELL_SIZE) as Vector2i
-			var offsets: Array[Vector2i] = BrushPatterns.get_field_offsets(active_shape, brush_size)
-			var cols: int = int(veg_field.get("cols"))
-			var rows: int = int(veg_field.get("rows"))
-			for off: Vector2i in offsets:
-				var tc: Vector2i = center_sub + off
-				if tc.x >= 0 and tc.x < cols and tc.y >= 0 and tc.y < rows:
-					field_cells.append(tc)
+		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
+		var preview_poly: PackedVector2Array = PackedVector2Array()
+
+		if is_painting_lmb and _freehand_points.size() >= 2:
+			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
+			preview_poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
+		elif active_shape == BrushPatterns.ShapeType.SINGLE:
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
+		else:
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
 
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
-		grid_overlay.call("update_field_preview", field_cells, line_col, fill_col)
+		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
 		return
 
 	# Camada de Terreno ou Objetos (em blocos de 0.80m)
-	grid_overlay.call("update_field_preview", preview_cells, Color.TRANSPARENT, Color.TRANSPARENT)
+	grid_overlay.call("update_vector_preview", PackedVector2Array(), Color.TRANSPARENT, Color.TRANSPARENT)
 
 	if active_tool == ToolMode.BOX_FILL:
 		fill_col = Color(1.0, 0.82, 0.2, 0.40)
@@ -535,29 +578,37 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		return
 
 	if active_layer == EditLayer.GRASS and active_tool != ToolMode.SPAWN:
-		# Pinta/Apaga grama no campo fino de 0.20m com formas analíticas suaves
-		if veg_field == null:
+		if vector_grass == null:
 			return
-		var center_sub: Vector2i = veg_field.call("world_to_cell", last_world_hit, CELL_SIZE) as Vector2i
-		var offsets: Array[Vector2i] = BrushPatterns.get_field_offsets(active_shape, brush_size)
-		var tid: int = 0 if erase_mode else VegetationFieldScript.type_name_to_id(active_grass_id)
-		var cols: int = int(veg_field.get("cols"))
-		var rows: int = int(veg_field.get("rows"))
-		var changed: bool = false
 
-		for off: Vector2i in offsets:
-			var sc: Vector2i = center_sub + off
-			if sc.x < 0 or sc.x >= cols or sc.y < 0 or sc.y >= rows:
-				continue
-			var cur_v: int = int(veg_field.call("get_cell", sc.x, sc.y))
-			if cur_v != tid:
-				veg_field.call("set_cell", sc.x, sc.y, tid)
-				changed = true
-				# Se não havia ilha debaixo da grama pintada, cria bloco de ilha
-				if tid != 0:
-					var bx: int = sc.x / 4
-					var bz: int = sc.y / 4
-					var bcell: Vector2i = Vector2i(bx, bz)
+		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
+		var poly: PackedVector2Array = PackedVector2Array()
+
+		if _freehand_points.size() >= 2:
+			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
+			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
+		elif active_shape == BrushPatterns.ShapeType.SINGLE:
+			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
+		else:
+			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+
+		if poly.size() < 3:
+			return
+
+		if erase_mode:
+			vector_grass.call("clip_shapes", poly)
+			if object_grid.has(center):
+				object_grid.erase(center)
+		else:
+			vector_grass.call("merge_or_add_shape", active_grass_id, poly)
+			var aabb: Rect2 = _compute_aabb_2d(poly)
+			var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+			var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+			var min_gz: int = clampi(int(floori((aabb.position.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+			var max_gz: int = clampi(int(ceili((aabb.end.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+			for gz: int in range(min_gz, max_gz + 1):
+				for gx: int in range(min_gx, max_gx + 1):
+					var bcell: Vector2i = Vector2i(gx, gz)
 					if not terrain_grid.has(bcell):
 						terrain_grid[bcell] = {
 							"tile_id": "island_center",
@@ -565,15 +616,9 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 							"auto": true
 						}
 
-		# Se a borracha for acionada em cima de um objeto de tile (pedra ou flor), apaga o objeto também
-		if erase_mode and object_grid.has(center):
-			object_grid.erase(center)
-			changed = true
-
-		if changed:
-			_stroke_modified = true
-			_rebuild_3d_world()
-			_sync_all_ui()
+		_stroke_modified = true
+		_rebuild_3d_world()
+		_sync_all_ui()
 		return
 
 	# Camada de Terreno ou Objetos em blocos de 0.80m
@@ -720,10 +765,7 @@ func _rebuild_3d_world() -> void:
 		"grid": { "width": grid_width, "height": grid_height, "cell_size": CELL_SIZE },
 		"terrain": [],
 		"objects": [],
-		"vegetation": {
-			"res": 0.20,
-			"rows": veg_field.call("to_rows") if veg_field != null else []
-		}
+		"grass_vectors": vector_grass.call("to_dict_list") if vector_grass != null else []
 	}
 
 	# Inclui rochas e flores em objects (discretos por tile de 0.80m)
@@ -743,7 +785,7 @@ func _rebuild_3d_world() -> void:
 	veg_grid_inst.name = "EditorVegGrid"
 	plants_container.add_child(veg_grid_inst)
 	# Desativa água e limites costeiros do grid filho para não duplicar os do editor
-	veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null)
+	_last_editor_goals = veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null) as Dictionary
 	var child_water: Node = veg_grid_inst.get_node_or_null("WaterOcean")
 	if child_water != null:
 		child_water.queue_free()
@@ -765,7 +807,8 @@ func _push_undo_snapshot() -> void:
 		"spawn_rot": spawn_rot,
 		"terrain": terrain_grid.duplicate(true),
 		"objects": object_grid.duplicate(true),
-		"veg_field_data": veg_field.call("to_rows") if veg_field != null else []
+		"veg_field_data": veg_field.call("to_rows") if veg_field != null else [],
+		"grass_vectors_data": vector_grass.call("to_dict_list") if vector_grass != null else []
 	}
 	_undo_stack.append(snap)
 	if _undo_stack.size() > MAX_UNDO_STEPS:
@@ -783,7 +826,8 @@ func perform_undo() -> void:
 		"spawn_rot": spawn_rot,
 		"terrain": terrain_grid.duplicate(true),
 		"objects": object_grid.duplicate(true),
-		"veg_field_data": veg_field.call("to_rows") if veg_field != null else []
+		"veg_field_data": veg_field.call("to_rows") if veg_field != null else [],
+		"grass_vectors_data": vector_grass.call("to_dict_list") if vector_grass != null else []
 	}
 	_redo_stack.append(current_snap)
 	var prev: Dictionary = _undo_stack.pop_back()
@@ -801,7 +845,8 @@ func perform_redo() -> void:
 		"spawn_rot": spawn_rot,
 		"terrain": terrain_grid.duplicate(true),
 		"objects": object_grid.duplicate(true),
-		"veg_field_data": veg_field.call("to_rows") if veg_field != null else []
+		"veg_field_data": veg_field.call("to_rows") if veg_field != null else [],
+		"grass_vectors_data": vector_grass.call("to_dict_list") if vector_grass != null else []
 	}
 	_undo_stack.append(current_snap)
 	var next_s: Dictionary = _redo_stack.pop_back()
@@ -815,9 +860,14 @@ func _restore_snapshot(snap: Dictionary) -> void:
 	spawn_rot = int(snap["spawn_rot"])
 	terrain_grid = (snap["terrain"] as Dictionary).duplicate(true)
 	object_grid = (snap["objects"] as Dictionary).duplicate(true)
-	if snap.has("veg_field_data") and veg_field != null:
+	if snap.has("grass_vectors_data"):
+		vector_grass = VectorGrassFieldScript.new()
+		vector_grass.call("from_dict_list", snap["grass_vectors_data"] as Array)
+	elif snap.has("veg_field_data") and veg_field != null:
 		veg_field.call("resize_blocks", grid_width, grid_height)
 		veg_field.call("from_rows", snap["veg_field_data"] as Array)
+		vector_grass = VectorGrassFieldScript.new()
+		vector_grass.call("convert_from_legacy_field", veg_field, grid_width, grid_height, CELL_SIZE)
 	grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 	_rebuild_3d_world()
 	_sync_all_ui()
@@ -840,6 +890,8 @@ func _on_generate_base_island() -> void:
 func _on_clear_objects() -> void:
 	_push_undo_snapshot()
 	object_grid.clear()
+	if vector_grass != null:
+		vector_grass.call("clear")
 	if veg_field != null:
 		veg_field.call("clear")
 	_rebuild_3d_world()
@@ -850,6 +902,8 @@ func _on_clear_all() -> void:
 	_push_undo_snapshot()
 	terrain_grid.clear()
 	object_grid.clear()
+	if vector_grass != null:
+		vector_grass.call("clear")
 	if veg_field != null:
 		veg_field.call("clear")
 	_rebuild_3d_world()
@@ -932,15 +986,20 @@ func _load_or_init_level(lvl_id: int) -> void:
 						"rot": int(d.get("rot", 0))
 					}
 
-		# Carrega campo de vegetação v2 ou converte de objects v1
-		if data.has("vegetation") and data["vegetation"] is Dictionary:
-			var vdict: Dictionary = data["vegetation"] as Dictionary
-			var rows_arr: Array = vdict.get("rows", []) as Array
-			veg_field = VegetationFieldScript.new(grid_width, grid_height)
-			veg_field.call("from_rows", rows_arr)
+		# Carrega campo de vegetação vetorial v3 ou converte de v2/v1
+		vector_grass = VectorGrassFieldScript.new()
+		if data.has("grass_vectors") and data["grass_vectors"] is Array:
+			vector_grass.call("from_dict_list", data["grass_vectors"] as Array)
 		else:
-			veg_field = VegetationFieldScript.new(grid_width, grid_height)
-			veg_field.call("from_legacy_objects", o_arr, grid_width, grid_height)
+			if data.has("vegetation") and data["vegetation"] is Dictionary:
+				var vdict: Dictionary = data["vegetation"] as Dictionary
+				var rows_arr: Array = vdict.get("rows", []) as Array
+				veg_field = VegetationFieldScript.new(grid_width, grid_height)
+				veg_field.call("from_rows", rows_arr)
+			else:
+				veg_field = VegetationFieldScript.new(grid_width, grid_height)
+				veg_field.call("from_legacy_objects", o_arr, grid_width, grid_height)
+			vector_grass.call("convert_from_legacy_field", veg_field, grid_width, grid_height, CELL_SIZE)
 
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
@@ -973,21 +1032,20 @@ func _build_default_island_for_level(lvl_id: int) -> void:
 	spawn_cell = Vector2i(5, 3)
 	spawn_rot = 0
 
-	for gz in range(1, grid_height - 1):
-		for gx in range(1, grid_width - 1):
-			var wp: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, grid_width, grid_height, CELL_SIZE)
-			if wp.length() < 0.7:
-				continue
-			object_grid[Vector2i(gx, gz)] = {
-				"type": "grass_green",
-				"rot": 0
-			}
+	vector_grass = VectorGrassFieldScript.new()
+	var default_poly: PackedVector2Array = PackedVector2Array([
+		Vector2(-3.6, -2.0),
+		Vector2(3.6, -2.0),
+		Vector2(3.6, 2.0),
+		Vector2(-3.6, 2.0)
+	])
+	vector_grass.call("add_shape", "grass_green", default_poly)
 
 	IslandAutotiler.apply_autotile(terrain_grid)
 
 	if lvl_id == 1:
 		LevelSerializer.save_level_json(
-			1, "Fase 1 - Ilha Inicial", time_limit, grid_width, grid_height, spawn_cell, spawn_rot, terrain_grid, object_grid, veg_field
+			1, "Fase 1 - Ilha Inicial", time_limit, grid_width, grid_height, spawn_cell, spawn_rot, terrain_grid, object_grid, veg_field, vector_grass
 		)
 
 func save_current_level_json() -> void:
@@ -1002,7 +1060,8 @@ func save_current_level_json() -> void:
 		spawn_rot,
 		terrain_grid,
 		object_grid,
-		veg_field
+		veg_field,
+		vector_grass
 	)
 	if ok:
 		ui.show_toast("💾 Salvo em res://data/levels/level_%02d.json" % current_level_id, Color(0.25, 0.95, 0.5))
@@ -1067,30 +1126,8 @@ func _start_playtest() -> void:
 		_playtest_joystick.connect("joystick_moved", Callable(_playtest_cutter, "set_input_direction"))
 
 	if GameManager != null:
-		# Define metas a partir do campo de vegetação
-		if veg_field != null:
-			var rows: int = int(veg_field.get("rows"))
-			var cols: int = int(veg_field.get("cols"))
-			var logical_subcells: Dictionary = {}
-			for r: int in range(rows):
-				for c: int in range(cols):
-					var tid: int = int(veg_field.call("get_cell", c, r))
-					if tid == 0:
-						continue
-					var lkey: Vector2i = Vector2i(c / 2, r / 2)
-					if not logical_subcells.has(lkey):
-						logical_subcells[lkey] = tid
-					elif tid == 9 or (tid == 8 and logical_subcells[lkey] != 9):
-						logical_subcells[lkey] = tid
-			for lkey: Vector2i in logical_subcells.keys():
-				var tid: int = int(logical_subcells[lkey])
-				var p_key: String = "grass"
-				if tid == 8:
-					p_key = "wheat"
-				elif tid == 9:
-					p_key = "flower"
-				goals[p_key] = int(goals.get(p_key, 0)) + 1
-
+		if not _last_editor_goals.is_empty():
+			goals = _last_editor_goals.duplicate()
 		if goals.is_empty():
 			goals = { "grass": 1 }
 
