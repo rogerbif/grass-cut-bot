@@ -8,7 +8,8 @@ uniform vec4 water2_color : source_color = vec4(0.08, 0.52, 0.75, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.88, 0.98, 1.0, 1.0);
 
 uniform float uv_scale : hint_range(0.01, 2.0) = 0.22;
-uniform float distortion_speed : hint_range(0.1, 5.0) = 1.2;
+uniform float distortion_speed : hint_range(0.0, 5.0) = 1.2;
+uniform float distortion_strength : hint_range(0.0, 0.5) = 0.10;
 uniform float foam_intensity : hint_range(0.0, 1.0) = 0.40;
 uniform float roughness : hint_range(0.0, 1.0) = 0.88;
 
@@ -53,8 +54,8 @@ void fragment() {
 	vec2 uv = v_world_pos.xz * uv_scale;
 
 	float t = TIME * distortion_speed * 0.1;
-	vec2 uv1 = uv + vec2(sin(t + uv.y * TWOPI), cos(t + uv.x * TWOPI)) * 0.1;
-	vec2 uv2 = uv - vec2(cos(t - uv.y * SIXPI), sin(t - uv.x * SIXPI)) * 0.1;
+	vec2 uv1 = uv + vec2(sin(t + uv.y * TWOPI), cos(t + uv.x * TWOPI)) * distortion_strength;
+	vec2 uv2 = uv - vec2(cos(t - uv.y * SIXPI), sin(t - uv.x * SIXPI)) * distortion_strength;
 
 	float layer1 = waterlayer(uv1);
 	float layer2 = waterlayer(uv2);
