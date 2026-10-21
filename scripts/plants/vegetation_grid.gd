@@ -58,6 +58,7 @@ static var _tile_meshes: Dictionary = {}
 # Dados por planta (SoA - Structure of Arrays para zero overhead de nós)
 var _positions: PackedVector3Array = PackedVector3Array()
 var _initial_transforms: Array[Transform3D] = []
+var _cut_transforms: Array[Transform3D] = []
 var _mmi_indices: PackedInt32Array = PackedInt32Array()
 var _instance_indices: PackedInt32Array = PackedInt32Array()
 var _health: PackedInt32Array = PackedInt32Array()
@@ -180,6 +181,7 @@ func _clear_state() -> void:
 		child.queue_free()
 	_positions.clear()
 	_initial_transforms.clear()
+	_cut_transforms.clear()
 	_mmi_indices.clear()
 	_instance_indices.clear()
 	_health.clear()
@@ -369,6 +371,24 @@ func build_from_level_json(
 	return goals
 
 
+func _compute_stub_transform(init_xform: Transform3D, v_type: String) -> Transform3D:
+	var y_scale: float = 0.15
+	var xz_scale: float = 1.08
+	if v_type == "wheat":
+		y_scale = 0.16
+		xz_scale = 1.05
+	elif v_type == "flower":
+		y_scale = 0.10
+		xz_scale = 1.15
+
+	var stub_basis: Basis = Basis(
+		init_xform.basis.x * xz_scale,
+		init_xform.basis.y * y_scale,
+		init_xform.basis.z * xz_scale
+	)
+	return Transform3D(stub_basis, init_xform.origin)
+
+
 func _build_from_vector_field(
 	vector_field: RefCounted,
 	width_blocks: int,
@@ -501,6 +521,7 @@ func _build_from_vector_field(
 			var p_idx: int = _positions.size()
 			_positions.append(pos)
 			_initial_transforms.append(xform)
+			_cut_transforms.append(_compute_stub_transform(xform, v_type))
 			_mmi_indices.append(mmi_idx)
 			_instance_indices.append(inst_idx)
 			_health.append(max_hp)
@@ -741,6 +762,7 @@ func _build_from_vegetation_field(
 			var p_idx: int = _positions.size()
 			_positions.append(pos)
 			_initial_transforms.append(xform)
+			_cut_transforms.append(_compute_stub_transform(xform, v_type))
 			_mmi_indices.append(mmi_idx)
 			_instance_indices.append(inst_idx)
 			_health.append(max_hp)
@@ -875,7 +897,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 				if new_hp <= 0:
 					_is_cut[p_idx] = 1
 					if mm != null:
-						mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
+						mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
 					_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
 
 					# Atualiza a contagem da célula lógica de 0.40m
@@ -951,6 +973,8 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 
 		if _is_cut[p_idx] == 0 and _is_hidden_by_density[p_idx] == 0:
 			mm.set_instance_transform(inst_idx, _initial_transforms[p_idx])
+		elif _is_cut[p_idx] == 1 and _is_hidden_by_density[p_idx] == 0:
+			mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
 		else:
 			mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 

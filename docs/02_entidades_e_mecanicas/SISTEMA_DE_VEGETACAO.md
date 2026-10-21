@@ -45,7 +45,7 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
-   - O modelo 3D do tufo é fatiado e achatado instantaneamente via Tween em 0.04s (`scale * (1.05, 0.05, 1.05)`), gerando um corte seco e limpo e executando `queue_free()` imediatamente ao final do Tween (0.04s).
+   - **Tocos 3D de Grama Cortada no Chão (Stubble):** Em vez de desaparecer completamente no nada, a instância cortada no `MultiMesh` transiciona instantaneamente para a escala de toco aparado (`_cut_transforms`): altura reduzida para ~15% ($Y \approx 0.045\text{m}$) e leve espalhamento lateral ($XZ \times 1.08$), deixando o rastro tátil de gramado recém-cortado no solo por todo o trajeto da lâmina.
 
 ---
 
