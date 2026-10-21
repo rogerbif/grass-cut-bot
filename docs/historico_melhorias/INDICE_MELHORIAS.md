@@ -64,6 +64,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`056_grama_vetorial_poisson_clipper.md`](./056_grama_vetorial_poisson_clipper.md) | Grama por Coordenadas Vetoriais 2D, Clipper C++, Amostragem Poisson Disk e Formato JSON v3 | Desenho contínuo de grama sem amarras de grade, polígonos 2D no plano XZ em metros, união/corte com Clipper C++, amostragem Poisson Disk (Bridson r=0.22m) em 2~5ms com afinamento de borda, malhas de piso trianguladas, pincel livre ribbon com atalhos [ e ], e conversão das 20 fases canônicas para JSON v3. |
 | [`057_correcao_solo_pintado_e_persistencia_vetorial.md`](./057_correcao_solo_pintado_e_persistencia_vetorial.md) | Remoção do Solo Pintado Artificial e Blindagem da Persistência Vetorial v3 | Eliminação das malhas planas de solo decalque restaurando o terreno natural sob a grama, correção do bake_to_tscn e preservação defensiva de grass_vectors v3 contra sobrescrita acidental. |
 | [`058_efeito_grama_cortada_tocos_aparados.md`](./058_efeito_grama_cortada_tocos_aparados.md) | Efeito Visual de Grama Cortada no Chão (Tocos 3D Aparados / Stubble) | Redução instantânea de escala vertical (Y x 0.15, ~4.5cm) nos tufos cortados mantendo o gramado aparado no chão, sem nós extras e com custo zero de draw calls. |
+| [`059_correcao_corte_playtest_editor.md`](./059_correcao_corte_playtest_editor.md) | Correção da Conexão de Corte no Modo Playtest do Editor | Eliminação de nós zumbis com remove_child imediato e referência forte _active_veg_grid, garantindo corte funcional no Playtest in-editor. |
 
 ---
 

@@ -83,6 +83,7 @@ var _last_editor_goals: Dictionary = {}
 var is_playtesting: bool = false
 var _playtest_cutter: CharacterBody3D = null
 var _playtest_joystick: Control = null
+var _active_veg_grid: Node3D = null
 
 func _ready() -> void:
 	_setup_desktop_window()
@@ -750,14 +751,18 @@ func _rebuild_3d_world() -> void:
 	# 1. Aplica Auto-Tile inteligente na ilha
 	IslandAutotiler.apply_autotile(terrain_grid)
 
-	# 2. Limpa containers 3D
+	# 2. Limpa containers 3D imediatamente da árvore antes de liberar memória
 	for c in island_tiles_container.get_children():
+		island_tiles_container.remove_child(c)
 		c.queue_free()
 	for c in coastal_limits_body.get_children():
+		coastal_limits_body.remove_child(c)
 		c.queue_free()
 	for c in plants_container.get_children():
+		plants_container.remove_child(c)
 		c.queue_free()
 	for c in obstacles_container.get_children():
+		obstacles_container.remove_child(c)
 		c.queue_free()
 
 	# 3. Instancia blocos 3D da ilha
@@ -798,6 +803,7 @@ func _rebuild_3d_world() -> void:
 	var veg_grid_inst: Node3D = VegetationGridScript.new() as Node3D
 	veg_grid_inst.name = "EditorVegGrid"
 	plants_container.add_child(veg_grid_inst)
+	_active_veg_grid = veg_grid_inst
 	# Desativa água e limites costeiros do grid filho para não duplicar os do editor
 	_last_editor_goals = veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null) as Dictionary
 	var child_water: Node = veg_grid_inst.get_node_or_null("WaterOcean")
@@ -1123,7 +1129,14 @@ func _start_playtest() -> void:
 
 	# Calcula metas reais da ilha a partir do VegetationGrid
 	var goals: Dictionary = {}
-	var editor_vg: Node3D = plants_container.get_node_or_null("EditorVegGrid") as Node3D
+	var editor_vg: Node3D = _active_veg_grid
+	if editor_vg == null or not is_instance_valid(editor_vg) or editor_vg.is_queued_for_deletion():
+		for c in plants_container.get_children():
+			if not c.is_queued_for_deletion() and c is Node3D:
+				editor_vg = c as Node3D
+				break
+		if editor_vg == null:
+			editor_vg = plants_container.get_node_or_null("EditorVegGrid") as Node3D
 
 	# Instancia o Cortador
 	_playtest_cutter = CUTTER_SCENE.instantiate() as CharacterBody3D
