@@ -18,6 +18,10 @@ var _saved_focus: Vector3 = Vector3.ZERO
 var _saved_distance: float = 14.5
 
 func _ready() -> void:
+	# Como a câmera do editor é controlada suavemente via _process (render frame)
+	# e por inputs de mouse/pan, desativa a interpolação física para evitar o aviso
+	# de Camera3D interpolada disparada fora de physics_process.
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	fov = 46.0
 	_update_camera_transform(1.0)
 
