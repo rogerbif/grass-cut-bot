@@ -85,7 +85,6 @@ var _veg_mmi_nodes: Array[MultiMeshInstance3D] = []
 # Decalque de solo orgânico e trilha
 var _lawn_decal_mesh: MeshInstance3D = null
 var _lawn_cut_trail: Node3D = null
-var _ground_mesh_instances: Array[MeshInstance3D] = []
 
 # Grade espacial discreta 2D: Vector2i(cx, cz) -> PackedInt32Array de p_idx
 var _grid: Dictionary = {}
@@ -198,7 +197,6 @@ func _clear_state() -> void:
 	_cell_is_completed.clear()
 	_lawn_decal_mesh = null
 	_lawn_cut_trail = null
-	_ground_mesh_instances.clear()
 	_veg_multimeshes.clear()
 	_veg_mmi_nodes.clear()
 	_grid.clear()
@@ -355,9 +353,6 @@ func build_from_level_json(
 	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
 	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells)
 
-	# Constrói malhas planas trianguladas rente ao piso
-	_setup_vector_ground_meshes(vector_field)
-
 	# 5. Posiciona o cortador no spawn
 	var spawn_dict: Dictionary = data.get("spawn", {}) as Dictionary
 	var sp_x: int = int(spawn_dict.get("gx", int(float(width) / 2.0)))
@@ -372,49 +367,6 @@ func build_from_level_json(
 		goals = { "grass": 1 }
 
 	return goals
-
-
-func _resolve_ground_color(t_name: String) -> Color:
-	match t_name:
-		"grass_yellow":
-			return Color(0.65, 0.58, 0.15, 1.0)
-		"grass_blue":
-			return Color(0.18, 0.42, 0.58, 1.0)
-		"grass_purple":
-			return Color(0.45, 0.22, 0.52, 1.0)
-		"grass_white":
-			return Color(0.78, 0.82, 0.76, 1.0)
-		"grass_red":
-			return Color(0.65, 0.22, 0.20, 1.0)
-		"grass_black":
-			return Color(0.20, 0.22, 0.20, 1.0)
-		"wheat":
-			return Color(0.68, 0.52, 0.18, 1.0)
-		_:
-			return Color(0.24, 0.48, 0.16, 1.0)
-
-
-func _setup_vector_ground_meshes(vector_field: RefCounted) -> void:
-	if vector_field == null:
-		return
-	var meshes: Dictionary = vector_field.call("generate_ground_meshes") as Dictionary
-	for t_name_var: Variant in meshes.keys():
-		var t_name: String = String(t_name_var)
-		var mesh_res: ArrayMesh = meshes[t_name] as ArrayMesh
-		if mesh_res == null or mesh_res.get_surface_count() == 0:
-			continue
-		var mi: MeshInstance3D = MeshInstance3D.new()
-		mi.name = "GroundMesh_%s" % t_name
-		mi.mesh = mesh_res
-		var mat: StandardMaterial3D = StandardMaterial3D.new()
-		mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
-		mat.albedo_color = _resolve_ground_color(t_name)
-		mat.roughness = 0.90
-		mi.material_override = mat
-		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		mi.position = Vector3(0.0, 0.005, 0.0)
-		add_child(mi)
-		_ground_mesh_instances.append(mi)
 
 
 func _build_from_vector_field(

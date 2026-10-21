@@ -64,7 +64,17 @@ static func save_level_json(
 				"rot": int(entry.get("rot", 0))
 			})
 
-	var version_num: int = 3 if (vector_field != null and vector_field.has_method("to_dict_list")) else 2
+	# Preservação defensiva: se vector_field for nulo, tenta preservar grass_vectors do arquivo existente
+	var existing_grass_vectors: Array = []
+	var path: String = get_json_path(level_id)
+	if vector_field == null and FileAccess.file_exists(path):
+		var prev_content: String = FileAccess.get_file_as_string(path)
+		var parsed: Variant = JSON.parse_string(prev_content)
+		if parsed is Dictionary and (parsed as Dictionary).has("grass_vectors"):
+			existing_grass_vectors = (parsed as Dictionary)["grass_vectors"] as Array
+
+	var has_vector_data: bool = (vector_field != null and vector_field.has_method("to_dict_list")) or not existing_grass_vectors.is_empty()
+	var version_num: int = 3 if has_vector_data else 2
 
 	var payload: Dictionary = {
 		"version": version_num,
@@ -87,6 +97,8 @@ static func save_level_json(
 
 	if vector_field != null and vector_field.has_method("to_dict_list"):
 		payload["grass_vectors"] = vector_field.call("to_dict_list")
+	elif not existing_grass_vectors.is_empty():
+		payload["grass_vectors"] = existing_grass_vectors
 	elif veg_field != null and veg_field.has_method("to_rows"):
 		payload["vegetation"] = {
 			"res": 0.20,
@@ -94,7 +106,6 @@ static func save_level_json(
 		}
 
 	var json_str: String = JSON.stringify(payload, "\t")
-	var path: String = get_json_path(level_id)
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		return false
@@ -122,7 +133,8 @@ static func bake_to_tscn(
 	spawn_rot: int,
 	terrain_grid: Dictionary,
 	object_grid: Dictionary,
-	veg_field: RefCounted = null
+	veg_field: RefCounted = null,
+	vector_field: RefCounted = null
 ) -> bool:
 	return save_level_json(
 		level_id,
@@ -134,5 +146,6 @@ static func bake_to_tscn(
 		spawn_rot,
 		terrain_grid,
 		object_grid,
-		veg_field
+		veg_field,
+		vector_field
 	)

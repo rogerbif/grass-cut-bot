@@ -41,6 +41,7 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - **Largura Dinâmica do Traço:** As teclas `[` e `]` ajustam em tempo real o diâmetro do pincel (de 1 a 4, correspondendo a $0.30\text{m} \dots 1.00\text{m}$ de largura).
   - **Auto-Geração de Terreno:** Ao pintar grama sobre áreas de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
   - **Amostragem Orgânica Poisson Disk:** A densidade foliar é gerada por algoritmo de Poisson Disk ($r = 0.22\text{m}$), conferindo visual vivo e uniforme sem artefatos de grade.
+  - **Visual Limpo sem Decalque Artificial:** O solo permanece com o material e textura naturais dos blocos 3D de terreno (`tile_island_*`), sendo a vegetação composta exclusivamente pelos tufos 3D de grama/trigo/flor; nenhuma malha plana de cor sólida é colada sobre o solo.
   - **Variedades Suportadas:** As 7 cores de grama (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`) e `wheat` (trigo maduro).
   - **Borracha / Clique Direito:** Recorta e subtrai qualquer polígono vetorial via `Geometry2D.clip_polygons()`.
 
@@ -51,8 +52,9 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
     - **`cutter_spawn` (Spawn do Robô):** Marcador de início do robô cortador (único por fase).
   - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra/flor em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar pedras e flores instantaneamente!
 
-- **Persistência Híbrida JSON v3:**
-  - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`, mantendo compatibilidade total com fases legadas v1 e v2.
+- **Persistência Híbrida JSON v3 e Blindagem de Bake (`LevelSerializer`):**
+  - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`.
+  - **Blindagem Defensiva contra Sobrescrita:** A rotina de exportação `bake_to_tscn` recebe e repassa `vector_field` obrigatoriamente; caso `vector_field` seja nulo mas o arquivo existente em disco já contenha `"grass_vectors"`, o serializador preserva os dados existentes sem reverter para `version: 2` vazia.
 
 ---
 

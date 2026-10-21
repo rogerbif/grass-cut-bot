@@ -1093,7 +1093,8 @@ func bake_current_level_tscn() -> void:
 		spawn_rot,
 		terrain_grid,
 		object_grid,
-		veg_field
+		veg_field,
+		vector_grass
 	)
 	if ok:
 		ui.show_toast("📦 Cena exportada: res://scenes/levels/level_%02d.tscn" % current_level_id, Color(0.7, 0.5, 1.0))
