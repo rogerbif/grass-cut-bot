@@ -61,6 +61,7 @@ func add_shape(type_name: String, outer_poly: PackedVector2Array, holes_list: Ar
 	return shape_id
 
 ## Mescla um novo polígono desenhado nas formas existentes do mesmo tipo (Auto-Merge via Clipper C++)
+## e substitui (recorta) automaticamente qualquer outra cor/tipo que esteja por baixo da área pintada!
 func merge_or_add_shape(type_name: String, new_poly: PackedVector2Array) -> void:
 	if new_poly.size() < 3:
 		return
@@ -69,7 +70,10 @@ func merge_or_add_shape(type_name: String, new_poly: PackedVector2Array) -> void
 	if not Geometry2D.is_polygon_clockwise(poly_to_merge):
 		poly_to_merge.reverse()
 
-	# Procura formas existentes da mesma cor que colidam/sobreponham o novo polígono
+	# 1. Substituição de cor: recorta a área desenhada de todas as outras formas de cores diferentes
+	clip_shapes_except(type_name, poly_to_merge)
+
+	# 2. Procura formas existentes da mesma cor que colidam/sobreponham o novo polígono
 	var merged_indices: Array[int] = []
 	var accumulated_polys: Array[PackedVector2Array] = [poly_to_merge]
 
@@ -94,11 +98,11 @@ func merge_or_add_shape(type_name: String, new_poly: PackedVector2Array) -> void
 			accumulated_polys.append(existing_poly)
 
 	if merged_indices.is_empty():
-		# Não cruza nenhuma forma existente: adiciona como nova forma independente
+		# Não cruza nenhuma forma existente da mesma cor: adiciona como nova forma independente
 		add_shape(type_name, poly_to_merge)
 		return
 
-	# Executa união com Clipper
+	# Executa união com Clipper para todas as formas da mesma cor
 	var result_polys: Array[PackedVector2Array] = [accumulated_polys[0]]
 	for idx: int in range(1, accumulated_polys.size()):
 		var to_merge: PackedVector2Array = accumulated_polys[idx]
@@ -124,6 +128,54 @@ func merge_or_add_shape(type_name: String, new_poly: PackedVector2Array) -> void
 	for res_p: PackedVector2Array in result_polys:
 		add_shape(type_name, res_p)
 
+## Recorta uma área de todas as formas que NÃO pertençam a excluded_type (substituição limpa de grama)
+func clip_shapes_except(excluded_type: String, cutter_poly: PackedVector2Array) -> bool:
+	if cutter_poly.size() < 3 or shapes.is_empty():
+		return false
+
+	var cutter_clean: PackedVector2Array = cutter_poly
+	if not Geometry2D.is_polygon_clockwise(cutter_clean):
+		cutter_clean.reverse()
+
+	var cutter_aabb: Rect2 = _compute_poly_aabb(cutter_clean)
+	var modified: bool = false
+	var new_shapes: Array[Dictionary] = []
+
+	for s: Dictionary in shapes:
+		var s_type: String = String(s.get("type", "grass_green"))
+		if s_type == excluded_type:
+			new_shapes.append(s)
+			continue
+
+		var s_poly: PackedVector2Array = s.get("polygon", PackedVector2Array()) as PackedVector2Array
+		var s_aabb: Rect2 = _compute_poly_aabb(s_poly)
+
+		if not s_aabb.intersects(cutter_aabb):
+			new_shapes.append(s)
+			continue
+
+		var test_overlap: Array[PackedVector2Array] = Geometry2D.intersect_polygons(s_poly, cutter_clean)
+		if test_overlap.is_empty():
+			new_shapes.append(s)
+			continue
+
+		var clipped_parts: Array[PackedVector2Array] = _clip_polygon_without_holes(s_poly, cutter_clean)
+		modified = true
+		for part: PackedVector2Array in clipped_parts:
+			if part.size() >= 3:
+				var new_id: int = _next_id
+				_next_id += 1
+				new_shapes.append({
+					"id": new_id,
+					"type": s_type,
+					"polygon": part,
+					"holes": []
+				})
+
+	if modified:
+		shapes = new_shapes
+	return modified
+
 ## Aplica corte/subtração booleana em todas as formas vetoriais com a borracha
 func clip_shapes(eraser_poly: PackedVector2Array) -> bool:
 	if eraser_poly.size() < 3 or shapes.is_empty():
@@ -146,27 +198,86 @@ func clip_shapes(eraser_poly: PackedVector2Array) -> bool:
 			new_shapes.append(s)
 			continue
 
-		# Executa recorte via Clipper C++
-		var clipped: Array[PackedVector2Array] = Geometry2D.clip_polygons(s_poly, eraser_clean)
-		if clipped.is_empty():
-			# O polígono foi 100% apagado pela borracha
-			modified = true
-		else:
-			modified = true
-			for part: PackedVector2Array in clipped:
-				if part.size() >= 3:
-					var new_id: int = _next_id
-					_next_id += 1
-					new_shapes.append({
-						"id": new_id,
-						"type": s_type,
-						"polygon": part,
-						"holes": []
-					})
+		var test_overlap: Array[PackedVector2Array] = Geometry2D.intersect_polygons(s_poly, eraser_clean)
+		if test_overlap.is_empty():
+			new_shapes.append(s)
+			continue
+
+		# Executa recorte robusto sem furos internos via Clipper C++
+		var clipped_parts: Array[PackedVector2Array] = _clip_polygon_without_holes(s_poly, eraser_clean)
+		modified = true
+		for part: PackedVector2Array in clipped_parts:
+			if part.size() >= 3:
+				var new_id: int = _next_id
+				_next_id += 1
+				new_shapes.append({
+					"id": new_id,
+					"type": s_type,
+					"polygon": part,
+					"holes": []
+				})
 
 	if modified:
 		shapes = new_shapes
 	return modified
+
+## Executa o corte de subject por eraser garantindo que o resultado contenha apenas polígonos simples trianguláveis
+func _clip_polygon_without_holes(subject: PackedVector2Array, eraser: PackedVector2Array) -> Array[PackedVector2Array]:
+	var result: Array[PackedVector2Array] = []
+	var raw_clip: Array[PackedVector2Array] = Geometry2D.clip_polygons(subject, eraser)
+	if raw_clip.is_empty():
+		return result
+
+	# No Godot 4, polígonos externos têm sentido anti-horário e furos internos têm sentido horário
+	var has_internal_hole: bool = false
+	for p: PackedVector2Array in raw_clip:
+		if Geometry2D.is_polygon_clockwise(p):
+			has_internal_hole = true
+			break
+
+	if not has_internal_hole:
+		for p: PackedVector2Array in raw_clip:
+			if not Geometry2D.is_polygon_clockwise(p) and p.size() >= 3:
+				result.append(p)
+		return result
+
+	# Quando cria furo interno (a borracha/carimbo está totalmente no interior da forma):
+	# Divide o subject verticalmente pelo centro do eraser para transformar o furo em concavidades de borda simples
+	var eraser_center: Vector2 = Vector2.ZERO
+	for pt: Vector2 in eraser:
+		eraser_center += pt
+	eraser_center /= float(eraser.size())
+
+	var aabb: Rect2 = _compute_poly_aabb(subject)
+	var left_box: PackedVector2Array = PackedVector2Array([
+		Vector2(aabb.position.x - 2.0, aabb.position.y - 2.0),
+		Vector2(eraser_center.x, aabb.position.y - 2.0),
+		Vector2(eraser_center.x, aabb.end.y + 2.0),
+		Vector2(aabb.position.x - 2.0, aabb.end.y + 2.0)
+	])
+	var right_box: PackedVector2Array = PackedVector2Array([
+		Vector2(eraser_center.x, aabb.position.y - 2.0),
+		Vector2(aabb.end.x + 2.0, aabb.position.y - 2.0),
+		Vector2(aabb.end.x + 2.0, aabb.end.y + 2.0),
+		Vector2(eraser_center.x, aabb.end.y + 2.0)
+	])
+
+	var left_halves: Array[PackedVector2Array] = Geometry2D.intersect_polygons(subject, left_box)
+	var right_halves: Array[PackedVector2Array] = Geometry2D.intersect_polygons(subject, right_box)
+
+	for h: PackedVector2Array in left_halves:
+		var c_parts: Array[PackedVector2Array] = Geometry2D.clip_polygons(h, eraser)
+		for p: PackedVector2Array in c_parts:
+			if not Geometry2D.is_polygon_clockwise(p) and p.size() >= 3:
+				result.append(p)
+
+	for h: PackedVector2Array in right_halves:
+		var c_parts: Array[PackedVector2Array] = Geometry2D.clip_polygons(h, eraser)
+		for p: PackedVector2Array in c_parts:
+			if not Geometry2D.is_polygon_clockwise(p) and p.size() >= 3:
+				result.append(p)
+
+	return result
 
 ## Amostra tufos em distribuição Poisson Disk / Blue Noise dentro de todos os polígonos
 ## Retorna Array[Dictionary]: [{ "pos": Vector3, "type": String, "scale_factor": float, "seed": float }]

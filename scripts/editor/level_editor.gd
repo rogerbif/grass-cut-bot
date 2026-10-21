@@ -380,9 +380,16 @@ func _input(event: InputEvent) -> void:
 		if is_painting_lmb and not over_ui:
 			if active_layer == EditLayer.GRASS:
 				var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
-				if _freehand_points.is_empty() or _freehand_points[-1].distance_to(hit_2d) >= 0.08:
-					_freehand_points.append(hit_2d)
-					_refresh_hover_preview()
+				if active_shape == BrushPatterns.ShapeType.SINGLE:
+					if _freehand_points.is_empty() or _freehand_points[-1].distance_to(hit_2d) >= 0.08:
+						_freehand_points.append(hit_2d)
+						_refresh_hover_preview()
+				else:
+					if _freehand_points.is_empty() or _freehand_points[-1].distance_to(hit_2d) >= float(brush_size) * 0.35:
+						_freehand_points.clear()
+						_freehand_points.append(hit_2d)
+						var is_erase: bool = (active_tool == ToolMode.ERASER)
+						_apply_brush_at(hovered_cell, is_erase)
 			else:
 				if active_tool == ToolMode.BRUSH:
 					_apply_brush_at(hovered_cell, false)
@@ -412,9 +419,12 @@ func _input(event: InputEvent) -> void:
 					is_painting_lmb = true
 					_stroke_modified = false
 					if active_layer == EditLayer.GRASS:
-						_freehand_points.clear()
-						_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
-						_refresh_hover_preview()
+						if active_shape != BrushPatterns.ShapeType.SINGLE:
+							_apply_brush_at(hovered_cell, false)
+						else:
+							_freehand_points.clear()
+							_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
+							_refresh_hover_preview()
 					else:
 						_apply_brush_at(hovered_cell, false)
 				elif active_tool == ToolMode.ERASER:
@@ -422,9 +432,12 @@ func _input(event: InputEvent) -> void:
 					is_painting_lmb = true
 					_stroke_modified = false
 					if active_layer == EditLayer.GRASS:
-						_freehand_points.clear()
-						_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
-						_refresh_hover_preview()
+						if active_shape != BrushPatterns.ShapeType.SINGLE:
+							_apply_brush_at(hovered_cell, true)
+						else:
+							_freehand_points.clear()
+							_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
+							_refresh_hover_preview()
 					else:
 						_apply_brush_at(hovered_cell, true)
 			elif not mb.pressed:
@@ -435,8 +448,9 @@ func _input(event: InputEvent) -> void:
 				if is_painting_lmb:
 					is_painting_lmb = false
 					if active_layer == EditLayer.GRASS:
-						var is_erase: bool = (active_tool == ToolMode.ERASER)
-						_apply_brush_at(hovered_cell, is_erase)
+						if active_shape == BrushPatterns.ShapeType.SINGLE:
+							var is_erase: bool = (active_tool == ToolMode.ERASER)
+							_apply_brush_at(hovered_cell, is_erase)
 						_freehand_points.clear()
 						_refresh_hover_preview()
 					elif _stroke_modified:
@@ -528,13 +542,13 @@ func _refresh_hover_preview() -> void:
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 		var preview_poly: PackedVector2Array = PackedVector2Array()
 
-		if is_painting_lmb and _freehand_points.size() >= 2:
+		if active_shape != BrushPatterns.ShapeType.SINGLE:
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			preview_poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
-		elif active_shape == BrushPatterns.ShapeType.SINGLE:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
 		else:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
 
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
 		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
@@ -584,13 +598,13 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 		var poly: PackedVector2Array = PackedVector2Array()
 
-		if _freehand_points.size() >= 2:
+		if active_shape != BrushPatterns.ShapeType.SINGLE:
+			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+		elif _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
-		elif active_shape == BrushPatterns.ShapeType.SINGLE:
-			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
 		else:
-			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
 
 		if poly.size() < 3:
 			return
