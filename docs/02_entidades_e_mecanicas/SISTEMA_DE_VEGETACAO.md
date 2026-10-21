@@ -14,23 +14,20 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ---
 
-## 2. Arquitetura de Renderização e Corte em Lote (`VegetationGrid`)
+## 2. Arquitetura de Renderização e Corte em Lote (`VegetationGrid` & `VegetationField`)
 
-Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e os blocos visuais de terreno operam em lote via **`VegetationGrid` (`res://scripts/plants/vegetation_grid.gd`)**:
+Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e os blocos visuais de terreno operam em lote via **`VegetationGrid` (`res://scripts/plants/vegetation_grid.gd`)** integrado ao campo analítico fino **`VegetationField` (`res://scripts/level/vegetation_field.gd`)**:
+- **Campo de Vegetação Fino (`0.20m x 0.20m`):**
+  - A ilha é mapeada em sub-células de $0.20\text{m} \times 0.20\text{m}$ ($4 \times 4$ por bloco de $0.80\text{m}$).
+  - Permite formas curvas orgânicas analíticas (círculos perfeitos, corações, estrelas, losangos e traços livres) sem aspecto serrilhado ou em cruz.
+  - **Afinamento de Borda por SDF:** A distância de cada micro-tufo até a borda vazia é calculada via SDF Chamfer 2-pass. Tufos periféricos sofrem atenuação proporcional de escala ($0.55 \dots 1.0$), conferindo um contorno natural e suave à vegetação.
+  - **Decalque de Solo Orgânico & Trilha de Corte:** Um plano horizontal rente ao piso (`lawn_base_decal.gdshader`) amostra a textura de densidade filtrada linearmente e o buffer dinâmico de corte (`lawn_cut_trail.gd`), revelando o tom de gramado aparado por onde a serra circular passa.
 - **GPU Instancing (`MultiMeshInstance3D`):**
   - Os tufos de vegetação são agrupados em até 9 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
-  - Para `wheat` e `flower`, as sub-malhas originais são combinadas uma única vez em cache estático (`ArrayMesh` multi-superfície via `SurfaceTool`), preservando todos os materiais e shaders em um único draw call por espécie.
-- **Grade Espacial Discreta 2D (`0.40m x 0.40m`):**
-  - Em vez de instanciar milhares de nós `Area3D`, o `VegetationGrid` particiona a ilha em células de `0.40m` (`_grid: Dictionary` mapeando `Vector2i -> PackedInt32Array` de índices em arrays SoA `PackedVector3Array`, `PackedInt32Array`, `PackedByteArray`).
-  - A cada frame de física, o cortador invoca `cut_in_circle(global_position, blade_radius, power)`, verificando em $\mathcal{O}(1)$ apenas as células que intersectam o raio da lâmina.
-  - As cenas individuais `scenes/plants/*.tscn` (`plant.gd`) permanecem apenas como fonte de malha/material e fallback para edição manual no Editor de Fases PC.
-
-- **Estrutura 3D Estilizada Low Poly e Gramado Condensado:**
-  - O tufo de grama básico (`grass_tuft.tscn`) utiliza o modelo 3D oficial `assets/models/grass_01.glb` (baseado na malha de 112 vértices e 80 faces `grass_varien_4_grass_0`).
-  - **Calibração de Escala Condensada:** No `_ready()`, cada tufo recebe uma rotação aleatória no eixo Y (`0.0` a $2\pi$) e uma calibração proporcional precisa: altura compacta no eixo Y reduzida em 25% (`0.53` a `0.64`) e diâmetro horizontal reduzido em 50% (`0.40` a `0.45m`).
-  - **Grade de Célula Reduzida (0.40m):** A célula de vegetação passa a medir exatamente $0.40\text{m} \times 0.40\text{m}$, coincidindo com o diâmetro do tufo. Cada bloco de terreno de $0.80\text{m} \times 0.80\text{m}$ acomoda perfeitamente uma subgrade $2 \times 2$ com 4 células de vegetação, garantindo um gramado contínuo, farto, denso e condensado.
-  - **Flores e Trigo em Slots de Tufo:** Flores e trigo ocupam 1 célula de $0.40\text{m}$ na mesma cota do tufo de grama, com as demais células do bloco preenchidas por grama.
-  - **Rochas Livres de Grama:** As rochas mantêm seu tamanho físico original (raio $0.36\text{m}$) e onde há rocha nenhuma grama é gerada sob ou dentro da sua área.
+  - Micro-tufos otimizados com 14 folhas e 98 vértices mantêm a densidade foliar em ~350 folhas/m² com orçamento gráfico idêntico ao modelo anterior.
+- **Grade Espacial Lógica e Corte Circular Preciso:**
+  - O corte ocorre por proximidade radial de micro-tufo sob o raio da lâmina da serra, conferindo uma borda de corte perfeitamente circular.
+  - A contagem de colheita e premiação econômica é consolidada por célula lógica de $0.40\text{m}$, garantindo que nunca restem tufos órfãos visíveis sem contabilização da vitória.
 
 ---
 
@@ -76,8 +73,9 @@ As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 
 O arquivo de modelagem `grass_01.blend` contém rigorosamente **1 único modelo default neutro e limpo**, exportado para `assets/models/grass_01.glb`. A definição de cores, materiais de shader e partículas ocorre diretamente na engine através de cenas especializadas.
 
-### A. Geometria Única no Blender (`grass_01.blend`)
-- **Malha Base:** `grass_01_mesh` refinada e enriquecida volumetricamente (392 vértices e 280 faces, divididos em 56 folhas conectadas independentes).
+### A. Geometria Única no Blender (`grass_01.blend` & `grass_01.glb`)
+- **Malha Base Otimizada:** `grass_01_mesh` reconfigurada para micro-tufos densos (98 vértices e 70 faces, compostos por 14 folhas conectadas independentes).
+- **Densidade Perfeita no Grid 0.20m:** Com a sub-divisão do campo em micro-células de $0.20\text{m}$, essa geometria compacta gera uma densidade foliar visual de ~350 folhas/m², mantendo o orçamento de vértices por fase (~490k na Fase 20) idêntico ou inferior ao formato anterior, com silhueta e cortes infinitamente mais fluidos e orgânicos.
 - **Normalização e Origem:** Dimensões $1.01\text{m} \times 0.99\text{m} \times 1.025\text{m}$, coordenadas $(0.0, 0.0, 0.0)$ e base ancorada em $Z = 0.0$.
 - **Atributos de Folha Assados:** Camada `blade_data` exportada como `COLOR_0` no glTF com `export_vertex_color='ACTIVE'` e `export_attributes=True`.
 - **Material Neutro:** `M_Grama_Default` sem texturas e sem cores saturadas aplicadas diretamente no Blender.

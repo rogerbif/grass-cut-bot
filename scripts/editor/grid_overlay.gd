@@ -47,6 +47,67 @@ func _ready() -> void:
 
 	rebuild_grid(current_width, current_height, cell_size)
 
+func update_field_preview(
+	field_cells: Array[Vector2i],
+	line_color: Color,
+	fill_color: Color
+) -> void:
+	if preview_fill_inst == null or preview_line_inst == null:
+		return
+
+	if field_cells.is_empty():
+		preview_fill_inst.mesh = null
+		preview_line_inst.mesh = null
+		return
+
+	_preview_fill_mat.albedo_color = fill_color
+	_preview_line_mat.albedo_color = line_color
+
+	var im_fill: ImmediateMesh = ImmediateMesh.new()
+	var im_line: ImmediateMesh = ImmediateMesh.new()
+	var res: float = 0.20
+	var half: float = (res * 0.94) / 2.0
+	var y_h: float = 0.038
+
+	var total_w_m: float = float(current_width) * cell_size
+	var total_h_m: float = float(current_height) * cell_size
+	var origin_x: float = -total_w_m * 0.5
+	var origin_z: float = -total_h_m * 0.5
+
+	im_fill.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+	im_line.surface_begin(Mesh.PRIMITIVE_LINES)
+
+	for c in field_cells:
+		var wp_x: float = origin_x + (float(c.x) + 0.5) * res
+		var wp_z: float = origin_z + (float(c.y) + 0.5) * res
+		var p0: Vector3 = Vector3(wp_x - half, y_h, wp_z - half)
+		var p1: Vector3 = Vector3(wp_x + half, y_h, wp_z - half)
+		var p2: Vector3 = Vector3(wp_x + half, y_h, wp_z + half)
+		var p3: Vector3 = Vector3(wp_x - half, y_h, wp_z + half)
+
+		im_fill.surface_add_vertex(p0)
+		im_fill.surface_add_vertex(p1)
+		im_fill.surface_add_vertex(p2)
+
+		im_fill.surface_add_vertex(p0)
+		im_fill.surface_add_vertex(p2)
+		im_fill.surface_add_vertex(p3)
+
+		im_line.surface_add_vertex(p0)
+		im_line.surface_add_vertex(p1)
+		im_line.surface_add_vertex(p1)
+		im_line.surface_add_vertex(p2)
+		im_line.surface_add_vertex(p2)
+		im_line.surface_add_vertex(p3)
+		im_line.surface_add_vertex(p3)
+		im_line.surface_add_vertex(p0)
+
+	im_fill.surface_end()
+	im_line.surface_end()
+
+	preview_fill_inst.mesh = im_fill
+	preview_line_inst.mesh = im_line
+
 func rebuild_grid(width: int, height: int, c_size: float = 0.80) -> void:
 	current_width = width
 	current_height = height

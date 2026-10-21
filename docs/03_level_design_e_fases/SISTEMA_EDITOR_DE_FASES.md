@@ -19,9 +19,11 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
 
 ---
 
-## 2. Camadas do Grid ($0.80\text{m} \times 0.80\text{m}$)
+## 2. Sistema de Grade de Dupla Resolução (Terreno 0.80m vs. Vegetação Orgânica 0.20m)
 
-- **Camada 0 — Terreno (Ilha 3D Modular com Modelos GLB):**
+Para garantir liberdade criativa, silhuetas fluidas e desempenho impecável, o editor opera com arquitetura de grade em duas camadas complementares:
+
+- **Camada 0 — Terreno (Ilha 3D Modular em $0.80\text{m} \times 0.80\text{m}$):**
   - Modelos 3D estilizados em `assets/models/tiles/*.glb` integrados nas cenas `scenes/editor/tiles/`:
     - `auto_island`: Pincel inteligente Auto-Tile (`island_autotiler.gd`) que resolve automaticamente entre `island_center`, `island_edge`, `island_corner_out`, `island_corner_in` e `island_end`.
     - `island_corner_out`: Canto convexo arredondado em arco cilíndrico ($R = 0.28\text{m}$) com acabamento macio (*smooth normals*) e encaixe estanque sem frestas.
@@ -31,21 +33,28 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
     - `island_center`: Piso plano de grama verde esmeralda.
     - `island_dirt`: Piso plano de terra/trilha alaranjada quente.
   - Todas as peças manuais possuem suporte a giro de $90^\circ$ (`R`).
-- **Camada 1 — Objetos & Vegetação:**
-  - 9 variações de plantas: `grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`.
-  - Obstáculos e Marcadores: `rock` (`Layer 4`) e `cutter_spawn` (único por fase).
+
+- **Camada 1 — Vegetação Orgânica em Campo Fino ($0.20\text{m} \times 0.20\text{m}$):**
+  - Cada bloco de $0.80\text{m}$ possui $4 \times 4 = 16$ micro-células de $0.20\text{m}$.
+  - A pintura de plantas ocorre diretamente no campo analítico `VegetationField`, permitindo traços suaves, curvas detalhadas e formas livres.
+  - **Auto-Geração de Terreno:** Ao pintar vegetação sobre células de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
+  - **Variedades Suportadas:** 9 tipos de vegetação (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`).
+  - **Entidades e Marcadores:** `rock` (`Layer 4`, mantida na grade discreta) e `cutter_spawn` (posição inicial do robô).
+
+- **Persistência Híbrida JSON v2:**
+  - O formato JSON salva a vegetação em bloco analítico compacto `"vegetation": { "res": 0.2, "width": W, "height": H, "rows": [...] }`, reduzindo o tamanho em disco e mantendo suporte automático a carregamento e conversão de mapas legados em formato v1 (`objects`).
 
 ---
 
-## 3. Pincéis e Carimbos de Formas (`brush_patterns.gd`)
+## 3. Pincéis e Carimbos de Formas Analíticas (`brush_patterns.gd`)
 
-O editor inclui 7 formatos matemáticos de pincel com escala ajustável (`1` a `4`) e preview holográfico em tempo real sobre a grade (`grid_overlay.gd`):
+O editor inclui formatos matemáticos com escala ajustável (`1` a `4`), suporte a offsets em passos de $0.20\text{m}$ para vegetação orgânica e preview holográfico em tempo real sobre a grade (`grid_overlay.gd`):
 - `⏺️ Único (1x1)`
 - `⬛ Quadrado`
-- `⚪ Círculo`
-- `🔶 Losango`
-- `❤️ Coração` (Matrizes $5\times5$, $7\times7$ e $9\times9$)
-- `⭐ Estrela` (Matrizes $5\times5$, $7\times7$ e $9\times9$)
+- `⚪ Círculo Analítico` (projeção contínua $dx^2 + dz^2 \le R^2$, eliminando pontas em cruz)
+- `🔶 Losango` ($|dx| + |dz| \le R$)
+- `❤️ Coração` (Equação implícita cardióide contínua)
+- `⭐ Estrela` (Modulação radial de 5 pontas)
 - `➕ Cruz`
 
 ---

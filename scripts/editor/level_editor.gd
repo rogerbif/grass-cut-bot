@@ -5,6 +5,8 @@ const TilePaletteDB = preload("res://scripts/editor/tile_palette_db.gd")
 const IslandAutotiler = preload("res://scripts/editor/island_autotiler.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const LevelSerializer = preload("res://scripts/editor/level_serializer.gd")
+const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
+const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
 const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.tscn")
@@ -53,6 +55,7 @@ var active_object_id: String = "grass_green"
 var terrain_grid: Dictionary = {}
 # object_grid: Vector2i -> { "type": String, "rot": int }
 var object_grid: Dictionary = {}
+var veg_field: RefCounted = null
 var spawn_cell: Vector2i = Vector2i(6, 4)
 var spawn_rot: int = 0
 
@@ -448,10 +451,37 @@ func _refresh_hover_preview() -> void:
 	var preview_cells: Array[Vector2i] = []
 	if not is_hover_in_bounds or (ui != null and ui.is_mouse_over_ui(mouse_pos)):
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
+		grid_overlay.call("update_field_preview", preview_cells, Color.TRANSPARENT, Color.TRANSPARENT)
 		return
 
 	var fill_col: Color = Color(0.2, 1.0, 0.55, 0.38)
 	var line_col: Color = Color(0.4, 1.0, 0.75, 0.95)
+
+	if active_layer == EditLayer.OBJECTS and active_object_id != "rock" and active_tool != ToolMode.SPAWN:
+		# Camada de Vegetação com preview fino de 0.20m
+		fill_col = Color(0.25, 0.85, 1.0, 0.38)
+		line_col = Color(0.55, 0.95, 1.0, 0.95)
+		if active_tool == ToolMode.ERASER:
+			fill_col = Color(1.0, 0.28, 0.28, 0.42)
+			line_col = Color(1.0, 0.55, 0.55, 0.95)
+
+		var field_cells: Array[Vector2i] = []
+		if veg_field != null:
+			var center_sub: Vector2i = veg_field.call("world_to_cell", last_world_hit, CELL_SIZE) as Vector2i
+			var offsets: Array[Vector2i] = BrushPatterns.get_field_offsets(active_shape, brush_size)
+			var cols: int = int(veg_field.get("cols"))
+			var rows: int = int(veg_field.get("rows"))
+			for off: Vector2i in offsets:
+				var tc: Vector2i = center_sub + off
+				if tc.x >= 0 and tc.x < cols and tc.y >= 0 and tc.y < rows:
+					field_cells.append(tc)
+
+		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
+		grid_overlay.call("update_field_preview", field_cells, line_col, fill_col)
+		return
+
+	# Camada de Terreno, Rocha ou Spawn (em blocos de 0.80m)
+	grid_overlay.call("update_field_preview", preview_cells, Color.TRANSPARENT, Color.TRANSPARENT)
 
 	if active_tool == ToolMode.BOX_FILL:
 		fill_col = Color(1.0, 0.82, 0.2, 0.40)
@@ -483,6 +513,45 @@ func _refresh_hover_preview() -> void:
 func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 	if not is_hover_in_bounds:
 		return
+
+	if active_layer == EditLayer.OBJECTS and active_object_id != "rock" and active_tool != ToolMode.SPAWN:
+		# Pinta vegetação no campo fino de 0.20m com formas analíticas suaves
+		if veg_field == null:
+			return
+		var center_sub: Vector2i = veg_field.call("world_to_cell", last_world_hit, CELL_SIZE) as Vector2i
+		var offsets: Array[Vector2i] = BrushPatterns.get_field_offsets(active_shape, brush_size)
+		var tid: int = 0 if erase_mode else VegetationFieldScript.type_name_to_id(active_object_id)
+		var cols: int = int(veg_field.get("cols"))
+		var rows: int = int(veg_field.get("rows"))
+		var changed: bool = false
+
+		for off: Vector2i in offsets:
+			var sc: Vector2i = center_sub + off
+			if sc.x < 0 or sc.x >= cols or sc.y < 0 or sc.y >= rows:
+				continue
+			var cur_v: int = int(veg_field.call("get_cell", sc.x, sc.y))
+			if cur_v != tid:
+				veg_field.call("set_cell", sc.x, sc.y, tid)
+				changed = true
+				# Se não havia ilha debaixo da grama pintada, cria bloco de ilha
+				if tid != 0:
+					var bx: int = sc.x / 4
+					var bz: int = sc.y / 4
+					var bcell: Vector2i = Vector2i(bx, bz)
+					if not terrain_grid.has(bcell):
+						terrain_grid[bcell] = {
+							"tile_id": "island_center",
+							"rot": 0,
+							"auto": true
+						}
+
+		if changed:
+			_stroke_modified = true
+			_rebuild_3d_world()
+			_sync_all_ui()
+		return
+
+	# Camada de Terreno, Rocha ou Spawn em blocos de 0.80m
 	var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
 	var changed_any: bool = false
 	for off in offsets:
@@ -603,42 +672,40 @@ func _rebuild_3d_world() -> void:
 	# 4. Constrói barreiras invisíveis de contenção costeira (Layer 1) e espumas na água
 	LevelJsonLoader.build_coastal_colliders_and_foam(coastal_limits_body, terrain_grid, grid_width, grid_height, CELL_SIZE)
 
-	# 5. Instancia vegetação (em subgrade 2x2 de 0.40m condensada, idêntica ao jogo) e obstáculos
-	var sub_offsets: Array[Vector3] = [
-		Vector3(-0.20, 0.0, -0.20),
-		Vector3(0.20, 0.0, -0.20),
-		Vector3(-0.20, 0.0, 0.20),
-		Vector3(0.20, 0.0, 0.20)
-	]
+	# 5. Instancia vegetação via VegetationGrid oficial (MultiMesh WYSIWYG) e rochas
+	var veg_json: Dictionary = {
+		"grid": { "width": grid_width, "height": grid_height, "cell_size": CELL_SIZE },
+		"terrain": [],
+		"objects": [],
+		"vegetation": {
+			"res": 0.20,
+			"rows": veg_field.call("to_rows") if veg_field != null else []
+		}
+	}
 
-	for cell_key in object_grid.keys():
+	# Inclui rochas em objects
+	for cell_key: Variant in object_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
-		var o_type: String = String(entry.get("type", ""))
-		var o_rot: int = int(entry.get("rot", 0))
-		var base_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+		if String(entry.get("type", "")) == "rock":
+			veg_json["objects"].append({
+				"gx": cell.x,
+				"gz": cell.y,
+				"type": "rock",
+				"rot": int(entry.get("rot", 0))
+			})
 
-		if o_type == "rock":
-			var rock_inst: Node3D = LevelJsonLoader.instantiate_object_node("rock", o_rot)
-			if rock_inst != null:
-				rock_inst.position = base_pos
-				obstacles_container.add_child(rock_inst)
-		elif o_type == "flower" or o_type == "wheat":
-			var plant_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
-			if plant_inst != null:
-				plant_inst.position = base_pos + sub_offsets[0]
-				plants_container.add_child(plant_inst)
-			for s_idx: int in range(1, 4):
-				var g_sub: Node3D = LevelJsonLoader.instantiate_object_node("grass_green", 0)
-				if g_sub != null:
-					g_sub.position = base_pos + sub_offsets[s_idx]
-					plants_container.add_child(g_sub)
-		else:
-			for offset: Vector3 in sub_offsets:
-				var g_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
-				if g_inst != null:
-					g_inst.position = base_pos + offset
-					plants_container.add_child(g_inst)
+	var veg_grid_inst: Node3D = VegetationGridScript.new() as Node3D
+	veg_grid_inst.name = "EditorVegGrid"
+	plants_container.add_child(veg_grid_inst)
+	# Desativa água e limites costeiros do grid filho para não duplicar os do editor
+	veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null)
+	var child_water: Node = veg_grid_inst.get_node_or_null("WaterOcean")
+	if child_water != null:
+		child_water.queue_free()
+	var child_limits: Node = veg_grid_inst.get_node_or_null("CoastalLimits")
+	if child_limits != null:
+		child_limits.queue_free()
 
 	# 6. Posiciona indicador visual do Spawn
 	if spawn_marker_visual != null:
@@ -653,7 +720,8 @@ func _push_undo_snapshot() -> void:
 		"spawn_cell": spawn_cell,
 		"spawn_rot": spawn_rot,
 		"terrain": terrain_grid.duplicate(true),
-		"objects": object_grid.duplicate(true)
+		"objects": object_grid.duplicate(true),
+		"veg_field_data": veg_field.call("to_rows") if veg_field != null else []
 	}
 	_undo_stack.append(snap)
 	if _undo_stack.size() > MAX_UNDO_STEPS:
@@ -670,7 +738,8 @@ func perform_undo() -> void:
 		"spawn_cell": spawn_cell,
 		"spawn_rot": spawn_rot,
 		"terrain": terrain_grid.duplicate(true),
-		"objects": object_grid.duplicate(true)
+		"objects": object_grid.duplicate(true),
+		"veg_field_data": veg_field.call("to_rows") if veg_field != null else []
 	}
 	_redo_stack.append(current_snap)
 	var prev: Dictionary = _undo_stack.pop_back()
@@ -687,7 +756,8 @@ func perform_redo() -> void:
 		"spawn_cell": spawn_cell,
 		"spawn_rot": spawn_rot,
 		"terrain": terrain_grid.duplicate(true),
-		"objects": object_grid.duplicate(true)
+		"objects": object_grid.duplicate(true),
+		"veg_field_data": veg_field.call("to_rows") if veg_field != null else []
 	}
 	_undo_stack.append(current_snap)
 	var next_s: Dictionary = _redo_stack.pop_back()
@@ -701,6 +771,9 @@ func _restore_snapshot(snap: Dictionary) -> void:
 	spawn_rot = int(snap["spawn_rot"])
 	terrain_grid = (snap["terrain"] as Dictionary).duplicate(true)
 	object_grid = (snap["objects"] as Dictionary).duplicate(true)
+	if snap.has("veg_field_data") and veg_field != null:
+		veg_field.call("resize_blocks", grid_width, grid_height)
+		veg_field.call("from_rows", snap["veg_field_data"] as Array)
 	grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 	_rebuild_3d_world()
 	_sync_all_ui()
@@ -723,6 +796,8 @@ func _on_generate_base_island() -> void:
 func _on_clear_objects() -> void:
 	_push_undo_snapshot()
 	object_grid.clear()
+	if veg_field != null:
+		veg_field.call("clear")
 	_rebuild_3d_world()
 	_sync_all_ui()
 	ui.show_toast("🌿 Plantas e rochas removidas", Color(0.95, 0.65, 0.25))
@@ -731,6 +806,8 @@ func _on_clear_all() -> void:
 	_push_undo_snapshot()
 	terrain_grid.clear()
 	object_grid.clear()
+	if veg_field != null:
+		veg_field.call("clear")
 	_rebuild_3d_world()
 	_sync_all_ui()
 	ui.show_toast("🌊 Mapa limpo (Oceano aberto)", Color(0.35, 0.78, 0.95))
@@ -739,6 +816,8 @@ func _on_grid_resize_requested(new_w: int, new_h: int) -> void:
 	_push_undo_snapshot()
 	grid_width = clampi(new_w, 4, 36)
 	grid_height = clampi(new_h, 4, 36)
+	if veg_field != null:
+		veg_field.call("resize_blocks", grid_width, grid_height)
 
 	# Remove células fora dos novos limites
 	for k in terrain_grid.keys():
@@ -806,6 +885,16 @@ func _load_or_init_level(lvl_id: int) -> void:
 					"rot": int(d.get("rot", 0))
 				}
 
+		# Carrega campo de vegetação v2 ou converte de objects v1
+		if data.has("vegetation") and data["vegetation"] is Dictionary:
+			var vdict: Dictionary = data["vegetation"] as Dictionary
+			var rows_arr: Array = vdict.get("rows", []) as Array
+			veg_field = VegetationFieldScript.new(grid_width, grid_height)
+			veg_field.call("from_rows", rows_arr)
+		else:
+			veg_field = VegetationFieldScript.new(grid_width, grid_height)
+			veg_field.call("from_legacy_objects", o_arr, grid_width, grid_height)
+
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
 		if ui != null:
@@ -851,7 +940,7 @@ func _build_default_island_for_level(lvl_id: int) -> void:
 
 	if lvl_id == 1:
 		LevelSerializer.save_level_json(
-			1, "Fase 1 - Ilha Inicial", time_limit, grid_width, grid_height, spawn_cell, spawn_rot, terrain_grid, object_grid
+			1, "Fase 1 - Ilha Inicial", time_limit, grid_width, grid_height, spawn_cell, spawn_rot, terrain_grid, object_grid, veg_field
 		)
 
 func save_current_level_json() -> void:
@@ -865,7 +954,8 @@ func save_current_level_json() -> void:
 		spawn_cell,
 		spawn_rot,
 		terrain_grid,
-		object_grid
+		object_grid,
+		veg_field
 	)
 	if ok:
 		ui.show_toast("💾 Salvo em res://data/levels/level_%02d.json" % current_level_id, Color(0.25, 0.95, 0.5))
@@ -882,7 +972,8 @@ func bake_current_level_tscn() -> void:
 		spawn_cell,
 		spawn_rot,
 		terrain_grid,
-		object_grid
+		object_grid,
+		veg_field
 	)
 	if ok:
 		ui.show_toast("📦 Cena exportada: res://scenes/levels/level_%02d.tscn" % current_level_id, Color(0.7, 0.5, 1.0))
@@ -909,27 +1000,17 @@ func _start_playtest() -> void:
 	spawn_marker_visual.visible = false
 	ui.set_playtest_mode(true)
 
-	# Calcula metas reais da ilha (considerando a subgrade 2x2 de 0.40m)
+	# Calcula metas reais da ilha a partir do VegetationGrid
 	var goals: Dictionary = {}
-	for k in object_grid:
-		var entry: Dictionary = object_grid[k] as Dictionary
-		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock":
-			continue
-		elif o_type == "flower" or o_type == "wheat":
-			goals[o_type] = int(goals.get(o_type, 0)) + 1
-			goals["grass"] = int(goals.get("grass", 0)) + 3
-		else:
-			goals["grass"] = int(goals.get("grass", 0)) + 4
-
-	if goals.is_empty():
-		goals = { "grass": 1 }
+	var editor_vg: Node3D = plants_container.get_node_or_null("EditorVegGrid") as Node3D
 
 	# Instancia o Cortador
 	_playtest_cutter = CUTTER_SCENE.instantiate() as CharacterBody3D
 	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
 	_playtest_cutter.position = Vector3(sp_world.x, 0.1, sp_world.z)
 	add_child(_playtest_cutter)
+	if editor_vg != null:
+		_playtest_cutter.set("vegetation_grid", editor_vg)
 
 	# Instancia o Joystick para suporte a mouse/touch e teclado WASD/Setas
 	_playtest_joystick = JOYSTICK_SCENE.instantiate() as Control
@@ -939,6 +1020,33 @@ func _start_playtest() -> void:
 		_playtest_joystick.connect("joystick_moved", Callable(_playtest_cutter, "set_input_direction"))
 
 	if GameManager != null:
+		# Define metas a partir do campo de vegetação
+		if veg_field != null:
+			var rows: int = int(veg_field.get("rows"))
+			var cols: int = int(veg_field.get("cols"))
+			var logical_subcells: Dictionary = {}
+			for r: int in range(rows):
+				for c: int in range(cols):
+					var tid: int = int(veg_field.call("get_cell", c, r))
+					if tid == 0:
+						continue
+					var lkey: Vector2i = Vector2i(c / 2, r / 2)
+					if not logical_subcells.has(lkey):
+						logical_subcells[lkey] = tid
+					elif tid == 9 or (tid == 8 and logical_subcells[lkey] != 9):
+						logical_subcells[lkey] = tid
+			for lkey: Vector2i in logical_subcells.keys():
+				var tid: int = int(logical_subcells[lkey])
+				var p_key: String = "grass"
+				if tid == 8:
+					p_key = "wheat"
+				elif tid == 9:
+					p_key = "flower"
+				goals[p_key] = int(goals.get(p_key, 0)) + 1
+
+		if goals.is_empty():
+			goals = { "grass": 1 }
+
 		GameManager.start_level(current_level_id, goals, time_limit)
 		ui.update_playtest_hud(GameManager.time_left, GameManager.goals)
 

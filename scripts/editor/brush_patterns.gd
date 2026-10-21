@@ -166,3 +166,81 @@ static func _bitmap_to_offsets(rows: Array[String]) -> Array[Vector2i]:
 			if line[c_idx] == "#":
 				result.append(Vector2i(c_idx - center_x, r_idx - center_z))
 	return result
+
+# Retorna offsets em resolução fina de 0.20m usando geometria analítica contínua
+static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
+	var offsets: Array[Vector2i] = []
+	var clamped_size: int = clampi(brush_size, 1, 4)
+
+	# Raio do pincel no mundo: 1 -> 0.40m (2 células 0.20m), 2 -> 0.70m, 3 -> 1.00m, 4 -> 1.30m
+	var radius_m: float = 0.40 + float(clamped_size - 1) * 0.30
+	var cell_r: int = ceili(radius_m / 0.20)
+
+	match shape:
+		ShapeType.SINGLE:
+			offsets.append(Vector2i.ZERO)
+
+		ShapeType.SQUARE:
+			for dz: int in range(-cell_r, cell_r + 1):
+				for dx: int in range(-cell_r, cell_r + 1):
+					offsets.append(Vector2i(dx, dz))
+
+		ShapeType.CIRCLE:
+			var r_sq: float = (radius_m + 0.05) * (radius_m + 0.05)
+			for dz: int in range(-cell_r, cell_r + 1):
+				for dx: int in range(-cell_r, cell_r + 1):
+					var dist_m_sq: float = float(dx * dx + dz * dz) * (0.20 * 0.20)
+					if dist_m_sq <= r_sq:
+						offsets.append(Vector2i(dx, dz))
+
+		ShapeType.DIAMOND:
+			for dz: int in range(-cell_r, cell_r + 1):
+				for dx: int in range(-cell_r, cell_r + 1):
+					var manhattan_m: float = (float(absi(dx)) + float(absi(dz))) * 0.20
+					if manhattan_m <= radius_m + 0.05:
+						offsets.append(Vector2i(dx, dz))
+
+		ShapeType.HEART:
+			# Equação analítica contínua de coração: (x^2 + y^2 - 1)^3 - x^2 * y^3 <= 0
+			var scale_f: float = radius_m * 1.15
+			for dz: int in range(-cell_r - 2, cell_r + 2):
+				for dx: int in range(-cell_r - 2, cell_r + 2):
+					var x: float = (float(dx) * 0.20) / scale_f
+					# Inverte Z para que o topo do coração fique para o Norte (-Z)
+					var y: float = -(float(dz) * 0.20) / scale_f + 0.25
+					var val: float = (x * x + y * y - 1.0)
+					var eq: float = val * val * val - x * x * (y * y * y)
+					if eq <= 0.0:
+						offsets.append(Vector2i(dx, dz))
+
+		ShapeType.STAR:
+			# Estrela regular de 5 pontas calculada analiticamente
+			var r_outer: float = radius_m * 1.2
+			var r_inner: float = r_outer * 0.45
+			for dz: int in range(-cell_r - 2, cell_r + 2):
+				for dx: int in range(-cell_r - 2, cell_r + 2):
+					var px: float = float(dx) * 0.20
+					var pz: float = float(dz) * 0.20
+					var d: float = sqrt(px * px + pz * pz)
+					if d > r_outer + 0.05:
+						continue
+					if d <= r_inner:
+						offsets.append(Vector2i(dx, dz))
+						continue
+					var ang: float = atan2(pz, px) + PI * 0.5
+					var sector: float = fmod(ang + TAU * 2.0, TAU / 5.0) - (TAU / 10.0)
+					var r_bound: float = r_inner / maxf(cos(absf(sector)), 0.2)
+					if d <= r_bound * 1.35:
+						offsets.append(Vector2i(dx, dz))
+
+		ShapeType.CROSS:
+			var bar_w_cells: int = 1
+			for dz: int in range(-cell_r, cell_r + 1):
+				for dx: int in range(-cell_r, cell_r + 1):
+					if absi(dx) <= bar_w_cells or absi(dz) <= bar_w_cells:
+						offsets.append(Vector2i(dx, dz))
+
+		_:
+			offsets.append(Vector2i.ZERO)
+
+	return offsets

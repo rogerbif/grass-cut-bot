@@ -24,7 +24,8 @@ static func save_level_json(
 	spawn_cell: Vector2i,
 	spawn_rot: int,
 	terrain_grid: Dictionary,
-	object_grid: Dictionary
+	object_grid: Dictionary,
+	veg_field: RefCounted = null
 ) -> bool:
 	var global_dir: String = ProjectSettings.globalize_path(LEVELS_JSON_DIR)
 	if not DirAccess.dir_exists_absolute(global_dir):
@@ -53,17 +54,17 @@ static func save_level_json(
 		var cell: Vector2i = k as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var obj_type: String = String(entry.get("type", ""))
-		if obj_type == "" or obj_type == "cutter_spawn":
-			continue
-		objects_list.append({
-			"gx": cell.x,
-			"gz": cell.y,
-			"type": obj_type,
-			"rot": int(entry.get("rot", 0))
-		})
+		# Em v2, apenas rochas e spawn ficam em objects
+		if obj_type == "rock":
+			objects_list.append({
+				"gx": cell.x,
+				"gz": cell.y,
+				"type": obj_type,
+				"rot": int(entry.get("rot", 0))
+			})
 
 	var payload: Dictionary = {
-		"version": 1,
+		"version": 2,
 		"level_id": level_id,
 		"name": level_name,
 		"time_limit": time_limit,
@@ -80,6 +81,12 @@ static func save_level_json(
 		"terrain": terrain_list,
 		"objects": objects_list
 	}
+
+	if veg_field != null and veg_field.has_method("to_rows"):
+		payload["vegetation"] = {
+			"res": 0.20,
+			"rows": veg_field.call("to_rows")
+		}
 
 	var json_str: String = JSON.stringify(payload, "\t")
 	var path: String = get_json_path(level_id)
@@ -109,7 +116,8 @@ static func bake_to_tscn(
 	spawn_cell: Vector2i,
 	spawn_rot: int,
 	terrain_grid: Dictionary,
-	object_grid: Dictionary
+	object_grid: Dictionary,
+	veg_field: RefCounted = null
 ) -> bool:
 	return save_level_json(
 		level_id,
@@ -120,5 +128,6 @@ static func bake_to_tscn(
 		spawn_cell,
 		spawn_rot,
 		terrain_grid,
-		object_grid
+		object_grid,
+		veg_field
 	)
