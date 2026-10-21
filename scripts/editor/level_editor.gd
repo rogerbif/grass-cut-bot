@@ -600,19 +600,42 @@ func _rebuild_3d_world() -> void:
 	# 4. Constrói barreiras invisíveis de contenção costeira (Layer 1) e espumas na água
 	LevelJsonLoader.build_coastal_colliders_and_foam(coastal_limits_body, terrain_grid, grid_width, grid_height, CELL_SIZE)
 
-	# 5. Instancia vegetação e obstáculos
+	# 5. Instancia vegetação (em subgrade 2x2 de 0.40m condensada, idêntica ao jogo) e obstáculos
+	var sub_offsets: Array[Vector3] = [
+		Vector3(-0.20, 0.0, -0.20),
+		Vector3(0.20, 0.0, -0.20),
+		Vector3(-0.20, 0.0, 0.20),
+		Vector3(0.20, 0.0, 0.20)
+	]
+
 	for cell_key in object_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
 		var o_rot: int = int(entry.get("rot", 0))
-		var inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
-		if inst != null:
-			inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
-			if o_type == "rock":
-				obstacles_container.add_child(inst)
-			else:
-				plants_container.add_child(inst)
+		var base_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+
+		if o_type == "rock":
+			var rock_inst: Node3D = LevelJsonLoader.instantiate_object_node("rock", o_rot)
+			if rock_inst != null:
+				rock_inst.position = base_pos
+				obstacles_container.add_child(rock_inst)
+		elif o_type == "flower" or o_type == "wheat":
+			var plant_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
+			if plant_inst != null:
+				plant_inst.position = base_pos + sub_offsets[0]
+				plants_container.add_child(plant_inst)
+			for s_idx: int in range(1, 4):
+				var g_sub: Node3D = LevelJsonLoader.instantiate_object_node("grass_green", 0)
+				if g_sub != null:
+					g_sub.position = base_pos + sub_offsets[s_idx]
+					plants_container.add_child(g_sub)
+		else:
+			for offset: Vector3 in sub_offsets:
+				var g_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
+				if g_inst != null:
+					g_inst.position = base_pos + offset
+					plants_container.add_child(g_inst)
 
 	# 6. Posiciona indicador visual do Spawn
 	if spawn_marker_visual != null:
@@ -883,15 +906,18 @@ func _start_playtest() -> void:
 	spawn_marker_visual.visible = false
 	ui.set_playtest_mode(true)
 
-	# Calcula metas reais da ilha
+	# Calcula metas reais da ilha (considerando a subgrade 2x2 de 0.40m)
 	var goals: Dictionary = {}
 	for k in object_grid:
 		var entry: Dictionary = object_grid[k] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		var info: Dictionary = TilePaletteDB.get_object_info(o_type)
-		var g_key: String = String(info.get("goal_key", ""))
-		if g_key != "":
-			goals[g_key] = int(goals.get(g_key, 0)) + 1
+		if o_type == "rock":
+			continue
+		elif o_type == "flower" or o_type == "wheat":
+			goals[o_type] = int(goals.get(o_type, 0)) + 1
+			goals["grass"] = int(goals.get("grass", 0)) + 3
+		else:
+			goals["grass"] = int(goals.get("grass", 0)) + 4
 
 	if goals.is_empty():
 		goals = { "grass": 1 }
