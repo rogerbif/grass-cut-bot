@@ -39,6 +39,7 @@ var is_stunned: bool = false
 var stun_timer: float = 0.0
 var idle_eyes_timer: float = 0.0
 var current_blade_speed: float = 90.0
+var vegetation_grid: Node3D = null
 
 var current_pitch: float = 0.0
 var current_roll: float = 0.0
@@ -369,7 +370,7 @@ func _trigger_obstacle_shock(normal: Vector3) -> void:
 		GameManager.trigger_haptic_impact()
 
 func _sync_initial_overlaps() -> void:
-	if blade_area == null:
+	if blade_area == null or not blade_area.monitoring:
 		return
 	var initial_areas: Array[Area3D] = blade_area.get_overlapping_areas()
 	for area in initial_areas:
@@ -402,6 +403,8 @@ func _cut_vegetation_area(area: Area3D) -> bool:
 	return bool(plant.get("is_cut"))
 
 func _process_cutting() -> void:
+	if vegetation_grid != null and is_instance_valid(vegetation_grid):
+		vegetation_grid.call("cut_in_circle", global_position, _cached_blade_radius, _cached_cutter_power)
 	if _overlapping_vegetation.is_empty():
 		return
 	for i in range(_overlapping_vegetation.size() - 1, -1, -1):

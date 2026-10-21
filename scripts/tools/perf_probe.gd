@@ -38,6 +38,8 @@ func _ready() -> void:
 	_btn_box.add_theme_constant_override("v_separation", 6)
 	root_vbox.add_child(_btn_box)
 
+	_create_action_button("Modo [B]", "toggle_mode")
+	_create_action_button("Reset [T]", "reset_level")
 	_create_action_button("100% [1]", "dens_1")
 	_create_action_button("50% [2]", "dens_2")
 	_create_action_button("25% [3]", "dens_4")
