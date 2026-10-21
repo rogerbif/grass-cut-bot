@@ -316,8 +316,8 @@ static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector
 
 	return poly
 
-## Gera polígonos inflados (ribbon) com pontas arredondadas a partir de um traço livre contínuo
-static func create_ribbon_polygon(stroke_points: Array[Vector2], width_m: float) -> Array[PackedVector2Array]:
+## Gera polígono inflado (ribbon) com pontas arredondadas a partir de um traço livre contínuo
+static func create_ribbon_polygon(stroke_points: Array[Vector2], width_m: float) -> PackedVector2Array:
 	if stroke_points.size() < 2:
 		if stroke_points.size() == 1:
 			var c: Vector2 = stroke_points[0]
@@ -326,8 +326,8 @@ static func create_ribbon_polygon(stroke_points: Array[Vector2], width_m: float)
 			for i: int in range(16):
 				var a: float = float(i) * TAU / 16.0
 				disc.append(c + Vector2(cos(a), sin(a)) * rad)
-			return [disc]
-		return []
+			return disc
+		return PackedVector2Array()
 
 	var polyline: PackedVector2Array = PackedVector2Array(stroke_points)
 	var offset_res: Array[PackedVector2Array] = Geometry2D.offset_polyline(
@@ -336,4 +336,15 @@ static func create_ribbon_polygon(stroke_points: Array[Vector2], width_m: float)
 		Geometry2D.JOIN_ROUND,
 		Geometry2D.END_ROUND
 	)
-	return offset_res
+	if offset_res.is_empty():
+		return PackedVector2Array()
+	if offset_res.size() == 1:
+		return offset_res[0]
+
+	# Se gerou múltiplos contornos (auto-interseções), seleciona o maior contorno
+	var best_p: PackedVector2Array = offset_res[0]
+	for idx: int in range(1, offset_res.size()):
+		var p_curr: PackedVector2Array = offset_res[idx]
+		if p_curr.size() > best_p.size():
+			best_p = p_curr
+	return best_p

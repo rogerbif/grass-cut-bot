@@ -48,4 +48,5 @@ Esta melhoria implanta a **Abordagem 1: Desenho Vetorial 2D (Polígonos 2D / Spl
 
 - **Tempo de Carga na Fase 20:** Carregamento de 14.924 tufos vetoriais em apenas **$809.9\text{ ms}$** (anteriormente $\approx 1.722\text{ ms}$), uma redução de **53%** no tempo de processamento.
 - **Zero Warnings Estrito:** Godot Engine 4.7.1 executou todos os testes headless (`level_editor.tscn`, `main.tscn`, `main_menu.tscn`, `perf_test.tscn`) com **0 erros** e **0 warnings**.
-- **Game SemVer:** Atualizado para `v0.9.0-alpha` (código `900`) em `game_version.gd`, `project.godot` e `export_presets.cfg`.
+- **Correção de Tipagem (Patch v0.9.1-alpha):** Correção da união booleana em `merge_or_add_shape` (`[accumulated_polys[0]]`) e padronização do retorno de `create_ribbon_polygon` para `PackedVector2Array`, eliminando o erro de atribuição de tipos `PackedVector2Array` para `Array[PackedVector2Array]`.
+- **Game SemVer:** Atualizado para `v0.9.1-alpha` (código `901`) em `game_version.gd`, `project.godot` e `export_presets.cfg`.

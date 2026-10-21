@@ -99,11 +99,21 @@ func merge_or_add_shape(type_name: String, new_poly: PackedVector2Array) -> void
 		return
 
 	# Executa união com Clipper
-	var result_polys: Array[PackedVector2Array] = accumulated_polys[0]
+	var result_polys: Array[PackedVector2Array] = [accumulated_polys[0]]
 	for idx: int in range(1, accumulated_polys.size()):
-		var merged_step: Array[PackedVector2Array] = Geometry2D.merge_polygons(result_polys, accumulated_polys[idx])
-		if not merged_step.is_empty():
-			result_polys = merged_step
+		var to_merge: PackedVector2Array = accumulated_polys[idx]
+		var union_step: Array[PackedVector2Array] = []
+		var did_merge: bool = false
+		for existing: PackedVector2Array in result_polys:
+			var m: Array[PackedVector2Array] = Geometry2D.merge_polygons(existing, to_merge)
+			if m.size() == 1:
+				union_step.append(m[0])
+				did_merge = true
+			else:
+				union_step.append(existing)
+		if not did_merge:
+			union_step.append(to_merge)
+		result_polys = union_step
 
 	# Remove as formas antigas mescladas (de trás para frente)
 	merged_indices.sort()
