@@ -83,6 +83,11 @@ var _cell_is_completed: PackedByteArray = PackedByteArray()
 var _veg_multimeshes: Array[MultiMesh] = []
 var _veg_mmi_nodes: Array[MultiMeshInstance3D] = []
 
+# MultiMeshes de aparas de folhas cortadas deitadas no chão
+var _clipping_multimeshes: Array[MultiMesh] = []
+var _clipping_mmi_nodes: Array[MultiMeshInstance3D] = []
+static var _clipping_meshes: Dictionary = {}
+
 # Decalque de solo orgânico e trilha
 var _lawn_decal_mesh: MeshInstance3D = null
 var _lawn_cut_trail: Node3D = null
@@ -201,6 +206,8 @@ func _clear_state() -> void:
 	_lawn_cut_trail = null
 	_veg_multimeshes.clear()
 	_veg_mmi_nodes.clear()
+	_clipping_multimeshes.clear()
+	_clipping_mmi_nodes.clear()
 	_grid.clear()
 	_last_vegetation_on = true
 	_last_density_step = 1
@@ -371,22 +378,87 @@ func build_from_level_json(
 	return goals
 
 
-func _compute_stub_transform(init_xform: Transform3D, v_type: String) -> Transform3D:
-	var y_scale: float = 0.15
-	var xz_scale: float = 1.08
-	if v_type == "wheat":
-		y_scale = 0.16
-		xz_scale = 1.05
-	elif v_type == "flower":
-		y_scale = 0.10
-		xz_scale = 1.15
+static func _resolve_clipping_color(v_type: String) -> Color:
+	match v_type:
+		"grass_green":
+			return Color(0.12, 0.36, 0.12, 1.0)
+		"grass_yellow":
+			return Color(0.56, 0.44, 0.08, 1.0)
+		"grass_blue":
+			return Color(0.10, 0.28, 0.42, 1.0)
+		"grass_purple":
+			return Color(0.32, 0.14, 0.38, 1.0)
+		"grass_white":
+			return Color(0.62, 0.68, 0.60, 1.0)
+		"grass_red":
+			return Color(0.48, 0.14, 0.12, 1.0)
+		"grass_black":
+			return Color(0.12, 0.14, 0.12, 1.0)
+		"wheat":
+			return Color(0.64, 0.46, 0.10, 1.0)
+		"flower":
+			return Color(0.85, 0.22, 0.55, 1.0)
+		_:
+			return Color(0.12, 0.36, 0.12, 1.0)
 
-	var stub_basis: Basis = Basis(
-		init_xform.basis.x * xz_scale,
-		init_xform.basis.y * y_scale,
-		init_xform.basis.z * xz_scale
-	)
-	return Transform3D(stub_basis, init_xform.origin)
+
+static func _get_or_create_clippings_mesh(v_type: String) -> ArrayMesh:
+	if _clipping_meshes.has(v_type):
+		return _clipping_meshes[v_type] as ArrayMesh
+
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	var leaf_color: Color = _resolve_clipping_color(v_type)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = leaf_color
+	mat.roughness = 0.90
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	st.set_material(mat)
+
+	# 6 lâminas fatiadas deitadas no plano XZ em posições e orientações aleatórias
+	var leaf_configs: Array[Vector4] = [
+		Vector4(0.04, 0.05, 0.12, 0.45),
+		Vector4(-0.06, 0.03, 0.10, 1.85),
+		Vector4(0.05, -0.06, 0.11, 2.75),
+		Vector4(-0.05, -0.05, 0.13, 3.90),
+		Vector4(0.00, 0.08, 0.09, 5.10),
+		Vector4(-0.02, -0.09, 0.11, 0.95)
+	]
+
+	for cfg: Vector4 in leaf_configs:
+		var cx: float = cfg.x
+		var cz: float = cfg.y
+		var length: float = cfg.z
+		var angle: float = cfg.w
+		var half_w: float = 0.013 # largura 2.6cm
+
+		var fwd := Vector3(cos(angle), 0.0, sin(angle))
+		var right := Vector3(-sin(angle), 0.0, cos(angle))
+		var center := Vector3(cx, 0.005, cz)
+
+		# 4 vértices do losango fino deitado no chão
+		var p_back := center - fwd * (length * 0.45)
+		var p_left := center + right * half_w
+		var p_front := center + fwd * (length * 0.55)
+		var p_right := center - right * half_w
+
+		st.set_normal(Vector3.UP)
+		st.set_color(leaf_color)
+
+		# Triângulo 1: back, front, left (anti-horário olhando de cima)
+		st.add_vertex(p_back)
+		st.add_vertex(p_front)
+		st.add_vertex(p_left)
+
+		# Triângulo 2: back, right, front
+		st.add_vertex(p_back)
+		st.add_vertex(p_right)
+		st.add_vertex(p_front)
+
+	var mesh: ArrayMesh = st.commit()
+	_clipping_meshes[v_type] = mesh
+	return mesh
 
 
 func _build_from_vector_field(
@@ -462,6 +534,8 @@ func _build_from_vector_field(
 	# Constrói MultiMeshes por tipo
 	_veg_multimeshes.resize(VEG_TYPES.size())
 	_veg_mmi_nodes.resize(VEG_TYPES.size())
+	_clipping_multimeshes.resize(VEG_TYPES.size())
+	_clipping_mmi_nodes.resize(VEG_TYPES.size())
 
 	for mmi_idx: int in range(VEG_TYPES.size()):
 		var v_type: String = VEG_TYPES[mmi_idx]
@@ -486,8 +560,21 @@ func _build_from_vector_field(
 			mmi.material_override = GRASS_MATERIALS[v_type] as Material
 		add_child(mmi)
 
+		var clip_mm: MultiMesh = MultiMesh.new()
+		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
+		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
+		clip_mm.instance_count = count
+
+		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		clip_mmi.name = "ClippingsMMI_%s" % v_type
+		clip_mmi.multimesh = clip_mm
+		clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(clip_mmi)
+
 		_veg_multimeshes[mmi_idx] = mm
 		_veg_mmi_nodes[mmi_idx] = mmi
+		_clipping_multimeshes[mmi_idx] = clip_mm
+		_clipping_mmi_nodes[mmi_idx] = clip_mmi
 
 		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
 		var max_hp: int = 1 if is_grass else 2
@@ -517,11 +604,14 @@ func _build_from_vector_field(
 			var basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
 			var xform: Transform3D = Transform3D(basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
+			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
+
+			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, random_rot), pos)
 
 			var p_idx: int = _positions.size()
 			_positions.append(pos)
 			_initial_transforms.append(xform)
-			_cut_transforms.append(_compute_stub_transform(xform, v_type))
+			_cut_transforms.append(cut_xform)
 			_mmi_indices.append(mmi_idx)
 			_instance_indices.append(inst_idx)
 			_health.append(max_hp)
@@ -700,6 +790,8 @@ func _build_from_vegetation_field(
 	# Constrói MultiMeshes por tipo
 	_veg_multimeshes.resize(VEG_TYPES.size())
 	_veg_mmi_nodes.resize(VEG_TYPES.size())
+	_clipping_multimeshes.resize(VEG_TYPES.size())
+	_clipping_mmi_nodes.resize(VEG_TYPES.size())
 
 	for mmi_idx: int in range(VEG_TYPES.size()):
 		var v_type: String = VEG_TYPES[mmi_idx]
@@ -724,8 +816,21 @@ func _build_from_vegetation_field(
 			mmi.material_override = GRASS_MATERIALS[v_type] as Material
 		add_child(mmi)
 
+		var clip_mm: MultiMesh = MultiMesh.new()
+		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
+		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
+		clip_mm.instance_count = count
+
+		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		clip_mmi.name = "ClippingsMMI_%s" % v_type
+		clip_mmi.multimesh = clip_mm
+		clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(clip_mmi)
+
 		_veg_multimeshes[mmi_idx] = mm
 		_veg_mmi_nodes[mmi_idx] = mmi
+		_clipping_multimeshes[mmi_idx] = clip_mm
+		_clipping_mmi_nodes[mmi_idx] = clip_mmi
 
 		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
 		var max_hp: int = 1 if is_grass else 2
@@ -758,11 +863,14 @@ func _build_from_vegetation_field(
 			var basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
 			var xform: Transform3D = Transform3D(basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
+			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
+
+			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, random_rot), pos)
 
 			var p_idx: int = _positions.size()
 			_positions.append(pos)
 			_initial_transforms.append(xform)
-			_cut_transforms.append(_compute_stub_transform(xform, v_type))
+			_cut_transforms.append(cut_xform)
 			_mmi_indices.append(mmi_idx)
 			_instance_indices.append(inst_idx)
 			_health.append(max_hp)
@@ -897,7 +1005,10 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 				if new_hp <= 0:
 					_is_cut[p_idx] = 1
 					if mm != null:
-						mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
+						mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
+					var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
+					if clip_mm != null:
+						clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
 					_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
 
 					# Atualiza a contagem da célula lógica de 0.40m
@@ -971,12 +1082,19 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 		if mm == null:
 			continue
 
+		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 		if _is_cut[p_idx] == 0 and _is_hidden_by_density[p_idx] == 0:
 			mm.set_instance_transform(inst_idx, _initial_transforms[p_idx])
+			if clip_mm != null:
+				clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 		elif _is_cut[p_idx] == 1 and _is_hidden_by_density[p_idx] == 0:
-			mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
+			mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
+			if clip_mm != null:
+				clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
 		else:
 			mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
+			if clip_mm != null:
+				clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
 
 func reset_all_plants() -> void:

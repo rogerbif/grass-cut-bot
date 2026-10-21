@@ -45,7 +45,7 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
-   - **Tocos 3D de Grama Cortada no Chão (Stubble):** Em vez de desaparecer completamente no nada, a instância cortada no `MultiMesh` transiciona instantaneamente para a escala de toco aparado (`_cut_transforms`): altura reduzida para ~15% ($Y \approx 0.045\text{m}$) e leve espalhamento lateral ($XZ \times 1.08$), deixando o rastro tátil de gramado recém-cortado no solo por todo o trajeto da lâmina.
+   - **Aparas de Folhas Cortadas Deitadas no Solo (Clippings):** Ao ser cortada, a moita alta de vegetação desaparece imediatamente (`HIDDEN_TRANSFORM`), e uma malha de **6 lâminas fatiadas deitadas horizontalmente no plano do solo** ($Y \approx 0.005\text{m}$, com orientações em $360^\circ$ e tom contrastante mais escuro) surge no local via `_clipping_multimeshes`, reproduzindo com fidelidade o rastro salpicado de aparas de grama cortada deitado no chão da ilha.
 
 ---
 
