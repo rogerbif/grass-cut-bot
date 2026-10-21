@@ -4,6 +4,9 @@ signal island_selected(level_number: int)
 
 const VegetationGrid = preload("res://scripts/plants/vegetation_grid.gd")
 const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
+const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
+const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
+const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
 
 # Shaders oficiais da grama com gradiente vertical (raiz -> topo) e balanço de vento
@@ -290,91 +293,146 @@ func build_miniature_from_json(lvl: int) -> void:
 				r_inst.rotation_degrees.y = float(orot)
 				miniature_container.add_child(r_inst)
 
-	# Carrega campo de vegetação (v2 ou conversão de v1)
-	var veg_field: RefCounted = null
-	if data.has("vegetation") and data["vegetation"] is Dictionary:
-		var vdict: Dictionary = data["vegetation"] as Dictionary
-		var rows_arr: Array = vdict.get("rows", []) as Array
-		veg_field = VegetationFieldScript.new(width, height)
-		veg_field.call("from_rows", rows_arr)
-	else:
-		veg_field = VegetationFieldScript.new(width, height)
-		veg_field.call("from_legacy_objects", objects_arr, width, height)
-
-	# Remove vegetação sob rochas
-	for obj_item: Variant in objects_arr:
-		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
-			var rx: int = int((obj_item as Dictionary).get("gx", 0))
-			var rz: int = int((obj_item as Dictionary).get("gz", 0))
-			for dz: int in range(4):
-				for dx: int in range(4):
-					veg_field.call("set_cell", rx * 4 + dx, rz * 4 + dz, 0)
-
-	var cols: int = int(veg_field.get("cols"))
-	var rows: int = int(veg_field.get("rows"))
-	var sdf: PackedFloat32Array = veg_field.call("compute_sdf_depth_map") as PackedFloat32Array
-
 	var veg_transforms_by_type: Dictionary = {}
 	for v_type: String in VegetationGrid.VEG_TYPES:
 		var empty_xforms: Array[Transform3D] = []
 		veg_transforms_by_type[v_type] = empty_xforms
 
-	var processed_flowers: Dictionary = {}
+	if data.has("grass_vectors") and data["grass_vectors"] is Array:
+		# Modo Vetorial v3 (Poisson Disk + Polígonos 2D contínuos)
+		var vector_field: RefCounted = VectorGrassFieldScript.new()
+		vector_field.call("from_dict_list", data["grass_vectors"] as Array)
 
-	# Adiciona flores de tile (0.80m) definidas em objects
-	for obj_item: Variant in objects_arr:
-		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
-			var fx: int = int((obj_item as Dictionary).get("gx", 0))
-			var fz: int = int((obj_item as Dictionary).get("gz", 0))
-			var f_pos: Vector3 = Vector3(offset_x + float(fx) * cell_size, 0.0, offset_z + float(fz) * cell_size)
-			var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
-			(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
+		# Remove polígonos sob rochas
+		for obj_item: Variant in objects_arr:
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
+				var rx: int = int((obj_item as Dictionary).get("gx", 0))
+				var rz: int = int((obj_item as Dictionary).get("gz", 0))
+				var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
+				var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+					BrushPatterns.ShapeType.CIRCLE,
+					1,
+					Vector2(r_world.x, r_world.z)
+				)
+				vector_field.call("clip_shapes", rock_clip_poly)
 
-	for r: int in range(rows):
-		for c: int in range(cols):
-			var tid: int = int(veg_field.call("get_cell", c, r))
-			if tid == 0:
+		# Adiciona flores de tile (0.80m) definidas em objects
+		for obj_item: Variant in objects_arr:
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
+				var fx: int = int((obj_item as Dictionary).get("gx", 0))
+				var fz: int = int((obj_item as Dictionary).get("gz", 0))
+				var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
+				var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+				(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
+
+		var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
+		for item: Variant in sampled_tufts:
+			if not (item is Dictionary):
 				continue
-			var v_type: String = VegetationFieldScript.type_id_to_name(tid)
+			var td: Dictionary = item as Dictionary
+			var pos: Vector3 = td["pos"] as Vector3
+			var v_type: String = String(td.get("type", "grass_green"))
 			if not veg_transforms_by_type.has(v_type):
 				v_type = "grass_green"
-
-			var lx: int = c / 2
-			var lz: int = r / 2
-			var lkey: Vector2i = Vector2i(lx, lz)
-
-			if tid == 9:
-				if processed_flowers.has(lkey):
-					continue
-				processed_flowers[lkey] = true
-				var flower_pos: Vector3 = veg_field.call("cell_to_world", lx * 2, lz * 2, cell_size) as Vector3
-				flower_pos.x += 0.10
-				flower_pos.z += 0.10
-				var f_basis: Basis = Basis(Vector3.UP, fmod(float(lx * 79 + lz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
-				(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, flower_pos))
-				continue
-
-			var base_pos: Vector3 = veg_field.call("cell_to_world", c, r, cell_size) as Vector3
-			var sub_seed: float = float(c * 73 + r * 19)
-			var j_x: float = (fmod(sub_seed * 0.17, 1.0) - 0.5) * 0.12
-			var j_z: float = (fmod(sub_seed * 0.31, 1.0) - 0.5) * 0.12
-			var tuft_pos: Vector3 = base_pos + Vector3(j_x, 0.0, j_z)
-
-			var dist_m: float = sdf[r * cols + c]
-			var edge_t: float = smoothstep(0.0, 0.28, dist_m)
-			var rot_y: float = fmod(sub_seed * 1.618, TAU)
+			var scale_factor: float = float(td.get("scale_factor", 1.0))
+			var s_seed: float = float(td.get("seed", 0.0))
+			var random_rot: float = fmod(s_seed * 1.618, TAU)
 
 			var scale_vec: Vector3
-			if v_type == "wheat":
-				var sw: float = lerpf(0.38, 0.52, edge_t)
+			if v_type != "wheat" and v_type != "flower":
+				var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+			elif v_type == "wheat":
+				var sw: float = lerpf(0.38, 0.52, scale_factor)
 				scale_vec = Vector3(sw, sw, sw)
 			else:
-				var scale_y: float = lerpf(0.48, 0.62, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
-				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+				var sf: float = 0.52 * scale_factor
+				scale_vec = Vector3(sf, sf, sf)
 
-			var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(scale_vec)
-			(veg_transforms_by_type[v_type] as Array[Transform3D]).append(Transform3D(g_basis, tuft_pos))
+			var g_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
+			(veg_transforms_by_type[v_type] as Array[Transform3D]).append(Transform3D(g_basis, pos))
+	else:
+		# Modo Legado v1/v2 (VegetationField discreto)
+		var veg_field: RefCounted = null
+		if data.has("vegetation") and data["vegetation"] is Dictionary:
+			var vdict: Dictionary = data["vegetation"] as Dictionary
+			var rows_arr: Array = vdict.get("rows", []) as Array
+			veg_field = VegetationFieldScript.new(width, height)
+			veg_field.call("from_rows", rows_arr)
+		else:
+			veg_field = VegetationFieldScript.new(width, height)
+			veg_field.call("from_legacy_objects", objects_arr, width, height)
+
+		# Remove vegetação sob rochas
+		for obj_item: Variant in objects_arr:
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
+				var rx: int = int((obj_item as Dictionary).get("gx", 0))
+				var rz: int = int((obj_item as Dictionary).get("gz", 0))
+				for dz: int in range(4):
+					for dx: int in range(4):
+						veg_field.call("set_cell", rx * 4 + dx, rz * 4 + dz, 0)
+
+		var cols: int = int(veg_field.get("cols"))
+		var rows: int = int(veg_field.get("rows"))
+		var sdf: PackedFloat32Array = veg_field.call("compute_sdf_depth_map") as PackedFloat32Array
+
+		var processed_flowers: Dictionary = {}
+
+		# Adiciona flores de tile (0.80m) definidas em objects
+		for obj_item: Variant in objects_arr:
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
+				var fx: int = int((obj_item as Dictionary).get("gx", 0))
+				var fz: int = int((obj_item as Dictionary).get("gz", 0))
+				var f_pos: Vector3 = Vector3(offset_x + float(fx) * cell_size, 0.0, offset_z + float(fz) * cell_size)
+				var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+				(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
+
+		for r: int in range(rows):
+			for c: int in range(cols):
+				var tid: int = int(veg_field.call("get_cell", c, r))
+				if tid == 0:
+					continue
+				var v_type: String = VegetationFieldScript.type_id_to_name(tid)
+				if not veg_transforms_by_type.has(v_type):
+					v_type = "grass_green"
+
+				var lx: int = c >> 1
+				var lz: int = r >> 1
+				var lkey: Vector2i = Vector2i(lx, lz)
+
+				if tid == 9:
+					if processed_flowers.has(lkey):
+						continue
+					processed_flowers[lkey] = true
+					var flower_pos: Vector3 = veg_field.call("cell_to_world", lx * 2, lz * 2, cell_size) as Vector3
+					flower_pos.x += 0.10
+					flower_pos.z += 0.10
+					var f_basis: Basis = Basis(Vector3.UP, fmod(float(lx * 79 + lz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+					(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, flower_pos))
+					continue
+
+				var base_pos: Vector3 = veg_field.call("cell_to_world", c, r, cell_size) as Vector3
+				var sub_seed: float = float(c * 73 + r * 19)
+				var j_x: float = (fmod(sub_seed * 0.17, 1.0) - 0.5) * 0.12
+				var j_z: float = (fmod(sub_seed * 0.31, 1.0) - 0.5) * 0.12
+				var tuft_pos: Vector3 = base_pos + Vector3(j_x, 0.0, j_z)
+
+				var dist_m: float = sdf[r * cols + c]
+				var edge_t: float = smoothstep(0.0, 0.28, dist_m)
+				var rot_y: float = fmod(sub_seed * 1.618, TAU)
+
+				var scale_vec: Vector3
+				if v_type == "wheat":
+					var sw: float = lerpf(0.38, 0.52, edge_t)
+					scale_vec = Vector3(sw, sw, sw)
+				else:
+					var scale_y: float = lerpf(0.48, 0.62, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
+					var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
+					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+
+				var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(scale_vec)
+				(veg_transforms_by_type[v_type] as Array[Transform3D]).append(Transform3D(g_basis, tuft_pos))
 
 	for v_type: String in VegetationGrid.VEG_TYPES:
 		var xforms: Array[Transform3D] = veg_transforms_by_type[v_type] as Array[Transform3D]
