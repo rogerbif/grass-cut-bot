@@ -15,7 +15,8 @@ const CELL_SIZE: float = 0.80
 
 enum EditLayer {
 	TERRAIN = 0,
-	OBJECTS = 1
+	GRASS = 1,
+	OBJECTS = 2
 }
 
 enum ToolMode {
@@ -48,7 +49,8 @@ var brush_size: int = 1
 var current_rot_deg: int = 0
 
 var active_terrain_id: String = "auto_island"
-var active_object_id: String = "grass_green"
+var active_grass_id: String = "grass_green"
+var active_object_id: String = "rock"
 
 # Matrizes de dados do nível em memória
 # terrain_grid: Vector2i -> { "tile_id": String, "rot": int, "auto": bool }
@@ -237,9 +239,18 @@ func _connect_ui_signals() -> void:
 		_sync_all_ui()
 		_refresh_hover_preview()
 	)
+	ui.grass_item_selected.connect(func(g_id: String) -> void:
+		active_grass_id = g_id
+		active_layer = EditLayer.GRASS
+		if active_tool == ToolMode.SPAWN or active_tool == ToolMode.ERASER:
+			active_tool = ToolMode.BRUSH
+		_sync_all_ui()
+		_refresh_hover_preview()
+	)
 	ui.object_item_selected.connect(func(o_id: String) -> void:
 		if o_id == "cutter_spawn":
 			active_tool = ToolMode.SPAWN
+			active_layer = EditLayer.OBJECTS
 		else:
 			active_object_id = o_id
 			active_layer = EditLayer.OBJECTS
@@ -264,11 +275,12 @@ func _sync_all_ui() -> void:
 		brush_size,
 		current_rot_deg,
 		active_terrain_id,
+		active_grass_id,
 		active_object_id,
 		editor_camera.is_top_down if editor_camera != null else false
 	)
 	ui.update_level_header(current_level_id, grid_width, grid_height, time_limit)
-	ui.update_goals_summary(terrain_grid.size(), object_grid)
+	ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field)
 
 func _input(event: InputEvent) -> void:
 	# Ignora eventos sintéticos de touch gerados pelo emulate_touch_from_mouse no modo Edição
@@ -417,7 +429,12 @@ func _input(event: InputEvent) -> void:
 				if not rmb_dragged and not over_ui and is_hover_in_bounds:
 					_push_undo_snapshot()
 					_stroke_modified = false
-					_apply_brush_at(hovered_cell, true)
+					# Se a célula clicada possui um objeto em object_grid (pedra ou flor), apaga o objeto!
+					if object_grid.has(hovered_cell):
+						object_grid.erase(hovered_cell)
+						_stroke_modified = true
+					if not _stroke_modified or active_layer != EditLayer.OBJECTS:
+						_apply_brush_at(hovered_cell, true)
 					if _stroke_modified:
 						_rebuild_3d_world()
 						_sync_all_ui()
@@ -457,8 +474,8 @@ func _refresh_hover_preview() -> void:
 	var fill_col: Color = Color(0.2, 1.0, 0.55, 0.38)
 	var line_col: Color = Color(0.4, 1.0, 0.75, 0.95)
 
-	if active_layer == EditLayer.OBJECTS and active_object_id != "rock" and active_tool != ToolMode.SPAWN:
-		# Camada de Vegetação com preview fino de 0.20m
+	if active_layer == EditLayer.GRASS and active_tool != ToolMode.SPAWN:
+		# Camada de Grama com preview fino de 0.20m
 		fill_col = Color(0.25, 0.85, 1.0, 0.38)
 		line_col = Color(0.55, 0.95, 1.0, 0.95)
 		if active_tool == ToolMode.ERASER:
@@ -480,7 +497,7 @@ func _refresh_hover_preview() -> void:
 		grid_overlay.call("update_field_preview", field_cells, line_col, fill_col)
 		return
 
-	# Camada de Terreno, Rocha ou Spawn (em blocos de 0.80m)
+	# Camada de Terreno ou Objetos (em blocos de 0.80m)
 	grid_overlay.call("update_field_preview", preview_cells, Color.TRANSPARENT, Color.TRANSPARENT)
 
 	if active_tool == ToolMode.BOX_FILL:
@@ -499,8 +516,11 @@ func _refresh_hover_preview() -> void:
 			fill_col = Color(1.0, 0.28, 0.28, 0.42)
 			line_col = Color(1.0, 0.55, 0.55, 0.95)
 		elif active_layer == EditLayer.OBJECTS:
-			fill_col = Color(0.25, 0.85, 1.0, 0.38)
-			line_col = Color(0.55, 0.95, 1.0, 0.95)
+			fill_col = Color(1.0, 0.65, 0.25, 0.40)
+			line_col = Color(1.0, 0.80, 0.45, 0.95)
+		elif active_layer == EditLayer.TERRAIN:
+			fill_col = Color(0.2, 1.0, 0.55, 0.38)
+			line_col = Color(0.4, 1.0, 0.75, 0.95)
 
 		var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
 		for off in offsets:
@@ -514,13 +534,13 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 	if not is_hover_in_bounds:
 		return
 
-	if active_layer == EditLayer.OBJECTS and active_object_id != "rock" and active_tool != ToolMode.SPAWN:
-		# Pinta vegetação no campo fino de 0.20m com formas analíticas suaves
+	if active_layer == EditLayer.GRASS and active_tool != ToolMode.SPAWN:
+		# Pinta/Apaga grama no campo fino de 0.20m com formas analíticas suaves
 		if veg_field == null:
 			return
 		var center_sub: Vector2i = veg_field.call("world_to_cell", last_world_hit, CELL_SIZE) as Vector2i
 		var offsets: Array[Vector2i] = BrushPatterns.get_field_offsets(active_shape, brush_size)
-		var tid: int = 0 if erase_mode else VegetationFieldScript.type_name_to_id(active_object_id)
+		var tid: int = 0 if erase_mode else VegetationFieldScript.type_name_to_id(active_grass_id)
 		var cols: int = int(veg_field.get("cols"))
 		var rows: int = int(veg_field.get("rows"))
 		var changed: bool = false
@@ -545,13 +565,18 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 							"auto": true
 						}
 
+		# Se a borracha for acionada em cima de um objeto de tile (pedra ou flor), apaga o objeto também
+		if erase_mode and object_grid.has(center):
+			object_grid.erase(center)
+			changed = true
+
 		if changed:
 			_stroke_modified = true
 			_rebuild_3d_world()
 			_sync_all_ui()
 		return
 
-	# Camada de Terreno, Rocha ou Spawn em blocos de 0.80m
+	# Camada de Terreno ou Objetos em blocos de 0.80m
 	var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
 	var changed_any: bool = false
 	for off in offsets:
@@ -584,9 +609,14 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 			if not terrain_grid.has(cell):
 				return false
 			terrain_grid.erase(cell)
-			# Regra de integridade costeira: remove planta/pedra se o bloco de ilha virou mar
+			# Regra de integridade costeira: remove objeto se o bloco de ilha virou mar
 			if object_grid.has(cell):
 				object_grid.erase(cell)
+			# Também limpa o campo fino sob esse bloco
+			if veg_field != null:
+				for dz in range(4):
+					for dx in range(4):
+						veg_field.call("set_cell", cell.x * 4 + dx, cell.y * 4 + dz, 0)
 			return true
 		else:
 			var is_auto: bool = (active_terrain_id == "auto_island")
@@ -601,23 +631,30 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 				"auto": is_auto
 			}
 			return true
-	else:
+	elif active_layer == EditLayer.OBJECTS:
 		if erase_mode:
+			# Apaga qualquer objeto do tile (pedra ou flor)
 			if not object_grid.has(cell):
 				return false
 			object_grid.erase(cell)
 			return true
 		else:
-			# Se não havia bloco de ilha debaixo da planta/pedra, cria automaticamente um bloco de ilha!
+			# Se não havia bloco de ilha debaixo do objeto, cria automaticamente um bloco de ilha!
 			if not terrain_grid.has(cell):
 				terrain_grid[cell] = {
 					"tile_id": "island_center",
 					"rot": 0,
 					"auto": true
 				}
-			# Não planta grama exatamente em cima do spawn do robô
+			# Não coloca pedra/flor em cima do spawn
 			if cell == spawn_cell and active_object_id != "cutter_spawn":
 				return false
+			if active_object_id == "cutter_spawn":
+				spawn_cell = cell
+				spawn_rot = current_rot_deg
+				if object_grid.has(cell):
+					object_grid.erase(cell)
+				return true
 			if object_grid.has(cell):
 				var cur_o: Dictionary = object_grid[cell] as Dictionary
 				if String(cur_o.get("type", "")) == active_object_id and int(cur_o.get("rot", 0)) == current_rot_deg:
@@ -626,7 +663,13 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 				"type": active_object_id,
 				"rot": current_rot_deg
 			}
+			# Se for rocha, limpa a grama sob a rocha no veg_field
+			if active_object_id == "rock" and veg_field != null:
+				for dz in range(4):
+					for dx in range(4):
+						veg_field.call("set_cell", cell.x * 4 + dx, cell.y * 4 + dz, 0)
 			return true
+	return false
 
 func _place_spawn_at(cell: Vector2i) -> void:
 	spawn_cell = cell
@@ -683,15 +726,16 @@ func _rebuild_3d_world() -> void:
 		}
 	}
 
-	# Inclui rochas em objects
+	# Inclui rochas e flores em objects (discretos por tile de 0.80m)
 	for cell_key: Variant in object_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
-		if String(entry.get("type", "")) == "rock":
+		var o_type: String = String(entry.get("type", ""))
+		if o_type == "rock" or o_type == "flower":
 			veg_json["objects"].append({
 				"gx": cell.x,
 				"gz": cell.y,
-				"type": "rock",
+				"type": o_type,
 				"rot": int(entry.get("rot", 0))
 			})
 
@@ -879,11 +923,14 @@ func _load_or_init_level(lvl_id: int) -> void:
 		for item in o_arr:
 			if item is Dictionary:
 				var d: Dictionary = item as Dictionary
-				var c: Vector2i = Vector2i(int(d.get("gx", 0)), int(d.get("gz", 0)))
-				object_grid[c] = {
-					"type": String(d.get("type", "grass_green")),
-					"rot": int(d.get("rot", 0))
-				}
+				var o_type: String = String(d.get("type", ""))
+				# Só guarda em object_grid os objetos discretos de tile: rock e flower
+				if o_type == "rock" or o_type == "flower":
+					var c: Vector2i = Vector2i(int(d.get("gx", 0)), int(d.get("gz", 0)))
+					object_grid[c] = {
+						"type": o_type,
+						"rot": int(d.get("rot", 0))
+					}
 
 		# Carrega campo de vegetação v2 ou converte de objects v1
 		if data.has("vegetation") and data["vegetation"] is Dictionary:

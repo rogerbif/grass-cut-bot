@@ -60,15 +60,15 @@ const TERRAIN_ITEMS: Array[Dictionary] = [
 	}
 ]
 
-# Catálogo de Objetos e Vegetação (Camada 1: Sobre a Ilha)
-const OBJECT_ITEMS: Array[Dictionary] = [
+# Catálogo de Grama e Vegetação Orgânica (Camada 1: Campo Fino 0.20m)
+const GRASS_ITEMS: Array[Dictionary] = [
 	{
 		"id": "grass_green",
 		"name": "Grama Verde",
 		"icon": "🌿",
 		"color": Color(0.25, 0.78, 0.32),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "grass_yellow",
@@ -76,7 +76,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "🌼",
 		"color": Color(0.95, 0.80, 0.20),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "grass_blue",
@@ -84,7 +84,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "💠",
 		"color": Color(0.25, 0.68, 0.96),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "grass_purple",
@@ -92,7 +92,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "🔮",
 		"color": Color(0.72, 0.35, 0.92),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "grass_white",
@@ -100,7 +100,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "🤍",
 		"color": Color(0.92, 0.94, 0.98),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "grass_red",
@@ -108,7 +108,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "❤️",
 		"color": Color(0.95, 0.22, 0.24),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "grass_black",
@@ -116,7 +116,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "🖤",
 		"color": Color(0.28, 0.28, 0.34),
 		"goal_key": "grass",
-		"category": "plant"
+		"category": "grass"
 	},
 	{
 		"id": "wheat",
@@ -124,7 +124,19 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "🌾",
 		"color": Color(0.92, 0.68, 0.18),
 		"goal_key": "wheat",
-		"category": "plant"
+		"category": "grass"
+	}
+]
+
+# Catálogo de Objetos e Obstáculos (Camada 2: Tile de 0.80m)
+const OBJECT_ITEMS: Array[Dictionary] = [
+	{
+		"id": "rock",
+		"name": "Rocha Sólida",
+		"icon": "🪨",
+		"color": Color(0.52, 0.56, 0.62),
+		"goal_key": "",
+		"category": "obstacle"
 	},
 	{
 		"id": "flower",
@@ -133,14 +145,6 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"color": Color(0.95, 0.38, 0.68),
 		"goal_key": "flower",
 		"category": "plant"
-	},
-	{
-		"id": "rock",
-		"name": "Rocha Sólida",
-		"icon": "🪨",
-		"color": Color(0.52, 0.56, 0.62),
-		"goal_key": "",
-		"category": "obstacle"
 	},
 	{
 		"id": "cutter_spawn",
@@ -157,6 +161,12 @@ static func get_terrain_info(tile_id: String) -> Dictionary:
 		if String(item["id"]) == tile_id:
 			return item
 	return TERRAIN_ITEMS[1]
+
+static func get_grass_info(grass_id: String) -> Dictionary:
+	for item in GRASS_ITEMS:
+		if String(item["id"]) == grass_id:
+			return item
+	return GRASS_ITEMS[0]
 
 static func get_object_info(obj_id: String) -> Dictionary:
 	for item in OBJECT_ITEMS:

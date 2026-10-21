@@ -24,6 +24,7 @@ signal rotate_requested()
 signal toggle_camera_view_requested()
 
 signal terrain_tile_selected(tile_id: String)
+signal grass_item_selected(grass_id: String)
 signal object_item_selected(obj_id: String)
 
 var spin_level: SpinBox
@@ -32,10 +33,12 @@ var spin_height: SpinBox
 var spin_time: SpinBox
 
 var btn_layer_terrain: Button
+var btn_layer_grass: Button
 var btn_layer_objects: Button
 var tool_buttons: Dictionary = {}
 var shape_buttons: Dictionary = {}
 var terrain_buttons: Dictionary = {}
+var grass_buttons: Dictionary = {}
 var object_buttons: Dictionary = {}
 
 var lbl_brush_size: Label
@@ -289,12 +292,16 @@ func _build_left_panel() -> void:
 	lbl_layer.add_theme_color_override("font_color", Color(0.55, 0.88, 1.0))
 	vbox.add_child(lbl_layer)
 
-	btn_layer_terrain = _create_styled_button("🏝️ Camada 0: Terreno (Ilha)", Color(0.28, 0.78, 0.45), Vector2(0, 36))
+	btn_layer_terrain = _create_styled_button("🏝️ Camada 0: Terreno (0.8m)", Color(0.28, 0.78, 0.45), Vector2(0, 34))
 	btn_layer_terrain.pressed.connect(func() -> void: layer_changed.emit(0))
 	vbox.add_child(btn_layer_terrain)
 
-	btn_layer_objects = _create_styled_button("🌿 Camada 1: Gramas & Objetos", Color(0.30, 0.82, 0.95), Vector2(0, 36))
-	btn_layer_objects.pressed.connect(func() -> void: layer_changed.emit(1))
+	btn_layer_grass = _create_styled_button("🌿 Camada 1: Grama (0.2m)", Color(0.30, 0.82, 0.95), Vector2(0, 34))
+	btn_layer_grass.pressed.connect(func() -> void: layer_changed.emit(1))
+	vbox.add_child(btn_layer_grass)
+
+	btn_layer_objects = _create_styled_button("🪨 Camada 2: Objetos (0.8m)", Color(0.85, 0.65, 0.35), Vector2(0, 34))
+	btn_layer_objects.pressed.connect(func() -> void: layer_changed.emit(2))
 	vbox.add_child(btn_layer_objects)
 
 	vbox.add_child(HSeparator.new())
@@ -400,45 +407,76 @@ func _build_right_panel() -> void:
 	_interactive_panels.append(right_panel)
 
 	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 7)
+	vbox.add_theme_constant_override("separation", 6)
 	right_panel.add_child(vbox)
 
+	# 1. Paleta de Terreno (0.80m)
 	var lbl_t_pal: Label = Label.new()
-	lbl_t_pal.text = "🏝️ BLOCOS 3D DE ILHA (TERRENO)"
-	lbl_t_pal.add_theme_font_size_override("font_size", 13)
+	lbl_t_pal.text = "🏝️ BLOCOS DE ILHA (TERRENO 0.8m)"
+	lbl_t_pal.add_theme_font_size_override("font_size", 12)
 	lbl_t_pal.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
 	vbox.add_child(lbl_t_pal)
 
+	var grid_terrain: GridContainer = GridContainer.new()
+	grid_terrain.columns = 2
+	grid_terrain.add_theme_constant_override("h_separation", 6)
+	grid_terrain.add_theme_constant_override("v_separation", 4)
+	vbox.add_child(grid_terrain)
+
 	for item in TilePaletteDB.TERRAIN_ITEMS:
 		var t_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s  %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(0, 34))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 28))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 11)
 		b.tooltip_text = String(item.get("desc", ""))
 		b.pressed.connect(func() -> void: terrain_tile_selected.emit(t_id))
-		vbox.add_child(b)
+		grid_terrain.add_child(b)
 		terrain_buttons[t_id] = b
 
 	vbox.add_child(HSeparator.new())
 
+	# 2. Paleta de Grama Orgânica (0.20m)
+	var lbl_g_pal: Label = Label.new()
+	lbl_g_pal.text = "🌿 GRAMA & TRIGO (CAMPO 0.2m)"
+	lbl_g_pal.add_theme_font_size_override("font_size", 12)
+	lbl_g_pal.add_theme_color_override("font_color", Color(0.35, 0.90, 1.0))
+	vbox.add_child(lbl_g_pal)
+
+	var grid_grass: GridContainer = GridContainer.new()
+	grid_grass.columns = 2
+	grid_grass.add_theme_constant_override("h_separation", 6)
+	grid_grass.add_theme_constant_override("v_separation", 4)
+	vbox.add_child(grid_grass)
+
+	for item in TilePaletteDB.GRASS_ITEMS:
+		var g_id: String = String(item["id"])
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 28))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 11)
+		b.pressed.connect(func() -> void: grass_item_selected.emit(g_id))
+		grid_grass.add_child(b)
+		grass_buttons[g_id] = b
+
+	vbox.add_child(HSeparator.new())
+
+	# 3. Paleta de Objetos no Tile (0.80m)
 	var lbl_o_pal: Label = Label.new()
-	lbl_o_pal.text = "🌿 VEGETAÇÃO, ROCHAS & SPAWN"
-	lbl_o_pal.add_theme_font_size_override("font_size", 13)
-	lbl_o_pal.add_theme_color_override("font_color", Color(0.55, 0.90, 1.0))
+	lbl_o_pal.text = "🪨 OBJETOS NO TILE (0.8m)"
+	lbl_o_pal.add_theme_font_size_override("font_size", 12)
+	lbl_o_pal.add_theme_color_override("font_color", Color(1.0, 0.75, 0.35))
 	vbox.add_child(lbl_o_pal)
 
-	var grid_objects: GridContainer = GridContainer.new()
-	grid_objects.columns = 2
-	grid_objects.add_theme_constant_override("h_separation", 6)
-	grid_objects.add_theme_constant_override("v_separation", 6)
-	vbox.add_child(grid_objects)
+	var hbox_objects: HBoxContainer = HBoxContainer.new()
+	hbox_objects.add_theme_constant_override("separation", 6)
+	vbox.add_child(hbox_objects)
 
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var o_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 32))
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 12)
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(86, 32))
+		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.add_theme_font_size_override("font_size", 11)
 		b.pressed.connect(func() -> void: object_item_selected.emit(o_id))
-		grid_objects.add_child(b)
+		hbox_objects.add_child(b)
 		object_buttons[o_id] = b
 
 	vbox.add_child(HSeparator.new())
@@ -540,11 +578,13 @@ func sync_state(
 	brush_size: int,
 	rot_deg: int,
 	active_terrain_id: String,
+	active_grass_id: String,
 	active_object_id: String,
 	is_top_down: bool
 ) -> void:
 	_set_button_selected(btn_layer_terrain, active_layer == 0, Color(0.28, 0.78, 0.45))
-	_set_button_selected(btn_layer_objects, active_layer == 1, Color(0.30, 0.82, 0.95))
+	_set_button_selected(btn_layer_grass, active_layer == 1, Color(0.30, 0.82, 0.95))
+	_set_button_selected(btn_layer_objects, active_layer == 2, Color(0.85, 0.65, 0.35))
 
 	var tool_colors: Dictionary = {
 		0: Color(0.25, 0.88, 0.52),
@@ -565,10 +605,15 @@ func sync_state(
 		if terrain_buttons.has(tid_str):
 			_set_button_selected(terrain_buttons[tid_str] as Button, active_layer == 0 and active_terrain_id == tid_str, item["color"] as Color)
 
+	for item in TilePaletteDB.GRASS_ITEMS:
+		var gid_str: String = String(item["id"])
+		if grass_buttons.has(gid_str):
+			_set_button_selected(grass_buttons[gid_str] as Button, active_layer == 1 and active_grass_id == gid_str, item["color"] as Color)
+
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var oid_str: String = String(item["id"])
 		if object_buttons.has(oid_str):
-			_set_button_selected(object_buttons[oid_str] as Button, active_layer == 1 and active_object_id == oid_str, item["color"] as Color)
+			_set_button_selected(object_buttons[oid_str] as Button, active_layer == 2 and active_object_id == oid_str, item["color"] as Color)
 
 	if lbl_brush_size != null:
 		lbl_brush_size.text = "Escala: %d" % brush_size
@@ -587,27 +632,34 @@ func update_level_header(level_id: int, width: int, height: int, time_limit: flo
 	if spin_time != null:
 		spin_time.set_value_no_signal(time_limit)
 
-func update_goals_summary(terrain_count: int, object_grid: Dictionary) -> void:
+func update_goals_summary(terrain_count: int, object_grid: Dictionary, veg_field: RefCounted = null) -> void:
 	if lbl_goals_summary == null:
 		return
-	var grass_c: int = 0
-	var wheat_c: int = 0
+	var grass_tufts: int = 0
+	var wheat_tufts: int = 0
+	if veg_field != null:
+		var cols: int = int(veg_field.get("cols"))
+		var rows: int = int(veg_field.get("rows"))
+		for r: int in range(rows):
+			for c: int in range(cols):
+				var tid: int = int(veg_field.call("get_cell", c, r))
+				if tid >= 1 and tid <= 7:
+					grass_tufts += 1
+				elif tid == 8:
+					wheat_tufts += 1
+
 	var flower_c: int = 0
 	var rock_c: int = 0
 	for k in object_grid:
 		var entry: Dictionary = object_grid[k] as Dictionary
 		var t: String = String(entry.get("type", ""))
-		if t.begins_with("grass"):
-			grass_c += 1
-		elif t == "wheat":
-			wheat_c += 1
-		elif t == "flower":
+		if t == "flower":
 			flower_c += 1
 		elif t == "rock":
 			rock_c += 1
 
-	lbl_goals_summary.text = "🌿 Gramas: %d\n🌾 Trigo: %d\n🌸 Flores: %d\n🪨 Rochas: %d\n🏝️ Blocos Ilha: %d" % [
-		grass_c, wheat_c, flower_c, rock_c, terrain_count
+	lbl_goals_summary.text = "🌿 Grama: %d\n🌾 Trigo: %d\n🌸 Flores: %d\n🪨 Rochas: %d\n🏝️ Blocos Ilha: %d" % [
+		grass_tufts, wheat_tufts, flower_c, rock_c, terrain_count
 	]
 
 func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> void:

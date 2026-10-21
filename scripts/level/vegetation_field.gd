@@ -143,7 +143,12 @@ func from_legacy_objects(objects_arr: Array, w_blocks: int, h_blocks: int) -> vo
 		var base_cx: int = gx * SUB_PER_BLOCK
 		var base_cz: int = gz * SUB_PER_BLOCK
 
-		if o_type == "flower" or o_type == "wheat":
+		if o_type == "flower":
+			# O bloco de ilha da flor recebe grama verde por baixo
+			for dz: int in range(SUB_PER_BLOCK):
+				for dx: int in range(SUB_PER_BLOCK):
+					set_cell(base_cx + dx, base_cz + dz, 1) # grass_green
+		elif o_type == "wheat":
 			var special_id: int = type_name_to_id(o_type)
 			# Slot especial em 0.40m (subcélulas 0,0 a 1,1) e grama verde no restante do bloco
 			for dz: int in range(2):

@@ -19,9 +19,9 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
 
 ---
 
-## 2. Sistema de Grade de Dupla Resolução (Terreno 0.80m vs. Vegetação Orgânica 0.20m)
+## 2. Sistema de Três Camadas de Edição (Terreno vs. Grama Fina vs. Objetos no Tile)
 
-Para garantir liberdade criativa, silhuetas fluidas e desempenho impecável, o editor opera com arquitetura de grade em duas camadas complementares:
+Para garantir liberdade criativa, precisão no posicionamento e facilidade na edição (incluindo exclusão pontual de pedras e flores), o editor opera com arquitetura em 3 camadas independentes:
 
 - **Camada 0 — Terreno (Ilha 3D Modular em $0.80\text{m} \times 0.80\text{m}$):**
   - Modelos 3D estilizados em `assets/models/tiles/*.glb` integrados nas cenas `scenes/editor/tiles/`:
@@ -33,16 +33,24 @@ Para garantir liberdade criativa, silhuetas fluidas e desempenho impecável, o e
     - `island_center`: Piso plano de grama verde esmeralda.
     - `island_dirt`: Piso plano de terra/trilha alaranjada quente.
   - Todas as peças manuais possuem suporte a giro de $90^\circ$ (`R`).
+  - **Borracha / Clique Direito:** Remove o bloco de terreno (transforma em mar aberto) e apaga automaticamente qualquer objeto ou vegetação contida naquela célula.
 
-- **Camada 1 — Vegetação Orgânica em Campo Fino ($0.20\text{m} \times 0.20\text{m}$):**
+- **Camada 1 — Grama Orgânica em Campo Fino ($0.20\text{m} \times 0.20\text{m}$):**
   - Cada bloco de $0.80\text{m}$ possui $4 \times 4 = 16$ micro-células de $0.20\text{m}$.
   - A pintura de plantas ocorre diretamente no campo analítico `VegetationField`, permitindo traços suaves, curvas detalhadas e formas livres.
-  - **Auto-Geração de Terreno:** Ao pintar vegetação sobre células de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
-  - **Variedades Suportadas:** 9 tipos de vegetação (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`).
-  - **Entidades e Marcadores:** `rock` (`Layer 4`, mantida na grade discreta) e `cutter_spawn` (posição inicial do robô).
+  - **Auto-Geração de Terreno:** Ao pintar grama sobre células de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
+  - **Variedades Suportadas:** As 7 cores de grama (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`) e `wheat` (trigo maduro).
+  - **Borracha / Clique Direito:** Apaga a grama/trigo em resolução de $0.20\text{m}$ sem afetar os blocos de terreno ou objetos posicionados.
+
+- **Camada 2 — Objetos & Obstáculos no Tile ($0.80\text{m} \times 0.80\text{m}$):**
+  - Itens discretos centralizados por bloco de terreno:
+    - **`rock` (Rocha Sólida):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo fino para não atravessar a pedra.
+    - **`flower` (Flor Nobre):** Vegetação de alto valor econômico (2 hits, 5 moedas) posicionada no centro do tile de $0.80\text{m}$.
+    - **`cutter_spawn` (Spawn do Robô):** Marcador de início do robô cortador (único por fase).
+  - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra/flor em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar pedras e flores instantaneamente!
 
 - **Persistência Híbrida JSON v2:**
-  - O formato JSON salva a vegetação em bloco analítico compacto `"vegetation": { "res": 0.2, "width": W, "height": H, "rows": [...] }`, reduzindo o tamanho em disco e mantendo suporte automático a carregamento e conversão de mapas legados em formato v1 (`objects`).
+  - O formato JSON salva a grama em bloco compacto `"vegetation": { "res": 0.2, "width": W, "height": H, "rows": [...] }` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`.
 
 ---
 

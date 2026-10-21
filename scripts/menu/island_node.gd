@@ -321,6 +321,15 @@ func build_miniature_from_json(lvl: int) -> void:
 
 	var processed_flowers: Dictionary = {}
 
+	# Adiciona flores de tile (0.80m) definidas em objects
+	for obj_item: Variant in objects_arr:
+		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
+			var fx: int = int((obj_item as Dictionary).get("gx", 0))
+			var fz: int = int((obj_item as Dictionary).get("gz", 0))
+			var f_pos: Vector3 = Vector3(offset_x + float(fx) * cell_size, 0.0, offset_z + float(fz) * cell_size)
+			var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+			(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
+
 	for r: int in range(rows):
 		for c: int in range(cols):
 			var tid: int = int(veg_field.call("get_cell", c, r))

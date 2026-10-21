@@ -287,16 +287,17 @@ func build_from_level_json(
 	var goals: Dictionary = {}
 	var objects_arr: Array = data.get("objects", []) as Array
 
-	# Instancia rochas (obstáculos sólidos da Layer 4)
+	# Instancia rochas (obstáculos sólidos da Layer 4) e flores (objetos de tile 0.80m)
 	var rock_cells: Dictionary = {}
+	var flower_cells: Dictionary = {}
 	for item: Variant in objects_arr:
 		if item is Dictionary:
 			var od: Dictionary = item as Dictionary
 			var o_type: String = String(od.get("type", ""))
+			var gx: int = int(od.get("gx", 0))
+			var gz: int = int(od.get("gz", 0))
+			var o_rot: int = int(od.get("rot", 0))
 			if o_type == "rock":
-				var gx: int = int(od.get("gx", 0))
-				var gz: int = int(od.get("gz", 0))
-				var o_rot: int = int(od.get("rot", 0))
 				var base_pos: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, width, height, cell_size)
 				rock_cells[Vector2i(gx, gz)] = true
 				var rock_inst: Node3D = LevelJsonLoader.instantiate_object_node("rock", o_rot)
@@ -306,6 +307,8 @@ func build_from_level_json(
 						obstacles_container.add_child(rock_inst)
 					else:
 						add_child(rock_inst)
+			elif o_type == "flower":
+				flower_cells[Vector2i(gx, gz)] = o_rot
 
 	# 4. Campo de Vegetação fino (0.20m): carrega do JSON v2 ou converte de objects v1
 	var veg_field: RefCounted = null
@@ -326,8 +329,8 @@ func build_from_level_json(
 			for dx: int in range(4):
 				veg_field.call("set_cell", base_cx + dx, base_cz + dz, 0)
 
-	# Constrói MultiMeshes e grade espacial a partir do campo fino 0.20m
-	goals = _build_from_vegetation_field(veg_field, width, height, cell_size)
+	# Constrói MultiMeshes e grade espacial a partir do campo fino 0.20m e flores de tile
+	goals = _build_from_vegetation_field(veg_field, width, height, cell_size, flower_cells)
 
 	# Constrói decal de solo orgânico e trilha de corte
 	_setup_lawn_decal_and_trail(veg_field, width, height, cell_size)
@@ -352,7 +355,8 @@ func _build_from_vegetation_field(
 	field: RefCounted,
 	width_blocks: int,
 	height_blocks: int,
-	block_cell_size: float
+	block_cell_size: float,
+	tile_flowers: Dictionary = {}
 ) -> Dictionary:
 	var goals: Dictionary = {}
 	var cols: int = int(field.get("cols"))
@@ -422,6 +426,25 @@ func _build_from_vegetation_field(
 	for v_type: String in VEG_TYPES:
 		var empty_list: Array[Dictionary] = []
 		tufts_by_type[v_type] = empty_list
+
+	# Adiciona flores de tile (0.80m) como objetos discretos com sua própria célula lógica
+	for f_cell: Vector2i in tile_flowers.keys():
+		var cell_idx: int = _cell_remaining_tufts.size()
+		var flower_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
+		goals["flower"] = int(goals.get("flower", 0)) + 1
+		_cell_keys.append("flower")
+		_cell_rewards.append(5)
+		_cell_is_completed.append(0)
+		_cell_remaining_tufts.append(1)
+
+		var f_entry: Dictionary = {
+			"pos": flower_pos,
+			"cell_idx": cell_idx,
+			"tid": 9,
+			"sdf": 0.50,
+			"seed": float(f_cell.x * 79 + f_cell.y * 31)
+		}
+		(tufts_by_type["flower"] as Array[Dictionary]).append(f_entry)
 
 	var processed_flowers: Dictionary = {}
 
