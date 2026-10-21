@@ -405,6 +405,7 @@ func _cut_vegetation_area(area: Area3D) -> bool:
 func _process_cutting() -> void:
 	if vegetation_grid != null and is_instance_valid(vegetation_grid):
 		vegetation_grid.call("cut_in_circle", global_position, _cached_blade_radius, _cached_cutter_power)
+		return
 	if _overlapping_vegetation.is_empty():
 		return
 	for i in range(_overlapping_vegetation.size() - 1, -1, -1):

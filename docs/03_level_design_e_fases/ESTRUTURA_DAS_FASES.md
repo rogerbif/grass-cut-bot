@@ -68,10 +68,9 @@ Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/
 
 ## 4. Arquitetura Técnica e Scripts
 
-- **Carregamento Runtime (`LevelController.gd`):**
-  - Prioridade 1 para `res://data/levels/level_%02d.json`.
-  - Mapeia automaticamente as metas no HUD via nó `$PlantsContainer` e propriedade `plant_key` de cada tufo.
-  - Spawna o robô cortador no ponto exato `spawn` da fase.
+- **Carregamento Runtime (`LevelController.gd` + `VegetationGrid.gd`):**
+  - Carrega `res://data/levels/level_%02d.json` e constrói a ilha e a vegetação em lote via `VegetationGrid` (`MultiMeshInstance3D` por tipo de tile e por espécie vegetal + Grade Espacial Discreta `0.40m`).
+  - Mapeia automaticamente as metas no HUD e posiciona o robô cortador no ponto `spawn` da fase em menos de `10 ms`.
 - **Gerador Automatizado (`scripts/tools/generate_levels.js`):**
   - Recalcula matematicamente o Autotile canônico (`IslandAutotiler`) de cada célula.
   - Validador embutido (`scripts/tools/verify_levels.js`) que audita a integridade geométrica, limites de grid e ausência de sobreposições em todas as 20 fases.

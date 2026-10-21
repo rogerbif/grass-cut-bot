@@ -14,15 +14,16 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ---
 
-## 2. Estrutura do Nó de Vegetação (`plant.tscn`)
+## 2. Arquitetura de Renderização e Corte em Lote (`VegetationGrid`)
 
-Cada tufo possui a seguinte árvore enxuta (as partículas de corte operam em um Pool Estático Compartilhado de 16 emissores em `plant.gd`, evitando instanciar milhares de `CPUParticles3D` ociosos):
-```
-Tuft (Node3D - grupo "plants", script plant.gd)
-├── Area3D (Layer 4, Mask 0, grupo "vegetation")
-│   └── CollisionShape3D (Cylinder r=0.18m, h=0.45m)
-└── VisualMesh (Node3D - malha Low Poly das folhas/espigas com cast_shadow = OFF)
-```
+Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e os blocos visuais de terreno operam em lote via **`VegetationGrid` (`res://scripts/plants/vegetation_grid.gd`)**:
+- **GPU Instancing (`MultiMeshInstance3D`):**
+  - Os tufos de vegetação são agrupados em até 6 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
+  - Para `wheat` e `flower`, as sub-malhas originais são combinadas uma única vez em cache estático (`ArrayMesh` multi-superfície via `SurfaceTool`), preservando todos os materiais e shaders em um único draw call por espécie.
+- **Grade Espacial Discreta 2D (`0.40m x 0.40m`):**
+  - Em vez de instanciar milhares de nós `Area3D`, o `VegetationGrid` particiona a ilha em células de `0.40m` (`_grid: Dictionary` mapeando `Vector2i -> PackedInt32Array` de índices em arrays SoA `PackedVector3Array`, `PackedInt32Array`, `PackedByteArray`).
+  - A cada frame de física, o cortador invoca `cut_in_circle(global_position, blade_radius, power)`, verificando em $\mathcal{O}(1)$ apenas as células que intersectam o raio da lâmina.
+  - As cenas individuais `scenes/plants/*.tscn` (`plant.gd`) permanecem apenas como fonte de malha/material e fallback para edição manual no Editor de Fases PC.
 
 - **Estrutura 3D Estilizada Low Poly e Gramado Condensado:**
   - O tufo de grama básico (`grass_tuft.tscn`) utiliza o modelo 3D oficial `assets/models/grass_01.glb` (baseado na malha de 112 vértices e 80 faces `grass_varien_4_grass_0`).

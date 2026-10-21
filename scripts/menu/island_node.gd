@@ -2,19 +2,8 @@ extends Node3D
 
 signal island_selected(level_number: int)
 
-const TILE_MODELS: Dictionary = {
-	"island_center": preload("res://assets/models/tiles/tile_island_center.glb"),
-	"island_edge": preload("res://assets/models/tiles/tile_island_edge.glb"),
-	"island_corner_out": preload("res://assets/models/tiles/tile_island_corner_out.glb"),
-	"island_corner_in": preload("res://assets/models/tiles/tile_island_corner_in.glb"),
-	"island_dirt": preload("res://assets/models/tiles/tile_island_dirt.glb"),
-	"island_end": preload("res://assets/models/tiles/tile_island_end.glb")
-}
-
-const GRASS_MODEL: PackedScene = preload("res://assets/models/grass_01.glb")
+const VegetationGrid = preload("res://scripts/plants/vegetation_grid.gd")
 const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
-const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
-const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
 
 # Shaders oficiais da grama com gradiente vertical (raiz -> topo) e balanço de vento
 const MAT_ACTIVE_GRASS_GREEN: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
@@ -50,8 +39,10 @@ var plaque_tween: Tween = null
 var grass_mesh_records: Array[Dictionary] = []
 var is_built: bool = false
 
+
 func _ready() -> void:
 	update_visuals()
+
 
 func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	level_number = lvl
@@ -60,6 +51,7 @@ func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	read_island_metadata(lvl)
 	update_visuals()
 	set_view_mode(is_map_mode, is_active_island, false)
+
 
 func read_island_metadata(lvl: int) -> void:
 	var json_path: String = "res://data/levels/level_%02d.json" % lvl
@@ -82,12 +74,14 @@ func read_island_metadata(lvl: int) -> void:
 		var half_h: float = island_dimensions.y / 2.0
 		map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
+
 func ensure_content_loaded() -> void:
 	if is_built:
 		return
 	is_built = true
 	build_miniature_from_json(level_number)
 	set_view_mode(is_map_mode, is_active_island, false)
+
 
 static func _init_materials() -> void:
 	if _mat_static_green == null:
@@ -108,88 +102,42 @@ static func _init_materials() -> void:
 		_mat_rock.albedo_color = Color(0.42, 0.46, 0.50, 1.0)
 		_mat_rock.roughness = 0.95
 
-static func _clear_node_owners(node: Node) -> void:
-	node.owner = null
-	for c in node.get_children():
-		_clear_node_owners(c)
-
-static func _strip_visual_mesh(inst: Node3D) -> Node3D:
-	var visual: Node3D = inst.get_node_or_null("VisualMesh") as Node3D
-	if visual != null:
-		inst.remove_child(visual)
-		_clear_node_owners(visual)
-		inst.queue_free()
-		return visual
-	_clear_node_owners(inst)
-	return inst
-
-static func create_miniature_object(otype: String) -> Node3D:
-	_init_materials()
-	if otype == "rock":
-		var r_inst: Node3D = ROCK_MODEL.instantiate() as Node3D
-		for child in r_inst.get_children():
-			if child is MeshInstance3D:
-				(child as MeshInstance3D).material_override = _mat_rock
-		return r_inst
-
-	elif otype == "wheat":
-		var w_inst: Node3D = WHEAT_SCENE.instantiate() as Node3D
-		return _strip_visual_mesh(w_inst)
-
-	elif otype == "flower":
-		var f_inst: Node3D = FLOWER_SCENE.instantiate() as Node3D
-		return _strip_visual_mesh(f_inst)
-
-	else:
-		# grass_green, grass_yellow, grass_blue, grass_purple (ou fallback)
-		var g_inst: Node3D = GRASS_MODEL.instantiate() as Node3D
-		var target_mat: ShaderMaterial = _mat_static_green
-		if otype == "grass_yellow":
-			target_mat = _mat_static_yellow
-		elif otype == "grass_blue":
-			target_mat = _mat_static_blue
-		elif otype == "grass_purple":
-			target_mat = _mat_static_purple
-
-		for child in g_inst.get_children():
-			if child is MeshInstance3D:
-				(child as MeshInstance3D).material_override = target_mat
-		return g_inst
 
 func set_grass_animated(enabled: bool) -> void:
 	_init_materials()
-	for rec in grass_mesh_records:
-		var mi: MeshInstance3D = rec.get("mesh", null) as MeshInstance3D
-		if mi == null or not is_instance_valid(mi):
+	for rec: Dictionary in grass_mesh_records:
+		var gi: GeometryInstance3D = rec.get("mesh", null) as GeometryInstance3D
+		if gi == null or not is_instance_valid(gi):
 			continue
 		var gtype: String = String(rec.get("type", "grass_green"))
 		if enabled:
 			match gtype:
 				"grass_yellow":
-					mi.material_override = MAT_ACTIVE_GRASS_YELLOW
+					gi.material_override = MAT_ACTIVE_GRASS_YELLOW
 				"grass_blue":
-					mi.material_override = MAT_ACTIVE_GRASS_BLUE
+					gi.material_override = MAT_ACTIVE_GRASS_BLUE
 				"grass_purple":
-					mi.material_override = MAT_ACTIVE_GRASS_PURPLE
+					gi.material_override = MAT_ACTIVE_GRASS_PURPLE
 				_:
-					mi.material_override = MAT_ACTIVE_GRASS_GREEN
+					gi.material_override = MAT_ACTIVE_GRASS_GREEN
 		else:
 			match gtype:
 				"grass_yellow":
-					mi.material_override = _mat_static_yellow
+					gi.material_override = _mat_static_yellow
 				"grass_blue":
-					mi.material_override = _mat_static_blue
+					gi.material_override = _mat_static_blue
 				"grass_purple":
-					mi.material_override = _mat_static_purple
+					gi.material_override = _mat_static_purple
 				_:
-					mi.material_override = _mat_static_green
+					gi.material_override = _mat_static_green
+
 
 func build_miniature_from_json(lvl: int) -> void:
 	if miniature_container == null:
 		return
 
-	# Limpa tiles anteriores da miniatura e registros de grama
-	for c in miniature_container.get_children():
+	# Limpa elementos anteriores da miniatura e registros de grama
+	for c: Node in miniature_container.get_children():
 		c.queue_free()
 	grass_mesh_records.clear()
 
@@ -229,9 +177,11 @@ func build_miniature_from_json(lvl: int) -> void:
 			fallback_mesh.visible = true
 		return
 
-	# Oculta o bloco de fallback e constrói a miniatura
 	if fallback_mesh != null:
 		fallback_mesh.visible = false
+
+	_init_materials()
+	VegetationGrid._ensure_static_meshes()
 
 	# Escala real 1.0x (idêntica ao gameplay)
 	miniature_container.scale = Vector3(1.0, 1.0, 1.0)
@@ -242,34 +192,53 @@ func build_miniature_from_json(lvl: int) -> void:
 	# Posiciona a placa no canto inferior direito da ilha (escala real 1.0x)
 	map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
-	for item in terrain_arr:
+	# 1. Agrupa blocos de terreno por tile_id em MultiMeshInstance3D
+	var tile_transforms_by_id: Dictionary = {}
+	for item: Variant in terrain_arr:
 		if not (item is Dictionary):
 			continue
 		var td: Dictionary = item as Dictionary
 		var gx: int = int(td.get("gx", 0))
 		var gz: int = int(td.get("gz", 0))
 		var tile_id: String = String(td.get("tile_id", "island_center"))
+		if not VegetationGrid._tile_meshes.has(tile_id):
+			tile_id = "island_center"
 		var rot: int = int(td.get("rot", 0))
-
-		var model_scene: PackedScene = TILE_MODELS.get(tile_id, TILE_MODELS["island_center"]) as PackedScene
-		if model_scene == null:
-			continue
-
-		var tile_inst: Node3D = model_scene.instantiate() as Node3D
-		if tile_inst == null:
-			continue
 
 		var local_x: float = offset_x + float(gx) * cell_size
 		var local_z: float = offset_z + float(gz) * cell_size
-		tile_inst.position = Vector3(local_x, 0.0, local_z)
-		tile_inst.rotation_degrees.y = float(rot)
+		var t_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(rot))).scaled(Vector3(1.0, 0.5, 1.0))
+		var t_xform: Transform3D = Transform3D(t_basis, Vector3(local_x, 0.0, local_z))
 
-		miniature_container.add_child(tile_inst)
+		if not tile_transforms_by_id.has(tile_id):
+			var new_list: Array[Transform3D] = []
+			tile_transforms_by_id[tile_id] = new_list
+		(tile_transforms_by_id[tile_id] as Array[Transform3D]).append(t_xform)
 
-	# Instancia os elementos/objetos sobre a ilha (vegetação, rochas, trigo, flores)
+	for tile_key: Variant in tile_transforms_by_id.keys():
+		var t_id: String = String(tile_key)
+		var xforms: Array[Transform3D] = tile_transforms_by_id[t_id] as Array[Transform3D]
+		if xforms.is_empty():
+			continue
+		var tile_mesh: ArrayMesh = VegetationGrid._tile_meshes.get(t_id, null) as ArrayMesh
+		if tile_mesh == null:
+			continue
+
+		var mm: MultiMesh = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = tile_mesh
+		mm.instance_count = xforms.size()
+		for i: int in range(xforms.size()):
+			mm.set_instance_transform(i, xforms[i])
+
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "MiniTileMMI_%s" % t_id
+		mmi.multimesh = mm
+		miniature_container.add_child(mmi)
+
+	# 2. Agrupa vegetação em MultiMeshInstance3D e instancia rochas
 	var objects_arr: Array = data.get("objects", []) as Array
 
-	# Subgrade 2x2 de células de 0.40m por bloco de terreno de 0.80m
 	var sub_offsets: Array[Vector3] = [
 		Vector3(-0.20, 0.0, -0.20),
 		Vector3(0.20, 0.0, -0.20),
@@ -277,7 +246,12 @@ func build_miniature_from_json(lvl: int) -> void:
 		Vector3(0.20, 0.0, 0.20)
 	]
 
-	for obj_item in objects_arr:
+	var veg_transforms_by_type: Dictionary = {}
+	for v_type: String in VegetationGrid.VEG_TYPES:
+		var empty_xforms: Array[Transform3D] = []
+		veg_transforms_by_type[v_type] = empty_xforms
+
+	for obj_item: Variant in objects_arr:
 		if not (obj_item is Dictionary):
 			continue
 		var od: Dictionary = obj_item as Dictionary
@@ -291,62 +265,70 @@ func build_miniature_from_json(lvl: int) -> void:
 		var base_pos: Vector3 = Vector3(local_ox, 0.0, local_oz)
 
 		if otype == "rock":
-			# Rocha no tamanho original sem nenhuma grama naquele bloco
-			var r_visual: Node3D = create_miniature_object("rock")
-			if r_visual != null:
-				r_visual.position = base_pos
-				r_visual.rotation_degrees.y = float(orot)
-				miniature_container.add_child(r_visual)
+			var r_inst: Node3D = ROCK_MODEL.instantiate() as Node3D
+			if r_inst != null:
+				for child: Node in r_inst.get_children():
+					if child is MeshInstance3D:
+						(child as MeshInstance3D).material_override = _mat_rock
+				r_inst.position = base_pos
+				r_inst.rotation_degrees.y = float(orot)
+				miniature_container.add_child(r_inst)
 			continue
 
 		elif otype == "flower" or otype == "wheat":
-			# Flor ou trigo ocupa uma das células de 0.40m
-			var p_visual: Node3D = create_miniature_object(otype)
-			if p_visual != null:
-				p_visual.position = base_pos + sub_offsets[0]
-				p_visual.rotation_degrees.y = float(orot)
-				p_visual.scale = Vector3(0.50, 0.50, 0.50)
-				miniature_container.add_child(p_visual)
+			var p_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(orot))).scaled(Vector3(0.50, 0.50, 0.50))
+			var p_xform: Transform3D = Transform3D(p_basis, base_pos + sub_offsets[0])
+			(veg_transforms_by_type[otype] as Array[Transform3D]).append(p_xform)
 
-			# Preenche as outras 3 subcélulas de 0.40m com grama verde condensada
-			for s_idx in range(1, 4):
-				var g_sub: Node3D = create_miniature_object("grass_green")
-				if g_sub != null:
-					g_sub.position = base_pos + sub_offsets[s_idx]
-					var sub_seed: float = float(ogx * 73 + ogz * 19 + s_idx * 31)
-					g_sub.rotation.y = fmod(sub_seed, TAU)
-					var s_y: float = (0.72 + fmod(sub_seed * 0.13, 0.13)) * 0.75
-					var s_xz: float = (0.96 + fmod(sub_seed * 0.27, 0.14)) * 0.42
-					g_sub.scale = Vector3(s_xz, s_y, s_xz)
-					for child in g_sub.get_children():
-						if child is MeshInstance3D:
-							grass_mesh_records.append({"mesh": child, "type": "grass_green"})
-					miniature_container.add_child(g_sub)
+			for s_idx: int in range(1, 4):
+				var sub_seed: float = float(ogx * 73 + ogz * 19 + s_idx * 31)
+				var rot_y: float = fmod(sub_seed, TAU)
+				var s_y: float = (0.72 + fmod(sub_seed * 0.13, 0.13)) * 0.75
+				var s_xz: float = (0.96 + fmod(sub_seed * 0.27, 0.14)) * 0.42
+				var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(Vector3(s_xz, s_y, s_xz))
+				var g_xform: Transform3D = Transform3D(g_basis, base_pos + sub_offsets[s_idx])
+				(veg_transforms_by_type["grass_green"] as Array[Transform3D]).append(g_xform)
 
-		elif otype.begins_with("grass_"):
-			# Preenche as 4 células de 0.40m com grama condensada
-			for s_idx in range(4):
-				var g_visual: Node3D = create_miniature_object(otype)
-				if g_visual != null:
-					g_visual.position = base_pos + sub_offsets[s_idx]
-					var sub_seed: float = float(ogx * 73 + ogz * 19 + s_idx * 31)
-					g_visual.rotation.y = fmod(sub_seed, TAU)
-					var s_y: float = (0.72 + fmod(sub_seed * 0.13, 0.13)) * 0.75
-					var s_xz: float = (0.96 + fmod(sub_seed * 0.27, 0.14)) * 0.42
-					g_visual.scale = Vector3(s_xz, s_y, s_xz)
-					for child in g_visual.get_children():
-						if child is MeshInstance3D:
-							grass_mesh_records.append({"mesh": child, "type": otype})
-					miniature_container.add_child(g_visual)
 		else:
-			var visual: Node3D = create_miniature_object(otype)
-			if visual != null:
-				visual.position = base_pos
-				visual.rotation_degrees.y = float(orot)
-				miniature_container.add_child(visual)
+			var target_gtype: String = otype if veg_transforms_by_type.has(otype) else "grass_green"
+			for s_idx: int in range(4):
+				var sub_seed: float = float(ogx * 73 + ogz * 19 + s_idx * 31)
+				var rot_y: float = fmod(sub_seed, TAU)
+				var s_y: float = (0.72 + fmod(sub_seed * 0.13, 0.13)) * 0.75
+				var s_xz: float = (0.96 + fmod(sub_seed * 0.27, 0.14)) * 0.42
+				var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(Vector3(s_xz, s_y, s_xz))
+				var g_xform: Transform3D = Transform3D(g_basis, base_pos + sub_offsets[s_idx])
+				(veg_transforms_by_type[target_gtype] as Array[Transform3D]).append(g_xform)
+
+	for v_type: String in VegetationGrid.VEG_TYPES:
+		var xforms: Array[Transform3D] = veg_transforms_by_type[v_type] as Array[Transform3D]
+		if xforms.is_empty():
+			continue
+
+		var mm: MultiMesh = MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		if v_type == "wheat":
+			mm.mesh = VegetationGrid._wheat_mesh
+		elif v_type == "flower":
+			mm.mesh = VegetationGrid._flower_mesh
+		else:
+			mm.mesh = VegetationGrid._grass_mesh
+		mm.instance_count = xforms.size()
+		for i: int in range(xforms.size()):
+			mm.set_instance_transform(i, xforms[i])
+
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "MiniVegMMI_%s" % v_type
+		mmi.multimesh = mm
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		miniature_container.add_child(mmi)
+
+		if v_type.begins_with("grass_"):
+			grass_mesh_records.append({"mesh": mmi, "type": v_type})
 
 	# Atualiza o estado da animação de vento conforme o modo e atividade da ilha
 	set_grass_animated(not is_map_mode and is_active_island)
+
 
 func update_visuals() -> void:
 	if level_label == null or stars_label == null:
@@ -356,7 +338,7 @@ func update_visuals() -> void:
 		level_label.text = str(level_number)
 		if stars_earned > 0:
 			var stars_str: String = ""
-			for i in range(stars_earned):
+			for i: int in range(stars_earned):
 				stars_str += "⭐"
 			stars_label.text = stars_str
 			stars_label.visible = true
@@ -378,6 +360,7 @@ func update_visuals() -> void:
 			else:
 				new_mat.albedo_color = Color(0.35, 0.38, 0.42, 1.0) # Cinza fosco bloqueado
 			plaque_board.material_override = new_mat
+
 
 func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -> void:
 	is_map_mode = map_view
@@ -424,13 +407,16 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 		plaque_root.rotation_degrees = target_rot
 		plaque_root.visible = target_vis
 
+
 func get_island_dimensions() -> Vector2:
 	return island_dimensions
+
 
 func get_bot_position() -> Vector3:
 	if bot_anchor != null:
 		return bot_anchor.global_position
 	return global_position + Vector3(0, -0.052, 0)
+
 
 func _on_click_area_input_event(_camera: Camera3D, event: InputEvent, _event_position: Vector3, _normal: Vector3, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:

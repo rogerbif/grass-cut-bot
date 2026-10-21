@@ -80,16 +80,15 @@ func _on_save_reset() -> void:
 
 func _detect_levels_and_build_archipelago() -> void:
 	# Limpa ilhas anteriores se houver
-	for c in islands_container.get_children():
+	for c: Node in islands_container.get_children():
 		c.queue_free()
 	island_nodes.clear()
 
 	# Identifica quantidade de fases existentes (cobre as 20 fases canônicas)
 	var level_count: int = 0
-	for lvl in range(1, 21):
+	for lvl: int in range(1, 21):
 		var json_path: String = "res://data/levels/level_%02d.json" % lvl
-		var scene_path: String = "res://scenes/levels/level_%02d.tscn" % lvl
-		if FileAccess.file_exists(json_path) or ResourceLoader.exists(scene_path):
+		if FileAccess.file_exists(json_path):
 			level_count = lvl
 
 	total_levels_count = maxi(level_count, 20)
@@ -103,7 +102,7 @@ func _detect_levels_and_build_archipelago() -> void:
 	var z_spacing: float = 18.5
 	var current_z: float = 0.0
 
-	for i in range(1, total_levels_count + 1):
+	for i: int in range(1, total_levels_count + 1):
 		var island: Node3D = ISLAND_SCENE.instantiate() as Node3D
 		islands_container.add_child(island)
 
@@ -150,7 +149,7 @@ func _detect_levels_and_build_archipelago() -> void:
 		menu_camera.set_scroll_bounds(0.0, end_z)
 		var waypoints: Array[Vector3] = []
 		var dimensions: Array[Vector2] = []
-		for isl in island_nodes:
+		for isl: Node3D in island_nodes:
 			waypoints.append(isl.position)
 			if isl.has_method("get_island_dimensions"):
 				dimensions.append(isl.get_island_dimensions())
@@ -244,7 +243,7 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 			if active_isl != null and active_isl.has_method("ensure_content_loaded"):
 				active_isl.ensure_content_loaded()
 
-		for isl in island_nodes:
+		for isl: Node3D in island_nodes:
 			if isl == null:
 				continue
 			var is_current: bool = (isl.level_number == selected_level)
@@ -259,7 +258,7 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 
 		var min_vis: int = focal_level - 1
 		var max_vis: int = focal_level + 1
-		for isl in island_nodes:
+		for isl: Node3D in island_nodes:
 			if isl == null:
 				continue
 			var in_window: bool = (isl.level_number >= min_vis and isl.level_number <= max_vis)
@@ -272,14 +271,14 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 
 func _load_surrounding_islands(focal_lvl: int) -> void:
 	var targets: Array[int] = [focal_lvl - 1, focal_lvl, focal_lvl + 1]
-	for t in targets:
+	for t: int in targets:
 		if t >= 1 and t <= island_nodes.size():
 			var isl: Node3D = island_nodes[t - 1]
 			if isl != null and isl.has_method("ensure_content_loaded"):
 				isl.ensure_content_loaded()
 
 func _update_plaques_view_mode(is_map: bool, animated: bool = true) -> void:
-	for island in island_nodes:
+	for island: Node3D in island_nodes:
 		if island != null and island.has_method("set_view_mode"):
 			var is_active: bool = (island.level_number == selected_level)
 			island.set_view_mode(is_map, is_active, animated)
@@ -289,7 +288,7 @@ func _on_tab_changed(tab_idx: int) -> void:
 
 func _switch_tab(tab_idx: int) -> void:
 	var tabs: Array[Control] = [tab_garage, tab_home, tab_collection, tab_store]
-	for i in range(tabs.size()):
+	for i: int in range(tabs.size()):
 		var t: Control = tabs[i]
 		if t != null:
 			t.visible = (i == tab_idx)

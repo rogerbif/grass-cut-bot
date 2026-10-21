@@ -49,9 +49,9 @@ grass-cut-bot/
 │   ├── core/                  # Autoloads e singletons (GameManager, UpgradeManager)
 │   ├── cutter/
 │   ├── editor/                # Scripts do Editor de Fases PC (autotiler, pincéis, UI)
-│   ├── level/                 # base_level.gd, level_controller.gd e level_json_loader.gd
+│   ├── level/                 # level_controller.gd e level_json_loader.gd
 │   ├── menu/                  # Scripts do Menu Inicial, câmera dual e navegação de abas
-│   ├── plants/
+│   ├── plants/                # vegetation_grid.gd (MultiMesh + Grid 0.40m) e plant.gd
 │   ├── tools/                 # Geradores automatizados e validadores de fases
 │   └── ui/
 ├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador de Diretrizes
