@@ -100,6 +100,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`051_lazy_loading_ilhas_e_persistencia_em_memoria.md`](./051_lazy_loading_ilhas_e_persistencia_em_memoria.md) | Lazy Loading de Ilhas sob Demanda e Persistência em Memória no Menu Inicial | Boot ultra-rápido construindo apenas as 3 ilhas focais, leitura instantânea de metadados, persistência em memória (nunca descarrega/recarrega) e culling por visibilidade. |
 | [`062_restauracao_grama_vetorial_ilhas_menu.md`](./062_restauracao_grama_vetorial_ilhas_menu.md) | Restauração da Grama Vetorial (v3) nas Ilhas do Menu Inicial | Suporte híbrido à amostragem Poisson Disk de grass_vectors v3 e objetos no island_node, restabelecendo a grama e o trigo nas ilhas 3D da Home e Mapa com 60 FPS. |
 | [`072_correcao_permissao_e_calibracao_vibracao_celular.md`](./072_correcao_permissao_e_calibracao_vibracao_celular.md) | Correção de Permissão VIBRATE e Calibração Háptica no Celular | Habilitação de permissions/vibrate=true no preset Android, calibração do pulso de corte para 30ms (vencendo inércia mecânica), impacto de 65ms, micro-cooldown de 35ms contra cancelamento em cascata da API e SemVer v0.10.9-alpha. |
+| [`077_atualizacao_novo_icone_oficial.md`](./077_atualizacao_novo_icone_oficial.md) | Atualização do Novo Ícone Oficial do Jogo | Substituição integral da identidade visual e ícones (`icon.png`, `icon.svg` e suíte `assets/brand/` 1024, 512, 432 e 192px) pelo novo emblema comercial do Cutter Bit em alta definição, sincronização de presets Android e SemVer v0.11.6-alpha. |
 
 ---
 
