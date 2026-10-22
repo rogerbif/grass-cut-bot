@@ -25,7 +25,7 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
   - **Malhas Planas Trianguladas de Piso:** Triangulação direta dos polígonos vetoriais via `Geometry2D.triangulate_polygon()`, gerando superfícies planas rente ao solo ($Y = 0.005$) com materiais foscos sólidos (`roughness = 0.90`) que desenham a base verde/dourada sob a vegetação.
 - **GPU Instancing (`MultiMeshInstance3D`):**
   - Os tufos de vegetação são agrupados em até 9 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
-  - Micro-tufos otimizados com 14 folhas e 98 vértices mantêm a densidade foliar em ~350 folhas/m² com orçamento gráfico idêntico ao modelo anterior.
+  - Micro-tufos densos com 21 folhas (+50% de volume foliar, 147 vértices e 105 faces) garantem visual exuberante e orgânico mantendo alta performance mobile via GPU Instancing.
 - **Grade Espacial Lógica e Corte Circular Preciso:**
   - O corte ocorre por proximidade radial de micro-tufo sob o raio da lâmina da serra, conferindo uma borda de corte perfeitamente circular.
   - A contagem de colheita e premiação econômica é consolidada por célula lógica de $0.40\text{m}$, garantindo que nunca restem tufos órfãos visíveis sem contabilização da vitória.
@@ -40,7 +40,7 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal), dando feedback imediato de que a planta sofreu impacto mas resistiu.
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - Um emissor do **Pool Estático Compartilhado (`_particle_pool`, 16 instâncias)** em `plant.gd` é posicionado no tufo e ejeta 14 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por anel (`emission_shape = RING`, raio $0.18\text{m}$), com cor sincronizada ao `color_top` do material da planta e giro 3D sob gravidade natural (`gravity = -9.8 m/s²`, voo de `0.55s`).
+   - Um emissor do **Pool Estático Compartilhado (`_particle_pool`, 16 instâncias)** em `plant.gd` é posicionado no tufo e ejeta 21 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por anel (`emission_shape = RING`, raio $0.18\text{m}$), com cor sincronizada ao `color_top` do material da planta e giro 3D sob gravidade natural (`gravity = -9.8 m/s²`, voo de `0.55s`).
    - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
@@ -76,8 +76,8 @@ As plantas utilizam o shader espacial `interactive_grass.gdshader`:
 O arquivo de modelagem `grass_01.blend` contém rigorosamente **1 único modelo default neutro e limpo**, exportado para `assets/models/grass_01.glb`. A definição de cores, materiais de shader e partículas ocorre diretamente na engine através de cenas especializadas.
 
 ### A. Geometria Única no Blender (`grass_01.blend` & `grass_01.glb`)
-- **Malha Base Otimizada:** `grass_01_mesh` reconfigurada para micro-tufos densos (98 vértices e 70 faces, compostos por 14 folhas conectadas independentes).
-- **Densidade Perfeita no Grid 0.20m:** Com a sub-divisão do campo em micro-células de $0.20\text{m}$, essa geometria compacta gera uma densidade foliar visual de ~350 folhas/m², mantendo o orçamento de vértices por fase (~490k na Fase 20) idêntico ou inferior ao formato anterior, com silhueta e cortes infinitamente mais fluidos e orgânicos.
+- **Malha Base Otimizada:** `grass_01_mesh` densa e volumosa (147 vértices e 105 faces, compostos por 21 folhas conectadas independentes, representando um ganho de +50% em relação ao modelo anterior).
+- **Densidade Perfeita no Grid 0.20m:** Com a sub-divisão do campo em micro-células de $0.20\text{m}$, essa geometria de 21 folhas gera uma densidade foliar visual de ~525 folhas/m², mantendo performance fluída de 60 FPS no mobile e silhueta orgânica rica.
 - **Normalização e Origem:** Dimensões $1.01\text{m} \times 0.99\text{m} \times 1.025\text{m}$, coordenadas $(0.0, 0.0, 0.0)$ e base ancorada em $Z = 0.0$.
 - **Atributos de Folha Assados:** Camada `blade_data` exportada como `COLOR_0` no glTF com `export_vertex_color='ACTIVE'` e `export_attributes=True`.
 - **Material Neutro:** `M_Grama_Default` sem texturas e sem cores saturadas aplicadas diretamente no Blender.

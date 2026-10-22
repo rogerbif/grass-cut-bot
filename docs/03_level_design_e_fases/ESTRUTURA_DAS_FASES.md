@@ -44,6 +44,9 @@ Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/
 | **19** | *Labirinto do Minotauro* | Malha de Corredores e Ruelas | $19 \times 19$ | Roxa + Trigo Pesado + Flor | 28 | 🌿 128 Gramas<br>🌾 52 Trigos<br>🌸 16 Flores | 95s | Destreza máxima no joystick e reflexos contra ricochete. |
 | **20** | *A Grande Coroa Real* | Coroa Imperial (5 Torres + Pátio) | $22 \times 20$ | Todas as Gramas + Trigo + Flores | 15 | 🌿 90 Gramas<br>🌾 103 Trigos<br>🌸 29 Flores | 110s | Clímax épico com chuva de moedas e coroação! |
 
+> [!NOTE]
+> **Sincronização de Templates (Fases 03 a 20):** Por solicitação direta de design, todas as fases a partir da Fase 03 foram limpas e sincronizadas com a geometria e layout aprovados da Fase 02 (Grade $17 \times 17$, 4 rochas periféricas, 4 estrelas de trigo e contorno de grama verde), servindo de base limpa uniforme para a reedição artística fase a fase através do Editor de Fases PC.
+
 ---
 
 ## 3. Progressão de 5 Tiers de Dificuldade

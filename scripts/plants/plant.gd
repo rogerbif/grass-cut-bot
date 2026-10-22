@@ -150,7 +150,7 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.name = "PooledCutParticles_%d" % i
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
-		p.amount = 14
+		p.amount = 21
 		p.lifetime = 0.55
 		p.one_shot = true
 		p.explosiveness = 0.92
