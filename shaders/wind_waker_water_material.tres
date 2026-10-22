@@ -6,10 +6,10 @@
 render_priority = 0
 shader = ExtResource("1_shader")
 shader_parameter/water_color = Color(0.18, 0.65, 0.82, 1)
-shader_parameter/water2_color = Color(0.08, 0.52, 0.75, 1)
+shader_parameter/water2_color = Color(0.084, 0.52, 0.743, 1)
 shader_parameter/foam_color = Color(0.88, 0.98, 1, 1)
-shader_parameter/uv_scale = 0.22
-shader_parameter/distortion_speed = 1.2
-shader_parameter/distortion_strength = 0.1
-shader_parameter/foam_intensity = 0.4
-shader_parameter/roughness = 0.88
+shader_parameter/uv_scale = 0.48
+shader_parameter/distortion_speed = 2.6
+shader_parameter/distortion_strength = 0.125
+shader_parameter/foam_intensity = 0.14
+shader_parameter/roughness = 0.5
