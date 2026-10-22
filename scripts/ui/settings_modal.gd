@@ -21,6 +21,11 @@ var sfx_enabled: bool = true
 var vib_enabled: bool = true
 var _reset_confirmation_pending: bool = false
 var _version_tap_count: int = 0
+var android_vib_hint_btn: Button = null
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		_update_toggle_visuals()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -34,6 +39,18 @@ func _ready() -> void:
 		music_enabled = bool(SaveManager.get_setting("music_enabled", true))
 		sfx_enabled = bool(SaveManager.get_setting("sfx_enabled", true))
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
+
+	if OS.get_name() == "Android" or OS.has_feature("android"):
+		var toggles_box: Node = get_node_or_null("Panel/VBox/AudioSection/VBox/HBoxToggles")
+		if toggles_box != null:
+			android_vib_hint_btn = Button.new()
+			android_vib_hint_btn.custom_minimum_size = Vector2(0, 42)
+			android_vib_hint_btn.focus_mode = Control.FOCUS_NONE
+			android_vib_hint_btn.add_theme_font_size_override("font_size", 14)
+			android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.82, 0.35, 1.0))
+			android_vib_hint_btn.text = "⚙️ Ajustar Vibração no Celular"
+			android_vib_hint_btn.pressed.connect(_open_android_sound_settings)
+			toggles_box.add_child(android_vib_hint_btn)
 
 	_update_toggle_visuals()
 
@@ -100,9 +117,15 @@ func _on_vib_toggled() -> void:
 	_update_toggle_visuals()
 	if SaveManager != null:
 		SaveManager.set_setting("vib_enabled", vib_enabled)
-	if vib_enabled and GameManager != null:
-		GameManager.trigger_haptic_cut()
-	_show_toast("Vibração " + ("Ativada" if vib_enabled else "Desativada"))
+	if vib_enabled:
+		Input.vibrate_handheld(200)
+		if OS.get_name() == "Android" or OS.has_feature("android"):
+			if not _is_android_haptic_feedback_enabled():
+				_show_toast("Ative 'Retorno Tátil' nas configurações do celular!")
+				return
+		_show_toast("Vibração Ativada")
+	else:
+		_show_toast("Vibração Desativada")
 
 func _update_toggle_visuals() -> void:
 	if music_btn != null:
@@ -111,6 +134,50 @@ func _update_toggle_visuals() -> void:
 		sfx_btn.text = "🔊 FX: " + ("ON" if sfx_enabled else "OFF")
 	if vib_btn != null:
 		vib_btn.text = "📳 Vibração: " + ("ON" if vib_enabled else "OFF")
+
+	if android_vib_hint_btn != null:
+		if not vib_enabled:
+			android_vib_hint_btn.visible = false
+		else:
+			var haptic_on: bool = _is_android_haptic_feedback_enabled()
+			if not haptic_on:
+				android_vib_hint_btn.visible = true
+				android_vib_hint_btn.text = "⚠️ Retorno Tátil desligado no Android (Abrir ⚙️)"
+				android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35, 1.0))
+			else:
+				android_vib_hint_btn.visible = true
+				android_vib_hint_btn.text = "⚙️ Ajustes de Som do Celular"
+				android_vib_hint_btn.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0, 1.0))
+
+func _is_android_haptic_feedback_enabled() -> bool:
+	if not Engine.has_singleton("JavaClassWrapper") or not Engine.has_singleton("AndroidRuntime"):
+		return true
+	var android_runtime: Object = Engine.get_singleton("AndroidRuntime")
+	var activity: Variant = android_runtime.call("getActivity")
+	if activity == null:
+		return true
+	var java_wrapper: Object = Engine.get_singleton("JavaClassWrapper")
+	var SettingsSystem: Variant = java_wrapper.call("wrap", "android.provider.Settings$System")
+	if SettingsSystem == null:
+		return true
+	var resolver: Variant = activity.getContentResolver()
+	var val: int = int(SettingsSystem.getInt(resolver, "haptic_feedback_enabled", 1))
+	return val == 1
+
+func _open_android_sound_settings() -> void:
+	if not Engine.has_singleton("JavaClassWrapper") or not Engine.has_singleton("AndroidRuntime"):
+		_show_toast("Disponível apenas no dispositivo Android")
+		return
+	var android_runtime: Object = Engine.get_singleton("AndroidRuntime")
+	var activity: Variant = android_runtime.call("getActivity")
+	if activity == null:
+		return
+	var java_wrapper: Object = Engine.get_singleton("JavaClassWrapper")
+	var IntentClass: Variant = java_wrapper.call("wrap", "android.content.Intent")
+	var SettingsClass: Variant = java_wrapper.call("wrap", "android.provider.Settings")
+	if IntentClass != null and SettingsClass != null:
+		var intent: Variant = IntentClass.new(SettingsClass.ACTION_SOUND_SETTINGS)
+		activity.startActivity(intent)
 
 func _on_save_local_pressed() -> void:
 	if SaveManager != null:
