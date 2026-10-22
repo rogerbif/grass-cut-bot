@@ -118,7 +118,7 @@ func _on_vib_toggled() -> void:
 	if SaveManager != null:
 		SaveManager.set_setting("vib_enabled", vib_enabled)
 	if vib_enabled:
-		Input.vibrate_handheld(200)
+		Input.vibrate_handheld(200, 1.0)
 		if OS.get_name() == "Android" or OS.has_feature("android"):
 			if not _is_android_haptic_feedback_enabled():
 				_show_toast("Ative 'Retorno Tátil' nas configurações do celular!")

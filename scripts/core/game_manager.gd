@@ -175,7 +175,7 @@ func trigger_haptic_cut() -> void:
 		return
 	_last_cut_haptic_time = now
 
-	Input.vibrate_handheld(HAPTIC_CUT_DURATION_MS)
+	Input.vibrate_handheld(HAPTIC_CUT_DURATION_MS, 1.0)
 
 func trigger_haptic_impact() -> void:
 	var vib_enabled: bool = true
@@ -183,5 +183,5 @@ func trigger_haptic_impact() -> void:
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
 
 	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")):
-		Input.vibrate_handheld(HAPTIC_IMPACT_DURATION_MS)
+		Input.vibrate_handheld(HAPTIC_IMPACT_DURATION_MS, 1.0)
 	camera_shake_requested.emit(0.35, 0.2)
