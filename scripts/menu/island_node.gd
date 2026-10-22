@@ -224,6 +224,7 @@ func build_miniature_from_json(lvl: int) -> void:
 	map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
 	# 1. Agrupa blocos de terreno por tile_id em MultiMeshInstance3D
+	var occupied_cells: Dictionary = {}
 	var tile_transforms_by_id: Dictionary = {}
 	for item: Variant in terrain_arr:
 		if not (item is Dictionary):
@@ -236,9 +237,11 @@ func build_miniature_from_json(lvl: int) -> void:
 			tile_id = "island_center"
 		var rot: int = int(td.get("rot", 0))
 
+		occupied_cells[Vector2i(gx, gz)] = { "tile_id": tile_id, "rot": rot }
+
 		var local_x: float = offset_x + float(gx) * cell_size
 		var local_z: float = offset_z + float(gz) * cell_size
-		var t_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(rot))).scaled(Vector3(1.0, 0.5, 1.0))
+		var t_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(rot)))
 		var t_xform: Transform3D = Transform3D(t_basis, Vector3(local_x, 0.0, local_z))
 
 		if not tile_transforms_by_id.has(tile_id):
@@ -266,6 +269,11 @@ func build_miniature_from_json(lvl: int) -> void:
 		mmi.name = "MiniTileMMI_%s" % t_id
 		mmi.multimesh = mm
 		miniature_container.add_child(mmi)
+
+	# Gera a fita de espuma costeira animada (CoastalFoamRibbon) na base exata das falésias
+	var foam_inst: MeshInstance3D = LevelJsonLoader.build_coastal_foam_mesh_instance(occupied_cells, width, height, cell_size)
+	if foam_inst != null:
+		miniature_container.add_child(foam_inst)
 
 	# 2. Agrupa vegetação em MultiMeshInstance3D a partir do VegetationField (0.20m) e instancia rochas
 	var objects_arr: Array = data.get("objects", []) as Array

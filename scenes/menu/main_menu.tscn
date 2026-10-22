@@ -58,7 +58,7 @@ directional_shadow_max_distance = 28.0
 [node name="World" type="Node3D" parent="."]
 
 [node name="OceanMesh" type="MeshInstance3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.34, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.71, 0)
 mesh = SubResource("PlaneMesh_ocean")
 
 [node name="IslandsContainer" type="Node3D" parent="World"]

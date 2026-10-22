@@ -92,14 +92,8 @@ static func build_coastal_colliders_and_foam(
 	var east_by_x: Dictionary = {}
 	var west_by_x: Dictionary = {}
 
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-
-	var foam_y: float = -0.692 # Acima do plano da água (-0.71m)
-
 	for cell_key in occupied_cells:
 		var cell: Vector2i = cell_key as Vector2i
-		var cell_world: Vector3 = grid_to_world(cell.x, cell.y, width, height, cell_size)
 
 		if not occupied_cells.has(cell + Vector2i(0, -1)):
 			if not north_by_z.has(cell.y):
@@ -122,6 +116,30 @@ static func build_coastal_colliders_and_foam(
 				west_by_x[cell.x] = arr_w
 			(west_by_x[cell.x] as Array[int]).append(cell.y)
 
+	_add_merged_horizontal_colliders(parent_body, north_by_z, -cell_size * 0.48, width, height, cell_size)
+	_add_merged_horizontal_colliders(parent_body, south_by_z, cell_size * 0.48, width, height, cell_size)
+	_add_merged_vertical_colliders(parent_body, east_by_x, cell_size * 0.48, width, height, cell_size)
+	_add_merged_vertical_colliders(parent_body, west_by_x, -cell_size * 0.48, width, height, cell_size)
+
+	# 2. Constrói a fita de espuma costeira animada (CoastalFoamRibbon)
+	var foam_inst: MeshInstance3D = build_coastal_foam_mesh_instance(occupied_cells, width, height, cell_size)
+	if foam_inst != null:
+		parent_body.add_child(foam_inst)
+
+static func build_coastal_foam_mesh_instance(
+	occupied_cells: Dictionary,
+	width: int,
+	height: int,
+	cell_size: float = DEFAULT_CELL_SIZE,
+	foam_y: float = -0.692
+) -> MeshInstance3D:
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	for cell_key in occupied_cells:
+		var cell: Vector2i = cell_key as Vector2i
+		var cell_world: Vector3 = grid_to_world(cell.x, cell.y, width, height, cell_size)
+
 		var tile_id: String = "island_center"
 		var tile_rot: int = 0
 		var entry_val: Variant = occupied_cells[cell]
@@ -143,11 +161,6 @@ static func build_coastal_colliders_and_foam(
 			if not occupied_cells.has(cell + Vector2i(-1, 0)):
 				_add_tile_foam_curve(st, "island_edge", 90, cell_world, foam_y, cell_size)
 
-	_add_merged_horizontal_colliders(parent_body, north_by_z, -cell_size * 0.48, width, height, cell_size)
-	_add_merged_horizontal_colliders(parent_body, south_by_z, cell_size * 0.48, width, height, cell_size)
-	_add_merged_vertical_colliders(parent_body, east_by_x, cell_size * 0.48, width, height, cell_size)
-	_add_merged_vertical_colliders(parent_body, west_by_x, -cell_size * 0.48, width, height, cell_size)
-
 	var foam_mesh: ArrayMesh = st.commit()
 	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
 		var foam_inst: MeshInstance3D = MeshInstance3D.new()
@@ -156,8 +169,10 @@ static func build_coastal_colliders_and_foam(
 		var foam_shader: Shader = preload("res://shaders/coastal_foam.gdshader")
 		var foam_mat: ShaderMaterial = ShaderMaterial.new()
 		foam_mat.shader = foam_shader
+		foam_mat.render_priority = 2
 		foam_inst.material_override = foam_mat
-		parent_body.add_child(foam_inst)
+		return foam_inst
+	return null
 
 static func _add_merged_horizontal_colliders(
 	parent_body: StaticBody3D,
