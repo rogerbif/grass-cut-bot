@@ -1,7 +1,7 @@
 # Melhoria 072: Correção de Permissão VIBRATE e Calibração Háptica no Celular 📳🤖
 
 **Data:** 22/10/2026  
-**Versão:** `v0.11.2-alpha` (Code: `1102`)  
+**Versão:** `v0.11.3-alpha` (Code: `1103`)  
 **Status:** Concluído com Sucesso ✅  
 **Arquivos Principais Afetados:**
 - `export_presets.cfg`
@@ -27,15 +27,16 @@ O sistema de vibração móvel (`Input.vibrate_handheld`) não emitia retorno t�
 
 ### A. Liberação da Permissão no Preset Android (`export_presets.cfg`)
 - Alterado `permissions/vibrate=true` no preset oficial Android (`grasscutbot`).
-- Sincronizados `version/name="0.11.2-alpha"` e `version/code=1102`.
+- Sincronizados `version/name="0.11.3-alpha"` e `version/code=1103`.
 
-### B. Calibração e Micro-Cooldown Háptico (`game_manager.gd`)
-- Adicionadas constantes canônicas de vibração com amplitude máxima (`1.0`):
-  - `HAPTIC_CUT_DURATION_MS = 40`: Pulso nítido e vigoroso suficiente para vencer a inércia do motor.
-  - `HAPTIC_CUT_COOLDOWN_MS = 40`: Janela protetora de tempo que impede cancelamentos mútuos ao ceifar grama densa.
-  - `HAPTIC_IMPACT_DURATION_MS = 80`: Pulso forte para colisão com rochas.
-- Implementado controle de timestamp via `Time.get_ticks_msec()` para garantir que cada vibração de corte complete o ciclo mecânico, gerando o zumbido contínuo e satisfatório esperado ("brrr").
-- Validação multi-plataforma com checagem segura para Android, iOS e ambientes móveis.
+### B. Calibração e Balanceamento de Amplitudes (`game_manager.gd`)
+- Calibração de amplitudes e durações personalizadas:
+  - `HAPTIC_CUT_AMPLITUDE = 0.25` (25%) e `40ms`: Micro-pulso suave e confortável ao ceifar grama contínua.
+  - `HAPTIC_IMPACT_AMPLITUDE = 0.80` (80%) e `80ms`: Impacto vigoroso e pesado ao bater em pedras.
+  - `HAPTIC_UI_AMPLITUDE = 0.35` (35%) e `25ms`: Feedback sutil e responsivo ao tocar em botões da UI.
+  - `HAPTIC_MENU_AMPLITUDE = 1.00` (100%) e `200ms`: Confirmação firme de ativação nas configurações.
+- Implementado hook global em `GameManager` escutando `get_tree().node_added` para conectar automaticamente todo e qualquer `BaseButton` adicionado à árvore ao método `trigger_haptic_ui()`.
+- Micro-cooldown de 40ms para corte e 50ms para cliques da UI.
 
 ### C. Sincronização Inteligente do Retorno Tátil com o Sistema (`settings_modal.gd`)
 - **Inicialização Defensiva:** Se o retorno tátil do sistema estiver desligado no Android (`haptic_feedback_enabled == 0`), o jogo inicializa com `vib_enabled = false` (`📳 Vibração: OFF`), refletindo a realidade física do aparelho.

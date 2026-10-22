@@ -19,10 +19,12 @@ Este documento detalha os elementos sensoriais que constroem a sensação de rel
 
 O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.vibrate_handheld`), com autorização obrigatória da permissão `android.permission.VIBRATE` no preset Android (`export_presets.cfg`):
 
-| Ação do Jogo | Duração do Pulso | Cooldown / Rate-Limit | Sensação no Aparelho |
-| :--- | :--- | :--- | :--- |
-| **Corte de Tufo Vegetal** | `30 ms` | `35 ms` | Micro-pulso nítido acima do tempo de inércia mecânica dos motores móveis (ERM/LRA). O rate-limit de 35ms impede o cancelamento em cascata da API Android durante cortes rápidos em fileira, produzindo um zumbido tátil contínuo e rítmico ("brrr"). |
-| **Colisão com Obstáculo Sólido** | `65 ms` | Imediato (prioritário) | Impacto seco e vigoroso transmitindo rigidez física da rocha e sinalizando o ricochete da lâmina. |
+| Ação do Jogo | Duração do Pulso | Força (Amplitude) | Cooldown / Rate-Limit | Sensação no Aparelho |
+| :--- | :--- | :--- | :--- | :--- |
+| **Corte de Tufo Vegetal** | `40 ms` | `25%` (`0.25`) | `40 ms` | Micro-pulso suave e relaxante, ideal para ceifar fileiras contínuas sem cansar a mão do jogador. |
+| **Colisão com Obstáculo Sólido** | `80 ms` | `80%` (`0.80`) | Imediato (prioritário) | Impacto seco e vigoroso transmitindo rigidez física da rocha e sinalizando o ricochete da lâmina. |
+| **Feedback em Botões da UI** | `25 ms` | `35%` (`0.35`) | `50 ms` | Toque tátil sutil em cada clique de botão da interface (BaseButton hook global no GameManager). |
+| **Teste no Menu de Configurações** | `200 ms` | `100%` (`1.0`) | 1 disparo | Pulso firme e longo confirmando a ativação bem-sucedida da vibração. |
 
 ---
 

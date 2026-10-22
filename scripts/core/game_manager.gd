@@ -23,9 +23,34 @@ var goals: Dictionary = {}
 
 const HAPTIC_CUT_COOLDOWN_MS: int = 40
 const HAPTIC_CUT_DURATION_MS: int = 40
+const HAPTIC_CUT_AMPLITUDE: float = 0.25 # 25% conforme solicitado
+
 const HAPTIC_IMPACT_DURATION_MS: int = 80
+const HAPTIC_IMPACT_AMPLITUDE: float = 0.80 # 80% conforme solicitado
+
+const HAPTIC_UI_COOLDOWN_MS: int = 50
+const HAPTIC_UI_DURATION_MS: int = 25
+const HAPTIC_UI_AMPLITUDE: float = 0.35 # Feedback sutil para botões da UI
 
 var _last_cut_haptic_time: int = 0
+var _last_ui_haptic_time: int = 0
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().node_added.connect(_on_scene_node_added)
+	_scan_and_connect_buttons(get_tree().root)
+
+func _on_scene_node_added(node: Node) -> void:
+	if node is BaseButton:
+		if not node.pressed.is_connected(trigger_haptic_ui):
+			node.pressed.connect(trigger_haptic_ui)
+
+func _scan_and_connect_buttons(node: Node) -> void:
+	if node is BaseButton:
+		if not node.pressed.is_connected(trigger_haptic_ui):
+			node.pressed.connect(trigger_haptic_ui)
+	for child: Node in node.get_children():
+		_scan_and_connect_buttons(child)
 
 func _process(delta: float) -> void:
 	if current_state == GameState.PLAYING:
@@ -175,7 +200,7 @@ func trigger_haptic_cut() -> void:
 		return
 	_last_cut_haptic_time = now
 
-	Input.vibrate_handheld(HAPTIC_CUT_DURATION_MS, 1.0)
+	Input.vibrate_handheld(HAPTIC_CUT_DURATION_MS, HAPTIC_CUT_AMPLITUDE)
 
 func trigger_haptic_impact() -> void:
 	var vib_enabled: bool = true
@@ -183,5 +208,23 @@ func trigger_haptic_impact() -> void:
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
 
 	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")):
-		Input.vibrate_handheld(HAPTIC_IMPACT_DURATION_MS, 1.0)
+		Input.vibrate_handheld(HAPTIC_IMPACT_DURATION_MS, HAPTIC_IMPACT_AMPLITUDE)
 	camera_shake_requested.emit(0.35, 0.2)
+
+func trigger_haptic_ui() -> void:
+	var vib_enabled: bool = true
+	if SaveManager != null:
+		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
+
+	if not vib_enabled:
+		return
+
+	if not (OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")):
+		return
+
+	var now: int = Time.get_ticks_msec()
+	if now - _last_ui_haptic_time < HAPTIC_UI_COOLDOWN_MS:
+		return
+	_last_ui_haptic_time = now
+
+	Input.vibrate_handheld(HAPTIC_UI_DURATION_MS, HAPTIC_UI_AMPLITUDE)
