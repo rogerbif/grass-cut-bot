@@ -1,7 +1,7 @@
 # Melhoria 072: Correção de Permissão VIBRATE e Calibração Háptica no Celular 📳🤖
 
 **Data:** 22/10/2026  
-**Versão:** `v0.11.1-alpha` (Code: `1101`)  
+**Versão:** `v0.11.2-alpha` (Code: `1102`)  
 **Status:** Concluído com Sucesso ✅  
 **Arquivos Principais Afetados:**
 - `export_presets.cfg`
@@ -27,27 +27,26 @@ O sistema de vibração móvel (`Input.vibrate_handheld`) não emitia retorno t�
 
 ### A. Liberação da Permissão no Preset Android (`export_presets.cfg`)
 - Alterado `permissions/vibrate=true` no preset oficial Android (`grasscutbot`).
-- Sincronizados `version/name="0.11.1-alpha"` e `version/code=1101`.
+- Sincronizados `version/name="0.11.2-alpha"` e `version/code=1102`.
 
 ### B. Calibração e Micro-Cooldown Háptico (`game_manager.gd`)
-- Adicionadas constantes canônicas de vibração:
-  - `HAPTIC_CUT_DURATION_MS = 30`: Pulso nítido e vigoroso suficiente para vencer a inércia do motor.
-  - `HAPTIC_CUT_COOLDOWN_MS = 35`: Janela protetora de tempo que impede cancelamentos mútuos ao ceifar grama densa.
-  - `HAPTIC_IMPACT_DURATION_MS = 65`: Pulso forte para colisão com rochas.
+- Adicionadas constantes canônicas de vibração com amplitude máxima (`1.0`):
+  - `HAPTIC_CUT_DURATION_MS = 40`: Pulso nítido e vigoroso suficiente para vencer a inércia do motor.
+  - `HAPTIC_CUT_COOLDOWN_MS = 40`: Janela protetora de tempo que impede cancelamentos mútuos ao ceifar grama densa.
+  - `HAPTIC_IMPACT_DURATION_MS = 80`: Pulso forte para colisão com rochas.
 - Implementado controle de timestamp via `Time.get_ticks_msec()` para garantir que cada vibração de corte complete o ciclo mecânico, gerando o zumbido contínuo e satisfatório esperado ("brrr").
 - Validação multi-plataforma com checagem segura para Android, iOS e ambientes móveis.
 
-### C. Abertura Direta dos Ajustes de Som do Android (`settings_modal.gd`)
-- Utilizando `JavaClassWrapper` e `AndroidRuntime`, o jogo agora detecta em tempo real se o "Retorno Tátil" está desligado no sistema Android (`haptic_feedback_enabled == 0`).
-- Adicionado botão interativo no modal de configurações:
-  - Emite aviso em caso de retorno tátil desligado: `⚠️ Retorno Tátil desligado no Android (Abrir ⚙️)`.
-  - Ao ser clicado, dispara o Intent nativo `android.provider.Settings.ACTION_SOUND_SETTINGS`, abrindo a tela de Som e Vibração do Android para o usuário com 1 toque.
-  - No evento `NOTIFICATION_APPLICATION_FOCUS_IN`, o estado do botão é automaticamente atualizado quando o jogador retorna das configurações do celular.
-  - O botão de teste do modal agora dispara pulso firme de 200ms (`Input.vibrate_handheld(200)`).
-
-### D. Versionamento SemVer e Documentação
-- Versão do projeto elevada para `0.11.1-alpha` em `GameVersion.gd` e `project.godot`.
-- Documentação canônica atualizada em `GAME_FEEL_E_HAPTICS.md` e `PORTABILIDADE_ANDROID.md`.
+### C. Sincronização Inteligente do Retorno Tátil com o Sistema (`settings_modal.gd`)
+- **Inicialização Defensiva:** Se o retorno tátil do sistema estiver desligado no Android (`haptic_feedback_enabled == 0`), o jogo inicializa com `vib_enabled = false` (`📳 Vibração: OFF`), refletindo a realidade física do aparelho.
+- **Transição Condicional para ON:** Quando o jogador tenta ligar a vibração no menu (`OFF -> ON`), se o sistema do celular ainda estiver desativado, o jogo:
+  1. Mantém a vibração como `OFF`.
+  2. Dispara o Intent nativo `ACTION_SOUND_SETTINGS` abrindo os ajustes de Som e Vibração do Android para o jogador.
+  3. Exibe o toast explicativo: *"Ative 'Retorno Tátil' nas configurações do celular!"*.
+- **Detecção Reativa no Retorno (`NOTIFICATION_APPLICATION_FOCUS_IN`):**
+  - Ao voltar das configurações do Android, o jogo reavalia o estado do sistema.
+  - Se o usuário ativou o retorno tátil: comuta automaticamente para `📳 Vibração: ON`, grava no `SaveManager`, aciona o pulso teste de 200ms com amplitude 1.0 e exibe *"Retorno Tátil ativado! Vibração ON 📳"*.
+  - Se não ativou: mantém `OFF` e alerta o jogador.
 
 ---
 

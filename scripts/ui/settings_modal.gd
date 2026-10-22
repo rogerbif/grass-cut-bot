@@ -22,10 +22,35 @@ var vib_enabled: bool = true
 var _reset_confirmation_pending: bool = false
 var _version_tap_count: int = 0
 var android_vib_hint_btn: Button = null
+var _waiting_for_android_haptic_toggle: bool = false
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
-		_update_toggle_visuals()
+		if OS.get_name() == "Android" or OS.has_feature("android"):
+			var system_haptic_on: bool = _is_android_haptic_feedback_enabled()
+			if _waiting_for_android_haptic_toggle:
+				_waiting_for_android_haptic_toggle = false
+				if system_haptic_on:
+					vib_enabled = true
+					if SaveManager != null:
+						SaveManager.set_setting("vib_enabled", true)
+					_update_toggle_visuals()
+					Input.vibrate_handheld(200, 1.0)
+					_show_toast("Retorno Tátil ativado! Vibração ON 📳")
+				else:
+					vib_enabled = false
+					if SaveManager != null:
+						SaveManager.set_setting("vib_enabled", false)
+					_update_toggle_visuals()
+					_show_toast("Retorno Tátil permanece desligado no celular")
+			else:
+				if not system_haptic_on and vib_enabled:
+					vib_enabled = false
+					if SaveManager != null:
+						SaveManager.set_setting("vib_enabled", false)
+				_update_toggle_visuals()
+		else:
+			_update_toggle_visuals()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -41,6 +66,12 @@ func _ready() -> void:
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
 
 	if OS.get_name() == "Android" or OS.has_feature("android"):
+		var system_haptic_on: bool = _is_android_haptic_feedback_enabled()
+		if not system_haptic_on:
+			vib_enabled = false
+			if SaveManager != null:
+				SaveManager.set_setting("vib_enabled", false)
+
 		var toggles_box: Node = get_node_or_null("Panel/VBox/AudioSection/VBox/HBoxToggles")
 		if toggles_box != null:
 			android_vib_hint_btn = Button.new()
@@ -49,7 +80,7 @@ func _ready() -> void:
 			android_vib_hint_btn.add_theme_font_size_override("font_size", 14)
 			android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.82, 0.35, 1.0))
 			android_vib_hint_btn.text = "⚙️ Ajustar Vibração no Celular"
-			android_vib_hint_btn.pressed.connect(_open_android_sound_settings)
+			android_vib_hint_btn.pressed.connect(_on_android_vib_hint_pressed)
 			toggles_box.add_child(android_vib_hint_btn)
 
 	_update_toggle_visuals()
@@ -113,19 +144,30 @@ func _on_sfx_toggled() -> void:
 	_show_toast("Som FX " + ("Ativado" if sfx_enabled else "Desativado"))
 
 func _on_vib_toggled() -> void:
-	vib_enabled = not vib_enabled
-	_update_toggle_visuals()
-	if SaveManager != null:
-		SaveManager.set_setting("vib_enabled", vib_enabled)
 	if vib_enabled:
-		Input.vibrate_handheld(200, 1.0)
+		vib_enabled = false
+		if SaveManager != null:
+			SaveManager.set_setting("vib_enabled", false)
+		_update_toggle_visuals()
+		_show_toast("Vibração Desativada")
+	else:
 		if OS.get_name() == "Android" or OS.has_feature("android"):
 			if not _is_android_haptic_feedback_enabled():
+				_waiting_for_android_haptic_toggle = true
+				_update_toggle_visuals()
 				_show_toast("Ative 'Retorno Tátil' nas configurações do celular!")
+				_open_android_sound_settings()
 				return
-		_show_toast("Vibração Ativada")
-	else:
-		_show_toast("Vibração Desativada")
+		vib_enabled = true
+		if SaveManager != null:
+			SaveManager.set_setting("vib_enabled", true)
+		_update_toggle_visuals()
+		Input.vibrate_handheld(200, 1.0)
+		_show_toast("Vibração Ativada! 📳")
+
+func _on_android_vib_hint_pressed() -> void:
+	_waiting_for_android_haptic_toggle = true
+	_open_android_sound_settings()
 
 func _update_toggle_visuals() -> void:
 	if music_btn != null:
@@ -136,18 +178,13 @@ func _update_toggle_visuals() -> void:
 		vib_btn.text = "📳 Vibração: " + ("ON" if vib_enabled else "OFF")
 
 	if android_vib_hint_btn != null:
-		if not vib_enabled:
-			android_vib_hint_btn.visible = false
+		var haptic_on: bool = _is_android_haptic_feedback_enabled()
+		if not haptic_on:
+			android_vib_hint_btn.visible = true
+			android_vib_hint_btn.text = "⚠️ Retorno Tátil desligado no Android (Abrir ⚙️)"
+			android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35, 1.0))
 		else:
-			var haptic_on: bool = _is_android_haptic_feedback_enabled()
-			if not haptic_on:
-				android_vib_hint_btn.visible = true
-				android_vib_hint_btn.text = "⚠️ Retorno Tátil desligado no Android (Abrir ⚙️)"
-				android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35, 1.0))
-			else:
-				android_vib_hint_btn.visible = true
-				android_vib_hint_btn.text = "⚙️ Ajustes de Som do Celular"
-				android_vib_hint_btn.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0, 1.0))
+			android_vib_hint_btn.visible = false
 
 func _is_android_haptic_feedback_enabled() -> bool:
 	if not Engine.has_singleton("JavaClassWrapper") or not Engine.has_singleton("AndroidRuntime"):
