@@ -59,7 +59,9 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
 - **Painel Direito Contextual e Contagem de Metas:**
   - **Filtro Contextual por Camada:** O painel lateral direito adapta seus componentes dinamicamente à camada selecionada no painel esquerdo:
     - *Camada 0 (Terreno):* Exibe exclusivamente a paleta de blocos de ilha (`auto_island`, `island_center`, `island_dirt`, `island_edge`, etc.), ocultando gramas e objetos.
-    - *Camada 1 (Grama):* Exibe exclusivamente a paleta de vegetação orgânica (7 cores de grama + Trigo Maduro `wheat`), ocultando terreno e objetos.
+    - *Camada 1 (Grama):* Exibe a paleta estruturada em duas seções nítidas:
+      - `🌿 Gramas Comuns (1x HP - 1 Moeda)`: Grade 2 colunas com as 7 cores cosméticas (Verde, Amarela 1x, Azul, Violeta, Branca, Vermelha, Preta).
+      - `🌾 Vegetação de Meta (2x HP - 3 Moedas)`: Botão de destaque largo para `🌾 Trigo Maduro (Meta 2x)` e botão de ação rápida `🔄 Converter Grama Amarela ➔ Trigo` (converte retroativamente polígonos amarelos desenhados por engano para trigo canônico).
     - *Camada 2 (Objetos):* Exibe exclusivamente a paleta de objetos discretos no tile (Rocha `rock`, Flor `flower`, Spawn `cutter_spawn`), ocultando terreno e gramas.
   - **Resumo Automático de Metas:** Fixado no rodapé do painel direito, contabiliza em tempo real:
     - 🌿 Grama: Total de tufos de grama amostrados no campo vetorial.

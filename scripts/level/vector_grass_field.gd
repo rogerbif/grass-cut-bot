@@ -30,6 +30,15 @@ func clear() -> void:
 func get_shapes() -> Array[Dictionary]:
 	return shapes
 
+## Converte todas as formas de um tipo para outro (ex: "grass_yellow" para "wheat")
+func convert_shapes_type(from_type: String, to_type: String) -> int:
+	var count: int = 0
+	for s: Dictionary in shapes:
+		if String(s.get("type", "")) == from_type:
+			s["type"] = to_type
+			count += 1
+	return count
+
 ## Adiciona uma nova forma vetorial fechada
 func add_shape(type_name: String, outer_poly: PackedVector2Array, holes_list: Array = []) -> int:
 	if outer_poly.size() < 3:

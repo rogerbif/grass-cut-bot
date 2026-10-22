@@ -72,7 +72,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 	},
 	{
 		"id": "grass_yellow",
-		"name": "Grama Dourada",
+		"name": "Grama Amarela (1x)",
 		"icon": "🌼",
 		"color": Color(0.95, 0.80, 0.20),
 		"goal_key": "grass",
@@ -120,7 +120,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 	},
 	{
 		"id": "wheat",
-		"name": "Trigo Maduro (2x)",
+		"name": "Trigo Maduro (Meta 2x)",
 		"icon": "🌾",
 		"color": Color(0.92, 0.68, 0.18),
 		"goal_key": "wheat",
@@ -155,6 +155,18 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"category": "spawn"
 	}
 ]
+
+static func get_item_by_id(id_str: String) -> Dictionary:
+	for item in GRASS_ITEMS:
+		if String(item["id"]) == id_str:
+			return item
+	for item in TERRAIN_ITEMS:
+		if String(item["id"]) == id_str:
+			return item
+	for item in OBJECT_ITEMS:
+		if String(item["id"]) == id_str:
+			return item
+	return {}
 
 static func get_terrain_info(tile_id: String) -> Dictionary:
 	for item in TERRAIN_ITEMS:

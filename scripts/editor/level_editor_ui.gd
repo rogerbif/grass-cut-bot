@@ -26,6 +26,7 @@ signal toggle_camera_view_requested()
 signal terrain_tile_selected(tile_id: String)
 signal grass_item_selected(grass_id: String)
 signal object_item_selected(obj_id: String)
+signal convert_yellow_to_wheat_requested()
 
 var spin_level: SpinBox
 var spin_width: SpinBox
@@ -447,7 +448,7 @@ func _build_right_panel() -> void:
 	vbox.add_child(section_grass)
 
 	var lbl_g_pal: Label = Label.new()
-	lbl_g_pal.text = "🌿 GRAMA & TRIGO (CAMPO 0.2m)"
+	lbl_g_pal.text = "🌿 GRAMA COMUM (1x HP - CAMPO 0.2m)"
 	lbl_g_pal.add_theme_font_size_override("font_size", 12)
 	lbl_g_pal.add_theme_color_override("font_color", Color(0.35, 0.90, 1.0))
 	section_grass.add_child(lbl_g_pal)
@@ -460,12 +461,47 @@ func _build_right_panel() -> void:
 
 	for item in TilePaletteDB.GRASS_ITEMS:
 		var g_id: String = String(item["id"])
+		if g_id == "wheat":
+			continue
 		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 28))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.add_theme_font_size_override("font_size", 11)
 		b.pressed.connect(func() -> void: grass_item_selected.emit(g_id))
 		grid_grass.add_child(b)
 		grass_buttons[g_id] = b
+
+	section_grass.add_child(HSeparator.new())
+
+	var lbl_w_pal: Label = Label.new()
+	lbl_w_pal.text = "🌾 VEGETAÇÃO DE META (2x HP - 3 MOEDAS)"
+	lbl_w_pal.add_theme_font_size_override("font_size", 12)
+	lbl_w_pal.add_theme_color_override("font_color", Color(1.0, 0.82, 0.28))
+	section_grass.add_child(lbl_w_pal)
+
+	var wheat_item: Variant = TilePaletteDB.get_item_by_id("wheat")
+	if wheat_item != null and wheat_item is Dictionary:
+		var w_dict: Dictionary = wheat_item as Dictionary
+		var b_wheat: Button = _create_styled_button(
+			"%s %s" % [String(w_dict["icon"]), String(w_dict["name"])],
+			w_dict["color"] as Color,
+			Vector2(262, 34)
+		)
+		b_wheat.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b_wheat.add_theme_font_size_override("font_size", 12)
+		b_wheat.pressed.connect(func() -> void: grass_item_selected.emit("wheat"))
+		section_grass.add_child(b_wheat)
+		grass_buttons["wheat"] = b_wheat
+
+	var btn_convert: Button = _create_styled_button(
+		"🔄 Converter Grama Amarela ➔ Trigo",
+		Color(0.85, 0.65, 0.25),
+		Vector2(262, 28)
+	)
+	btn_convert.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn_convert.add_theme_font_size_override("font_size", 11)
+	btn_convert.tooltip_text = "Converte polígonos de Grama Amarela no mapa em Trigo Maduro (para contagem de metas)"
+	btn_convert.pressed.connect(func() -> void: convert_yellow_to_wheat_requested.emit())
+	section_grass.add_child(btn_convert)
 
 	# 3. Seção de Objetos no Tile (0.80m)
 	section_objects = VBoxContainer.new()

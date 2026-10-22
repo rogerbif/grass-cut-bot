@@ -252,6 +252,7 @@ func _connect_ui_signals() -> void:
 		_sync_all_ui()
 		_refresh_hover_preview()
 	)
+	ui.convert_yellow_to_wheat_requested.connect(_on_convert_yellow_to_wheat)
 	ui.object_item_selected.connect(func(o_id: String) -> void:
 		if o_id == "cutter_spawn":
 			active_tool = ToolMode.SPAWN
@@ -929,6 +930,18 @@ func _on_clear_all() -> void:
 	_rebuild_3d_world()
 	_sync_all_ui()
 	ui.show_toast("🌊 Mapa limpo (Oceano aberto)", Color(0.35, 0.78, 0.95))
+
+func _on_convert_yellow_to_wheat() -> void:
+	if vector_grass == null:
+		return
+	var count: int = int(vector_grass.call("convert_shapes_type", "grass_yellow", "wheat"))
+	if count > 0:
+		_push_undo_snapshot()
+		_rebuild_3d_world()
+		_sync_all_ui()
+		ui.show_toast("🌾 %d forma(s) de Grama Amarela convertidas em Trigo!" % count, Color(1.0, 0.85, 0.3))
+	else:
+		ui.show_toast("ℹ️ Nenhuma forma de Grama Amarela no mapa para converter.", Color(0.6, 0.8, 1.0))
 
 func _on_grid_resize_requested(new_w: int, new_h: int) -> void:
 	_push_undo_snapshot()
