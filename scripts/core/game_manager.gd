@@ -21,9 +21,9 @@ var level_coins: int = 0
 # Estrutura de metas: { "grass": {"target": 60, "current": 0}, "flower": ... }
 var goals: Dictionary = {}
 
-const HAPTIC_CUT_COOLDOWN_MS: int = 35
-const HAPTIC_CUT_DURATION_MS: int = 30
-const HAPTIC_IMPACT_DURATION_MS: int = 65
+const HAPTIC_CUT_COOLDOWN_MS: int = 40
+const HAPTIC_CUT_DURATION_MS: int = 40
+const HAPTIC_IMPACT_DURATION_MS: int = 80
 
 var _last_cut_haptic_time: int = 0
 
