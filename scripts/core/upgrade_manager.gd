@@ -72,9 +72,14 @@ func buy_upgrade(upgrade_name: String) -> bool:
 			"speed": speed_level += 1
 			"multiplier": multiplier_level += 1
 		upgrade_purchased.emit(upgrade_name, get_level(upgrade_name))
+		if AudioManager != null:
+			AudioManager.play_sfx("buy")
+			AudioManager.play_sfx("power_up")
 		if SaveManager != null:
 			SaveManager.save_game()
 		return true
+	if AudioManager != null:
+		AudioManager.play_sfx("denied")
 	return false
 
 func get_level(upgrade_name: String) -> int:

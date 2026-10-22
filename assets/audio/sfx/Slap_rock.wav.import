@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://yjk8hkmtrqrg"
-path="res://.godot/imported/Buy_sell.wav-52c319d4ec77d8760a85a747ad763140.sample"
+uid="uid://cun1w10w0id4a"
+path="res://.godot/imported/Slap_rock.wav-ad9983f4a298a122581926899571cba9.sample"
 
 [deps]
 
-source_file="res://Sound FX/Buy_sell.wav"
-dest_files=["res://.godot/imported/Buy_sell.wav-52c319d4ec77d8760a85a747ad763140.sample"]
+source_file="res://assets/audio/sfx/Slap_rock.wav"
+dest_files=["res://.godot/imported/Slap_rock.wav-ad9983f4a298a122581926899571cba9.sample"]
 
 [params]
 

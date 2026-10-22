@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://cun1w10w0id4a"
-path="res://.godot/imported/Slap_rock.wav-8b90344a809922a2b17ae9769d6e2f71.sample"
+uid="uid://bjjr6skx5brqv"
+path="res://.godot/imported/Star_pop.wav-e8bbb81a5bb387cbfd2e9c4fea72b64c.sample"
 
 [deps]
 
-source_file="res://Sound FX/Slap_rock.wav"
-dest_files=["res://.godot/imported/Slap_rock.wav-8b90344a809922a2b17ae9769d6e2f71.sample"]
+source_file="res://assets/audio/sfx/Star_pop.wav"
+dest_files=["res://.godot/imported/Star_pop.wav-e8bbb81a5bb387cbfd2e9c4fea72b64c.sample"]
 
 [params]
 

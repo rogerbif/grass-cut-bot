@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://brl5d4fbq0cwp"
-path="res://.godot/imported/Pause.wav-d8d0531bf72469933828598e43817c2a.sample"
+uid="uid://ianff5esx16i"
+path="res://.godot/imported/Confirm.wav-92dd83408c607be5e88b97006a280ab3.sample"
 
 [deps]
 
-source_file="res://Sound FX/Pause.wav"
-dest_files=["res://.godot/imported/Pause.wav-d8d0531bf72469933828598e43817c2a.sample"]
+source_file="res://assets/audio/sfx/Confirm.wav"
+dest_files=["res://.godot/imported/Confirm.wav-92dd83408c607be5e88b97006a280ab3.sample"]
 
 [params]
 

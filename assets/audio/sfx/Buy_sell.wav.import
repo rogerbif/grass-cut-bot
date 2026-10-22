@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://byv5qalacidt8"
-path="res://.godot/imported/Close.wav-7eabdc6a8cbedf02c282788edfc91597.sample"
+uid="uid://yjk8hkmtrqrg"
+path="res://.godot/imported/Buy_sell.wav-5529e0a200bce1002c08d5103b909d63.sample"
 
 [deps]
 
-source_file="res://Sound FX/Close.wav"
-dest_files=["res://.godot/imported/Close.wav-7eabdc6a8cbedf02c282788edfc91597.sample"]
+source_file="res://assets/audio/sfx/Buy_sell.wav"
+dest_files=["res://.godot/imported/Buy_sell.wav-5529e0a200bce1002c08d5103b909d63.sample"]
 
 [params]
 

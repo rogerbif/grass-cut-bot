@@ -98,8 +98,8 @@ Todas as lâminas compartilham a mesma identidade visual: alcance radial idênti
 
 ## 4. Estado de Choque e Ricochete (Obstáculos)
 
-Ao colidir contra obstáculos sólidos (como rochas do grupo `"obstacles"`), seja pelo perímetro da lâmina giratória (`_cached_blade_radius + 0.36m`) ou pelo corpo do cortador:
-1. **Detecção Perimétrica da Lâmina:** A borda externa da serra é monitorada continuamente. Ao tocar a borda de uma rocha, um bloqueio elástico instantâneo reposiciona o robô para fora da malha da pedra, impedindo qualquer penetração visual fantasma.
+Ao colidir contra obstáculos sólidos (como rochas do grupo `"obstacles"`), seja pelo perímetro da lâmina giratória (`_cached_blade_radius + obs_radius`, onde `obs_radius = 0.18m` para rochas) ou pelo corpo do cortador:
+1. **Detecção Perimétrica da Lâmina:** A borda externa da serra é monitorada continuamente com base no colisor do obstáculo ($R = 0.18\text{m}$). Ao tocar a borda de uma rocha, um bloqueio elástico instantâneo reposiciona o robô para fora da malha da pedra, impedindo qualquer penetração visual fantasma.
 2. **Interrupção de Inércia e Atordoamento Estendido:** O estado `is_stunned` é ativado por 0.24s (com cooldown de 0.32s), permitindo a leitura visual clara do impacto antes da retomada do joystick.
 3. **Impulso Reverso Violento (Knockback Ampliado):** A velocidade do cortador recebe um impulso reverso de `9.5 m/s` na direção normal do impacto, arremessando o robô cerca de $1.2\text{m}$ para trás com atrito elástico:
    $$\vec{v}_{\text{choque}} = \vec{n}_{\text{colisão}} \times \text{knockback\_force}$$

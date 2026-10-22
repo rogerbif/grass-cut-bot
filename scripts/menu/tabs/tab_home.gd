@@ -42,4 +42,6 @@ func _on_play_pressed() -> void:
 	play_level_requested.emit(current_level_selected)
 
 func _on_toggle_pressed() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
 	toggle_view_requested.emit()

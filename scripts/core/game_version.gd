@@ -6,8 +6,8 @@ extends RefCounted
 ## e compatibilidade de saves e presets de exportação.
 
 const MAJOR: int = 0
-const MINOR: int = 10
-const PATCH: int = 9
+const MINOR: int = 11
+const PATCH: int = 0
 const STAGE: String = "ALPHA" # "PRE-ALPHA", "ALPHA", "BETA", "RC", "RELEASE"
 const BUILD_TYPE: String = "dev" # "dev", "nightly", "public"
 

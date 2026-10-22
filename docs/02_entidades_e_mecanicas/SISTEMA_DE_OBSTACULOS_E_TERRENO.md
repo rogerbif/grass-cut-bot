@@ -32,7 +32,7 @@ As rochas atuam como barreiras táticas que obrigam o jogador a contornar o cen�
 - **Corpo e Colisão:**
   - Instanciadas como `StaticBody3D` pertencentes ao grupo `"obstacles"`.
   - Camada de colisão: `Layer 4: Obstacles` (`collision_layer = 8`).
-  - Colisor: `CylinderShape3D(radius = 0.36m, height = 0.8m)`.
+  - Colisor: `CylinderShape3D(radius = 0.18m, height = 0.8m)` (reduzido em 50% de $0.36\text{m}$ para $0.18\text{m}$, permitindo manobras ágeis e evitando colisões invisíveis de perímetro).
 - **Composição Visual 3D Oficial (`rock.glb`):**
   - Modelo 3D oficial facetado low-poly exportado do Blender (`Prop_Rock` / `assets/models/rock.glb`), substituindo os blocos primitivos BoxMesh provisórios.
   - Material canônico do jogo: `StandardMaterial3D` fosco com acabamento cinza ardósia (`Color(0.42, 0.46, 0.5)` e `roughness = 0.95`), mantendo a identidade visual estabelecida.

@@ -65,6 +65,9 @@ func _ready() -> void:
 	_setup_workshop_buttons()
 
 func _on_menu_pressed() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
+		AudioManager.stop_engine()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
@@ -84,6 +87,8 @@ func _on_time_updated(time_left: float) -> void:
 		# Alerta visual se o tempo estiver acabando (< 15 segundos)
 		if time_left <= 15.0:
 			timer_label.modulate = Color(1.0, 0.3, 0.3)
+			if AudioManager != null:
+				AudioManager.play_countdown_alert()
 		else:
 			timer_label.modulate = Color.WHITE
 
@@ -170,9 +175,13 @@ func _on_restart_pressed() -> void:
 	if _is_restarting:
 		return
 	_is_restarting = true
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
 	GameManager.restart_level()
 
 func _on_next_level_pressed() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("fast_forward")
 	GameManager.next_level()
 
 func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
@@ -181,12 +190,21 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 	var next_btn = $VictoryModal/Panel/VBox.get_node_or_null("NextBtn") as Button
 
 	if victory_stars_label != null:
+		var earned_stars: int = clampi(stars_earned, 1, 3)
 		var stars_str: String = ""
-		for s in range(clampi(stars_earned, 1, 3)):
+		for s in range(earned_stars):
 			stars_str += "⭐"
-		for s in range(3 - clampi(stars_earned, 1, 3)):
+		for s in range(3 - earned_stars):
 			stars_str += "☆"
 		victory_stars_label.text = stars_str
+
+		if AudioManager != null:
+			for s in range(earned_stars):
+				var delay: float = 0.22 * float(s)
+				get_tree().create_timer(delay, true, false, true).timeout.connect(func() -> void:
+					if AudioManager != null:
+						AudioManager.play_sfx("star_pop", 0.05)
+				)
 
 	if GameManager.current_level >= 20:
 		if title_lbl != null:
@@ -206,10 +224,14 @@ func _on_level_lost(reason: String) -> void:
 	game_over_modal.visible = true
 
 func _on_open_workshop_pressed() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
 	_update_workshop_display()
 	workshop_modal.visible = true
 
 func _on_close_workshop_pressed() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("close")
 	workshop_modal.visible = false
 
 func _on_state_changed(_new_state: int) -> void:

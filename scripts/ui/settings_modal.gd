@@ -58,6 +58,8 @@ func _ready() -> void:
 		support_btn.pressed.connect(_on_support_pressed)
 
 func open_modal() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
 	visible = true
 	modulate.a = 0.0
 	var tw: Tween = create_tween()
@@ -66,6 +68,8 @@ func open_modal() -> void:
 		toast_label.visible = false
 
 func close_modal() -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("close")
 	var tw: Tween = create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.tween_callback(func() -> void:
@@ -76,6 +80,8 @@ func close_modal() -> void:
 func _on_music_toggled() -> void:
 	music_enabled = not music_enabled
 	_update_toggle_visuals()
+	if AudioManager != null:
+		AudioManager.set_music_enabled(music_enabled)
 	if SaveManager != null:
 		SaveManager.set_setting("music_enabled", music_enabled)
 	_show_toast("Música " + ("Ativada" if music_enabled else "Desativada"))
@@ -83,6 +89,8 @@ func _on_music_toggled() -> void:
 func _on_sfx_toggled() -> void:
 	sfx_enabled = not sfx_enabled
 	_update_toggle_visuals()
+	if AudioManager != null:
+		AudioManager.set_sfx_enabled(sfx_enabled)
 	if SaveManager != null:
 		SaveManager.set_setting("sfx_enabled", sfx_enabled)
 	_show_toast("Som FX " + ("Ativado" if sfx_enabled else "Desativado"))

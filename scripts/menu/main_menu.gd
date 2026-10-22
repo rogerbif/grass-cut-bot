@@ -75,6 +75,9 @@ func _ready() -> void:
 	_update_plaques_view_mode(false, false)
 	_update_islands_visibility(false, selected_level)
 
+	if AudioManager != null:
+		AudioManager.play_menu_music()
+
 func _process(_delta: float) -> void:
 	if ocean_mesh != null and menu_camera != null:
 		ocean_mesh.global_position.x = menu_camera.global_position.x
@@ -290,6 +293,8 @@ func _update_plaques_view_mode(is_map: bool, animated: bool = true) -> void:
 			island.set_view_mode(is_map, is_active, animated)
 
 func _on_tab_changed(tab_idx: int) -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
 	_switch_tab(tab_idx)
 
 func _switch_tab(tab_idx: int) -> void:
@@ -311,6 +316,8 @@ func _update_top_bar() -> void:
 		energy_label.text = "❤️ 5 Max"
 
 func _on_play_level_requested(lvl_to_play: int) -> void:
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
 	if GameManager != null:
 		GameManager.current_level = lvl_to_play
 

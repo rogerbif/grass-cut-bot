@@ -82,6 +82,12 @@ func _ready() -> void:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
 	if GameManager != null:
 		GameManager.state_changed.connect(_on_game_state_changed)
+	if AudioManager != null:
+		AudioManager.start_engine()
+
+func _exit_tree() -> void:
+	if AudioManager != null:
+		AudioManager.stop_engine()
 
 func _setup_eyes() -> void:
 	if robot_eyes == null:
@@ -102,6 +108,11 @@ func _on_game_state_changed(new_state: int) -> void:
 	if new_state != GameManager.GameState.PLAYING:
 		velocity = Vector3.ZERO
 		input_direction = Vector2.ZERO
+		if AudioManager != null:
+			AudioManager.stop_engine()
+	else:
+		if AudioManager != null:
+			AudioManager.start_engine()
 	if robot_eyes != null:
 		if new_state == GameManager.GameState.PAUSED:
 			robot_eyes.set_screen_off(true)
@@ -277,6 +288,9 @@ func _physics_process(delta: float) -> void:
 	_process_procedural_motion(delta, target_speed)
 
 	move_and_slide()
+	if AudioManager != null and GameManager != null and GameManager.current_state == GameManager.GameState.PLAYING:
+		var speed_ratio: float = velocity.length() / maxf(1.0, _cached_cutter_speed)
+		AudioManager.update_engine_speed(speed_ratio)
 	_check_obstacle_collisions()
 	_process_cutting()
 	_update_shader_globals()
@@ -361,14 +375,27 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 func _check_obstacle_collisions() -> void:
 	# 1. Detecção no perímetro da lâmina giratória contra rochas (grupo "obstacles")
 	var obstacles: Array[Node] = get_tree().get_nodes_in_group("obstacles")
-	var blade_reach: float = _cached_blade_radius + 0.36 # Raio da lâmina + raio cilíndrico da rocha
-	var blade_reach_sq: float = blade_reach * blade_reach
+	if obstacles.is_empty():
+		return
+
 	var cutter_pos_2d: Vector2 = Vector2(global_position.x, global_position.z)
 
 	for obs: Node in obstacles:
 		var obs_3d: Node3D = obs as Node3D
 		if obs_3d == null or not is_instance_valid(obs_3d):
 			continue
+
+		# Obtém o raio do colisor do obstáculo dinamicamente (raio padrão calibrado: 0.18m)
+		var obs_radius: float = 0.18
+		var col_shape: CollisionShape3D = obs_3d.get_node_or_null("CollisionShape3D") as CollisionShape3D
+		if col_shape != null and col_shape.shape is CylinderShape3D:
+			obs_radius = (col_shape.shape as CylinderShape3D).radius
+		elif col_shape != null and col_shape.shape is SphereShape3D:
+			obs_radius = (col_shape.shape as SphereShape3D).radius
+
+		var blade_reach: float = _cached_blade_radius + obs_radius
+		var blade_reach_sq: float = blade_reach * blade_reach
+
 		var obs_pos_2d: Vector2 = Vector2(obs_3d.global_position.x, obs_3d.global_position.z)
 		var diff_2d: Vector2 = cutter_pos_2d - obs_pos_2d
 		var dist_sq: float = diff_2d.length_squared()
@@ -427,6 +454,10 @@ func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO)
 	# Vibração de impacto no celular e tremor de câmera
 	if GameManager != null:
 		GameManager.trigger_haptic_impact()
+
+	# Efeito sonoro do choque da lâmina com a rocha
+	if AudioManager != null:
+		AudioManager.play_sfx("slap_rock")
 
 func _sync_initial_overlaps() -> void:
 	if blade_area == null or not blade_area.monitoring:

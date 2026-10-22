@@ -11,5 +11,7 @@ func _on_free_pack_pressed() -> void:
 		UpgradeManager.add_coins(250)
 		buy_pack_btn.text = "COLETADO ✔"
 		buy_pack_btn.disabled = true
+		if AudioManager != null:
+			AudioManager.play_sfx("buy")
 		if GameManager != null:
 			GameManager.trigger_haptic_cut()

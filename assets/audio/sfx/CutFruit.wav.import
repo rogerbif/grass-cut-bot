@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://36grfk1iei8l"
-path="res://.godot/imported/Denied.wav-c07c3353bcb7e98d0c7014f76450457b.sample"
+uid="uid://jnam3iq710yr"
+path="res://.godot/imported/CutFruit.wav-85fcbb887f1cc8b8988cccb63fe5f47e.sample"
 
 [deps]
 
-source_file="res://Sound FX/Denied.wav"
-dest_files=["res://.godot/imported/Denied.wav-c07c3353bcb7e98d0c7014f76450457b.sample"]
+source_file="res://assets/audio/sfx/CutFruit.wav"
+dest_files=["res://.godot/imported/CutFruit.wav-85fcbb887f1cc8b8988cccb63fe5f47e.sample"]
 
 [params]
 

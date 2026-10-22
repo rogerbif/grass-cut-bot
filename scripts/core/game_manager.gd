@@ -62,6 +62,9 @@ func start_level(level_index: int, level_goals: Dictionary, duration_seconds: fl
 		var target: int = goals[plant_type]["target"]
 		goal_updated.emit(plant_type, target, target)
 
+	if AudioManager != null:
+		AudioManager.play_gameplay_music()
+
 func register_cut(plant_type: String, base_coins: int = 1) -> void:
 	if current_state != GameState.PLAYING:
 		return
@@ -76,6 +79,12 @@ func register_cut(plant_type: String, base_coins: int = 1) -> void:
 	# Dispara feedback háptico leve
 	trigger_haptic_cut()
 
+	# Dispara efeitos sonoros de corte e pingo de moedas
+	if AudioManager != null:
+		var is_special: bool = (plant_type == "flower" or plant_type == "wheat")
+		AudioManager.play_cut_sfx(is_special)
+		AudioManager.play_coin_sfx()
+
 	# Atualiza metas
 	if goals.has(plant_type):
 		var goal_info: Dictionary = goals[plant_type]
@@ -85,6 +94,8 @@ func register_cut(plant_type: String, base_coins: int = 1) -> void:
 
 		if remaining == 0:
 			goal_completed.emit(plant_type)
+			if AudioManager != null:
+				AudioManager.play_sfx("goal_completed")
 
 		_check_victory()
 
@@ -103,11 +114,16 @@ func _check_victory() -> void:
 	if SaveManager != null:
 		stars = SaveManager.record_level_victory(current_level, time_left, time_limit, level_coins)
 
+	if AudioManager != null:
+		AudioManager.play_sfx("star_win")
+
 	level_won.emit(level_coins, stars)
 	state_changed.emit(current_state)
 
 func _check_game_over(reason: String) -> void:
 	current_state = GameState.GAME_OVER
+	if AudioManager != null:
+		AudioManager.play_sfx("defeat")
 	level_lost.emit(reason)
 	state_changed.emit(current_state)
 
@@ -115,11 +131,15 @@ func toggle_pause() -> void:
 	if current_state == GameState.PLAYING:
 		current_state = GameState.PAUSED
 		get_tree().paused = true
+		if AudioManager != null:
+			AudioManager.play_sfx("pause")
 		game_paused.emit(true)
 		state_changed.emit(current_state)
 	elif current_state == GameState.PAUSED:
 		current_state = GameState.PLAYING
 		get_tree().paused = false
+		if AudioManager != null:
+			AudioManager.play_sfx("unpause")
 		game_paused.emit(false)
 		state_changed.emit(current_state)
 

@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://jnam3iq710yr"
-path="res://.godot/imported/CutFruit.wav-730b7fde2e2c564b0978bbd2499a2946.sample"
+uid="uid://brl5d4fbq0cwp"
+path="res://.godot/imported/Pause.wav-b409fd9dbd6905e1e2497bc32ce238b4.sample"
 
 [deps]
 
-source_file="res://Sound FX/CutFruit.wav"
-dest_files=["res://.godot/imported/CutFruit.wav-730b7fde2e2c564b0978bbd2499a2946.sample"]
+source_file="res://assets/audio/sfx/Pause.wav"
+dest_files=["res://.godot/imported/Pause.wav-b409fd9dbd6905e1e2497bc32ce238b4.sample"]
 
 [params]
 
