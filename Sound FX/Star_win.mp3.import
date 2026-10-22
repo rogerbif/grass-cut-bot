@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b8xp8vp1mvlcs"
+path="res://.godot/imported/Star_win.mp3-04fcdb13e564a3891aba5b2308711f12.mp3str"
+
+[deps]
+
+source_file="res://Sound FX/Star_win.mp3"
+dest_files=["res://.godot/imported/Star_win.mp3-04fcdb13e564a3891aba5b2308711f12.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

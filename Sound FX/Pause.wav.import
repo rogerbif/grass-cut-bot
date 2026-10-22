@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://brl5d4fbq0cwp"
+path="res://.godot/imported/Pause.wav-d8d0531bf72469933828598e43817c2a.sample"
+
+[deps]
+
+source_file="res://Sound FX/Pause.wav"
+dest_files=["res://.godot/imported/Pause.wav-d8d0531bf72469933828598e43817c2a.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

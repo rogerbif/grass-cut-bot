@@ -17,12 +17,12 @@ Este documento detalha os elementos sensoriais que constroem a sensação de rel
 
 ## 2. Sistema de Feedback Tátil (Haptics)
 
-O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.vibrate_handheld`):
+O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.vibrate_handheld`), com autorização obrigatória da permissão `android.permission.VIBRATE` no preset Android (`export_presets.cfg`):
 
-| Ação do Jogo | Duração do Pulso | Sensação no Aparelho |
-| :--- | :--- | :--- |
-| **Corte de Tufo Vegetal** | `15 ms` | Micro-pulso sutil quase imperceptível individualmente, mas que cria um zumbido tátil rítmico contínuo e extremamente satisfatório ao ceifar fileiras de grama em velocidade. |
-| **Colisão com Obstáculo Sólido** | `60 ms` | Impacto seco e vigoroso transmitindo rigidez física da rocha e sinalizando o ricochete da lâmina. |
+| Ação do Jogo | Duração do Pulso | Cooldown / Rate-Limit | Sensação no Aparelho |
+| :--- | :--- | :--- | :--- |
+| **Corte de Tufo Vegetal** | `30 ms` | `35 ms` | Micro-pulso nítido acima do tempo de inércia mecânica dos motores móveis (ERM/LRA). O rate-limit de 35ms impede o cancelamento em cascata da API Android durante cortes rápidos em fileira, produzindo um zumbido tátil contínuo e rítmico ("brrr"). |
+| **Colisão com Obstáculo Sólido** | `65 ms` | Imediato (prioritário) | Impacto seco e vigoroso transmitindo rigidez física da rocha e sinalizando o ricochete da lâmina. |
 
 ---
 

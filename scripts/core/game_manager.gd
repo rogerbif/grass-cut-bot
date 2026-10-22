@@ -21,6 +21,12 @@ var level_coins: int = 0
 # Estrutura de metas: { "grass": {"target": 60, "current": 0}, "flower": ... }
 var goals: Dictionary = {}
 
+const HAPTIC_CUT_COOLDOWN_MS: int = 35
+const HAPTIC_CUT_DURATION_MS: int = 30
+const HAPTIC_IMPACT_DURATION_MS: int = 65
+
+var _last_cut_haptic_time: int = 0
+
 func _process(delta: float) -> void:
 	if current_state == GameState.PLAYING:
 		time_left -= delta
@@ -140,14 +146,24 @@ func trigger_haptic_cut() -> void:
 	if SaveManager != null:
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
 
-	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android")):
-		Input.vibrate_handheld(15)
+	if not vib_enabled:
+		return
+
+	if not (OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")):
+		return
+
+	var now: int = Time.get_ticks_msec()
+	if now - _last_cut_haptic_time < HAPTIC_CUT_COOLDOWN_MS:
+		return
+	_last_cut_haptic_time = now
+
+	Input.vibrate_handheld(HAPTIC_CUT_DURATION_MS)
 
 func trigger_haptic_impact() -> void:
 	var vib_enabled: bool = true
 	if SaveManager != null:
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
 
-	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android")):
-		Input.vibrate_handheld(60)
+	if vib_enabled and (OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")):
+		Input.vibrate_handheld(HAPTIC_IMPACT_DURATION_MS)
 	camera_shake_requested.emit(0.35, 0.2)

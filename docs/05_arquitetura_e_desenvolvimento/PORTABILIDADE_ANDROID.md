@@ -33,3 +33,10 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
 3. **Pool Compartilhado de Partículas e Shader sem Inverse Matrix:**
    - Um pool estático de 16 `CPUParticles3D` em `plant.gd` atende a todos os cortes da fase sem instanciar emissores ociosos por tufo.
    - O `interactive_grass.gdshader` projeta vetores de mundo usando as colunas XZ da `MODEL_MATRIX` (sem `inverse()` por vértice) e aplica *early-out* por distância ao quadrado (`dist_sq < r_sq`).
+
+---
+
+## 4. Permissões Android e Feedback Háptico
+
+- **Permissão VIBRATE Obrigatória:** No arquivo `export_presets.cfg`, a chave `permissions/vibrate` deve estar configurada como `true`. Sem isso, o sistema operacional Android bloqueia o acesso ao serviço de vibração em nível de sistema operacional (`SecurityException`), desativando silenciosamente qualquer chamada a `Input.vibrate_handheld()`.
+- **Calibração de Motores (ERM/LRA):** Pulsos hápticos devem respeitar um tempo mínimo de aceleração de inércia ($\ge 30\text{ms}$) e incluir rate-limiting de $\ge 35\text{ms}$ para evitar o cancelamento contínuo da API do Android em ceifadas consecutivas.

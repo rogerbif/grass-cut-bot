@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://36grfk1iei8l"
+path="res://.godot/imported/Denied.wav-c07c3353bcb7e98d0c7014f76450457b.sample"
+
+[deps]
+
+source_file="res://Sound FX/Denied.wav"
+dest_files=["res://.godot/imported/Denied.wav-c07c3353bcb7e98d0c7014f76450457b.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

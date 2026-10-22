@@ -674,25 +674,25 @@
 	"name": "Fase 02",
 	"objects": [
 		{
-			"gx": 6,
+			"gx": 5,
 			"gz": 8,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
 			"gx": 8,
-			"gz": 6,
+			"gz": 5,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
 			"gx": 8,
-			"gz": 10,
+			"gz": 11,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
-			"gx": 10,
+			"gx": 11,
 			"gz": 8,
 			"rot": 0,
 			"type": "rock"
