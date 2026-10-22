@@ -31,7 +31,7 @@ const SFX_USE_ITEM: AudioStream = preload("res://assets/audio/sfx/Use_item.wav")
 const SFX_WATER_SPLASH: AudioStream = preload("res://assets/audio/sfx/Water_splash.wav")
 
 const SFX_POOL_SIZE: int = 8
-const CUT_COOLDOWN_MS: int = 35
+const CUT_COOLDOWN_MS: int = 40
 const COIN_COOLDOWN_MS: int = 45
 const COUNTDOWN_COOLDOWN_MS: int = 800
 
@@ -217,7 +217,7 @@ func play_cut_sfx(is_special: bool = false) -> void:
 		player.pitch_scale = randf_range(0.95, 1.05)
 	else:
 		player.stream = SFX_GRASS_CUT
-		player.volume_db = -1.0
+		player.volume_db = 0.0
 		player.pitch_scale = randf_range(0.92, 1.08)
 	player.play()
 

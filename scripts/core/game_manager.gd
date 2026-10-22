@@ -79,11 +79,9 @@ func register_cut(plant_type: String, base_coins: int = 1) -> void:
 	# Dispara feedback háptico leve
 	trigger_haptic_cut()
 
-	# Dispara efeitos sonoros de corte e pingo de moedas
+	# Dispara efeito sonoro limpo de corte de vegetação (sem moeda, com som padrão de grama)
 	if AudioManager != null:
-		var is_special: bool = (plant_type == "flower" or plant_type == "wheat")
-		AudioManager.play_cut_sfx(is_special)
-		AudioManager.play_coin_sfx()
+		AudioManager.play_cut_sfx(false)
 
 	# Atualiza metas
 	if goals.has(plant_type):

@@ -31,8 +31,8 @@ O design de áudio do **Grass Cut Bot** segue os pilares de **relaxamento tátil
 
 ### Efeitos Sonoros (`assets/audio/sfx/`)
 1. **Corte e Vegetação:**
-   - `Grass-cut.ogg`: Corte padrão de tufos de grama comum (com pitch randômico e debounce de 35ms).
-   - `CutFruit.wav`: Corte especial para flores (`flower_tuft`) e trigo (`wheat_tuft`).
+   - `Grass-cut.ogg`: Corte limpo e crocante de toda a vegetação (grama, trigo e flores), com pitch randômico (`0.92 ~ 1.08`), volume calibrado em `0.0 dB` e debounce espaçado de `40ms` (sem sobreposição metálica de moedas).
+   - `CutFruit.wav`: Recurso reservado no catálogo para eventos especiais.
 2. **Impactos e Física:**
    - `Slap_rock.wav`: Choque seco com rochas e obstáculos sólidos, sincronizado com tremor de câmera e faíscas.
    - `Water_splash.wav`: Borrifo de água costeira ao aproximar-se da borda do oceano.
