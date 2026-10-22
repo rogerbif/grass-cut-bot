@@ -39,7 +39,7 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 | `friction` | `18.0 m/s²` | Desaceleração suave quando o jogador solta o joystick. |
 | `rotation_speed`| `1200.0 °/s` | Rotação angular de alta velocidade da serra em torno do eixo Y durante a condução. |
 | `idle_rotation_speed`| `90.0 °/s` | Rotação suave e lenta da lâmina em torno do eixo Y quando o robô estiver parado (idle). |
-| `knockback_force`| `5.0 m/s` | Impulso reverso aplicado na direção normal da colisão contra obstáculos. |
+| `knockback_force`| `9.5 m/s` | Impulso reverso ampliado aplicado na direção normal da colisão ao tocar obstáculos sólidos com a serra. |
 
 ### Lógica de Vetor de Movimento e Orientação Frontal
 O vetor 2D fornecido pelo joystick flutuante é convertido diretamente para o plano horizontal 3D ($X, Z$):
@@ -98,12 +98,14 @@ Todas as lâminas compartilham a mesma identidade visual: alcance radial idênti
 
 ## 4. Estado de Choque e Ricochete (Obstáculos)
 
-Ao colidir frontalmente contra obstáculos sólidos (como rochas do grupo `"obstacles"`):
-1. **Interrupção de Inércia e Atordoamento:** O estado `is_stunned` é ativado por 0.18s, impedindo a aceitação de comandos direcionais imediatos.
-2. **Impulso Reverso (Knockback):** A velocidade do cortador é redirecionada na direção normal da colisão:
+Ao colidir contra obstáculos sólidos (como rochas do grupo `"obstacles"`), seja pelo perímetro da lâmina giratória (`_cached_blade_radius + 0.36m`) ou pelo corpo do cortador:
+1. **Detecção Perimétrica da Lâmina:** A borda externa da serra é monitorada continuamente. Ao tocar a borda de uma rocha, um bloqueio elástico instantâneo reposiciona o robô para fora da malha da pedra, impedindo qualquer penetração visual fantasma.
+2. **Interrupção de Inércia e Atordoamento Estendido:** O estado `is_stunned` é ativado por 0.24s (com cooldown de 0.32s), permitindo a leitura visual clara do impacto antes da retomada do joystick.
+3. **Impulso Reverso Violento (Knockback Ampliado):** A velocidade do cortador recebe um impulso reverso de `9.5 m/s` na direção normal do impacto, arremessando o robô cerca de $1.2\text{m}$ para trás com atrito elástico:
    $$\vec{v}_{\text{choque}} = \vec{n}_{\text{colisão}} \times \text{knockback\_force}$$
-3. **Emissão de Faíscas:** O nó `SparkParticles` é reposicionado no ponto de contato e ativado instantaneamente.
-4. **Vibração Tátil e Tremer de Câmera:** O `GameManager` emite vibração seca (`Input.vibrate_handheld(60)`) e solicita um camera shake de intensidade 0.35 por 0.2s.
+4. **Compressão da Suspensão:** O chassi sofre afundamento vertical repentino (`shock_compression = -0.07`), transmitindo o recuo físico da batida mecânica.
+5. **Emissão de Faíscas no Ponto de Contato:** O nó `SparkParticles` é reposicionado exatamente no ponto de fricção dente-de-serra contra rocha (`top_level = true`) e ativado instantaneamente.
+6. **Vibração Tátil e Tremer de Câmera:** O `GameManager` emite vibração de 60ms (`Input.vibrate_handheld(60)`) e solicita um camera shake de intensidade 0.35 por 0.2s.
 
 ---
 

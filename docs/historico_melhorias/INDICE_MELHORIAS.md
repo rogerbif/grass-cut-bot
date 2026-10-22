@@ -74,6 +74,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`068_adocao_definitiva_toon_water_shader.md`](./068_adocao_definitiva_toon_water_shader.md) | Adoção Definitiva do Toon Water Shader e Calibração Fina | Implementação oficial do clássico Toon Water Shader (Roystan / HGouveia) com Beer-Lambert depth, espuma de costa dinâmica, texturas de distorção/perlin e eliminação de shaders legados com 0 warnings. |
 | [`069_restauracao_espuma_costeira_animada_ilhas.md`](./069_restauracao_espuma_costeira_animada_ilhas.md) | Restauração da Espuma Costeira Animada nas Ilhas do Menu e Gameplay | Modularização de CoastalFoamRibbon em level_json_loader, equalização da altura do oceano (-0.71m) e falésias (0.72m) nas miniaturas do Menu Inicial, e render_priority = 2. |
 | [`070_unificacao_modelo_trigo_grass_01.md`](./070_unificacao_modelo_trigo_grass_01.md) | Unificação do Modelo 3D do Trigo com a Grama Oficial (`grass_01`) | Substituição definitiva de primitivas (caixas e cilindros) pela malha 3D estilizada `grass_01.glb` com `interactive_wheat_material.tres`, balanço de vento orgânico e proporções ajustadas. |
+| [`071_colisao_lamina_pedra_ricochete_ampliado.md`](./071_colisao_lamina_pedra_ricochete_ampliado.md) | Detecção Perimétrica da Lâmina contra Rochas e Ricochete Ampliado | Detecção no perímetro da lâmina giratória (raio lâmina + 0.36m), bloqueio elástico instantâneo contra penetração de malha, ricochete ampliado para 9.5 m/s, stun de 0.24s, faíscas metálicas no ponto de contato e cooldown de impacto. |
 
 ---
 

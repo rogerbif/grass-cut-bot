@@ -5,7 +5,7 @@ extends CharacterBody3D
 @export var friction: float = 18.0
 @export var rotation_speed: float = 1200.0 # Graus por segundo de rotação da serra em velocidade máxima (em movimento)
 @export var idle_rotation_speed: float = 90.0 # Graus por segundo de rotação suave da serra quando parado (marcha lenta)
-@export var knockback_force: float = 5.0
+@export var knockback_force: float = 9.5 # Arremesso ampliado ao colidir a lâmina com rochas
 
 @export_group("Procedural Motion")
 @export var max_pitch_deg: float = 6.0         # Inclinação máxima para frente/trás (graus)
@@ -37,6 +37,7 @@ extends CharacterBody3D
 var input_direction: Vector2 = Vector2.ZERO
 var is_stunned: bool = false
 var stun_timer: float = 0.0
+var _shock_cooldown: float = 0.0
 var idle_eyes_timer: float = 0.0
 var current_blade_speed: float = 90.0
 var vegetation_grid: Node3D = null
@@ -66,6 +67,8 @@ func _ready() -> void:
 		last_body_yaw = robot_body.rotation.y
 	if wheel_mesh:
 		initial_wheel_y = wheel_mesh.position.y
+	if spark_particles != null:
+		spark_particles.top_level = true
 	if blade_area != null:
 		if not blade_area.area_entered.is_connected(_on_blade_area_entered):
 			blade_area.area_entered.connect(_on_blade_area_entered)
@@ -203,6 +206,9 @@ func set_input_direction(dir: Vector2) -> void:
 	input_direction = dir
 
 func _physics_process(delta: float) -> void:
+	if _shock_cooldown > 0.0:
+		_shock_cooldown = maxf(0.0, _shock_cooldown - delta)
+
 	# Desativa completamente rotação, movimento e corte se não estiver em gameplay ativo (ex: modal de fim de fase)
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
 		velocity = Vector3.ZERO
@@ -353,31 +359,72 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 		head_node.rotation.x = lerp_angle(head_node.rotation.x, -current_pitch * 0.25, 12.0 * delta)
 
 func _check_obstacle_collisions() -> void:
+	# 1. Detecção no perímetro da lâmina giratória contra rochas (grupo "obstacles")
+	var obstacles: Array[Node] = get_tree().get_nodes_in_group("obstacles")
+	var blade_reach: float = _cached_blade_radius + 0.36 # Raio da lâmina + raio cilíndrico da rocha
+	var blade_reach_sq: float = blade_reach * blade_reach
+	var cutter_pos_2d: Vector2 = Vector2(global_position.x, global_position.z)
+
+	for obs: Node in obstacles:
+		var obs_3d: Node3D = obs as Node3D
+		if obs_3d == null or not is_instance_valid(obs_3d):
+			continue
+		var obs_pos_2d: Vector2 = Vector2(obs_3d.global_position.x, obs_3d.global_position.z)
+		var diff_2d: Vector2 = cutter_pos_2d - obs_pos_2d
+		var dist_sq: float = diff_2d.length_squared()
+
+		if dist_sq < blade_reach_sq:
+			var dist: float = sqrt(dist_sq)
+			var normal_2d: Vector2 = Vector2(0.0, 1.0)
+			if dist > 0.001:
+				normal_2d = diff_2d / dist
+			elif velocity.length_squared() > 0.001:
+				normal_2d = -Vector2(velocity.x, velocity.z).normalized()
+
+			var normal_3d: Vector3 = Vector3(normal_2d.x, 0.0, normal_2d.y)
+			var spark_pt: Vector3 = global_position - normal_3d * (_cached_blade_radius * 0.85)
+			spark_pt.y = global_position.y + 0.15
+
+			# Bloqueio elástico instantâneo para impedir que a lâmina penetre a malha da rocha
+			var overlap: float = blade_reach - dist
+			if overlap > 0.0:
+				global_position += normal_3d * overlap
+
+			# Dispara choque e ricochete com arremesso ampliado se não estiver em cooldown
+			if _shock_cooldown <= 0.0:
+				_trigger_obstacle_shock(normal_3d, spark_pt)
+			return
+
+	# 2. Checagem de colisão direta do chassi via slide_collision (salvaguarda física)
 	var count: int = get_slide_collision_count()
 	for i in range(count):
 		var collision: KinematicCollision3D = get_slide_collision(i)
 		var collider: Object = collision.get_collider()
 		if collider and collider.is_in_group("obstacles"):
-			# Colisão direta com obstáculo sólido!
-			_trigger_obstacle_shock(collision.get_normal())
+			if _shock_cooldown <= 0.0:
+				_trigger_obstacle_shock(collision.get_normal(), collision.get_position())
 			break
 
-func _trigger_obstacle_shock(normal: Vector3) -> void:
+func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO) -> void:
 	is_stunned = true
-	stun_timer = 0.18
-	velocity = normal * knockback_force
-	shock_compression = -0.045
+	stun_timer = 0.24 # Duração estendida do choque para absorver o recuo
+	_shock_cooldown = 0.32 # Cooldown defensivo para evitar múltiplos choques consecutivos
+	velocity = normal * knockback_force # Força aumentada (9.5 m/s) para arremessar o robô para longe
+	shock_compression = -0.07 # Afundamento elástico pronunciado da suspensão
 	
 	# Dispara expressão brava com olhos vermelhos e faíscas elétricas
 	if robot_eyes:
 		robot_eyes.trigger_obstacle_reaction()
 
-	# Efeito de faíscas
+	# Efeito de faíscas metálicas no ponto de contato dente-de-serra contra rocha
 	if spark_particles:
-		spark_particles.global_position = global_position - normal * 0.4
+		if spark_pos != Vector3.ZERO:
+			spark_particles.global_position = spark_pos
+		else:
+			spark_particles.global_position = global_position - normal * (_cached_blade_radius * 0.85)
 		spark_particles.restart()
 
-	# Vibração de impacto
+	# Vibração de impacto no celular e tremor de câmera
 	if GameManager != null:
 		GameManager.trigger_haptic_impact()
 
