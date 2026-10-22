@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://tab_store_scene_01" path="res://scenes/menu/tabs/tab_store.tscn" id="7_tab_store"]
 [ext_resource type="PackedScene" uid="uid://bottom_nav_bar_scene_01" path="res://scenes/menu/bottom_nav_bar.tscn" id="8_nav_bar"]
 [ext_resource type="PackedScene" uid="uid://settings_modal_scene_01" path="res://scenes/ui/settings_modal.tscn" id="9_settings_modal"]
-[ext_resource type="Material" uid="uid://wind_waker_water_mat_01" path="res://shaders/wind_waker_water_material.tres" id="10_water_mat"]
+[ext_resource type="Material" uid="uid://toon_water_mat_01" path="res://shaders/toon_water_material.tres" id="10_water_mat"]
 
 [sub_resource type="Environment" id="Environment_menu"]
 background_mode = 1

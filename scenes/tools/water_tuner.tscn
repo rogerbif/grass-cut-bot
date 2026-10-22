@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://water_tuner_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/tools/water_tuner.gd" id="1_tuner"]
-[ext_resource type="Material" uid="uid://wind_waker_water_mat_01" path="res://shaders/wind_waker_water_material.tres" id="2_water_mat"]
+[ext_resource type="Material" uid="uid://toon_water_mat_01" path="res://shaders/toon_water_material.tres" id="2_water_mat"]
 
 [sub_resource type="Environment" id="Environment_tuner"]
 background_mode = 1
@@ -94,7 +94,7 @@ anchors_preset = 9
 anchor_bottom = 1.0
 offset_left = 14.0
 offset_top = 14.0
-offset_right = 370.0
+offset_right = 380.0
 offset_bottom = -14.0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -106,14 +106,14 @@ horizontal_scroll_mode = 0
 [node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 9
 
 [node name="Title" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "🌊 SINTONIZADOR DE ÁGUA
-(Wind Waker Toon)"
+(Toon Water Shader)"
 horizontal_alignment = 1
 
 [node name="HSep1" type="HSeparator" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
@@ -122,45 +122,45 @@ layout_mode = 2
 [node name="SectionColors" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
-theme_override_font_sizes/font_size = 13
-text = "🎨 PALETA DE CORES"
+theme_override_font_sizes/font_size = 12
+text = "🎨 CORES & GRADIENTE"
 
 [node name="GridColors" type="GridContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
 columns = 2
 theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 6
+theme_override_constants/v_separation = 5
 
-[node name="LblW1" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
+[node name="LblShallow" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Água Turquesa:"
+theme_override_font_sizes/font_size = 11
+text = "Água Rasa (Shallow):"
 
-[node name="PickerWater1" type="ColorPickerButton" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
+[node name="PickerShallow" type="ColorPickerButton" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 28)
+custom_minimum_size = Vector2(80, 26)
 layout_mode = 2
 color = Color(0.18, 0.65, 0.82, 1)
 
-[node name="LblW2" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
+[node name="LblDeep" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Água Profunda:"
+theme_override_font_sizes/font_size = 11
+text = "Água Profunda (Deep):"
 
-[node name="PickerWater2" type="ColorPickerButton" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
+[node name="PickerDeep" type="ColorPickerButton" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 28)
+custom_minimum_size = Vector2(80, 26)
 layout_mode = 2
-color = Color(0.08, 0.52, 0.75, 1)
+color = Color(0.084, 0.52, 0.743, 1)
 
 [node name="LblFm" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Espuma de Onda:"
+theme_override_font_sizes/font_size = 11
+text = "Espuma (Foam Color):"
 
 [node name="PickerFoam" type="ColorPickerButton" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/GridColors"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 28)
+custom_minimum_size = Vector2(80, 26)
 layout_mode = 2
 color = Color(0.88, 0.98, 1, 1)
 
@@ -170,104 +170,152 @@ layout_mode = 2
 [node name="SectionSliders" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
-theme_override_font_sizes/font_size = 13
-text = "📐 PARÂMETROS E ESCALA"
+theme_override_font_sizes/font_size = 12
+text = "📐 ESPUMA & PROFUNDIDADE"
 
-[node name="HBoxUv" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+[node name="HBoxScale" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxUv"]
+[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxScale"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-text = "Tamanho Ondas (uv_scale):"
+theme_override_font_sizes/font_size = 11
+text = "Escala de Mundo (world_scale):"
 
-[node name="LblUvScale" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxUv"]
+[node name="LblWorldScale" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxScale"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = "0.220"
+theme_override_font_sizes/font_size = 11
+text = "0.280"
 
-[node name="SliderUvScale" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+[node name="SliderWorldScale" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.05
+max_value = 5.0
+step = 0.01
+value = 0.28
+
+[node name="HBoxCutoff" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxCutoff"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Corte Espuma (noise_cutoff):"
+
+[node name="LblNoiseCutoff" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxCutoff"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "0.520"
+
+[node name="SliderNoiseCutoff" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.52
+
+[node name="HBoxDistort" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxDistort"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Distorção Superfície (distort):"
+
+[node name="LblDistortion" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxDistort"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "0.34"
+
+[node name="SliderDistortion" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.34
+
+[node name="HBoxScroll" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Velocidade Correnteza (scroll):"
+
+[node name="LblScrollSpeed" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "0.040"
+
+[node name="SliderScrollSpeed" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 0.2
+step = 0.005
+value = 0.04
+
+[node name="HBoxBeer" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxBeer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Atenuação Beer-Lambert (depth):"
+
+[node name="LblBeer" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxBeer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "1.40"
+
+[node name="SliderBeer" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 3.0
+step = 0.05
+value = 1.4
+
+[node name="HBoxFoamDist" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxFoamDist"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Alcance Espuma Costa (foam_dist):"
+
+[node name="LblFoamDist" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxFoamDist"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "0.72"
+
+[node name="SliderFoamDist" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 0.02
-max_value = 1.0
-step = 0.005
-value = 0.22
-
-[node name="HBoxSpeed" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxSpeed"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-text = "Velocidade Ondas (speed):"
-
-[node name="LblSpeed" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxSpeed"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = "1.20"
-
-[node name="SliderSpeed" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 0.0
-max_value = 4.0
-step = 0.05
-value = 1.2
-
-[node name="HBoxStrength" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxStrength"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-text = "Força Ondulação (strength):"
-
-[node name="LblStrength" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxStrength"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = "0.100"
-
-[node name="SliderStrength" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 0.0
-max_value = 0.4
-step = 0.005
-value = 0.1
-
-[node name="HBoxFoam" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxFoam"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-text = "Intensidade Espuma (foam):"
-
-[node name="LblFoam" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxFoam"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = "0.40"
-
-[node name="SliderFoam" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 0.0
-max_value = 1.0
+max_value = 1.5
 step = 0.02
-value = 0.4
+value = 0.72
 
 [node name="HBoxRough" type="HBoxContainer" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
@@ -275,15 +323,15 @@ layout_mode = 2
 [node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxRough"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "Rugosidade Fosca (rough):"
 
 [node name="LblRoughness" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox/HBoxRough"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = "0.88"
+theme_override_font_sizes/font_size = 11
+text = "0.48"
 
 [node name="SliderRoughness" type="HSlider" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
@@ -291,7 +339,7 @@ layout_mode = 2
 min_value = 0.0
 max_value = 1.0
 step = 0.02
-value = 0.88
+value = 0.48
 
 [node name="HSep3" type="HSeparator" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
@@ -299,36 +347,43 @@ layout_mode = 2
 [node name="SectionActions" type="Label" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 text = "⚡ AÇÕES E VISUALIZAÇÃO"
+
+[node name="BtnCoordsToggle" type="Button" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "🌐 Mapeamento: Coordenadas de Mundo (XZ)"
 
 [node name="BtnCopy" type="Button" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 38)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_copy")
 text = "📋 COPIAR PARÂMETROS"
 
 [node name="BtnSave" type="Button" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "💾 Salvar no Arquivo .tres"
 
 [node name="BtnCamToggle" type="Button" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "🎥 Câmera: Jogo / Partida"
 
 [node name="BtnLevelToggle" type="Button" parent="CanvasLayer/Control/PanelContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "🏝️ Fase Testada: 02"
 
 [node name="ToastPanel" type="PanelContainer" parent="CanvasLayer/Control"]
@@ -349,6 +404,6 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 1, 0.9, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "📋 Parâmetros copiados com sucesso!"
 horizontal_alignment = 1

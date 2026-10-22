@@ -71,6 +71,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`064_restauracao_mar_tropical_limpo_e_oceano_infinito.md`](./064_restauracao_mar_tropical_limpo_e_oceano_infinito.md) | Restauração do Mar Tropical Limpo e Preservação do Oceano Infinito | Remoção do shader com manchas brancas caóticas e restauração da água limpa fosca canônica, preservando o oceano infinito com camera-tracking em todas as fases do mapa. |
 | [`065_shader_agua_wind_waker_calibrado.md`](./065_shader_agua_wind_waker_calibrado.md) | Calibração Fina do Shader de Água Toon Wind Waker | Port da referência 2D (zeludtnecniv) para spatial 3D com coordenadas de mundo, mar azul turquesa 90% predominante, espuma fina contida (10%) e oscilações trigonométricas leves a 60 FPS. |
 | [`067_aplicacao_parametros_finais_agua_wind_waker.md`](./067_aplicacao_parametros_finais_agua_wind_waker.md) | Aplicação dos Parâmetros Calibrados da Água Wind Waker | Configuração aprovada no WaterTuner gravada no material mestre (`shaders/wind_waker_water_material.tres`), com mar turquesa limpo, cristas sutis de espuma (14%) e 0 warnings. |
+| [`068_adocao_definitiva_toon_water_shader.md`](./068_adocao_definitiva_toon_water_shader.md) | Adoção Definitiva do Toon Water Shader e Calibração Fina | Implementação oficial do clássico Toon Water Shader (Roystan / HGouveia) com Beer-Lambert depth, espuma de costa dinâmica, texturas de distorção/perlin e eliminação de shaders legados com 0 warnings. |
 
 ---
 
