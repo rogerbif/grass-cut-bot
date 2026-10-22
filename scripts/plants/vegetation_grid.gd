@@ -18,7 +18,8 @@ const GRASS_MATERIALS: Dictionary = {
 	"grass_purple": preload("res://shaders/interactive_grass_purple_material.tres"),
 	"grass_white": preload("res://shaders/interactive_grass_white_material.tres"),
 	"grass_red": preload("res://shaders/interactive_grass_red_material.tres"),
-	"grass_black": preload("res://shaders/interactive_grass_black_material.tres")
+	"grass_black": preload("res://shaders/interactive_grass_black_material.tres"),
+	"wheat": preload("res://shaders/interactive_wheat_material.tres")
 }
 
 const TILE_MODELS: Dictionary = {
@@ -544,9 +545,7 @@ func _build_from_vector_field(
 
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if v_type == "wheat":
-			mm.mesh = _wheat_mesh
-		elif v_type == "flower":
+		if v_type == "flower":
 			mm.mesh = _flower_mesh
 		else:
 			mm.mesh = _grass_mesh
@@ -595,8 +594,9 @@ func _build_from_vector_field(
 				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			elif v_type == "wheat":
-				var sw: float = lerpf(0.38, 0.52, scale_factor)
-				scale_vec = Vector3(sw, sw, sw)
+				var scale_y: float = lerpf(0.55, 0.70, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.34, 0.46, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
 				var sf: float = 0.52 * scale_factor
 				scale_vec = Vector3(sf, sf, sf)
@@ -800,9 +800,7 @@ func _build_from_vegetation_field(
 
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if v_type == "wheat":
-			mm.mesh = _wheat_mesh
-		elif v_type == "flower":
+		if v_type == "flower":
 			mm.mesh = _flower_mesh
 		else:
 			mm.mesh = _grass_mesh
@@ -853,8 +851,9 @@ func _build_from_vegetation_field(
 				var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			elif v_type == "wheat":
-				var sw: float = lerpf(0.38, 0.52, edge_t)
-				scale_vec = Vector3(sw, sw, sw)
+				var scale_y: float = lerpf(0.55, 0.70, edge_t) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.34, 0.46, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
 				# Flor
 				var sf: float = 0.52

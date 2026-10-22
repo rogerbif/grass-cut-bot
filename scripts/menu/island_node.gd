@@ -17,6 +17,7 @@ const MAT_ACTIVE_GRASS_PURPLE: ShaderMaterial = preload("res://shaders/interacti
 const MAT_ACTIVE_GRASS_WHITE: ShaderMaterial = preload("res://shaders/interactive_grass_white_material.tres")
 const MAT_ACTIVE_GRASS_RED: ShaderMaterial = preload("res://shaders/interactive_grass_red_material.tres")
 const MAT_ACTIVE_GRASS_BLACK: ShaderMaterial = preload("res://shaders/interactive_grass_black_material.tres")
+const MAT_ACTIVE_WHEAT: ShaderMaterial = preload("res://shaders/interactive_wheat_material.tres")
 
 static var _mat_static_green: ShaderMaterial = null
 static var _mat_static_yellow: ShaderMaterial = null
@@ -25,6 +26,7 @@ static var _mat_static_purple: ShaderMaterial = null
 static var _mat_static_white: ShaderMaterial = null
 static var _mat_static_red: ShaderMaterial = null
 static var _mat_static_black: ShaderMaterial = null
+static var _mat_static_wheat: ShaderMaterial = null
 static var _mat_rock: StandardMaterial3D = null
 
 @export var level_number: int = 1
@@ -117,6 +119,9 @@ static func _init_materials() -> void:
 		_mat_static_black = MAT_ACTIVE_GRASS_BLACK.duplicate() as ShaderMaterial
 		_mat_static_black.set_shader_parameter("wind_strength", 0.0)
 
+		_mat_static_wheat = MAT_ACTIVE_WHEAT.duplicate() as ShaderMaterial
+		_mat_static_wheat.set_shader_parameter("wind_strength", 0.0)
+
 		_mat_rock = StandardMaterial3D.new()
 		_mat_rock.albedo_color = Color(0.42, 0.46, 0.50, 1.0)
 		_mat_rock.roughness = 0.95
@@ -143,6 +148,8 @@ func set_grass_animated(enabled: bool) -> void:
 					gi.material_override = MAT_ACTIVE_GRASS_RED
 				"grass_black":
 					gi.material_override = MAT_ACTIVE_GRASS_BLACK
+				"wheat":
+					gi.material_override = MAT_ACTIVE_WHEAT
 				_:
 					gi.material_override = MAT_ACTIVE_GRASS_GREEN
 		else:
@@ -159,6 +166,8 @@ func set_grass_animated(enabled: bool) -> void:
 					gi.material_override = _mat_static_red
 				"grass_black":
 					gi.material_override = _mat_static_black
+				"wheat":
+					gi.material_override = _mat_static_wheat
 				_:
 					gi.material_override = _mat_static_green
 
@@ -347,13 +356,14 @@ func build_miniature_from_json(lvl: int) -> void:
 			var random_rot: float = fmod(s_seed * 1.618, TAU)
 
 			var scale_vec: Vector3
-			if v_type != "wheat" and v_type != "flower":
+			if v_type == "wheat":
+				var scale_y: float = lerpf(0.55, 0.70, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.34, 0.46, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+			elif v_type != "flower":
 				var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
 				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-			elif v_type == "wheat":
-				var sw: float = lerpf(0.38, 0.52, scale_factor)
-				scale_vec = Vector3(sw, sw, sw)
 			else:
 				var sf: float = 0.52 * scale_factor
 				scale_vec = Vector3(sf, sf, sf)
@@ -432,12 +442,16 @@ func build_miniature_from_json(lvl: int) -> void:
 
 				var scale_vec: Vector3
 				if v_type == "wheat":
-					var sw: float = lerpf(0.38, 0.52, edge_t)
-					scale_vec = Vector3(sw, sw, sw)
-				else:
+					var scale_y: float = lerpf(0.55, 0.70, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
+					var scale_xz: float = lerpf(0.34, 0.46, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
+					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+				elif v_type != "flower":
 					var scale_y: float = lerpf(0.48, 0.62, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
 					var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
 					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+				else:
+					var sf: float = 0.52
+					scale_vec = Vector3(sf, sf, sf)
 
 				var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(scale_vec)
 				(veg_transforms_by_type[v_type] as Array[Transform3D]).append(Transform3D(g_basis, tuft_pos))
@@ -449,9 +463,7 @@ func build_miniature_from_json(lvl: int) -> void:
 
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if v_type == "wheat":
-			mm.mesh = VegetationGrid._wheat_mesh
-		elif v_type == "flower":
+		if v_type == "flower":
 			mm.mesh = VegetationGrid._flower_mesh
 		else:
 			mm.mesh = VegetationGrid._grass_mesh
@@ -465,7 +477,7 @@ func build_miniature_from_json(lvl: int) -> void:
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		miniature_container.add_child(mmi)
 
-		if v_type.begins_with("grass_"):
+		if v_type.begins_with("grass_") or v_type == "wheat":
 			grass_mesh_records.append({"mesh": mmi, "type": v_type})
 
 	# Atualiza o estado da animação de vento conforme o modo e atividade da ilha

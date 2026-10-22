@@ -73,6 +73,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`067_aplicacao_parametros_finais_agua_wind_waker.md`](./067_aplicacao_parametros_finais_agua_wind_waker.md) | Aplicação dos Parâmetros Calibrados da Água Wind Waker | Configuração aprovada no WaterTuner gravada no material mestre (`shaders/wind_waker_water_material.tres`), com mar turquesa limpo, cristas sutis de espuma (14%) e 0 warnings. |
 | [`068_adocao_definitiva_toon_water_shader.md`](./068_adocao_definitiva_toon_water_shader.md) | Adoção Definitiva do Toon Water Shader e Calibração Fina | Implementação oficial do clássico Toon Water Shader (Roystan / HGouveia) com Beer-Lambert depth, espuma de costa dinâmica, texturas de distorção/perlin e eliminação de shaders legados com 0 warnings. |
 | [`069_restauracao_espuma_costeira_animada_ilhas.md`](./069_restauracao_espuma_costeira_animada_ilhas.md) | Restauração da Espuma Costeira Animada nas Ilhas do Menu e Gameplay | Modularização de CoastalFoamRibbon em level_json_loader, equalização da altura do oceano (-0.71m) e falésias (0.72m) nas miniaturas do Menu Inicial, e render_priority = 2. |
+| [`070_unificacao_modelo_trigo_grass_01.md`](./070_unificacao_modelo_trigo_grass_01.md) | Unificação do Modelo 3D do Trigo com a Grama Oficial (`grass_01`) | Substituição definitiva de primitivas (caixas e cilindros) pela malha 3D estilizada `grass_01.glb` com `interactive_wheat_material.tres`, balanço de vento orgânico e proporções ajustadas. |
 
 ---
 
