@@ -61,3 +61,19 @@ As expressões digitais do robô complementam o *Game Feel* adicionando carisma,
 4. **Olhar Direcional (Eye Tracking):** As pupilas deslizam suavemente na direção do vetor do joystick (`look_offset`), criando a percepção de que o robô está focalizando a grama que irá cortar.
 5. **Recompensa Eufórica de Vitória:** Ao zerar as metas da fase, o visor transita para Estrelas e Corações (`★ ♥`) com pulso luminoso de sobre-emissão.
 
+---
+
+## 6. Números Flutuantes Cartoon 3D e Rastro de Colheita 💥🪙
+
+Para proporcionar gratificação imediata estilo *arcade casual*, o jogo conta com um sistema de números 3D flutuantes cel-shaded disparados no ponto exato do corte:
+1. **Tipografia Arcade e Contorno de Alto Contraste:**
+   - Formato puro sem ícones obstrutivos: `+1`, `+3`, `+5`;
+   - Contorno preto sólido de 14px (`outline_size = 14`, `outline_modulate = Color(0, 0, 0, 1)`) sobre preenchimento cel-shaded;
+   - Cores dinâmicas por espécie: Branco (`#FFFFFF`) para grama comum, Dourado (`#FFE633`) para trigo e Magenta (`#FF4090`) para flores silvestres;
+   - Reflete o valor real multiplicado pela oficina (`+2`, `+6`, `+10`).
+2. **Rastro Contínuo (*Number Trail*):**
+   - Conforme o cortador avança, os números surgem sucessivamente com pop de escala elástico (`0.5 -> 1.25 -> 1.0`), flutuando verticalmente por $+0.72\text{m}$ em 0.65s;
+   - Opacidade constante durante os primeiros 0.35s e esvaecimento suave (`1.0 -> 0.0`) nos 0.30s finais, criando uma cauda fluida e satisfatória no ar.
+3. **Pool Estático de 32 Nós:**
+   - Pré-alocação no `FloatingCoinManager` garantindo 0 coletas de lixo (GC) e 60 FPS cravados no mobile.
+

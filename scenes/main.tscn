@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://main_scene_01"]
+[gd_scene load_steps=9 format=3 uid="uid://main_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://terrain_island_01" path="res://scenes/level/terrain.tscn" id="2_terrain"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/camera/isometric_camera.gd" id="5_camera"]
 [ext_resource type="PackedScene" uid="uid://hud_scene_01" path="res://scenes/ui/hud.tscn" id="6_hud"]
 [ext_resource type="PackedScene" uid="uid://floating_joystick_01" path="res://scenes/ui/floating_joystick.tscn" id="7_joystick"]
+[ext_resource type="Script" path="res://scripts/effects/floating_coin_manager.gd" id="8_coins"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -52,3 +53,6 @@ target_path = NodePath("../LevelController/Cutter")
 [node name="FloatingJoystick" parent="CanvasLayer" instance=ExtResource("7_joystick")]
 
 [node name="HUD" parent="CanvasLayer" instance=ExtResource("6_hud")]
+
+[node name="FloatingCoinManager" type="Node3D" parent="."]
+script = ExtResource("8_coins")

@@ -1019,7 +1019,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						if _cell_remaining_tufts[cell_idx] <= 0 and _cell_is_completed[cell_idx] == 0:
 							_cell_is_completed[cell_idx] = 1
 							if GameManager != null:
-								GameManager.register_cut(_cell_keys[cell_idx], _cell_rewards[cell_idx])
+								GameManager.register_cut(_cell_keys[cell_idx], _cell_rewards[cell_idx], p_pos)
 				else:
 					if mm != null:
 						var init_xform: Transform3D = _initial_transforms[p_idx]

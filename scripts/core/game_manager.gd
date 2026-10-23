@@ -8,6 +8,7 @@ signal level_won(coins_earned: int, stars_earned: int)
 signal level_lost(reason: String)
 signal game_paused(is_paused: bool)
 signal camera_shake_requested(intensity: float, duration: float)
+signal coin_popup_requested(world_pos: Vector3, amount: int, plant_type: String)
 
 enum GameState { READY, PLAYING, PAUSED, VICTORY, GAME_OVER }
 
@@ -92,7 +93,7 @@ func start_level(level_index: int, level_goals: Dictionary, duration_seconds: fl
 	if AudioManager != null:
 		AudioManager.play_gameplay_music()
 
-func register_cut(plant_type: String, base_coins: int = 1) -> void:
+func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Vector3.ZERO) -> void:
 	if current_state != GameState.PLAYING or _is_victory_pending:
 		return
 
@@ -102,6 +103,10 @@ func register_cut(plant_type: String, base_coins: int = 1) -> void:
 		multiplier = UpgradeManager.get_coin_multiplier()
 	var earned := base_coins * multiplier
 	level_coins += earned
+
+	# Dispara evento para números flutuantes 3D no local do corte
+	if cut_pos != Vector3.ZERO:
+		coin_popup_requested.emit(cut_pos, earned, plant_type)
 
 	# Dispara feedback háptico leve
 	trigger_haptic_cut()

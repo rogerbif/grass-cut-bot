@@ -104,6 +104,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`077_atualizacao_novo_icone_oficial.md`](./077_atualizacao_novo_icone_oficial.md) | Atualização do Novo Ícone Oficial do Jogo | Substituição integral da identidade visual e ícones (`icon.png`, `icon.svg` e suíte `assets/brand/` 1024, 512, 432 e 192px) pelo novo emblema comercial do Cutter Bit em alta definição, sincronização de presets Android e SemVer v0.11.6-alpha. |
 | [`078_celebracao_cinematografica_vitoria_e_derrota.md`](./078_celebracao_cinematografica_vitoria_e_derrota.md) | Interface de Vitória Desobstruída: Estrelas em Arco e Bottom Bar | Substituição do modal cinza central por estrelas parabólicas no topo/sobre o robô com pop-in sequencial e barra de ações deslizante na base da tela. |
 | [`079_teleporte_cutter_bot_mapa_com_shader_pend00.md`](./079_teleporte_cutter_bot_mapa_com_shader_pend00.md) | Teleporte do Cutter Bot no Mapa com Spatial Shader 3D (pend00) | Teleporte reativo ao navegar entre ilhas na visão de mapa: desintegração de cima para baixo com feixe turquesa e ruído de gradiente procedural, e materialização de baixo para cima na ilha de destino. |
+| [`080_moedas_flutuantes_cartoon_3d.md`](./080_moedas_flutuantes_cartoon_3d.md) | Números Flutuantes Cartoon 3D de Colheita (+1, +3, +5) e Efeito Rastro | Feedback visual cel-shaded cartoon com contorno preto sólido de 14px, cores por espécie vegetal (+1 branco, +3 trigo dourado, +5 magenta flores), rastro contínuo com pool circular de 32 Label3D e suporte a multiplicador econômico. |
 
 ---
 

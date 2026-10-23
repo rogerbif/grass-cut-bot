@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://level_editor_scene_01"]
+[gd_scene load_steps=8 format=3 uid="uid://level_editor_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/editor/level_editor.gd" id="1_editor"]
 [ext_resource type="PackedScene" uid="uid://water_ocean_01" path="res://scenes/level/water_ocean.tscn" id="2_water"]
 [ext_resource type="Script" path="res://scripts/editor/grid_overlay.gd" id="3_grid"]
 [ext_resource type="Script" path="res://scripts/editor/editor_camera.gd" id="4_cam"]
 [ext_resource type="PackedScene" uid="uid://level_editor_ui_01" path="res://scenes/editor/level_editor_ui.tscn" id="5_ui"]
+[ext_resource type="Script" path="res://scripts/effects/floating_coin_manager.gd" id="6_coins"]
 
 [sub_resource type="Environment" id="Environment_editor"]
 background_mode = 1
@@ -51,3 +52,6 @@ script = ExtResource("4_cam")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="LevelEditorUI" parent="CanvasLayer" instance=ExtResource("5_ui")]
+
+[node name="FloatingCoinManager" type="Node3D" parent="."]
+script = ExtResource("6_coins")

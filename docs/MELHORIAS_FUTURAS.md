@@ -12,9 +12,9 @@ Este documento contém o planejamento de evolução do jogo organizado por impac
 - **🧲 Imã de Moedas / Trevo de 4 Folhas:** Efeito temporário que atrai automaticamente moedas emitidas ou duplica ganhos durante 6 segundos.
 
 ### 1.2 Feedback Visual e "Juiciness"
-- **🪙 Moedas Flutuantes Tridimensionais:** Textos/ícones flutuantes estilizados (`+1`, `+3`, `+5`) que sobem em arco suave e desaparecem no mundo 3D ao ceifar tufos, gerando gratificação visual instantânea.
-- **🎉 Celebração de Vitória (3 ⭐):** Chuva de confetes coloridos 3D de baixa contagem poligonal, pequenos fogos arcade, olhos do Cutter Bit em modo estrelado/coração (`STAR` ou `HEART`) e pulinho comemoração com giro.
-- **💥 Reação Dramática de Derrota:** Quando o cronômetro zera, animação dos olhos em `X_X` (`DEAD`), pequena fumaça cinza cartoon saindo dos respiradouros e desaceleração melancólica da serra.
+- **[ENTREGUE v0.12.4-alpha] 🪙 Moedas Flutuantes Tridimensionais:** Textos estilizados cel-shaded cartoon (`+1`, `+3`, `+5`) com contorno preto grosso (14px) e rastro contínuo no mundo 3D ao ceifar tufos.
+- **[ENTREGUE v0.12.3-alpha] 🎉 Celebração de Vitória (3 ⭐):** Câmera heroica frontal, bot sorrindo e saltando com squash & stretch, confetes e fogos de artifício 3D, estrelas em arco e transição para comportamento vivo.
+- **[ENTREGUE v0.12.3-alpha] 💥 Reação Dramática de Derrota:** Quando o cronômetro zera, animação dos olhos em `SAD`, robô cabisbaixo com suspensão cedida, fumaça cinza saindo do motor e lâmina desacelerando por inércia.
 - **💨 Poeira e Marcas de Manobra:** Pequenas partículas de poeira branca/terra saindo da mono-wheel ao mudar bruscamente de direção no gramado.
 
 ---
