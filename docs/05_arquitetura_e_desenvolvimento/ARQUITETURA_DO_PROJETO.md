@@ -21,7 +21,8 @@ grass-cut-bot/
 │       └── cutter/            # eyes_atlas.svg (Atlas vetorial das 10 expressões de LED)
 ├── shaders/                   # Shaders espaciais (.gdshader) e materiais (.tres)
 │   ├── eye_display.gdshader   # Shader do display de LED com scanlines e piscar procedural
-│   └── interactive_grass.gdshader
+│   ├── interactive_grass.gdshader # Shader de balanço e gradiente da vegetação
+│   └── teleport_effect.gdshader # Shader de desintegração e materialização de teleporte
 ├── docs/                      # Hub Central da Wiki e documentação técnica canônica
 │   ├── .gdignore              # Instrução para Godot ignorar a pasta
 │   ├── 01_visao_geral_e_gdd/
@@ -49,6 +50,7 @@ grass-cut-bot/
 │   ├── core/                  # Autoloads e singletons (GameManager, UpgradeManager)
 │   ├── cutter/
 │   ├── editor/                # Scripts do Editor de Fases PC (autotiler, pincéis, UI)
+│   ├── effects/               # Gerenciadores de efeitos 3D (floating_coin_manager.gd)
 │   ├── level/                 # level_controller.gd e level_json_loader.gd
 │   ├── menu/                  # Scripts do Menu Inicial, câmera dual e navegação de abas
 │   ├── plants/                # vegetation_grid.gd (MultiMesh + Grid 0.40m) e plant.gd

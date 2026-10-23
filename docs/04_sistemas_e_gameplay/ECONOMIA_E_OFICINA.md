@@ -7,12 +7,14 @@ Este documento detalha o sistema econômico, a aquisição de moedas, a escalabi
 ## 1. Economia de Moedas Verdes
 
 As moedas verdes são a moeda corrente do jogo e são obtidas diretamente pelo ato mecânico de corte:
-- **Grama Verde:** 1 moeda base.
-- **Trigo Dourado:** 3 moedas base.
-- **Flores do Campo:** 5 moedas base.
+- **Grama Verde:** 1 moeda base (+1 em branco puro).
+- **Trigo Dourado:** 3 moedas base (+3 em amarelo ouro).
+- **Flores do Campo:** 5 moedas base (+5 em rosa magenta).
 
 O rendimento por corte é calculado como:
 $$\text{Moedas Ganhas} = \text{Moedas Base da Planta} \times \text{Multiplicador Ativo}$$
+
+A cada tufo ceifado, o valor final obtido surge como um número flutuante cartoon 3D (`FloatingCoinManager`) com contorno preto sólido de 14px e animação elástica, subindo no ar e esmaecendo suavemente em um rastro contínuo (*number trail*).
 
 ---
 

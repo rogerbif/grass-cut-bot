@@ -41,8 +41,9 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
 2. **Corte Concluído (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
    - Um emissor do **Pool Estático Compartilhado (`_particle_pool`, 16 instâncias)** em `plant.gd` é posicionado no tufo e ejeta 21 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por anel (`emission_shape = RING`, raio $0.18\text{m}$), com cor sincronizada ao `color_top` do material da planta e giro 3D sob gravidade natural (`gravity = -9.8 m/s²`, voo de `0.55s`).
-   - O `GameManager.register_cut(plant_key, coin_reward)` é notificado:
-     - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo.
+   - O `GameManager.register_cut(plant_key, coin_reward, cut_pos)` é notificado:
+     - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo da oficina.
+     - Dispara o sinal `coin_popup_requested(cut_pos, earned, plant_type)` gerando os números flutuantes cartoon 3D (`+1`, `+3`, `+5`) com contorno preto e rastro contínuo (*number trail*) via `FloatingCoinManager`.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
    - **Aparas de Folhas Cortadas Deitadas no Solo (Clippings):** Ao ser cortada, a moita alta de vegetação desaparece imediatamente (`HIDDEN_TRANSFORM`), e uma malha de **6 lâminas fatiadas deitadas horizontalmente no plano do solo** ($Y \approx 0.005\text{m}$, com orientações em $360^\circ$ e tom contrastante mais escuro) surge no local via `_clipping_multimeshes`, reproduzindo com fidelidade o rastro salpicado de aparas de grama cortada deitado no chão da ilha.
