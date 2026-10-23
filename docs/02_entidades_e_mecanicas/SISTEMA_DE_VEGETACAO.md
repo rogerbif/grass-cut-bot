@@ -25,7 +25,7 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
   - **Malhas Planas Trianguladas de Piso:** Triangulação direta dos polígonos vetoriais via `Geometry2D.triangulate_polygon()`, gerando superfícies planas rente ao solo ($Y = 0.005$) com materiais foscos sólidos (`roughness = 0.90`) que desenham a base verde/dourada sob a vegetação.
 - **GPU Instancing (`MultiMeshInstance3D`):**
   - Os tufos de vegetação são agrupados em até 9 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
-  - Tufos estilizados cartoon com 9 lâminas pontiagudas triangulares dobradas em V (36 vértices e 18 faces, redução de mais de 80% na GPU) garantem iluminação facetada cel-shaded nítida e 60 FPS cravados em qualquer celular via GPU Instancing.
+  - Micro-tufos densos com 39 lâminas e volume foliar farto garantem visual exuberante e orgânico mantendo alta performance mobile via GPU Instancing.
 - **Grade Espacial Lógica e Corte Circular Preciso:**
   - O corte ocorre por proximidade radial de micro-tufo sob o raio da lâmina da serra, conferindo uma borda de corte perfeitamente circular.
   - A contagem de colheita e premiação econômica é consolidada por célula lógica de $0.40\text{m}$, garantindo que nunca restem tufos órfãos visíveis sem contabilização da vitória.

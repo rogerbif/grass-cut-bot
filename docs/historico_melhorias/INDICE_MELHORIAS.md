@@ -108,6 +108,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`081_numeros_circulo_interno_lamina_3_pontos.md`](./081_numeros_circulo_interno_lamina_3_pontos.md) | Números no Círculo Interno da Lâmina em 3 Setores (Esquerda, Centro, Direita) | Ancoragem precisa no anel interno da serra em 3 pontos direcionais calculados por projeção lateral, com nova coreografia de fade-in, pop scale expansivo, retração para 1.0, subida e fade-out. |
 | [`082_agrupamento_corte_10_tufos_por_meta.md`](./082_agrupamento_corte_10_tufos_por_meta.md) | Agrupamento de Corte (10 Tufos Físicos = 1 Meta = 1 Moeda) | Regra unificada de campo: 10 tufos físicos de grama = 1 meta e 1 moeda (+1 branco); 10 tufos físicos de trigo = 1 meta e 3 moedas (+3 dourado). Redução de 10x na poluição visual e proteção anti-trava. |
 | [`083_malha_grama_triangulos_lowpoly.md`](./083_malha_grama_triangulos_lowpoly.md) | Otimização da Malha da Grama em Triângulos Cartoon | Remodelagem da vegetação canônica em lâminas pontudas triangulares em leque (36 vértices e 18 faces contra 183 vértices anteriores), redução de 80% na GPU e facetamento cel-shaded cartoon. |
+| [`084_restauracao_condensacao_volume_grama.md`](./084_restauracao_condensacao_volume_grama.md) | Restauração da Condensação, Envergadura e Volume Foliar da Grama | Restauração da malha canônica com 39 folhas, envergadura de 1.10m e fechamento total de solo em tapete contínuo, eliminando o aspecto ralo e preservando 60 FPS estáveis. |
 
 ---
 
