@@ -34,20 +34,22 @@ content_margin_right = 24.0
 content_margin_bottom = 24.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pill"]
-bg_color = Color(0.08, 0.11, 0.16, 0.82)
-corner_radius_top_left = 22
-corner_radius_top_right = 22
-corner_radius_bottom_right = 22
-corner_radius_bottom_left = 22
-content_margin_left = 20.0
-content_margin_top = 8.0
-content_margin_right = 20.0
-content_margin_bottom = 8.0
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.3, 0.9, 0.45, 0.4)
+bg_color = Color(0.08, 0.11, 0.16, 0.88)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+content_margin_left = 26.0
+content_margin_top = 10.0
+content_margin_right = 26.0
+content_margin_bottom = 10.0
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.9, 0.45, 0.5)
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_next"]
 bg_color = Color(0.18, 0.72, 0.35, 0.95)
@@ -227,23 +229,27 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -280.0
-offset_top = 100.0
-offset_right = 280.0
+offset_left = -300.0
+offset_top = 45.0
+offset_right = 300.0
 offset_bottom = 330.0
 grow_horizontal = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Title" type="Label" parent="VictoryModal/VictoryHeader"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 1, 0.5, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
+theme_override_colors/font_outline_color = Color(0.05, 0.12, 0.16, 0.95)
+theme_override_constants/shadow_offset_y = 3
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 38
 text = "Fase Concluída!"
 horizontal_alignment = 1
 
 [node name="StarsArc" type="Control" parent="VictoryModal/VictoryHeader"]
-custom_minimum_size = Vector2(0, 85)
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 
 [node name="Star1" type="Label" parent="VictoryModal/VictoryHeader/StarsArc"]
@@ -253,15 +259,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -95.0
-offset_top = -24.0
-offset_right = -45.0
-offset_bottom = 26.0
+offset_left = -140.0
+offset_top = -32.0
+offset_right = -60.0
+offset_bottom = 54.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = -0.22
-pivot_offset = Vector2(25, 25)
-theme_override_font_sizes/font_size = 46
+pivot_offset = Vector2(40, 43)
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 0.8)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 72
 text = "⭐"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -273,14 +281,16 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -30.0
-offset_top = -42.0
-offset_right = 30.0
-offset_bottom = 26.0
+offset_left = -50.0
+offset_top = -65.0
+offset_right = 50.0
+offset_bottom = 45.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(30, 34)
-theme_override_font_sizes/font_size = 58
+pivot_offset = Vector2(50, 55)
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 0.8)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 94
 text = "⭐"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -292,15 +302,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 45.0
-offset_top = -24.0
-offset_right = 95.0
-offset_bottom = 26.0
+offset_left = 60.0
+offset_top = -32.0
+offset_right = 140.0
+offset_bottom = 54.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = 0.22
-pivot_offset = Vector2(25, 25)
-theme_override_font_sizes/font_size = 46
+pivot_offset = Vector2(40, 43)
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 0.8)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 72
 text = "⭐"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -312,18 +324,18 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_pill")
 
 [node name="HBox" type="HBoxContainer" parent="VictoryModal/VictoryHeader/StatsPill"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 24
 alignment = 1
 
 [node name="TimeLabel" type="Label" parent="VictoryModal/VictoryHeader/StatsPill/HBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "⏱️ 0:42"
 
 [node name="CoinsEarnedLabel" type="Label" parent="VictoryModal/VictoryHeader/StatsPill/HBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.9, 0.25, 1)
+theme_override_font_sizes/font_size = 22
 text = "+ 60 Moedas"
 
 [node name="BottomBar" type="PanelContainer" parent="VictoryModal"]

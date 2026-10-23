@@ -1,5 +1,6 @@
 extends Control
 
+@onready var top_bar: PanelContainer = $TopBar
 @onready var timer_label: Label = $TopBar/HBox/TimerContainer/TimerLabel
 @onready var pause_button: Button = $TopBar/HBox/PauseButton
 @onready var coins_label: Label = $TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
@@ -24,7 +25,9 @@ extends Control
 var goal_cards: Dictionary = {}
 
 func _ready() -> void:
-	# Oculta modais inicialmente
+	# Oculta modais inicialmente e garante top_bar visível
+	if top_bar != null:
+		top_bar.visible = true
 	pause_modal.visible = false
 	victory_modal.visible = false
 	game_over_modal.visible = false
@@ -183,16 +186,22 @@ func _on_restart_pressed() -> void:
 	if _is_restarting:
 		return
 	_is_restarting = true
+	if top_bar != null:
+		top_bar.visible = true
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	GameManager.restart_level()
 
 func _on_next_level_pressed() -> void:
+	if top_bar != null:
+		top_bar.visible = true
 	if AudioManager != null:
 		AudioManager.play_sfx("fast_forward")
 	GameManager.next_level()
 
 func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
+	if top_bar != null:
+		top_bar.visible = false
 	if victory_coins_label != null:
 		victory_coins_label.text = "+ %d Moedas" % coins_earned
 
@@ -257,6 +266,8 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 		bar_tween.parallel().tween_property(victory_bottom_bar, "offset_bottom", target_bottom, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _on_level_lost(reason: String) -> void:
+	if top_bar != null:
+		top_bar.visible = false
 	game_over_reason_label.text = reason
 	get_tree().create_timer(0.65, true, false, true).timeout.connect(func() -> void:
 		game_over_modal.visible = true
@@ -273,8 +284,10 @@ func _on_close_workshop_pressed() -> void:
 		AudioManager.play_sfx("close")
 	workshop_modal.visible = false
 
-func _on_state_changed(_new_state: int) -> void:
-	pass
+func _on_state_changed(new_state: int) -> void:
+	if new_state == GameManager.GameState.PLAYING:
+		if top_bar != null:
+			top_bar.visible = true
 
 # Oficina de Upgrades
 func _setup_workshop_buttons() -> void:

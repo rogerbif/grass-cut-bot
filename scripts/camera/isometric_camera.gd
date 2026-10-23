@@ -45,9 +45,9 @@ func transition_to_victory_cam() -> void:
 		_victory_tween.kill()
 
 	_victory_tween = create_tween().set_parallel(true)
-	# Transiciona suavemente para o enquadramento frontal do herói
-	var target_victory_offset: Vector3 = Vector3(0.0, 2.4, 3.8)
-	_victory_tween.tween_property(self, "_current_offset", target_victory_offset, 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	# Transiciona suavemente para o enquadramento frontal do herói com close maior
+	var target_victory_offset: Vector3 = Vector3(0.0, 1.45, 2.35)
+	_victory_tween.tween_property(self, "_current_offset", target_victory_offset, 0.85).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func reset_cam() -> void:
 	_in_victory_cam = false
@@ -67,9 +67,9 @@ func _physics_process(delta: float) -> void:
 
 	if _in_victory_cam:
 		# Enquadramento suave em close frontal no herói
-		var look_target: Vector3 = target.global_position + Vector3(0.0, 0.45, 0.0)
+		var look_target: Vector3 = target.global_position + Vector3(0.0, 0.38, 0.0)
 		var desired_pos: Vector3 = target.global_position + _current_offset
-		global_position = global_position.lerp(desired_pos, clampf(follow_speed * delta * 1.5, 0.0, 1.0))
+		global_position = global_position.lerp(desired_pos, clampf(follow_speed * delta * 2.0, 0.0, 1.0))
 		look_at(look_target, Vector3.UP)
 		return
 
