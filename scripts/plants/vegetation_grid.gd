@@ -370,6 +370,8 @@ func build_from_level_json(
 	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_x, sp_z, width, height, cell_size)
 	if cutter != null:
 		cutter.position = Vector3(sp_world.x, 0.1, sp_world.z)
+		if cutter.has_method("reset_orientation_to_camera"):
+			cutter.reset_orientation_to_camera()
 		if "vegetation_grid" in cutter:
 			cutter.set("vegetation_grid", self)
 

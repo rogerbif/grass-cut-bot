@@ -42,7 +42,9 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 | `knockback_force`| `9.5 m/s` | Impulso reverso ampliado aplicado na direção normal da colisão ao tocar obstáculos sólidos com a serra. |
 
 ### Lógica de Vetor de Movimento e Orientação Frontal
-O vetor 2D fornecido pelo joystick flutuante é convertido diretamente para o plano horizontal 3D ($X, Z$):
+Ao iniciar qualquer fase (no `_ready()`, no spawn de `vegetation_grid.gd` ou ao reiniciar a partida via `reset_orientation_to_camera()`), o Cutter Bit é garantido **olhando diretamente de frente para a câmera isométrica ($+Z$, `robot_body.rotation.y = 0.0`)**, estabelecendo contato visual imediato e carismático com os olhos de LED.
+
+Durante o gameplay, o vetor 2D fornecido pelo joystick flutuante é convertido diretamente para o plano horizontal 3D ($X, Z$):
 ```gdscript
 var move_dir = Vector3(input_direction.x, 0.0, input_direction.y)
 if move_dir.length_squared() > 0.001:

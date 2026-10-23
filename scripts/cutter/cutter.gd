@@ -54,7 +54,7 @@ var current_pitch: float = 0.0
 var current_roll: float = 0.0
 var suspension_phase: float = 0.0
 var shock_compression: float = 0.0
-var last_body_yaw: float = PI
+var last_body_yaw: float = 0.0
 var head_yaw_lag: float = 0.0
 var initial_body_y: float = 0.0
 var initial_wheel_y: float = 0.0
@@ -70,9 +70,9 @@ func _ready() -> void:
 	current_blade_speed = idle_rotation_speed
 	_cached_cutter_speed = base_speed
 	if robot_body:
-		robot_body.rotation.y = PI
+		robot_body.rotation.y = 0.0 # Virado de frente para a câmera (+Z)
 		initial_body_y = robot_body.position.y
-		last_body_yaw = robot_body.rotation.y
+		last_body_yaw = 0.0
 	if wheel_mesh:
 		initial_wheel_y = wheel_mesh.position.y
 	if spark_particles != null:
@@ -86,6 +86,7 @@ func _ready() -> void:
 	_setup_eyes()
 	update_upgrades()
 	_update_shader_globals()
+	reset_orientation_to_camera()
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
 	if GameManager != null:
@@ -139,8 +140,30 @@ func _on_game_state_changed(new_state: int) -> void:
 	elif new_state == GameManager.GameState.GAME_OVER:
 		play_defeat_reaction()
 	elif new_state == GameManager.GameState.PLAYING:
+		reset_orientation_to_camera()
 		if robot_eyes != null:
 			robot_eyes.set_screen_off(false)
+
+## Reseta a orientação e postura para olhar de frente para a câmera (+Z)
+func reset_orientation_to_camera() -> void:
+	velocity = Vector3.ZERO
+	input_direction = Vector2.ZERO
+	if visual_pivot != null:
+		visual_pivot.rotation = Vector3.ZERO
+		visual_pivot.position = Vector3.ZERO
+		visual_pivot.scale = Vector3(0.62, 0.62, 0.62)
+	if robot_body != null:
+		robot_body.rotation.y = 0.0 # Frente para a câmera (+Z)
+		robot_body.rotation.x = 0.0
+		robot_body.rotation.z = 0.0
+		last_body_yaw = 0.0
+	if head_node != null:
+		head_node.rotation = Vector3.ZERO
+	if neck_node != null:
+		neck_node.rotation = Vector3.ZERO
+	current_pitch = 0.0
+	current_roll = 0.0
+	shock_compression = 0.0
 
 func play_victory_celebration() -> void:
 	if _is_celebrating:

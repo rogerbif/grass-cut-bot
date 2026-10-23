@@ -1155,6 +1155,8 @@ func _start_playtest() -> void:
 	_playtest_cutter = CUTTER_SCENE.instantiate() as CharacterBody3D
 	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
 	_playtest_cutter.position = Vector3(sp_world.x, 0.1, sp_world.z)
+	if _playtest_cutter.has_method("reset_orientation_to_camera"):
+		_playtest_cutter.reset_orientation_to_camera()
 	add_child(_playtest_cutter)
 	if editor_vg != null:
 		_playtest_cutter.set("vegetation_grid", editor_vg)
