@@ -1087,7 +1087,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 								GameManager.register_cut("wheat", 3, p_pos)
 						elif _remaining_physical_wheat <= 0 and _wheat_cut_accumulator > 0:
 							_wheat_cut_accumulator = 0
-							if GameManager != null and GameManager.goals.get("wheat", 0) > 0:
+							if GameManager != null and _get_remaining_goal_safe("wheat") > 0:
 								GameManager.register_cut("wheat", 3, p_pos)
 					elif p_key == "flower":
 						_remaining_physical_flower = maxi(0, _remaining_physical_flower - 1)
@@ -1103,17 +1103,17 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 								GameManager.register_cut("grass", 1, p_pos)
 						elif _remaining_physical_grass <= 0 and _grass_cut_accumulator > 0:
 							_grass_cut_accumulator = 0
-							if GameManager != null and GameManager.goals.get("grass", 0) > 0:
+							if GameManager != null and _get_remaining_goal_safe("grass") > 0:
 								GameManager.register_cut("grass", 1, p_pos)
 
 					# Proteção anti-trava: se todos os tufos físicos foram ceifados, fecha metas residuais
 					if _remaining_physical_grass <= 0 and _remaining_physical_wheat <= 0 and _remaining_physical_flower <= 0:
 						if GameManager != null:
-							while GameManager.goals.get("grass", 0) > 0:
+							while _get_remaining_goal_safe("grass") > 0:
 								GameManager.register_cut("grass", 1, p_pos)
-							while GameManager.goals.get("wheat", 0) > 0:
+							while _get_remaining_goal_safe("wheat") > 0:
 								GameManager.register_cut("wheat", 3, p_pos)
-							while GameManager.goals.get("flower", 0) > 0:
+							while _get_remaining_goal_safe("flower") > 0:
 								GameManager.register_cut("flower", 5, p_pos)
 				else:
 					if mm != null:
@@ -1221,3 +1221,17 @@ func reset_all_plants() -> void:
 		_lawn_cut_trail.call("reset_trail")
 
 	set_benchmark_visibility(_last_vegetation_on, _last_density_step)
+
+
+static func _get_remaining_goal_safe(p_type: String) -> int:
+	if GameManager == null:
+		return 0
+	if GameManager.has_method("get_remaining_goal"):
+		return GameManager.get_remaining_goal(p_type)
+	var g_val: Variant = GameManager.goals.get(p_type, null)
+	if g_val is Dictionary:
+		var gd: Dictionary = g_val as Dictionary
+		return maxi(0, int(gd.get("target", 0)) - int(gd.get("current", 0)))
+	elif g_val is int:
+		return maxi(0, int(g_val))
+	return 0

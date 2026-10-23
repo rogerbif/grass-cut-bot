@@ -129,6 +129,13 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 
 		_check_victory()
 
+## Retorna a quantidade restante para bater a meta (target - current). Se não houver meta ou já concluída, retorna 0.
+func get_remaining_goal(plant_type: String) -> int:
+	if goals.has(plant_type):
+		var goal_info: Dictionary = goals[plant_type]
+		return maxi(0, int(goal_info.get("target", 0)) - int(goal_info.get("current", 0)))
+	return 0
+
 func _check_victory() -> void:
 	if _is_victory_pending or current_state != GameState.PLAYING:
 		return
