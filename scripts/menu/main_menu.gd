@@ -27,6 +27,7 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 var total_levels_count: int = 20
 var island_nodes: Array[Node3D] = []
 var selected_level: int = 1
+var current_bot_level: int = 1
 var clouds_end_node: Node3D = null
 
 func _ready() -> void:
@@ -175,6 +176,7 @@ func _detect_levels_and_build_archipelago() -> void:
 	_update_bot_position()
 
 func _update_bot_position() -> void:
+	current_bot_level = selected_level
 	var idx: int = selected_level - 1
 	if idx >= 0 and idx < island_nodes.size():
 		var island: Node3D = island_nodes[idx]
@@ -198,6 +200,35 @@ func _update_bot_position() -> void:
 	if tab_home != null and tab_home.has_method("update_level_display"):
 		tab_home.update_level_display(selected_level)
 
+func _teleport_bot_to_level(lvl: int) -> void:
+	var idx: int = lvl - 1
+	if idx < 0 or idx >= island_nodes.size():
+		return
+	var target_island: Node3D = island_nodes[idx]
+	if target_island == null:
+		return
+	if target_island.has_method("ensure_content_loaded"):
+		target_island.ensure_content_loaded()
+
+	var bot_target: Vector3 = Vector3(0, -0.052, 0)
+	if target_island.has_method("get_bot_position"):
+		bot_target = target_island.get_bot_position()
+	else:
+		bot_target = target_island.global_position + Vector3(0, -0.052, 0)
+
+	current_bot_level = lvl
+
+	if menu_bot != null and menu_bot.has_method("teleport_to_position"):
+		menu_bot.teleport_to_position(bot_target)
+	elif menu_bot != null:
+		if menu_bot.has_method("set_base_position"):
+			menu_bot.set_base_position(bot_target)
+		else:
+			menu_bot.position = bot_target
+
+	if menu_camera != null:
+		menu_camera.set_bot_target(bot_target)
+
 func _on_island_clicked(lvl_num: int) -> void:
 	if lvl_num <= total_levels_count:
 		var can_select: bool = true
@@ -211,6 +242,8 @@ func _on_island_clicked(lvl_num: int) -> void:
 			if menu_camera != null:
 				if is_map:
 					menu_camera.snap_to_level(selected_level, true)
+					if selected_level != current_bot_level:
+						_teleport_bot_to_level(selected_level)
 				else:
 					_update_bot_position()
 			if tab_home != null and tab_home.has_method("update_level_display"):
@@ -227,6 +260,9 @@ func _on_camera_island_snapped(snapped_lvl: int) -> void:
 	var is_map: bool = menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW if menu_camera != null else true
 	_update_plaques_view_mode(is_map, false)
 	_update_islands_visibility(is_map, snapped_lvl)
+
+	if is_map and snapped_lvl != current_bot_level:
+		_teleport_bot_to_level(snapped_lvl)
 
 func _on_camera_scroll_focus_changed(focused_lvl: int) -> void:
 	if menu_camera != null and menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:

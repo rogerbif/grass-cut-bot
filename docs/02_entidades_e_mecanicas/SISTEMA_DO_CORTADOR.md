@@ -138,3 +138,14 @@ A cabeça do cortador (`$VisualPivot/GrassBot/Robot/Body/head`) incorpora uma te
   9. `VICTORY`: Estrela e Coração `★ ♥` com pulso de brilho neon ao vencer a fase.
   10. `OFF`: Display apagado mantendo apenas as scanlines do visor quando o jogo estiver pausado.
 
+---
+
+## 7. Efeito de Teleporte no Mapa de Fases (Spatial Shader 3D) 🌌🤖
+
+Ao navegar entre as ilhas no **Mapa de Fases** (`MAP_VIEW`), o cortador executa uma rotina de teleporte com desintegração e materialização física orientada por shader espacial (`shaders/teleport_effect.gdshader`), baseado no algoritmo procedural de [pend00](https://godotshaders.com/shader/teleport-effect/):
+
+- **Desaparecendo de Cima para Baixo:** O robô na ilha de origem é varrido por uma linha horizontal de energia turquesa (`vec4(0.0, 1.02, 1.2, 1.0)`) com ruído de gradiente procedural que descarta fragmentos do topo até as rodas.
+- **Transição Instantânea e Materialização de Baixo para Cima:** Na ilha de destino focada pela câmera, o robô surge a partir da base e o feixe sobe até o topo, recompondo a geometria.
+- **Preservação PBR e Zero Sobrecarga:** As propriedades de cor original (`albedo_color`), texturas e reflexos da malha são clonadas no shader durante a transição; ao concluir, todos os `surface_override_material` são limpos, restaurando os materiais nativos e a tela dos olhos (`_setup_eyes()`).
+
+

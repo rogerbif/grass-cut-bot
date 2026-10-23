@@ -12,6 +12,8 @@ enum BotState {
 	RESET_ALIGN
 }
 
+const TELEPORT_SHADER: Shader = preload("res://shaders/teleport_effect.gdshader")
+
 @export var blade_rotation_speed: float = 75.0 # Graus por segundo de rotação suave da lâmina
 @export var move_distance: float = 0.50          # Distância máxima de avanço frontal (meio metro)
 @export var drive_speed: float = 0.42           # Velocidade de deslocamento suave na ilha (m/s)
@@ -20,6 +22,17 @@ var current_state: BotState = BotState.IDLE
 var base_position: Vector3 = Vector3.ZERO
 var current_drive_offset: float = 0.0
 var target_drive_offset: float = 0.0
+
+# Teleporte entre ilhas
+var is_teleporting: bool = false
+var _teleport_tween: Tween = null
+var _teleport_materials: Array[ShaderMaterial] = []
+var _mesh_surface_targets: Array[Dictionary] = []
+var teleport_progress: float = 0.0:
+	set(value):
+		teleport_progress = value
+		for mat: ShaderMaterial in _teleport_materials:
+			mat.set_shader_parameter("progress", value)
 
 # Temporizadores de máquina de estados
 var _state_timer: float = 0.0
@@ -80,6 +93,9 @@ func _process(delta: float) -> void:
 	# 1. Rotação suave contínua da lâmina em marcha lenta
 	if blade_spinner != null:
 		blade_spinner.rotate_y(deg_to_rad(blade_rotation_speed * delta))
+
+	if is_teleporting:
+		return
 
 	# 2. Condução física e máquina de estados de locomoção
 	_process_locomotion(delta)
@@ -224,3 +240,127 @@ func _on_upgrade_purchased(_upgrade_name: String, _new_level: int) -> void:
 func set_base_position(new_pos: Vector3) -> void:
 	base_position = new_pos
 	position = new_pos
+
+# -----------------------------------------------------------------------------
+# Efeito de Teleporte (Spatial Shader Bidirecional de Desintegração / Materialização)
+# -----------------------------------------------------------------------------
+
+func _set_teleport_mode(m: int) -> void:
+	for mat: ShaderMaterial in _teleport_materials:
+		mat.set_shader_parameter("mode", m)
+
+func _set_teleport_world_y(y: float) -> void:
+	for mat: ShaderMaterial in _teleport_materials:
+		mat.set_shader_parameter("bot_world_y", y)
+
+func _collect_mesh_instances(node: Node) -> Array[MeshInstance3D]:
+	var list: Array[MeshInstance3D] = []
+	if node is MeshInstance3D:
+		list.append(node as MeshInstance3D)
+	for child: Node in node.get_children():
+		list.append_array(_collect_mesh_instances(child))
+	return list
+
+func _apply_teleport_materials() -> void:
+	_clear_teleport_materials()
+	var meshes: Array[MeshInstance3D] = _collect_mesh_instances(visual_pivot)
+	for mesh_inst: MeshInstance3D in meshes:
+		if mesh_inst.mesh == null:
+			continue
+		var surf_count: int = mesh_inst.mesh.get_surface_count()
+		for s: int in range(surf_count):
+			var active_mat: Material = mesh_inst.get_active_material(s)
+			var sm: ShaderMaterial = ShaderMaterial.new()
+			sm.shader = TELEPORT_SHADER
+			if active_mat is StandardMaterial3D:
+				var std: StandardMaterial3D = active_mat as StandardMaterial3D
+				sm.set_shader_parameter("albedo_color", std.albedo_color)
+				if std.albedo_texture != null:
+					sm.set_shader_parameter("albedo_texture", std.albedo_texture)
+					sm.set_shader_parameter("use_texture", true)
+				sm.set_shader_parameter("metallic", std.metallic)
+				sm.set_shader_parameter("roughness", std.roughness)
+				sm.set_shader_parameter("emission_color", std.emission)
+				sm.set_shader_parameter("emission_energy", std.emission_energy_multiplier)
+			elif active_mat is ShaderMaterial:
+				# Ex: tela de LED dos olhos
+				sm.set_shader_parameter("albedo_color", Color(0.17, 0.89, 1.0, 1.0))
+				sm.set_shader_parameter("emission_color", Color(0.17, 0.89, 1.0, 1.0))
+				sm.set_shader_parameter("emission_energy", 2.2)
+			else:
+				sm.set_shader_parameter("albedo_color", Color.WHITE)
+				sm.set_shader_parameter("roughness", 0.85)
+
+			mesh_inst.set_surface_override_material(s, sm)
+			_teleport_materials.append(sm)
+			_mesh_surface_targets.append({
+				"mesh": mesh_inst,
+				"surface": s
+			})
+
+func _clear_teleport_materials() -> void:
+	for rec: Dictionary in _mesh_surface_targets:
+		var m: MeshInstance3D = rec.get("mesh", null) as MeshInstance3D
+		var s: int = int(rec.get("surface", 0))
+		if is_instance_valid(m):
+			m.set_surface_override_material(s, null)
+	_teleport_materials.clear()
+	_mesh_surface_targets.clear()
+	_setup_eyes()
+
+func teleport_to_position(target_pos: Vector3, on_complete: Callable = Callable()) -> void:
+	# Se já estiver praticamente na mesma posição e não estiver no meio de um teleporte, ignora
+	if not is_teleporting and position.distance_squared_to(target_pos) < 0.04:
+		if on_complete.is_valid():
+			on_complete.call()
+		return
+
+	if _teleport_tween != null and _teleport_tween.is_valid():
+		_teleport_tween.kill()
+
+	is_teleporting = true
+	current_state = BotState.IDLE
+	current_drive_offset = 0.0
+	target_drive_offset = 0.0
+
+	# Alinha suavemente o corpo e a cabeça para frente durante o teleporte
+	if robot_body != null:
+		robot_body.rotation.y = 0.0
+		robot_body.rotation.x = 0.0
+	if head_node != null:
+		head_node.rotation.y = 0.0
+		head_node.rotation.x = 0.0
+
+	_apply_teleport_materials()
+	_set_teleport_world_y(global_position.y)
+	_set_teleport_mode(0) # 0 = Desaparecendo de cima para baixo
+	teleport_progress = 0.0
+
+	if AudioManager != null:
+		AudioManager.play_sfx("fast_forward")
+
+	_teleport_tween = create_tween()
+	# 1. Desaparece de cima para baixo
+	_teleport_tween.tween_property(self, "teleport_progress", 1.0, 0.36).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+
+	# 2. Transição instantânea enquanto 100% invisível
+	_teleport_tween.tween_callback(func() -> void:
+		set_base_position(target_pos)
+		_set_teleport_world_y(target_pos.y)
+		_set_teleport_mode(1) # 1 = Aparecendo de baixo para cima
+		teleport_progress = 0.0
+		if AudioManager != null:
+			AudioManager.play_sfx("power_up")
+	)
+
+	# 3. Aparece de baixo para cima na nova ilha
+	_teleport_tween.tween_property(self, "teleport_progress", 1.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	# 4. Finalização e restauração dos materiais e estado
+	_teleport_tween.tween_callback(func() -> void:
+		_clear_teleport_materials()
+		is_teleporting = false
+		_reset_state_timer(randf_range(2.0, 3.5))
+		if on_complete.is_valid():
+			on_complete.call()
+	)
