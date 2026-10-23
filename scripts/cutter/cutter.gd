@@ -72,6 +72,12 @@ var _last_shader_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
 var _last_shader_radius: float = -1.0
 var _overlapping_vegetation: Array[Area3D] = []
 
+# Cache pré-calculado de obstáculos (Tarefa 1.1)
+var _obstacle_positions_2d: PackedVector2Array = PackedVector2Array()
+var _obstacle_radii: PackedFloat32Array = PackedFloat32Array()
+var _obstacle_bounds: Rect2 = Rect2()
+var _has_obstacles: bool = false
+
 func _ready() -> void:
 	add_to_group("cutter")
 	current_blade_speed = idle_rotation_speed
@@ -94,6 +100,7 @@ func _ready() -> void:
 	update_upgrades()
 	_update_shader_globals()
 	reset_orientation_to_camera()
+	call_deferred("rebuild_obstacles_cache")
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
 	if GameManager != null:
@@ -565,31 +572,77 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 		head_node.rotation.y = head_yaw_lag
 		head_node.rotation.x = lerp_angle(head_node.rotation.x, -current_pitch * 0.25, 12.0 * delta)
 
-func _check_obstacle_collisions() -> void:
-	# 1. Detecção no perímetro da lâmina giratória contra rochas (grupo "obstacles")
-	var obstacles: Array[Node] = get_tree().get_nodes_in_group("obstacles")
-	if obstacles.is_empty():
+## Reconstrói o cache contíguo de obstáculos da fase para eliminar buscas dinâmicas na SceneTree a cada physics tick.
+func rebuild_obstacles_cache() -> void:
+	_obstacle_positions_2d.clear()
+	_obstacle_radii.clear()
+	_has_obstacles = false
+
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		_obstacle_bounds = Rect2()
 		return
 
-	var cutter_pos_2d: Vector2 = Vector2(global_position.x, global_position.z)
+	var obstacles: Array[Node] = tree.get_nodes_in_group("obstacles")
+	if obstacles.is_empty():
+		_obstacle_bounds = Rect2()
+		return
+
+	var min_pos := Vector2(INF, INF)
+	var max_pos := Vector2(-INF, -INF)
+	var max_radius: float = 0.18
 
 	for obs: Node in obstacles:
 		var obs_3d: Node3D = obs as Node3D
 		if obs_3d == null or not is_instance_valid(obs_3d):
 			continue
 
-		# Obtém o raio do colisor do obstáculo dinamicamente (raio padrão calibrado: 0.18m)
+		var obs_pos_2d: Vector2 = Vector2(obs_3d.global_position.x, obs_3d.global_position.z)
 		var obs_radius: float = 0.18
 		var col_shape: CollisionShape3D = obs_3d.get_node_or_null("CollisionShape3D") as CollisionShape3D
-		if col_shape != null and col_shape.shape is CylinderShape3D:
-			obs_radius = (col_shape.shape as CylinderShape3D).radius
-		elif col_shape != null and col_shape.shape is SphereShape3D:
-			obs_radius = (col_shape.shape as SphereShape3D).radius
+		if col_shape != null:
+			if col_shape.shape is CylinderShape3D:
+				obs_radius = (col_shape.shape as CylinderShape3D).radius
+			elif col_shape.shape is SphereShape3D:
+				obs_radius = (col_shape.shape as SphereShape3D).radius
 
+		_obstacle_positions_2d.append(obs_pos_2d)
+		_obstacle_radii.append(obs_radius)
+		max_radius = maxf(max_radius, obs_radius)
+
+		min_pos.x = minf(min_pos.x, obs_pos_2d.x)
+		min_pos.y = minf(min_pos.y, obs_pos_2d.y)
+		max_pos.x = maxf(max_pos.x, obs_pos_2d.x)
+		max_pos.y = maxf(max_pos.y, obs_pos_2d.y)
+
+	_has_obstacles = not _obstacle_positions_2d.is_empty()
+	if _has_obstacles:
+		# Expande o bounding box pelo raio máximo mais margem segura da lâmina (3.0m)
+		var margin: float = max_radius + 3.0
+		_obstacle_bounds = Rect2(min_pos - Vector2(margin, margin), (max_pos - min_pos) + Vector2(margin * 2.0, margin * 2.0))
+	else:
+		_obstacle_bounds = Rect2()
+
+func _check_obstacle_collisions() -> void:
+	if not _has_obstacles:
+		_check_slide_collisions()
+		return
+
+	var cutter_pos_2d := Vector2(global_position.x, global_position.z)
+
+	# 1. Early-exit espacial se o robô estiver fora da área que contém rochas
+	if not _obstacle_bounds.has_point(cutter_pos_2d):
+		_check_slide_collisions()
+		return
+
+	# 2. Verificação direta em memória contígua (zero alocações no heap, zero lookups na SceneTree)
+	var count: int = _obstacle_positions_2d.size()
+	for i: int in range(count):
+		var obs_pos_2d: Vector2 = _obstacle_positions_2d[i]
+		var obs_radius: float = _obstacle_radii[i]
 		var blade_reach: float = _cached_blade_radius + obs_radius
 		var blade_reach_sq: float = blade_reach * blade_reach
 
-		var obs_pos_2d: Vector2 = Vector2(obs_3d.global_position.x, obs_3d.global_position.z)
 		var diff_2d: Vector2 = cutter_pos_2d - obs_pos_2d
 		var dist_sq: float = diff_2d.length_squared()
 
@@ -615,7 +668,10 @@ func _check_obstacle_collisions() -> void:
 				_trigger_obstacle_shock(normal_3d, spark_pt)
 			return
 
-	# 2. Checagem de colisão direta do chassi via slide_collision (salvaguarda física)
+	# 3. Salvaguarda corporal física via slide_collision
+	_check_slide_collisions()
+
+func _check_slide_collisions() -> void:
 	var count: int = get_slide_collision_count()
 	for i in range(count):
 		var collision: KinematicCollision3D = get_slide_collision(i)

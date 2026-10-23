@@ -53,6 +53,8 @@ func generate_level(level_num: int) -> void:
 		var blade_area: Area3D = cutter.get_node_or_null("BladeArea") as Area3D
 		if blade_area != null:
 			blade_area.monitoring = false
+		if cutter.has_method("rebuild_obstacles_cache"):
+			cutter.call("rebuild_obstacles_cache")
 
 	var time_limit: float = float(data.get("time_limit", 90.0))
 	GameManager.start_level(level_num, goals, time_limit)
