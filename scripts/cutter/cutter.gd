@@ -111,6 +111,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if AudioManager != null:
 		AudioManager.stop_engine()
+	RenderingServer.global_shader_parameter_set("global_cutter_pos", Vector3(0.0, -9999.0, 0.0))
+	RenderingServer.global_shader_parameter_set("global_cutter_interact_radius", 0.0)
 
 func _setup_eyes() -> void:
 	if robot_eyes == null:
@@ -313,16 +315,6 @@ func play_defeat_reaction() -> void:
 	if head_node != null:
 		_defeat_tween.tween_property(head_node, "rotation:x", deg_to_rad(18.0), 0.9).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-const GRASS_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
-const GRASS_YELLOW_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_yellow_material.tres")
-const GRASS_BLUE_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_blue_material.tres")
-const GRASS_PURPLE_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_purple_material.tres")
-const GRASS_WHITE_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_white_material.tres")
-const GRASS_RED_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_red_material.tres")
-const GRASS_BLACK_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_black_material.tres")
-const WHEAT_MAT: ShaderMaterial = preload("res://shaders/interactive_wheat_material.tres")
-const FLOWER_MAT: ShaderMaterial = preload("res://shaders/interactive_flower_material.tres")
-
 func _update_shader_globals() -> void:
 	var interact_radius: float = _cached_blade_radius + 0.95
 	if global_position.distance_squared_to(_last_shader_pos) <= 0.0004 and absf(interact_radius - _last_shader_radius) <= 0.001:
@@ -330,33 +322,8 @@ func _update_shader_globals() -> void:
 	_last_shader_pos = global_position
 	_last_shader_radius = interact_radius
 
-	if GRASS_MAT:
-		GRASS_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if GRASS_YELLOW_MAT:
-		GRASS_YELLOW_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_YELLOW_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if GRASS_BLUE_MAT:
-		GRASS_BLUE_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_BLUE_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if GRASS_PURPLE_MAT:
-		GRASS_PURPLE_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_PURPLE_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if GRASS_WHITE_MAT:
-		GRASS_WHITE_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_WHITE_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if GRASS_RED_MAT:
-		GRASS_RED_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_RED_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if GRASS_BLACK_MAT:
-		GRASS_BLACK_MAT.set_shader_parameter("cutter_pos", global_position)
-		GRASS_BLACK_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if WHEAT_MAT:
-		WHEAT_MAT.set_shader_parameter("cutter_pos", global_position)
-		WHEAT_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
-	if FLOWER_MAT:
-		FLOWER_MAT.set_shader_parameter("cutter_pos", global_position)
-		FLOWER_MAT.set_shader_parameter("cutter_interact_radius", interact_radius)
+	RenderingServer.global_shader_parameter_set("global_cutter_pos", global_position)
+	RenderingServer.global_shader_parameter_set("global_cutter_interact_radius", interact_radius)
 
 func _on_upgrade_purchased(upgrade_name: String, _level: int) -> void:
 	if upgrade_name == "radius" or upgrade_name == "speed" or upgrade_name == "power":

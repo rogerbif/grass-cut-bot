@@ -104,23 +104,8 @@ func _ready() -> void:
 	_sync_all_ui()
 
 func _reset_grass_shader_interaction() -> void:
-	var mat_paths: Array[String] = [
-		"res://shaders/interactive_grass_material.tres",
-		"res://shaders/interactive_grass_yellow_material.tres",
-		"res://shaders/interactive_grass_blue_material.tres",
-		"res://shaders/interactive_grass_purple_material.tres",
-		"res://shaders/interactive_grass_white_material.tres",
-		"res://shaders/interactive_grass_red_material.tres",
-		"res://shaders/interactive_grass_black_material.tres",
-		"res://shaders/interactive_wheat_material.tres",
-		"res://shaders/interactive_flower_material.tres"
-	]
-	for mp in mat_paths:
-		if ResourceLoader.exists(mp):
-			var mat: ShaderMaterial = load(mp) as ShaderMaterial
-			if mat != null:
-				mat.set_shader_parameter("cutter_pos", Vector3(0.0, -9999.0, 0.0))
-				mat.set_shader_parameter("cutter_interact_radius", 0.0)
+	RenderingServer.global_shader_parameter_set("global_cutter_pos", Vector3(0.0, -9999.0, 0.0))
+	RenderingServer.global_shader_parameter_set("global_cutter_interact_radius", 0.0)
 
 func _setup_desktop_window() -> void:
 	var win: Window = get_window()

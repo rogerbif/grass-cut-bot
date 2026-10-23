@@ -1,9 +1,9 @@
 shader_type spatial;
 render_mode cull_disabled;
 
-// Posição e raio do cortador (atualizados pelo cortador no material compartilhado)
-uniform vec3 cutter_pos = vec3(0.0, -9999.0, 0.0);
-uniform float cutter_interact_radius = 1.6;
+// Posição e raio do cortador via Global Shader Parameters (Zero Overhead GDScript)
+global uniform vec3 global_cutter_pos;
+global uniform float global_cutter_interact_radius;
 
 // Parâmetros de curvatura e interação
 uniform float interact_power : hint_range(0.0, 2.0) = 0.29;
@@ -75,17 +75,17 @@ void vertex() {
 	float sway_displacement = length(leaf_sway.xz);
 	VERTEX.y -= sway_displacement * 0.22;
 
-	// --- Interação com a lâmina do cortador (com early-out fora do raio) ---
-	vec3 diff = world_vert - cutter_pos;
+	// --- Interação com a lâmina do cortador (com early-out fora do raio via Global Uniforms) ---
+	vec3 diff = world_vert - global_cutter_pos;
 	float dist_sq = dot(diff, diff);
-	float r_sq = cutter_interact_radius * cutter_interact_radius;
+	float r_sq = global_cutter_interact_radius * global_cutter_interact_radius;
 	if (dist_sq < r_sq) {
 		vec3 direction = vec3(diff.x, 0.0, diff.z);
 		float len = length(direction);
 		vec3 dir_norm = (len > 0.001) ? (direction / len) : vec3(0.0, 0.0, 1.0);
 
 		float dist = sqrt(dist_sq);
-		float power = smoothstep(cutter_interact_radius, 0.0, dist);
+		float power = smoothstep(global_cutter_interact_radius, 0.0, dist);
 
 		vec3 model_dir = vec3(dot(dir_norm, col_x), 0.0, dot(dir_norm, col_z)) * inv_scale_sq;
 		VERTEX += model_dir * (power * interact_power * bend_factor);
