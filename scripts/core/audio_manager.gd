@@ -16,6 +16,7 @@ const SFX_ELECTRIC_ENGINE: AudioStream = preload("res://assets/audio/sfx/Electri
 const SFX_COIN_PICKUP: AudioStream = preload("res://assets/audio/sfx/coin_pickup.wav")
 const SFX_TIMER_COUNTDOWN: AudioStream = preload("res://assets/audio/sfx/Timer_Countdown.wav")
 const SFX_GOAL_COMPLETED: AudioStream = preload("res://assets/audio/sfx/goal_completed.wav")
+const SFX_LEVEL_COMPLETED: AudioStream = preload("res://assets/audio/sfx/level_completed.wav")
 const SFX_STAR_WIN: AudioStream = preload("res://assets/audio/sfx/Star_win.mp3")
 const SFX_STAR_POP: AudioStream = preload("res://assets/audio/sfx/Star_pop.wav")
 const SFX_MACHINE_POWER_OFF: AudioStream = preload("res://assets/audio/sfx/MachinePowerOff.ogg")
@@ -71,7 +72,8 @@ func _init_sfx_map() -> void:
 		"coin_pickup": SFX_COIN_PICKUP,
 		"timer_countdown": SFX_TIMER_COUNTDOWN,
 		"goal_completed": SFX_GOAL_COMPLETED,
-		"star_win": SFX_STAR_WIN,
+		"level_completed": SFX_LEVEL_COMPLETED,
+		"star_win": SFX_LEVEL_COMPLETED,
 		"star_pop": SFX_STAR_POP,
 		"defeat": SFX_MACHINE_POWER_OFF,
 		"pause": SFX_PAUSE,

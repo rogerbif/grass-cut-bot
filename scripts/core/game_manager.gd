@@ -163,7 +163,7 @@ func _trigger_victory_celebration() -> void:
 		stars = SaveManager.record_level_victory(current_level, time_left, time_limit, level_coins)
 
 	if AudioManager != null:
-		AudioManager.play_sfx("star_win")
+		AudioManager.play_sfx("level_completed")
 
 	level_won.emit(level_coins, stars)
 	state_changed.emit(current_state)
