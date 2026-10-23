@@ -73,6 +73,7 @@ var _last_shader_radius: float = -1.0
 var _overlapping_vegetation: Array[Area3D] = []
 
 func _ready() -> void:
+	add_to_group("cutter")
 	current_blade_speed = idle_rotation_speed
 	_cached_cutter_speed = base_speed
 	if robot_body:
@@ -698,3 +699,31 @@ func _process_cutting() -> void:
 		var fully_cut: bool = _cut_vegetation_area(area)
 		if fully_cut:
 			_overlapping_vegetation.remove_at(i)
+
+## Calcula a coordenada 3D exata no anel interno da lâmina (Esquerda, Centro ou Direita)
+## baseando-se na projeção lateral do corte relativo à orientação do robô
+func get_inner_blade_point(cut_pos: Vector3) -> Vector3:
+	var yaw: float = robot_body.rotation.y if robot_body != null else rotation.y
+	var forward: Vector3 = Vector3(sin(yaw), 0.0, cos(yaw))
+	var right: Vector3 = Vector3(cos(yaw), 0.0, -sin(yaw))
+
+	var to_cut: Vector3 = cut_pos - global_position
+	to_cut.y = 0.0
+	var lateral_dot: float = to_cut.dot(right)
+
+	# Classifica nos 3 setores anotados na referência
+	var sector_offset: Vector3 = Vector3.ZERO
+	if lateral_dot < -0.16:
+		# Setor Esquerda: frente-esquerda no círculo interno
+		sector_offset = forward * 0.42 - right * 0.38
+	elif lateral_dot > 0.16:
+		# Setor Direita: frente-direita no círculo interno
+		sector_offset = forward * 0.42 + right * 0.38
+	else:
+		# Setor Centro: frente central no círculo interno
+		sector_offset = forward * 0.50
+
+	var jitter_x: float = randf_range(-0.03, 0.03)
+	var jitter_z: float = randf_range(-0.03, 0.03)
+	return global_position + sector_offset + Vector3(jitter_x, 0.28, jitter_z)
+

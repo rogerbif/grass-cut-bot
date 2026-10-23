@@ -2,7 +2,7 @@ class_name FloatingCoinManager
 extends Node3D
 
 ## Gerencia o pool de números flutuantes cartoon 3D (+1, +3, +5).
-## Estilo cel-shaded cartoon com contorno preto grosso e rastro dinâmico.
+## Estilo cel-shaded cartoon com contorno preto grosso no círculo interno da lâmina.
 
 const POOL_SIZE: int = 32
 
@@ -41,6 +41,10 @@ func _init_pool() -> void:
 		_tweens.append(null)
 
 
+func _get_cutter() -> CharacterBody3D:
+	return get_tree().get_first_node_in_group("cutter") as CharacterBody3D
+
+
 func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: String) -> void:
 	if _pool.is_empty():
 		return
@@ -62,31 +66,37 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 			base_color = COLOR_GRASS
 
 	label.text = "+" + str(amount)
-	label.modulate = base_color
+	label.modulate = Color(base_color.r, base_color.g, base_color.b, 0.0)
+	label.scale = Vector3(0.35, 0.35, 0.35)
 	label.visible = true
 
-	# Posição inicial com leve variação horizontal para efeito orgânico de rastro
-	var jitter_x: float = randf_range(-0.06, 0.06)
-	var jitter_z: float = randf_range(-0.06, 0.06)
-	label.global_position = world_pos + Vector3(jitter_x, 0.30, jitter_z)
-	label.scale = Vector3(0.5, 0.5, 0.5)
+	# Calcula o ponto no círculo interno da lâmina (Esquerda, Centro ou Direita)
+	var spawn_pos: Vector3 = world_pos + Vector3(0.0, 0.28, 0.0)
+	var cutter: CharacterBody3D = _get_cutter()
+	if cutter != null and is_instance_valid(cutter) and cutter.has_method("get_inner_blade_point"):
+		spawn_pos = cutter.get_inner_blade_point(world_pos)
+
+	label.global_position = spawn_pos
 
 	var tween: Tween = create_tween()
 	_tweens[idx] = tween
 
-	# 1. Pop elástico de escala (0.5 -> 1.25 -> 1.0)
-	tween.tween_property(label, "scale", Vector3(1.25, 1.25, 1.25), 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	# 1. Aparecer em fase (Fade-in rápido: 0.0 -> 1.0 em 0.08s)
+	tween.tween_property(label, "modulate:a", 1.0, 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 2. Subida vertical constante de +0.72m durante 0.65s (em paralelo)
-	var target_y: float = label.global_position.y + 0.72
-	tween.parallel().tween_property(label, "global_position:y", target_y, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 2. Crescer depois diminuir (Pop elástico: 0.35 -> 1.30 em 0.10s, depois 1.30 -> 1.0 em 0.08s)
+	tween.parallel().tween_property(label, "scale", Vector3(1.30, 1.30, 1.30), 0.10).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.chain().tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
-	# 3. Fade out transparente mantendo opaco no início do rastro (em paralelo)
-	tween.parallel().tween_property(label, "modulate:a", 1.0, 0.35)
-	tween.tween_property(label, "modulate:a", 0.0, 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# 3. Subir verticalmente (+0.70m durante 0.60s)
+	var target_y: float = label.global_position.y + 0.70
+	tween.parallel().tween_property(label, "global_position:y", target_y, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 4. Oculta ao finalizar
+	# 4. Desaparecer em fase (Fade-out transparente: sustentação inicial e fade 1.0 -> 0.0 em 0.28s)
+	tween.chain().tween_interval(0.14)
+	tween.chain().tween_property(label, "modulate:a", 0.0, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	# 5. Oculta ao finalizar
 	tween.tween_callback(func() -> void:
 		label.visible = false
 	)

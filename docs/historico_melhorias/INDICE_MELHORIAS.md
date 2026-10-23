@@ -105,6 +105,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`078_celebracao_cinematografica_vitoria_e_derrota.md`](./078_celebracao_cinematografica_vitoria_e_derrota.md) | Interface de Vitória Desobstruída: Estrelas em Arco e Bottom Bar | Substituição do modal cinza central por estrelas parabólicas no topo/sobre o robô com pop-in sequencial e barra de ações deslizante na base da tela. |
 | [`079_teleporte_cutter_bot_mapa_com_shader_pend00.md`](./079_teleporte_cutter_bot_mapa_com_shader_pend00.md) | Teleporte do Cutter Bot no Mapa com Spatial Shader 3D (pend00) | Teleporte reativo ao navegar entre ilhas na visão de mapa: desintegração de cima para baixo com feixe turquesa e ruído de gradiente procedural, e materialização de baixo para cima na ilha de destino. |
 | [`080_moedas_flutuantes_cartoon_3d.md`](./080_moedas_flutuantes_cartoon_3d.md) | Números Flutuantes Cartoon 3D de Colheita (+1, +3, +5) e Efeito Rastro | Feedback visual cel-shaded cartoon com contorno preto sólido de 14px, cores por espécie vegetal (+1 branco, +3 trigo dourado, +5 magenta flores), rastro contínuo com pool circular de 32 Label3D e suporte a multiplicador econômico. |
+| [`081_numeros_circulo_interno_lamina_3_pontos.md`](./081_numeros_circulo_interno_lamina_3_pontos.md) | Números no Círculo Interno da Lâmina em 3 Setores (Esquerda, Centro, Direita) | Ancoragem precisa no anel interno da serra em 3 pontos direcionais calculados por projeção lateral, com nova coreografia de fade-in, pop scale expansivo, retração para 1.0, subida e fade-out. |
 
 ---
 

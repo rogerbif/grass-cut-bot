@@ -71,9 +71,13 @@ Para proporcionar gratificação imediata estilo *arcade casual*, o jogo conta c
    - Contorno preto sólido de 14px (`outline_size = 14`, `outline_modulate = Color(0, 0, 0, 1)`) sobre preenchimento cel-shaded;
    - Cores dinâmicas por espécie: Branco (`#FFFFFF`) para grama comum, Dourado (`#FFE633`) para trigo e Magenta (`#FF4090`) para flores silvestres;
    - Reflete o valor real multiplicado pela oficina (`+2`, `+6`, `+10`).
-2. **Rastro Contínuo (*Number Trail*):**
-   - Conforme o cortador avança, os números surgem sucessivamente com pop de escala elástico (`0.5 -> 1.25 -> 1.0`), flutuando verticalmente por $+0.72\text{m}$ em 0.65s;
-   - Opacidade constante durante os primeiros 0.35s e esvaecimento suave (`1.0 -> 0.0`) nos 0.30s finais, criando uma cauda fluida e satisfatória no ar.
-3. **Pool Estático de 32 Nós:**
+2. **Ancoragem no Círculo Interno da Lâmina em 3 Setores:**
+   - Em vez de surgirem no solo, os números surgem diretamente no anel interno da serra do robô ($R \approx 0.40\text{m} \dots 0.48\text{m}$, $Y = 0.28\text{m}$);
+   - A posição é classificada dinamicamente entre **Esquerda**, **Centro** e **Direita** conforme a projeção lateral do corte relativo à frente do robô.
+3. **Coreografia em Fases (*Number Trail*):**
+   - **Aparecer em fase:** Fade-in de opacidade (`0.0 -> 1.0` em 0.08s);
+   - **Crescer depois diminuir:** Expansão de escala (`0.35 -> 1.30` em 0.10s) e retração de assentamento (`1.30 -> 1.0` em 0.08s);
+   - **Subir e desaparecer em fase:** Elevação vertical de $+0.70\text{m}$ em 0.60s com fade-out suave (`1.0 -> 0.0` em 0.28s).
+4. **Pool Estático de 32 Nós:**
    - Pré-alocação no `FloatingCoinManager` garantindo 0 coletas de lixo (GC) e 60 FPS cravados no mobile.
 
