@@ -27,7 +27,7 @@ Implementar o efeito de teleporte do **Cutter Bot** ao navegar entre as ilhas na
 - Orquestração de animação via `Tween`:
   - Varredura de saída: $0.54\text{s}$ (calibrado 50% mais lento para visualização nítida do feixe) com SFX `fast_forward` reduzido para 25% do volume (`linear_to_db(0.25)`).
   - Reposicionamento quando 100% invisível.
-  - Varredura de entrada: $0.60\text{s}$ com SFX `power_up` suavizado a 25% de volume.
+  - Varredura de entrada: $0.60\text{s}$ silenciosa/suave (sem sobreposição de sons adicionais).
   - Retorno suave à máquina de estados de locomoção autônoma.
 
 ### 3. Orquestração no MainMenu (`scripts/menu/main_menu.gd`)

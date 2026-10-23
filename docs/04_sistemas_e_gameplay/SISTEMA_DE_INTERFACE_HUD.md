@@ -99,7 +99,7 @@ Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Ro
 Ao navegar entre as ilhas na Visão de Mapa (`MAP_VIEW`), o Cutter Bot executa uma rotina de teleporte com desintegração e materialização física orientada por shader espacial (`shaders/teleport_effect.gdshader`):
 - **Gatilho Reativo:** Disparado quando a câmera se encaixa magneticamente em outra ilha após arraste/flick (`_on_camera_island_snapped`) ou no toque direto em qualquer ilha do arquipélago (`_on_island_clicked`).
 - **Desaparecendo de Cima para Baixo ($0.54\text{s}$):** Um feixe de energia turquesa neon (`vec4(0.0, 1.02, 1.2, 1.0)`) com ruído de gradiente procedural varre o robô da antena à base, descartando os fragmentos com o SFX `fast_forward` suavizado a 25% de volume (`linear_to_db(0.25)`).
-- **Aparecendo de Baixo para Cima ($0.60\text{s}$):** Na nova ilha, o robô materializa-se da base até a antena com o SFX `power_up` suavizado a 25%, restaurando os materiais normais e a tela de LED dos olhos (`_setup_eyes()`) ao término.
+- **Aparecendo de Baixo para Cima ($0.60\text{s}$):** Na nova ilha, o robô materializa-se da base até a antena suavemente, restaurando os materiais normais e a tela de LED dos olhos (`_setup_eyes()`) ao término.
 - **Sincronização de Foco:** Atualiza continuamente `menu_camera.set_bot_target()`, garantindo transição suave ao retornar para a Visão do Bot (`BOT_VIEW`).
 
 ### 3.3 Top Bar e Barra de Navegação Inferior (`BottomNavBar`)

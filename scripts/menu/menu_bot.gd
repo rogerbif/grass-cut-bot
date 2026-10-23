@@ -349,8 +349,6 @@ func teleport_to_position(target_pos: Vector3, on_complete: Callable = Callable(
 		_set_teleport_world_y(target_pos.y)
 		_set_teleport_mode(1) # 1 = Aparecendo de baixo para cima
 		teleport_progress = 0.0
-		if AudioManager != null:
-			AudioManager.play_sfx("power_up", 0.0, linear_to_db(0.25))
 	)
 
 	# 3. Aparece de baixo para cima na nova ilha (50% mais lento: 0.40s -> 0.60s)
