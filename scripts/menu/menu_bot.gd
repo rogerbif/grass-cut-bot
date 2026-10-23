@@ -337,11 +337,11 @@ func teleport_to_position(target_pos: Vector3, on_complete: Callable = Callable(
 	teleport_progress = 0.0
 
 	if AudioManager != null:
-		AudioManager.play_sfx("fast_forward")
+		AudioManager.play_sfx("fast_forward", 0.0, linear_to_db(0.25))
 
 	_teleport_tween = create_tween()
-	# 1. Desaparece de cima para baixo
-	_teleport_tween.tween_property(self, "teleport_progress", 1.0, 0.36).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	# 1. Desaparece de cima para baixo (50% mais lento: 0.36s -> 0.54s)
+	_teleport_tween.tween_property(self, "teleport_progress", 1.0, 0.54).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
 	# 2. Transição instantânea enquanto 100% invisível
 	_teleport_tween.tween_callback(func() -> void:
@@ -350,11 +350,11 @@ func teleport_to_position(target_pos: Vector3, on_complete: Callable = Callable(
 		_set_teleport_mode(1) # 1 = Aparecendo de baixo para cima
 		teleport_progress = 0.0
 		if AudioManager != null:
-			AudioManager.play_sfx("power_up")
+			AudioManager.play_sfx("power_up", 0.0, linear_to_db(0.25))
 	)
 
-	# 3. Aparece de baixo para cima na nova ilha
-	_teleport_tween.tween_property(self, "teleport_progress", 1.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 3. Aparece de baixo para cima na nova ilha (50% mais lento: 0.40s -> 0.60s)
+	_teleport_tween.tween_property(self, "teleport_progress", 1.0, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	# 4. Finalização e restauração dos materiais e estado
 	_teleport_tween.tween_callback(func() -> void:

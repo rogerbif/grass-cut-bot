@@ -28,8 +28,8 @@ func _ready() -> void:
 	assert(mats.size() > 0, "Materiais de teleporte devem ter sido atribuídos às superfícies!")
 	print("✔ Teste 3: Teleporte iniciado, materiais e estado de transição validados.")
 
-	# Aguarda a animação do teleporte concluir (~0.85s)
-	await get_tree().create_timer(1.0).timeout
+	# Aguarda a animação do teleporte concluir (~1.14s)
+	await get_tree().create_timer(1.35).timeout
 
 	assert(status["completed"] == true, "Callback de conclusão de teleporte deve ter sido disparado!")
 	assert(bot.get("is_teleporting") == false, "Bot deve desativar is_teleporting após conclusão!")

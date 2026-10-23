@@ -25,9 +25,9 @@ Implementar o efeito de teleporte do **Cutter Bot** ao navegar entre as ilhas na
 - Adição da rotina `teleport_to_position(target_pos: Vector3, on_complete: Callable = Callable())`.
 - Injeção e remoção atômica de `ShaderMaterial` via `set_surface_override_material`, com recuperação automática da tela de LED dos olhos (`_setup_eyes()`) ao término.
 - Orquestração de animação via `Tween`:
-  - Varredura de saída: $0.36\text{s}$ com SFX `fast_forward`.
+  - Varredura de saída: $0.54\text{s}$ (calibrado 50% mais lento para visualização nítida do feixe) com SFX `fast_forward` reduzido para 25% do volume (`linear_to_db(0.25)`).
   - Reposicionamento quando 100% invisível.
-  - Varredura de entrada: $0.40\text{s}$ com SFX `power_up`.
+  - Varredura de entrada: $0.60\text{s}$ com SFX `power_up` suavizado a 25% de volume.
   - Retorno suave à máquina de estados de locomoção autônoma.
 
 ### 3. Orquestração no MainMenu (`scripts/menu/main_menu.gd`)
