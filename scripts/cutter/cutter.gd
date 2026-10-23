@@ -50,6 +50,12 @@ var _is_defeated: bool = false
 var _celebration_tween: Tween = null
 var _defeat_tween: Tween = null
 
+var _victory_idle_active: bool = false
+var _victory_head_timer: float = 0.0
+var _victory_target_head_yaw: float = 0.0
+var _victory_target_head_pitch: float = 0.0
+var _victory_expression_timer: float = 0.0
+
 var current_pitch: float = 0.0
 var current_roll: float = 0.0
 var suspension_phase: float = 0.0
@@ -146,6 +152,8 @@ func _on_game_state_changed(new_state: int) -> void:
 
 ## Reseta a orientação e postura para olhar de frente para a câmera (+Z)
 func reset_orientation_to_camera() -> void:
+	_victory_idle_active = false
+	_is_celebrating = false
 	velocity = Vector3.ZERO
 	input_direction = Vector2.ZERO
 	if visual_pivot != null:
@@ -169,6 +177,7 @@ func play_victory_celebration() -> void:
 	if _is_celebrating:
 		return
 	_is_celebrating = true
+	_victory_idle_active = false
 	velocity = Vector3.ZERO
 	input_direction = Vector2.ZERO
 
@@ -221,6 +230,13 @@ func play_victory_celebration() -> void:
 		_celebration_tween.chain().tween_property(visual_pivot, "position:y", 0.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		_celebration_tween.parallel().tween_property(visual_pivot, "scale", base_scale, 0.18)
 
+		# Ao finalizar os saltos, transiciona para o comportamento vivo da Home (cabeça olhando em volta e expressões)
+		_celebration_tween.finished.connect(func() -> void:
+			_victory_idle_active = true
+			_victory_head_timer = 0.5
+			_victory_expression_timer = 1.0
+		)
+
 	# Aceno feliz de cabeça no final
 	if head_node != null:
 		var head_tween: Tween = create_tween()
@@ -228,6 +244,37 @@ func play_victory_celebration() -> void:
 		head_tween.tween_property(head_node, "rotation:x", deg_to_rad(-14.0), 0.2)
 		head_tween.tween_property(head_node, "rotation:x", deg_to_rad(10.0), 0.2)
 		head_tween.tween_property(head_node, "rotation:x", 0.0, 0.2)
+
+func _process_victory_idle_behavior(delta: float) -> void:
+	if not _victory_idle_active:
+		return
+
+	# 1. Articulação expressiva e autônoma da cabeça (igual à cena da Home)
+	if head_node != null:
+		_victory_head_timer -= delta
+		if _victory_head_timer <= 0.0:
+			_victory_target_head_yaw = deg_to_rad(randf_range(-22.0, 22.0))
+			_victory_target_head_pitch = deg_to_rad(randf_range(-12.0, 8.0))
+			_victory_head_timer = randf_range(1.8, 3.2)
+			if robot_eyes != null:
+				var look_vec: Vector2 = Vector2(_victory_target_head_yaw * 1.5, _victory_target_head_pitch * 2.0)
+				robot_eyes.set_look_direction(look_vec)
+
+		head_node.rotation.y = lerp_angle(head_node.rotation.y, _victory_target_head_yaw, delta * 4.0)
+		head_node.rotation.x = lerp_angle(head_node.rotation.x, _victory_target_head_pitch, delta * 4.0)
+
+	# 2. Alternância de expressões alegres e vivas nos olhos
+	if robot_eyes != null:
+		_victory_expression_timer -= delta
+		if _victory_expression_timer <= 0.0:
+			var joy_expressions: Array[RobotEyes.EyeExpression] = [
+				RobotEyes.EyeExpression.VICTORY,
+				RobotEyes.EyeExpression.HAPPY,
+				RobotEyes.EyeExpression.WINK
+			]
+			var next_expr: RobotEyes.EyeExpression = joy_expressions[randi() % joy_expressions.size()]
+			robot_eyes.set_expression(next_expr, Color.TRANSPARENT, randf_range(2.0, 3.5))
+			_victory_expression_timer = randf_range(3.5, 6.0)
 
 func play_defeat_reaction() -> void:
 	if _is_defeated:
@@ -361,7 +408,13 @@ func _physics_process(delta: float) -> void:
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
 		velocity = Vector3.ZERO
 		input_direction = Vector2.ZERO
-		current_blade_speed = 0.0
+		if _is_celebrating:
+			current_blade_speed = idle_rotation_speed
+			if blade_spinner != null:
+				blade_spinner.rotate_y(deg_to_rad(current_blade_speed * delta))
+			_process_victory_idle_behavior(delta)
+		else:
+			current_blade_speed = 0.0
 		_process_procedural_motion(delta, 1.0)
 		return
 

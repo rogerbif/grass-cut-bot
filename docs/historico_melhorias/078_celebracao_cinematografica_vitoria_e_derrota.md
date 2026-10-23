@@ -1,22 +1,26 @@
-# Melhoria 078: Celebração Cinematográfica de Vitória 🎉, Reação de Derrota 💥 e Enquadramento Heroico [v0.12.2-alpha] 🌿🤖
+# Melhoria 078: Celebração Cinematográfica de Vitória 🎉, Reação de Derrota 💥 e Comportamento Vivo do Robô [v0.12.3-alpha] 🌿🤖
 
-Este documento registra a implementação da **Celebração Cinematográfica de Vitória**, da **Reação Expressiva de Derrota**, do **Enquadramento Inicial Frontal Obrigatório** e do **Refinamento do Enquadramento e UI de Fim de Fase** para o robô **Cutter Bit**, inaugurando a **Etapa 1 do Roadmap** com foco em *Juicy Game Feel*, carisma e direção de arte 3D sem modal central obstrusivo.
+Este documento registra a implementação da **Celebração Cinematográfica de Vitória**, da **Reação Expressiva de Derrota**, do **Enquadramento Inicial Frontal Obrigatório**, do **Refinamento do Enquadramento e UI de Fim de Fase** e da **Transição para Comportamento Vivo da Home com Giro Contínuo de Lâmina** para o robô **Cutter Bit**, inaugurando a **Etapa 1 do Roadmap** com foco em *Juicy Game Feel*, carisma e direção de arte 3D sem modal central obstrusivo.
 
 ---
 
 ## 📋 Resumo Executivo
 - **Data da Conclusão:** Outubro de 2026
-- **Versão SemVer:** `v0.12.2-alpha` (Code: `1202`)
+- **Versão SemVer:** `v0.12.3-alpha` (Code: `1203`)
 - **Domínio:** Gameplay, Game Feel, Câmera Isométrica, Partículas 3D e Interface do HUD
 - **Objetivos Entregues:**
-  1. **Enquadramento Heroico em Close Frontal:** A câmera de vitória agora aproxima-se ainda mais do robô (`target_victory_offset = (0.0, 1.45, 2.35)` e mira em `Y = 0.38m`), fazendo o Cutter Bit preencher o centro da tela de forma imponente e carismática, sem cortes na blade ou visor.
-  2. **Remoção da TopBar no Fim de Fase:** A barra superior de gameplay (cronômetro, moedas da partida e metas) é automaticamente ocultada na vitória e na derrota, eliminando sobreposições e poluição visual.
-  3. **Ampliação do Bloco Superior de Vitória:**
-     - **Título:** Ampliado para 38px com outline e sombra contrastantes;
-     - **Estrelas em Arco:** Ampliadas em mais de 60% (laterais de 46px para 72px, e estrela central de 58px para 94px com outline);
-     - **Pílula de Tempo e Moedas:** Ampliada com texto de 22px, bordas e padding refinados.
-  4. **Orientação Inicial Frontal em Todas as Fases:** Correção do yaw inicial de `PI` (180° de costas) para `0.0` (frente para a câmera em $+Z$), com método `reset_orientation_to_camera()` acionado no `_ready()`, no spawn de fases de `vegetation_grid.gd` e em reinicializações de fases.
-  5. **Timer de 1.0s de Antecipação no Último Corte:** Ao colher a última planta exigida na fase, o cronômetro para imediatamente e o jogo concede um respiro de 1.0s para o jogador ver a finalização antes de deflagrar a comemoração.
+  1. **Enquadramento Heroico Calibrado:** A câmera de vitória foi elevada e ligeiramente recuada para `target_victory_offset = (0.0, 1.85, 2.85)` com mira em `Y = 0.42m`, garantindo distância estanque entre o topo da cabeça do robô e a pílula de estatísticas.
+  2. **Giro Contínuo da Lâmina no Fim de Fase:** A serra circular continua girando suavemente em marcha lenta (`idle_rotation_speed = 90.0°/s`) durante toda a tela de celebração, mantendo o dinamismo da máquina.
+  3. **Comportamento Vivo Pós-Comemoração (Estilo Home):** Ao término dos saltos comemorativos, o Cutter Bit ativa o comportamento autônomo e expressivo idêntico ao menu principal:
+     - Articulação suave da cabeça olhando para os lados ($\pm 22^\circ$) e para cima/baixo ($\pm 10^\circ$);
+     - Pupilas acompanhando organicamente a direção do olhar;
+     - Alternância de humores alegres nos olhos de LED (`VICTORY`, `HAPPY`, `WINK`).
+  4. **Remoção da TopBar no Fim de Fase:** A barra superior de gameplay é automaticamente ocultada na vitória e derrota, eliminando sobreposições.
+  5. **Ampliação do Bloco Superior de Vitória:**
+     - **Título:** Ampliado para 38px com outline escuro e sombra contrastantes;
+     - **Estrelas em Arco:** Ampliadas em mais de 60% (laterais de 72px e central de 94px);
+     - **Pílula de Tempo e Moedas:** Ampliada com texto de 22px e posicionada elegantemente no terço superior.
+  6. **Orientação Inicial Frontal em Todas as Fases:** Yaw inicial corrigido para `0.0` ($+Z$, virado de frente para o jogador) via `reset_orientation_to_camera()`.
   2. **Direção Cinematográfica (Robô & Câmera):**
      - O Cutter Bit rotaciona suavemente para olhar de frente para a câmera ($+Z$);
      - A câmera isométrica sai do ângulo alto distante (`offset = (0, 7.2, 8.5)`) e desliza suavemente em um *glide zoom* frontal para mais perto do robô (`offset = (0, 2.4, 3.8)`), focando na altura do visor e chassi.
