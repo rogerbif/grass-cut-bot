@@ -1158,6 +1158,8 @@ func _start_playtest() -> void:
 	if _playtest_cutter.has_method("reset_orientation_to_camera"):
 		_playtest_cutter.reset_orientation_to_camera()
 	add_child(_playtest_cutter)
+	if _playtest_cutter.has_method("rebuild_obstacles_cache"):
+		_playtest_cutter.call("rebuild_obstacles_cache")
 	if editor_vg != null:
 		_playtest_cutter.set("vegetation_grid", editor_vg)
 
