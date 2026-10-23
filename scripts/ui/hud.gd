@@ -10,9 +10,14 @@ extends Control
 @onready var game_over_modal: Control = $GameOverModal
 @onready var workshop_modal: Control = $WorkshopModal
 
-# Elementos das janelas de fim de jogo e pausa
-@onready var victory_coins_label: Label = $VictoryModal/Panel/VBox/CoinsEarnedLabel
-@onready var victory_stars_label: Label = $VictoryModal/Panel/VBox.get_node_or_null("StarsLabel") as Label
+# Elementos da comemoração de vitória e modais
+@onready var victory_title_label: Label = $VictoryModal.find_child("Title", true, false) as Label
+@onready var star_1_label: Label = $VictoryModal.find_child("Star1", true, false) as Label
+@onready var star_2_label: Label = $VictoryModal.find_child("Star2", true, false) as Label
+@onready var star_3_label: Label = $VictoryModal.find_child("Star3", true, false) as Label
+@onready var victory_time_label: Label = $VictoryModal.find_child("TimeLabel", true, false) as Label
+@onready var victory_coins_label: Label = $VictoryModal.find_child("CoinsEarnedLabel", true, false) as Label
+@onready var victory_bottom_bar: PanelContainer = $VictoryModal.find_child("BottomBar", true, false) as PanelContainer
 @onready var game_over_reason_label: Label = $GameOverModal/Panel/VBox/ReasonLabel
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
@@ -47,12 +52,15 @@ func _ready() -> void:
 	if $PauseModal/Panel/VBox.has_node("MenuBtn"):
 		_connect_button($PauseModal/Panel/VBox/MenuBtn, _on_menu_pressed)
 
-	if $VictoryModal/Panel/VBox.has_node("NextBtn"):
-		_connect_button($VictoryModal/Panel/VBox/NextBtn, _on_next_level_pressed)
-	if $VictoryModal/Panel/VBox.has_node("RestartBtn"):
-		_connect_button($VictoryModal/Panel/VBox/RestartBtn, _on_restart_pressed)
-	if $VictoryModal/Panel/VBox.has_node("MenuBtn"):
-		_connect_button($VictoryModal/Panel/VBox/MenuBtn, _on_menu_pressed)
+	var next_btn: Button = $VictoryModal.find_child("NextBtn", true, false) as Button
+	if next_btn:
+		_connect_button(next_btn, _on_next_level_pressed)
+	var restart_btn: Button = $VictoryModal.find_child("RestartBtn", true, false) as Button
+	if restart_btn:
+		_connect_button(restart_btn, _on_restart_pressed)
+	var menu_btn: Button = $VictoryModal.find_child("MenuBtn", true, false) as Button
+	if menu_btn:
+		_connect_button(menu_btn, _on_menu_pressed)
 
 	if $GameOverModal/Panel/VBox.has_node("RetryBtn"):
 		_connect_button($GameOverModal/Panel/VBox/RetryBtn, _on_restart_pressed)
@@ -185,43 +193,74 @@ func _on_next_level_pressed() -> void:
 	GameManager.next_level()
 
 func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
-	victory_coins_label.text = "+ %d Moedas" % coins_earned
-	var title_lbl = $VictoryModal/Panel/VBox/Title as Label
-	var next_btn = $VictoryModal/Panel/VBox.get_node_or_null("NextBtn") as Button
+	if victory_coins_label != null:
+		victory_coins_label.text = "+ %d Moedas" % coins_earned
 
-	if victory_stars_label != null:
-		var earned_stars: int = clampi(stars_earned, 1, 3)
-		var stars_str: String = ""
-		for s in range(earned_stars):
-			stars_str += "⭐"
-		for s in range(3 - earned_stars):
-			stars_str += "☆"
-		victory_stars_label.text = stars_str
+	if victory_time_label != null and GameManager != null:
+		var time_taken: float = maxf(0.0, GameManager.time_limit - GameManager.time_left)
+		var mins: int = int(time_taken / 60.0)
+		var secs: int = int(time_taken) % 60
+		victory_time_label.text = "⏱️ %d:%02d" % [mins, secs]
 
-		if AudioManager != null:
-			for s in range(earned_stars):
-				var delay: float = 0.22 * float(s)
-				get_tree().create_timer(delay, true, false, true).timeout.connect(func() -> void:
-					if AudioManager != null:
-						AudioManager.play_sfx("star_pop", 0.05)
-				)
-
+	var next_btn: Button = $VictoryModal.find_child("NextBtn", true, false) as Button
 	if GameManager.current_level >= 20:
-		if title_lbl != null:
-			title_lbl.text = "🏆 Campeão do Jardim! 🏆"
+		if victory_title_label != null:
+			victory_title_label.text = "🏆 Campeão do Jardim! 🏆"
 		if next_btn != null:
 			next_btn.text = "Ciclo Mestre (Fase 1) 👑"
 	else:
-		if title_lbl != null:
-			title_lbl.text = "Fase %02d Concluída!" % GameManager.current_level
+		if victory_title_label != null:
+			victory_title_label.text = "Fase %02d Concluída!" % GameManager.current_level
 		if next_btn != null:
 			next_btn.text = "Próxima Fase ➔"
 
 	victory_modal.visible = true
 
+	# Configura animação das estrelas em arco
+	var stars: Array[Label] = []
+	if star_1_label: stars.append(star_1_label)
+	if star_2_label: stars.append(star_2_label)
+	if star_3_label: stars.append(star_3_label)
+
+	var earned: int = clampi(stars_earned, 1, 3)
+	for i in range(stars.size()):
+		var lbl: Label = stars[i]
+		lbl.scale = Vector2.ZERO
+		var is_star_won: bool = (i + 1) <= earned
+		var delay: float = 0.25 * float(i)
+
+		if is_star_won:
+			lbl.modulate = Color(1.0, 1.0, 1.0, 1.0)
+			lbl.text = "⭐"
+			get_tree().create_timer(delay, true, false, true).timeout.connect(func() -> void:
+				var star_tween: Tween = create_tween()
+				star_tween.tween_property(lbl, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				if AudioManager != null:
+					AudioManager.play_sfx("star_pop", 0.05)
+			)
+		else:
+			lbl.modulate = Color(0.45, 0.5, 0.6, 0.45)
+			lbl.text = "☆"
+			get_tree().create_timer(delay, true, false, true).timeout.connect(func() -> void:
+				var star_tween: Tween = create_tween()
+				star_tween.tween_property(lbl, "scale", Vector2.ONE * 0.85, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			)
+
+	# Anima a entrada da barra inferior deslizando de baixo para cima
+	if victory_bottom_bar != null:
+		var target_top: float = victory_bottom_bar.offset_top
+		var target_bottom: float = victory_bottom_bar.offset_bottom
+		victory_bottom_bar.offset_top += 120.0
+		victory_bottom_bar.offset_bottom += 120.0
+		var bar_tween: Tween = create_tween()
+		bar_tween.tween_property(victory_bottom_bar, "offset_top", target_top, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		bar_tween.parallel().tween_property(victory_bottom_bar, "offset_bottom", target_bottom, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
 func _on_level_lost(reason: String) -> void:
 	game_over_reason_label.text = reason
-	game_over_modal.visible = true
+	get_tree().create_timer(0.65, true, false, true).timeout.connect(func() -> void:
+		game_over_modal.visible = true
+	)
 
 func _on_open_workshop_pressed() -> void:
 	if AudioManager != null:

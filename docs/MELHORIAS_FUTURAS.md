@@ -1,58 +1,88 @@
 # Roadmap de Melhorias Futuras: Grass Cut Bot 🌿🤖
 
-Este documento contém o planejamento de evolução do jogo organizado por impacto na experiência do jogador (*Juicy Game Feel*, retenção casual e qualidade técnica mobile).
+Este documento contém o planejamento de evolução do jogo organizado por impacto na experiência do jogador (*Juicy Game Feel*, retenção casual, metagame e qualidade técnica mobile).
 
 ---
 
-## 🚀 Prioridade P1: Essencial e Próximos Passos Imediatos
+## 🚀 1. Gameplay Dinâmico & Juicy Game Feel
 
-1. **Sistema de Áudio e Sound Design Satisfying**
-   - SFX de corte orgânico contínuo (som "crocante" / *crisp grass slicing sound*) modulando pitch levemente a cada tufo consecutivo ceifado.
-   - SFX de choque metálico seco com rochas (*metallic thud + sparks*).
-   - Jingle festivo de vitória de fase com moedas tinindo.
-   - SFX de tique-taque tenso nos últimos 10 segundos do cronômetro.
-   - Trilha sonora alegre e relaxante (música arcade lo-fi/casual em loop suave).
+### 1.1 Power-ups e Bônus de Campo
+- **🍄 Cogumelo Turbo:** Tufo especial no gramado que, ao ser ceifado, concede 4 a 5 segundos de sobrecarga: rotação da serra acelerada em 2x, raio de lâmina ampliado temporariamente (+0.25m), aura energética brilhante e SFX em alta frequência.
+- **🌟 Flor Dourada Rara:** Espécie que brota esporadicamente nas fases e murcha após 10 segundos caso não seja colhida, recompensando o jogador com um bônus gordo de $+25$ moedas.
+- **🧲 Imã de Moedas / Trevo de 4 Folhas:** Efeito temporário que atrai automaticamente moedas emitidas ou duplica ganhos durante 6 segundos.
 
-2. ~~**Persistência de Dados e SaveGame (`SaveManager`)**~~ *(Concluído na [Melhoria 037](historico_melhorias/037_sistema_de_savegame_e_persistencia_de_dados.md))*
-   - Criação de Autoload `SaveManager` serializando em JSON (`user://savegame.json`).
-   - Salvar progresso de fases liberadas, estrelas (1 a 3), melhor tempo em cada estágio, moedas totais e níveis de melhorias da oficina.
-   - Escrita atômica com backup automático de integridade (`savegame.bak`).
-
-3. **Efeito Visual de Solo Aparado (Gramado Ceifado)**
-   - Adicionar decalque suave ou malha de piso mostrando a passagem da lâmina em faixas (estilo corte de gramado com faixas contrastantes).
-   - Animação de tocos de grama aparados rente ao solo.
-
-4. **Modelos 3D e Animações da Serra Refinados**
-   - Melhoria visual da serra circular: lâmina metálica chanfrada com dentes afiados desenhados em 3D Low Poly, tampa superior de motor estilizada com respiradouros e porca central.
+### 1.2 Feedback Visual e "Juiciness"
+- **🪙 Moedas Flutuantes Tridimensionais:** Textos/ícones flutuantes estilizados (`+1`, `+3`, `+5`) que sobem em arco suave e desaparecem no mundo 3D ao ceifar tufos, gerando gratificação visual instantânea.
+- **🎉 Celebração de Vitória (3 ⭐):** Chuva de confetes coloridos 3D de baixa contagem poligonal, pequenos fogos arcade, olhos do Cutter Bit em modo estrelado/coração (`STAR` ou `HEART`) e pulinho comemoração com giro.
+- **💥 Reação Dramática de Derrota:** Quando o cronômetro zera, animação dos olhos em `X_X` (`DEAD`), pequena fumaça cinza cartoon saindo dos respiradouros e desaceleração melancólica da serra.
+- **💨 Poeira e Marcas de Manobra:** Pequenas partículas de poeira branca/terra saindo da mono-wheel ao mudar bruscamente de direção no gramado.
 
 ---
 
-## 🎨 Prioridade P2: Conteúdo, Variedade e Fases
+## 🏆 2. Metagame, Coleção e Retenção Casual
 
-5. **Expansão das Fases 4 a 10**
-   - Níveis com formatos de ilhas não retangulares (formato de L, ilhas ovais, canteiros divididos por caminhos estreitos).
-   - Desafios com múltiplas metas misturadas (ex: 40 gramas, 20 trigos e 15 flores).
-   - Introdução de obstáculos variados (troncos caídos, tocos de árvore, pedras musgosas).
+### 2.1 Ativação Real da Aba Coleção (`TabCollection`)
+- **🌿 Herbário da Ilha Interativo:** Conexão direta dos cards botânicos com os dados de progresso no `SaveManager`. Exibe espécies descobertas e bloqueadas por nível.
+- **📊 Estatísticas Globais de Carreira:**
+  - Total acumulado de tufos cortados (Grama, Trigo, Flores).
+  - Total de moedas verdes colhidas historicamente.
+  - Estrelas totais conquistadas no arquipélago (ex: $52/60 \star$).
+  - Tempo total de corte acumulado.
+- **🎖️ Sistema de Conquistas e Badges:**
+  - Condecorações desbloqueáveis com recompensa em moedas:
+    - *"Ceifador Implacável"*: Cortar 1.000 tufos.
+    - *"Mestre das 3 Estrelas"*: Conquistar 3 estrelas em 10 fases.
+    - *"Corte Cirúrgico"*: Vencer uma fase sem bater em nenhuma rocha.
+    - *"Lâmina Lendária"*: Atingir o Tier 4 na Oficina.
 
-6. **Novas Espécies Vegetais e Bônus**
-   - **Arbusto Denso:** Exige corte contínuo ou nível 3 de potência.
-   - **Flor Dourada Rara:** Surge aleatoriamente concedendo 25 moedas bônus se ceifada antes de murchar.
-   - **Cogumelo Turbo:** Ao ser cortado, concede 4 segundos de corte acelerado e raio expandido instantaneamente.
-
-7. **Menu Principal e Seletor de Fases (Level Select)**
-   - Tela inicial elegante em portrait com botão "Jogar", acesso direto à Oficina e botão de Configurações.
-   - Mapa ou lista de seleção de fases com avaliação de 1 a 3 estrelas (baseada no tempo de conclusão).
+### 2.2 Loja & Engajamento Diário (`TabStore`)
+- **🎁 Recompensa Diária (Daily Reward):** Temporizador de 24 horas real com bônus progressivo de moedas a cada dia consecutivo de login.
+- **📦 Pacotes de Recursos:** Conversão ou pacotes temáticos de moedas desbloqueáveis.
 
 ---
 
-## 📱 Prioridade P3: Portabilidade Android e Publicação
+## 🎨 3. Customização e Oficina do Robô
 
-8. **Preset de Exportação Android (`export_presets.cfg`)**
-   - Configuração de Keystore de debug e release.
-   - Ícones adaptativos Android (Adaptive Icons foreground e background).
-   - Splash screen personalizada com fundo verde escuro e logo do robô cortador.
-   - Otimização do APK/AAB com compressão de texturas ASTC/ETC2 e compilação limpa.
+### 3.1 Pinturas de Chassi (Skins do Cutter Bit)
+- Variações de cor e materiais aplicadas à carcaça do robô, adquiridas na Oficina com moedas ganhas em jogo:
+  - 🟡 **Amarelo Clássico:** A pintura amarela vibrante icônica de fábrica.
+  - 🔵 **Azul Ciano Ártico:** Chassi azul turquesa com olhos ciano brilhantes.
+  - 🔴 **Vermelho Arcade Turbo:** Chassi vermelho esportivo com acabamento acetinado.
+  - ⚫ **Preto Grafite Stealth:** Preto fosco com detalhes em dourado metálico.
+  - 🟢 **Verde Limão Esmeralda:** Camuflagem botânica.
 
-9. **Polimento de Configurações e Acessibilidade**
-   - Menu in-game de Configurações: alternância de vibração (haptics ligada/desligada), volume de música e volume de SFX.
-   - Opção de sensibilidade do joystick virtual.
+### 3.2 Acessórios Cosméticos
+- Pequenos adereços de topo para o robô:
+  - Antena com bandeirinha quadriculada.
+  - Mini hélice de brinquedo giratória.
+  - Óculos escuros estilo arcade.
+
+---
+
+## 🗺️ 4. Variedade de Cenários, Obstáculos e Novos Modos
+
+### 4.1 Novos Obstáculos e Elementos Interativos
+- **🪵 Troncos Caídos e Raízes:** Obstáculos sólidos retangulares/alongados (diferentes das rochas cilíndricas) que exigem manobras perimetrais mais amplas.
+- **💧 Poças de Lama / Areia Fofa:** Áreas de piso que reduzem temporariamente a tração e velocidade do cortador em 35% ao passar por cima.
+
+### 4.2 Novos Biomas e Variações Visuais
+- **🍂 Ilhas de Crepúsculo (Outono):** Terreno em tons quentes, gramado dourado/âmbar, água arroxeada e folhagens secas ao vento.
+- **🌌 Ilhas Noturnas Bioluminescentes:** Iluminação suave de luar, mar escuro profundo com reflexos estelares, gramado violeta fluorescente e vaga-lumes flutuantes.
+
+### 4.3 Modos de Jogo Alternativos
+- **🧘 Modo Zen / Anti-Estresse:** Jogo livre em ilha ampla sem cronômetro, sem metas obrigatórias e sem risco de derrota, focado 100% no prazer relaxante de aparar toda a vegetação com som das ondas.
+- **⏱️ Desafio Diário (Time Attack):** Fase especial gerada ou selecionada rotativamente por dia com contagem de milissegundos e tabela local de recordes pessoais.
+
+---
+
+## ✅ Histórico de Metas Antigas Concluídas
+
+Os itens prioritários das versões anteriores já consolidados na árvore de desenvolvimento canônica:
+
+- [x] **Sistema de Áudio e Sound Design:** AudioManager com 20 SFX, trilhas e motor sonoro ([Melhoria 074](historico_melhorias/074_sistema_de_audio_e_sonoplastia_completo.md)).
+- [x] **Persistência de Dados e SaveGame:** SaveManager com escrita atômica, backup .bak e estrelas ([Melhoria 037](historico_melhorias/037_sistema_de_savegame_e_persistencia_de_dados.md)).
+- [x] **Efeito Visual de Solo Aparado:** Tocos aparados e aparas de grama cortada deitadas no chão ([Melhorias 058](historico_melhorias/058_efeito_grama_cortada_tocos_aparados.md) e [060](historico_melhorias/060_aparas_grama_cortada_deitada_no_chao.md)).
+- [x] **Lâminas Estreladas e Tiers:** Modelagem 3D dos Tiers 1 a 4 com arestas retas no rotor ([Melhorias 012](historico_melhorias/012_nova_lamina_tripla_tier_1.md), [013](historico_melhorias/013_nova_lamina_quadrupla_tier_2.md), [015](historico_melhorias/015_familia_laminas_estreladas_e_amarelo_vibrante.md), [032](historico_melhorias/032_ajuste_raio_base_e_incremento_lamina.md)).
+- [x] **20 Fases Canônicas com Autotile:** Arquipélago de 20 ilhas 3D flutuantes sem cerca ([Melhorias 034](historico_melhorias/034_criacao_20_fases_canonicas.md) e [076](historico_melhorias/076_sincronizacao_fases_e_aumento_folhas_tufo.md)).
+- [x] **Menu Inicial Hub com Diorama 3D & Mapa:** Câmera dual, scroll 1:1, placas adaptativas e lazy loading ([Melhorias 035](historico_melhorias/035_menu_inicial_hub_principal_com_camera_dual_e_tabs.md), [047](historico_melhorias/047_menu_ilhas_miniatura_scroll_1_a_1_e_placas_adaptativas.md), [051](historico_melhorias/051_lazy_loading_ilhas_e_persistencia_em_memoria.md)).
+- [x] **Preset Android, Haptics & Ícone Oficial:** Permissões, haptics calibrado a 25%/80% e novos ícones comerciais ([Melhorias 072](historico_melhorias/072_correcao_permissao_e_calibracao_vibracao_celular.md) e [077](historico_melhorias/077_atualizacao_novo_icone_oficial.md)).

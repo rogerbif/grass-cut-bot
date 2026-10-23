@@ -32,6 +32,9 @@ extends CharacterBody3D
 @onready var blade_area: Area3D = $BladeArea
 @onready var blade_shape: CollisionShape3D = $BladeArea/CollisionShape3D
 @onready var spark_particles: CPUParticles3D = $SparkParticles
+@onready var confetti_particles: CPUParticles3D = $ConfettiParticles if has_node("ConfettiParticles") else null
+@onready var fireworks_particles: CPUParticles3D = $FireworksParticles if has_node("FireworksParticles") else null
+@onready var defeat_puff_particles: CPUParticles3D = $DefeatPuffParticles if has_node("DefeatPuffParticles") else null
 @onready var robot_eyes: RobotEyes = $RobotEyes if has_node("RobotEyes") else null
 
 var input_direction: Vector2 = Vector2.ZERO
@@ -41,6 +44,11 @@ var _shock_cooldown: float = 0.0
 var idle_eyes_timer: float = 0.0
 var current_blade_speed: float = 90.0
 var vegetation_grid: Node3D = null
+
+var _is_celebrating: bool = false
+var _is_defeated: bool = false
+var _celebration_tween: Tween = null
+var _defeat_tween: Tween = null
 
 var current_pitch: float = 0.0
 var current_roll: float = 0.0
@@ -111,15 +119,121 @@ func _on_game_state_changed(new_state: int) -> void:
 		if AudioManager != null:
 			AudioManager.stop_engine()
 	else:
+		_is_celebrating = false
+		_is_defeated = false
+		if _celebration_tween != null and _celebration_tween.is_valid():
+			_celebration_tween.kill()
+		if _defeat_tween != null and _defeat_tween.is_valid():
+			_defeat_tween.kill()
+		if visual_pivot != null:
+			visual_pivot.scale = Vector3(0.62, 0.62, 0.62)
+			visual_pivot.position = Vector3.ZERO
 		if AudioManager != null:
 			AudioManager.start_engine()
-	if robot_eyes != null:
-		if new_state == GameManager.GameState.PAUSED:
+
+	if new_state == GameManager.GameState.PAUSED:
+		if robot_eyes != null:
 			robot_eyes.set_screen_off(true)
-		elif new_state == GameManager.GameState.VICTORY:
-			robot_eyes.trigger_victory_reaction()
-		elif new_state == GameManager.GameState.PLAYING:
+	elif new_state == GameManager.GameState.VICTORY:
+		play_victory_celebration()
+	elif new_state == GameManager.GameState.GAME_OVER:
+		play_defeat_reaction()
+	elif new_state == GameManager.GameState.PLAYING:
+		if robot_eyes != null:
 			robot_eyes.set_screen_off(false)
+
+func play_victory_celebration() -> void:
+	if _is_celebrating:
+		return
+	_is_celebrating = true
+	velocity = Vector3.ZERO
+	input_direction = Vector2.ZERO
+
+	if robot_eyes != null:
+		robot_eyes.trigger_victory_reaction()
+
+	# Gira o corpo suavemente para a frente da câmera (+Z)
+	if robot_body != null:
+		var turn_tween: Tween = create_tween()
+		turn_tween.tween_property(robot_body, "rotation:y", 0.0, 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+	# Dispara confetes e fogos de artifício
+	if confetti_particles != null:
+		confetti_particles.restart()
+		confetti_particles.emitting = true
+	if fireworks_particles != null:
+		fireworks_particles.restart()
+		fireworks_particles.emitting = true
+
+	# Rotina de saltos de comemoração com squash & stretch
+	if _celebration_tween != null and _celebration_tween.is_valid():
+		_celebration_tween.kill()
+
+	if visual_pivot != null:
+		_celebration_tween = create_tween()
+		var base_scale: Vector3 = Vector3(0.62, 0.62, 0.62)
+		var squash_prep: Vector3 = Vector3(0.68, 0.52, 0.68)
+		var stretch_air: Vector3 = Vector3(0.56, 0.70, 0.56)
+		var squash_land: Vector3 = Vector3(0.70, 0.50, 0.70)
+
+		# Salto 1: Antecipação rápida (squash)
+		_celebration_tween.tween_property(visual_pivot, "scale", squash_prep, 0.12).set_trans(Tween.TRANS_QUAD)
+		_celebration_tween.parallel().tween_property(visual_pivot, "position:y", -0.04, 0.12).set_trans(Tween.TRANS_QUAD)
+
+		# Subida triunfal
+		_celebration_tween.chain().tween_property(visual_pivot, "scale", stretch_air, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_celebration_tween.parallel().tween_property(visual_pivot, "position:y", 0.42, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+		# Queda
+		_celebration_tween.chain().tween_property(visual_pivot, "position:y", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		_celebration_tween.parallel().tween_property(visual_pivot, "scale", base_scale, 0.22)
+
+		# Aterrissagem com squash elástico
+		_celebration_tween.chain().tween_property(visual_pivot, "scale", squash_land, 0.08).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		_celebration_tween.chain().tween_property(visual_pivot, "scale", base_scale, 0.14).set_trans(Tween.TRANS_SINE)
+
+		# Salto 2 (Pequeno pulinho rítmico secundário de alegria)
+		_celebration_tween.chain().tween_property(visual_pivot, "position:y", 0.22, 0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_celebration_tween.parallel().tween_property(visual_pivot, "scale", Vector3(0.58, 0.66, 0.58), 0.15)
+		_celebration_tween.chain().tween_property(visual_pivot, "position:y", 0.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		_celebration_tween.parallel().tween_property(visual_pivot, "scale", base_scale, 0.18)
+
+	# Aceno feliz de cabeça no final
+	if head_node != null:
+		var head_tween: Tween = create_tween()
+		head_tween.tween_interval(0.3)
+		head_tween.tween_property(head_node, "rotation:x", deg_to_rad(-14.0), 0.2)
+		head_tween.tween_property(head_node, "rotation:x", deg_to_rad(10.0), 0.2)
+		head_tween.tween_property(head_node, "rotation:x", 0.0, 0.2)
+
+func play_defeat_reaction() -> void:
+	if _is_defeated:
+		return
+	_is_defeated = true
+	velocity = Vector3.ZERO
+	input_direction = Vector2.ZERO
+
+	if robot_eyes != null:
+		robot_eyes.trigger_defeat_reaction()
+
+	if defeat_puff_particles != null:
+		defeat_puff_particles.restart()
+		defeat_puff_particles.emitting = true
+
+	# Desacelera a lâmina suavemente até parar
+	var blade_decel_tween: Tween = create_tween()
+	blade_decel_tween.tween_property(self, "current_blade_speed", 0.0, 1.2).set_trans(Tween.TRANS_SINE)
+
+	# Postura cabisbaixa: inclina para a frente, abaixa suspensão e pende a cabeça
+	if _defeat_tween != null and _defeat_tween.is_valid():
+		_defeat_tween.kill()
+
+	_defeat_tween = create_tween().set_parallel(true)
+	if robot_body != null:
+		_defeat_tween.tween_property(robot_body, "rotation:x", deg_to_rad(10.0), 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(robot_body, "position:y", initial_body_y - 0.05, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	if head_node != null:
+		_defeat_tween.tween_property(head_node, "rotation:x", deg_to_rad(18.0), 0.9).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 const GRASS_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_material.tres")
 const GRASS_YELLOW_MAT: ShaderMaterial = preload("res://shaders/interactive_grass_yellow_material.tres")
@@ -299,8 +413,10 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 	if robot_body == null:
 		return
 
-	# Se não estiver jogando, interpola tudo suavemente de volta ao repouso
+	# Se não estiver jogando, interpola tudo suavemente de volta ao repouso (a não ser que esteja comemorando ou derrotado)
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+		if _is_celebrating or _is_defeated:
+			return
 		current_pitch = lerp(current_pitch, 0.0, 8.0 * delta)
 		current_roll = lerp(current_roll, 0.0, 8.0 * delta)
 		shock_compression = move_toward(shock_compression, 0.0, 3.0 * delta)

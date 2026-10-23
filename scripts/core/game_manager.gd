@@ -17,6 +17,7 @@ var current_level: int = 1
 var time_limit: float = 90.0
 var time_left: float = 90.0
 var level_coins: int = 0
+var _is_victory_pending: bool = false
 
 # Estrutura de metas: { "grass": {"target": 60, "current": 0}, "flower": ... }
 var goals: Dictionary = {}
@@ -53,7 +54,7 @@ func _scan_and_connect_buttons(node: Node) -> void:
 		_scan_and_connect_buttons(child)
 
 func _process(delta: float) -> void:
-	if current_state == GameState.PLAYING:
+	if current_state == GameState.PLAYING and not _is_victory_pending:
 		time_left -= delta
 		if time_left < 0.0:
 			time_left = 0.0
@@ -64,6 +65,7 @@ func _process(delta: float) -> void:
 
 func start_level(level_index: int, level_goals: Dictionary, duration_seconds: float) -> void:
 	current_level = level_index
+	_is_victory_pending = false
 	if SaveManager != null:
 		SaveManager.set_last_played_level(current_level)
 
@@ -91,7 +93,7 @@ func start_level(level_index: int, level_goals: Dictionary, duration_seconds: fl
 		AudioManager.play_gameplay_music()
 
 func register_cut(plant_type: String, base_coins: int = 1) -> void:
-	if current_state != GameState.PLAYING:
+	if current_state != GameState.PLAYING or _is_victory_pending:
 		return
 
 	# Incrementa moedas da fase
@@ -123,13 +125,24 @@ func register_cut(plant_type: String, base_coins: int = 1) -> void:
 		_check_victory()
 
 func _check_victory() -> void:
+	if _is_victory_pending or current_state != GameState.PLAYING:
+		return
+
 	for plant_type in goals:
-		var g = goals[plant_type]
-		if g["current"] < g["target"]:
+		var g: Dictionary = goals[plant_type]
+		if int(g.get("current", 0)) < int(g.get("target", 0)):
 			return # Ainda há metas incompletas
 
-	# Todas as metas batidas!
+	# Todas as metas batidas! Trava o temporizador e aguarda 1.0s de antecipação
+	_is_victory_pending = true
+	get_tree().create_timer(1.0, false).timeout.connect(_trigger_victory_celebration)
+
+func _trigger_victory_celebration() -> void:
+	if current_state != GameState.PLAYING and current_state != GameState.VICTORY:
+		return
+
 	current_state = GameState.VICTORY
+	_is_victory_pending = false
 	if UpgradeManager != null:
 		UpgradeManager.add_coins(level_coins)
 

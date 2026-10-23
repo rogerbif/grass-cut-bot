@@ -8,12 +8,19 @@ var target: Node3D
 var shake_intensity: float = 0.0
 var shake_duration: float = 0.0
 
+var _in_victory_cam: bool = false
+var _current_offset: Vector3 = Vector3(0.0, 7.2, 8.5)
+var _victory_tween: Tween = null
+
 func _ready() -> void:
+	_current_offset = offset
 	if has_node(target_path):
 		target = get_node(target_path) as Node3D
 
 	if GameManager != null:
 		GameManager.camera_shake_requested.connect(_on_shake_requested)
+		GameManager.level_won.connect(_on_level_won)
+		GameManager.state_changed.connect(_on_state_changed)
 
 	# Configura e trava a orientacao isometrica inicial
 	if target:
@@ -22,12 +29,48 @@ func _ready() -> void:
 	else:
 		look_at_from_position(global_position, global_position - offset, Vector3.UP)
 
+func _on_state_changed(new_state: int) -> void:
+	if new_state == GameManager.GameState.PLAYING:
+		reset_cam()
+
+func _on_level_won(_coins: int, _stars: int) -> void:
+	transition_to_victory_cam()
+
+func transition_to_victory_cam() -> void:
+	if _in_victory_cam or target == null:
+		return
+	_in_victory_cam = true
+	
+	if _victory_tween != null and _victory_tween.is_valid():
+		_victory_tween.kill()
+
+	_victory_tween = create_tween().set_parallel(true)
+	# Transiciona suavemente para o enquadramento frontal do herói
+	var target_victory_offset: Vector3 = Vector3(0.0, 2.4, 3.8)
+	_victory_tween.tween_property(self, "_current_offset", target_victory_offset, 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+func reset_cam() -> void:
+	_in_victory_cam = false
+	if _victory_tween != null and _victory_tween.is_valid():
+		_victory_tween.kill()
+	_current_offset = offset
+	if target:
+		look_at_from_position(target.global_position + offset, target.global_position, Vector3.UP)
+
 func _on_shake_requested(intensity: float, duration: float) -> void:
 	shake_intensity = intensity
 	shake_duration = duration
 
 func _physics_process(delta: float) -> void:
 	if not target:
+		return
+
+	if _in_victory_cam:
+		# Enquadramento suave em close frontal no herói
+		var look_target: Vector3 = target.global_position + Vector3(0.0, 0.45, 0.0)
+		var desired_pos: Vector3 = target.global_position + _current_offset
+		global_position = global_position.lerp(desired_pos, clampf(follow_speed * delta * 1.5, 0.0, 1.0))
+		look_at(look_target, Vector3.UP)
 		return
 
 	# Translada suavemente em sincronia com o physics_process do cortador para eliminar micro-travamentos

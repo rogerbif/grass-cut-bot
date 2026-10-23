@@ -170,6 +170,18 @@ func trigger_victory_reaction() -> void:
 		3.5, 2.0, 0.4
 	).set_trans(Tween.TRANS_SINE)
 
+## Dispara reação de derrota (olhos tristes em tom azulado melancólico)
+func trigger_defeat_reaction() -> void:
+	set_expression(EyeExpression.SAD, Color(0.4, 0.6, 0.95, 1.0))
+	if _material == null:
+		return
+	
+	var fade_tween: Tween = create_tween()
+	fade_tween.tween_method(
+		func(energy: float) -> void: _material.set_shader_parameter("emission_energy", energy),
+		2.0, 1.2, 0.5
+	).set_trans(Tween.TRANS_SINE)
+
 ## Desliga a tela (para menu de pausa ou sem bateria)
 func set_screen_off(is_off: bool) -> void:
 	if is_off:

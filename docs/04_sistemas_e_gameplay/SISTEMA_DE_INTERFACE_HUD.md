@@ -43,20 +43,19 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
   - `Oficina ⚙`: Abre a oficina para compra de melhorias imediatas.
   - `Menu Inicial 🏠`: Retorna ao Hub Principal preservando as moedas obtidas.
 
-### 2.2 Modal de Vitória (`VictoryModal`)
-- Disparado automaticamente quando todas as metas chegam a zero antes do tempo expirar.
-- Desativa imediatamente a rotação, corte e movimentação da lâmina, além de ocultar e desativar o joystick virtual.
-- Exibe o bônus de moedas obtidas na fase.
-- **Ações:**
+### 2.2 Celebração de Vitória e Interface Desobstruída (`VictoryModal`)
+- **Timer de Antecipação (1.0s):** Ao cortar a última planta exigida, o cronômetro para e o jogo concede 1.0s para o jogador acompanhar a finalização.
+- **Enquadramento Heroico:** A câmera isométrica aproxima-se frontalmente do Cutter Bit em *glide zoom* (`offset = (0, 2.4, 3.8)`), enquanto o robô rotaciona para olhar de frente para a câmera e comemora com saltos em *squash & stretch*, confetes coloridos e fogos de artifício 3D.
+- **Estrelas em Arco e Métricas Flutuantes:** Em vez de uma caixa modal obstrusiva no centro, as 3 estrelas são projetadas em arco parabólico no topo da tela com pop-in sequencial e som `star_pop`, acompanhadas de uma pílula translúcida com `⏱️ Tempo` e `🪙 +Moedas`.
+- **Barra de Ações Inferior (Bottom Bar):** Desliza na base da tela mantendo 100% da ilha visível:
   - `Próxima Fase ➔`: Avança dinamicamente para o estágio seguinte (`GameManager.next_level()`). Na Fase 20, o botão se transforma em `"Ciclo Mestre (Fase 1) 👑"` e o título celebra `"🏆 Campeão do Jardim! 🏆"`.
   - `Repetir Fase 🔄`: Permite rejogar o nível atual para farmar moedas adicionais.
   - `Menu Inicial 🏠`: Retorna ao Hub Principal com visualização da ilha desbloqueada no mapa.
 
-### 2.3 Modal de Derrota (`GameOverModal`)
+### 2.3 Reação Expressiva de Derrota (`GameOverModal`)
 - Disparado caso o cronômetro atinja `0:00` antes de bater as cotas.
-- Desativa imediatamente a rotação, corte e movimentação da lâmina e oculta o joystick virtual.
-- Exibe mensagem explicativa de falha ("Tempo Esgotado!").
-- **Ações:**
+- O robô assume postura cabisbaixa (inclinação de $10^\circ$, cabeça baixa a $18^\circ$), olhos em `EyeExpression.SAD`, baforadas cartoon de fumaça cinza saindo do motor e desaceleração suave da lâmina por inércia.
+- Após delay suave de 0.65s, surge a tela de derrota:
   - `Tentar Novamente 🔄`: Reinicia a fase imediatamente.
   - `Menu Inicial 🏠`: Retorna ao Hub Principal.
 
