@@ -84,6 +84,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`086_separacao_audio_objetivo_e_conclusao_fase.md`](./086_separacao_audio_objetivo_e_conclusao_fase.md) | Separação Sonora de Objetivo Concluído (`goal_completed`) e Vitória da Fase (`level_completed`) | Desacoplamento sonoro: `goal_completed.wav` toca individualmente ao completar cada meta e `level_completed.wav` toca no início dos fogos de artifício e pulos de comemoração do Cutter Bot. |
 | [`087_subviewport_trilha_sob_demanda.md`](./087_subviewport_trilha_sob_demanda.md) | Otimização de Performance: SubViewport da Trilha de Solo Sob Demanda (Tarefa 1.2) | Eliminação de 3.600 passes/minuto de renderização ociosa do SubViewport 256x256 configurando UPDATE_ONCE ativado exclusivamente ao adicionar novos pontos de corte. |
 | [`088_global_shader_parameters_cortador.md`](./088_global_shader_parameters_cortador.md) | Otimização de Performance: Global Shader Parameters para Interação da Serra (Tarefa 1.3) | Substituição de 18 chamadas GDScript em 9 materiais por 2 chamadas nativas em C++ via RenderingServer.global_shader_parameter_set, com UBO global na GPU e remoção de preloads. |
+| [`089_cache_cutter_coin_manager.md`](./089_cache_cutter_coin_manager.md) | Otimização de Performance: Cache de Referência do Cortador no FloatingCoinManager (Tarefa 1.4) | Eliminação de varreduras repetitivas na SceneTree (`get_first_node_in_group`) a cada popup de moeda através de lazy cache local com validação defensiva. |
 
 ---
 

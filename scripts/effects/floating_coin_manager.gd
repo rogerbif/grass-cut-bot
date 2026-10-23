@@ -13,10 +13,12 @@ const COLOR_FLOWER: Color = Color(1.0, 0.40, 0.85, 1.0)
 var _pool: Array[Label3D] = []
 var _tweens: Array[Tween] = []
 var _next_index: int = 0
+var _cached_cutter: CharacterBody3D = null
 
 
 func _ready() -> void:
 	_init_pool()
+	call_deferred("_get_cutter")
 	if GameManager:
 		GameManager.coin_popup_requested.connect(_on_coin_popup_requested)
 
@@ -42,7 +44,11 @@ func _init_pool() -> void:
 
 
 func _get_cutter() -> CharacterBody3D:
-	return get_tree().get_first_node_in_group("cutter") as CharacterBody3D
+	if _cached_cutter == null or not is_instance_valid(_cached_cutter):
+		var tree: SceneTree = get_tree()
+		if tree != null:
+			_cached_cutter = tree.get_first_node_in_group("cutter") as CharacterBody3D
+	return _cached_cutter
 
 
 func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: String) -> void:
