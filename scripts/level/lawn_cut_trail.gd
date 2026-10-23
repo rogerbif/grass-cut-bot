@@ -20,7 +20,7 @@ func _ready() -> void:
 	viewport.size = Vector2i(256, 256)
 	viewport.transparent_bg = true
 	viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_NEVER
-	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	add_child(viewport)
 
 	brush_node = Node2D.new()
@@ -55,6 +55,8 @@ func paint(world_pos: Vector3, blade_radius: float) -> void:
 
 	if brush_node != null:
 		brush_node.queue_redraw()
+	if viewport != null:
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 func _on_brush_draw() -> void:
 	if _points_to_draw.is_empty():
@@ -68,3 +70,4 @@ func reset_trail() -> void:
 	_points_to_draw.clear()
 	if viewport != null:
 		viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ONCE
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
