@@ -37,6 +37,15 @@ const HAPTIC_UI_AMPLITUDE: float = 0.35 # Feedback sutil para botões da UI
 var _last_cut_haptic_time: int = 0
 var _last_ui_haptic_time: int = 0
 
+func _enter_tree() -> void:
+	# Registro defensivo dos Global Shader Parameters em tempo de execução
+	if RenderingServer.has_method("global_shader_parameter_get_list"):
+		var existing: PackedStringArray = RenderingServer.global_shader_parameter_get_list()
+		if not existing.has("global_cutter_pos"):
+			RenderingServer.global_shader_parameter_add(&"global_cutter_pos", RenderingServer.GLOBAL_VAR_TYPE_VEC3, Vector3(0.0, -9999.0, 0.0))
+		if not existing.has("global_cutter_interact_radius"):
+			RenderingServer.global_shader_parameter_add(&"global_cutter_interact_radius", RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 1.6)
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().node_added.connect(_on_scene_node_added)
