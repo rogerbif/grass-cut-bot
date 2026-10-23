@@ -80,6 +80,18 @@ var _cell_keys: PackedStringArray = PackedStringArray()
 var _cell_rewards: PackedInt32Array = PackedInt32Array()
 var _cell_is_completed: PackedByteArray = PackedByteArray()
 
+# Contadores físicos e acumuladores de corte (10 físicos = 1 meta)
+var _total_physical_grass: int = 0
+var _total_physical_wheat: int = 0
+var _total_physical_flower: int = 0
+
+var _remaining_physical_grass: int = 0
+var _remaining_physical_wheat: int = 0
+var _remaining_physical_flower: int = 0
+
+var _grass_cut_accumulator: int = 0
+var _wheat_cut_accumulator: int = 0
+
 # MultiMeshes ativos de vegetação (indexados por mmi_idx de 0 a VEG_TYPES.size() - 1)
 var _veg_multimeshes: Array[MultiMesh] = []
 var _veg_mmi_nodes: Array[MultiMeshInstance3D] = []
@@ -637,6 +649,32 @@ func _build_from_vector_field(
 				bucket.append(p_idx)
 				_grid[cell_key] = bucket
 
+	# Unifica contagem de metas: 10 tufos físicos = 1 unidade virtual de meta
+	_total_physical_grass = 0
+	_total_physical_wheat = 0
+	_total_physical_flower = 0
+	for p_idx: int in range(_positions.size()):
+		var pk: String = _plant_keys[p_idx]
+		if pk == "wheat":
+			_total_physical_wheat += 1
+		elif pk == "flower":
+			_total_physical_flower += 1
+		else:
+			_total_physical_grass += 1
+
+	_remaining_physical_grass = _total_physical_grass
+	_remaining_physical_wheat = _total_physical_wheat
+	_remaining_physical_flower = _total_physical_flower
+	_grass_cut_accumulator = 0
+	_wheat_cut_accumulator = 0
+
+	goals.clear()
+	goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
+	if _total_physical_wheat > 0:
+		goals["wheat"] = maxi(1, int(ceilf(float(_total_physical_wheat) / 10.0)))
+	if _total_physical_flower > 0:
+		goals["flower"] = _total_physical_flower
+
 	return goals
 
 
@@ -895,6 +933,32 @@ func _build_from_vegetation_field(
 				bucket.append(p_idx)
 				_grid[cell_key] = bucket
 
+	# Unifica contagem de metas: 10 tufos físicos = 1 unidade virtual de meta
+	_total_physical_grass = 0
+	_total_physical_wheat = 0
+	_total_physical_flower = 0
+	for p_idx: int in range(_positions.size()):
+		var pk: String = _plant_keys[p_idx]
+		if pk == "wheat":
+			_total_physical_wheat += 1
+		elif pk == "flower":
+			_total_physical_flower += 1
+		else:
+			_total_physical_grass += 1
+
+	_remaining_physical_grass = _total_physical_grass
+	_remaining_physical_wheat = _total_physical_wheat
+	_remaining_physical_flower = _total_physical_flower
+	_grass_cut_accumulator = 0
+	_wheat_cut_accumulator = 0
+
+	goals.clear()
+	goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
+	if _total_physical_wheat > 0:
+		goals["wheat"] = maxi(1, int(ceilf(float(_total_physical_wheat) / 10.0)))
+	if _total_physical_flower > 0:
+		goals["flower"] = _total_physical_flower
+
 	return goals
 
 
@@ -1012,14 +1076,45 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
 					_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
 
-					# Atualiza a contagem da célula lógica de 0.40m
-					var cell_idx: int = _tuft_logical_cell[p_idx]
-					if cell_idx >= 0 and cell_idx < _cell_remaining_tufts.size():
-						_cell_remaining_tufts[cell_idx] = _cell_remaining_tufts[cell_idx] - 1
-						if _cell_remaining_tufts[cell_idx] <= 0 and _cell_is_completed[cell_idx] == 0:
-							_cell_is_completed[cell_idx] = 1
+					# Acumulador unificado: 10 tufos físicos = 1 unidade de meta
+					var p_key: String = _plant_keys[p_idx]
+					if p_key == "wheat":
+						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
+						_wheat_cut_accumulator += 1
+						if _wheat_cut_accumulator >= 10:
+							_wheat_cut_accumulator -= 10
 							if GameManager != null:
-								GameManager.register_cut(_cell_keys[cell_idx], _cell_rewards[cell_idx], p_pos)
+								GameManager.register_cut("wheat", 3, p_pos)
+						elif _remaining_physical_wheat <= 0 and _wheat_cut_accumulator > 0:
+							_wheat_cut_accumulator = 0
+							if GameManager != null and GameManager.goals.get("wheat", 0) > 0:
+								GameManager.register_cut("wheat", 3, p_pos)
+					elif p_key == "flower":
+						_remaining_physical_flower = maxi(0, _remaining_physical_flower - 1)
+						if GameManager != null:
+							GameManager.register_cut("flower", 5, p_pos)
+					else:
+						# Qualquer tipo/cor de grama
+						_remaining_physical_grass = maxi(0, _remaining_physical_grass - 1)
+						_grass_cut_accumulator += 1
+						if _grass_cut_accumulator >= 10:
+							_grass_cut_accumulator -= 10
+							if GameManager != null:
+								GameManager.register_cut("grass", 1, p_pos)
+						elif _remaining_physical_grass <= 0 and _grass_cut_accumulator > 0:
+							_grass_cut_accumulator = 0
+							if GameManager != null and GameManager.goals.get("grass", 0) > 0:
+								GameManager.register_cut("grass", 1, p_pos)
+
+					# Proteção anti-trava: se todos os tufos físicos foram ceifados, fecha metas residuais
+					if _remaining_physical_grass <= 0 and _remaining_physical_wheat <= 0 and _remaining_physical_flower <= 0:
+						if GameManager != null:
+							while GameManager.goals.get("grass", 0) > 0:
+								GameManager.register_cut("grass", 1, p_pos)
+							while GameManager.goals.get("wheat", 0) > 0:
+								GameManager.register_cut("wheat", 3, p_pos)
+							while GameManager.goals.get("flower", 0) > 0:
+								GameManager.register_cut("flower", 5, p_pos)
 				else:
 					if mm != null:
 						var init_xform: Transform3D = _initial_transforms[p_idx]
@@ -1115,6 +1210,12 @@ func reset_all_plants() -> void:
 		var c_idx: int = _tuft_logical_cell[p_idx]
 		if c_idx >= 0 and c_idx < _cell_remaining_tufts.size():
 			_cell_remaining_tufts[c_idx] = _cell_remaining_tufts[c_idx] + 1
+
+	_remaining_physical_grass = _total_physical_grass
+	_remaining_physical_wheat = _total_physical_wheat
+	_remaining_physical_flower = _total_physical_flower
+	_grass_cut_accumulator = 0
+	_wheat_cut_accumulator = 0
 
 	if _lawn_cut_trail != null and is_instance_valid(_lawn_cut_trail):
 		_lawn_cut_trail.call("reset_trail")

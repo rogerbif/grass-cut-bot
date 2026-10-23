@@ -6,11 +6,11 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ## 1. Classificação das Espécies Vegetais
 
-| Variedade | Cena | Saúde Base | Moedas Ganhas | Partículas | Comportamento e Papel no Jogo |
+| Variedade | Cena | Saúde Base | Regra de Lote & Moedas | Partículas | Comportamento e Papel no Jogo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Grama Verde Básica** | `grass_tuft.tscn` | 1 golpe | 1 moeda | Verde esmeralda | Vegetação fundamental presente em todos os estágios. Ceifada instantaneamente. |
-| **Trigo Dourado** | `wheat_tuft.tscn` | 2 golpes | 3 moedas | Dourado ouro | Exige duas passadas ou lâmina com upgrade de potência $\ge 2$. Cota de colheita. |
-| **Flores do Campo** | `flower_tuft.tscn` | 2 golpes | 5 moedas | Pétalas magenta | Vegetação nobre com alto valor econômico. Cota de colheita nos níveis avançados. |
+| **Grama Verde Básica** | `grass_tuft.tscn` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Verde esmeralda | Vegetação fundamental presente em todos os estágios. Ceifada instantaneamente. |
+| **Trigo Dourado** | `wheat_tuft.tscn` | 2 golpes | 10 físicos = 1 meta = 3 🪙 | Dourado ouro | Exige duas passadas ou lâmina com upgrade de potência $\ge 2$. Cota de colheita. |
+| **Flores do Campo** | `flower_tuft.tscn` | 2 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Vegetação nobre com alto valor econômico. Cota de colheita nos níveis avançados. |
 
 ---
 
