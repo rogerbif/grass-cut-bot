@@ -2,6 +2,7 @@ extends Control
 
 signal modal_closed
 
+@onready var graphics_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles.get_node_or_null("GraphicsBtn") as Button
 @onready var music_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn
 @onready var sfx_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn
 @onready var vib_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/VibBtn
@@ -16,6 +17,7 @@ signal modal_closed
 @onready var close_btn: Button = $Panel/Header/CloseBtn
 @onready var toast_label: Label = $Panel/ToastLabel
 
+var graphics_quality: String = "balanced"
 var music_enabled: bool = true
 var sfx_enabled: bool = true
 var vib_enabled: bool = true
@@ -64,6 +66,7 @@ func _ready() -> void:
 		music_enabled = bool(SaveManager.get_setting("music_enabled", true))
 		sfx_enabled = bool(SaveManager.get_setting("sfx_enabled", true))
 		vib_enabled = bool(SaveManager.get_setting("vib_enabled", true))
+		graphics_quality = String(SaveManager.get_setting("graphics_quality", "balanced"))
 
 	if OS.get_name() == "Android" or OS.has_feature("android"):
 		var system_haptic_on: bool = _is_android_haptic_feedback_enabled()
@@ -87,6 +90,8 @@ func _ready() -> void:
 
 	if close_btn != null:
 		close_btn.pressed.connect(close_modal)
+	if graphics_btn != null:
+		graphics_btn.pressed.connect(_on_graphics_toggled)
 	if music_btn != null:
 		music_btn.pressed.connect(_on_music_toggled)
 	if sfx_btn != null:
@@ -124,6 +129,27 @@ func close_modal() -> void:
 		visible = false
 		modal_closed.emit()
 	)
+
+func _on_graphics_toggled() -> void:
+	match graphics_quality:
+		"balanced":
+			graphics_quality = "eco"
+			_show_toast("Qualidade 3D: Econômica (70% FSR - Bateria)")
+		"eco":
+			graphics_quality = "high"
+			_show_toast("Qualidade 3D: Alta (100% Nativa)")
+		"high":
+			graphics_quality = "balanced"
+			_show_toast("Qualidade 3D: Balanceada (85% FSR) ⭐")
+		_:
+			graphics_quality = "balanced"
+			_show_toast("Qualidade 3D: Balanceada (85% FSR) ⭐")
+
+	if SaveManager != null:
+		SaveManager.set_setting("graphics_quality", graphics_quality)
+	if GameManager != null:
+		GameManager.apply_graphics_quality(graphics_quality)
+	_update_toggle_visuals()
 
 func _on_music_toggled() -> void:
 	music_enabled = not music_enabled
@@ -170,6 +196,15 @@ func _on_android_vib_hint_pressed() -> void:
 	_open_android_sound_settings()
 
 func _update_toggle_visuals() -> void:
+	if graphics_btn != null:
+		match graphics_quality:
+			"high":
+				graphics_btn.text = "⚡ Gráficos 3D: Alta (100% Nativa)"
+			"eco":
+				graphics_btn.text = "⚡ Gráficos 3D: Econômica (70% FSR)"
+			_:
+				graphics_btn.text = "⚡ Gráficos 3D: Balanceada (85% FSR) ⭐"
+
 	if music_btn != null:
 		music_btn.text = "🎵 Música: " + ("ON" if music_enabled else "OFF")
 	if sfx_btn != null:

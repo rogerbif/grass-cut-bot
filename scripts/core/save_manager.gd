@@ -32,7 +32,8 @@ func get_default_save() -> Dictionary:
 		"settings": {
 			"music_enabled": true,
 			"sfx_enabled": true,
-			"vib_enabled": true
+			"vib_enabled": true,
+			"graphics_quality": "balanced"
 		},
 		"player": {
 			"total_coins": 0,

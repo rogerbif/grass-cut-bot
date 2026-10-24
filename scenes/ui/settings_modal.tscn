@@ -71,9 +71,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -300.0
-offset_top = -430.0
+offset_top = -455.0
 offset_right = 300.0
-offset_bottom = 430.0
+offset_bottom = 455.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_modal_panel")
@@ -112,11 +112,19 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.88, 0.95, 1)
 theme_override_font_sizes/font_size = 18
-text = "Áudio e Feedback Tátil"
+text = "Desempenho, Áudio e Tátil"
 
 [node name="HBoxToggles" type="VBoxContainer" parent="Panel/VBox/AudioSection/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 10
+
+[node name="GraphicsBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "⚡ Gráficos 3D: Balanceada (FSR) ⭐"
 
 [node name="MusicBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
 custom_minimum_size = Vector2(0, 48)
