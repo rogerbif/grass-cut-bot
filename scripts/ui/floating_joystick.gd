@@ -14,8 +14,10 @@ var touch_origin: Vector2 = Vector2.ZERO
 var stick_position: Vector2 = Vector2.ZERO
 var output_vector: Vector2 = Vector2.ZERO
 var touch_pointer_id: int = -1
+var _is_mobile: bool = false
 
 func _ready() -> void:
+	_is_mobile = OS.has_feature("mobile")
 	# Cobrir a área inferior da tela
 	anchor_left = 0.0
 	anchor_top = 0.4
@@ -119,8 +121,8 @@ func _process(_delta: float) -> void:
 			joystick_moved.emit(Vector2.ZERO)
 		return
 
-	# Fallback para teclado (WASD / Setas) se o joystick não estiver ativo
-	if not is_active:
+	# Fallback para teclado (WASD / Setas) se o joystick não estiver ativo (apenas fora do mobile)
+	if not is_active and not _is_mobile:
 		var keyboard_dir: Vector2 = Vector2.ZERO
 		if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
 			keyboard_dir.x += 1.0

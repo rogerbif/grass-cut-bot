@@ -35,6 +35,7 @@ var _temporary_timer: float = 0.0
 var _is_blinking: bool = false
 var _target_look_offset: Vector2 = Vector2.ZERO
 var _current_look_offset: Vector2 = Vector2.ZERO
+var _last_applied_look_offset: Vector2 = Vector2(-999.0, -999.0)
 var _blink_tween: Tween
 var _color_tween: Tween
 var _glitch_tween: Tween
@@ -64,8 +65,11 @@ func _process(delta: float) -> void:
 		return
 
 	# Suavização da direção do olhar (eye tracking)
-	_current_look_offset = _current_look_offset.lerp(_target_look_offset, delta * 10.0)
-	_material.set_shader_parameter("look_offset", _current_look_offset)
+	if not _current_look_offset.is_equal_approx(_target_look_offset):
+		_current_look_offset = _current_look_offset.lerp(_target_look_offset, delta * 10.0)
+	if _current_look_offset.distance_squared_to(_last_applied_look_offset) > 0.000004:
+		_last_applied_look_offset = _current_look_offset
+		_material.set_shader_parameter("look_offset", _current_look_offset)
 
 	# Temporizador de expressão temporária (ex.: após choque ou combo rápido)
 	if _temporary_timer > 0.0:

@@ -70,6 +70,8 @@ var _cached_cutter_speed: float = 3.25
 var _cached_cutter_power: int = 1
 var _last_shader_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
 var _last_shader_radius: float = -1.0
+var _last_cut_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
+var _last_cut_radius: float = -1.0
 var _overlapping_vegetation: Array[Area3D] = []
 
 # Cache pré-calculado de obstáculos (Tarefa 1.1)
@@ -710,6 +712,10 @@ func _cut_vegetation_area(area: Area3D) -> bool:
 
 func _process_cutting() -> void:
 	if vegetation_grid != null and is_instance_valid(vegetation_grid):
+		if global_position.distance_squared_to(_last_cut_pos) < 0.0004 and absf(_cached_blade_radius - _last_cut_radius) < 0.001:
+			return
+		_last_cut_pos = global_position
+		_last_cut_radius = _cached_blade_radius
 		vegetation_grid.call("cut_in_circle", global_position, _cached_blade_radius, _cached_cutter_power)
 		return
 	if _overlapping_vegetation.is_empty():

@@ -88,10 +88,16 @@ func _connect_button(btn: Button, callback: Callable) -> void:
 	btn.pressed.connect(callback)
 
 var _is_restarting: bool = false
+var _last_displayed_total_seconds: int = -1
 
 func _on_time_updated(time_left: float) -> void:
-	var minutes: int = int(time_left / 60.0)
-	var seconds: int = int(time_left) % 60
+	var total_sec: int = int(ceilf(time_left))
+	if total_sec == _last_displayed_total_seconds:
+		return
+	_last_displayed_total_seconds = total_sec
+
+	var minutes: int = total_sec / 60
+	var seconds: int = total_sec % 60
 	if timer_label != null:
 		timer_label.text = "%d:%02d" % [minutes, seconds]
 		
@@ -285,6 +291,7 @@ func _on_close_workshop_pressed() -> void:
 	workshop_modal.visible = false
 
 func _on_state_changed(new_state: int) -> void:
+	_last_displayed_total_seconds = -1
 	if new_state == GameManager.GameState.PLAYING:
 		if top_bar != null:
 			top_bar.visible = true
