@@ -40,3 +40,14 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
 
 - **Permissão VIBRATE Obrigatória:** No arquivo `export_presets.cfg`, a chave `permissions/vibrate` deve estar configurada como `true`. Sem isso, o sistema operacional Android bloqueia o acesso ao serviço de vibração em nível de sistema operacional (`SecurityException`), desativando silenciosamente qualquer chamada a `Input.vibrate_handheld()`.
 - **Calibração de Motores (ERM/LRA):** Pulsos hápticos devem respeitar um tempo mínimo de aceleração de inércia ($\ge 30\text{ms}$) e incluir rate-limiting de $\ge 35\text{ms}$ para evitar o cancelamento contínuo da API do Android em ceifadas consecutivas.
+
+---
+
+## 5. Especificação de Adaptive Icons (Android 8.0+)
+
+- **Safe Zone Canônica (72dp / ~67%):** Em dispositivos Android modernos (MIUI/HyperOS, OneUI, Pixel), o launcher aplica máscaras de recorte adaptativas (squircle, círculo ou quadrado arredondado) sobre a tela de 108dp (432x432 px).
+- **Enquadramento Sem Cortes:** Toda a arte crítica (logo "GRASS CUT BOT", Cutter Bit, lâminas e ilha) deve estar estritamente contida dentro da zona segura central de 288x288 px (escala de ~67% centralizada).
+- **Camadas Separadas e Sincronizadas:**
+  - `launcher_icons/adaptive_foreground_432x432="res://assets/brand/icon_432.png"`: Contém o emblema centrado na Safe Zone sobre o fundo de céu estendido.
+  - `launcher_icons/adaptive_background_432x432="res://assets/brand/icon_adaptive_background_432.png"`: Contém o gradiente de céu tropical (#6EE6FD -> #1E98D0) preenchendo todos os 432x432 px.
+  - `launcher_icons/main_192x192="res://assets/brand/icon_192.png"`: Formato legado para versões anteriores ao Android 8.0.
