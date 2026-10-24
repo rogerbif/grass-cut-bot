@@ -28,7 +28,7 @@ Este documento estabelece o diagnóstico técnico, a matriz de priorização por
 | **1.3** | **Shaders / CPU** | Migração de parâmetros da lâmina para `RenderingServer.global_shader_parameter_set` | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.12-alpha`)** |
 | **1.4** | **Efeitos / CPU** | Cache de referência do cortador no `FloatingCoinManager` | **Médio** | **Mínimo** | ✅ **Concluído (`v0.12.13-alpha`)** |
 | **2.1** | **Shaders / GPU** | Desacoplar `depth_texture` da água do mar em mobile (aproveitando `CoastalFoamRibbon`) | **Crítico** | **Médio** | ✅ **Concluído (`v0.12.14-alpha`)** |
-| **2.2** | **Render / GPU** | Avaliação de Backface Culling (`cull_back`) nas malhas de grama e aparas de solo | **Alto** | **Médio** | `shaders/interactive_grass.gdshader` |
+| **2.2** | **Render / GPU** | Avaliação de Backface Culling (`cull_back`) nas malhas de grama e aparas de solo | **Alto** | **Médio** | ✅ **Concluído (`v0.12.15-alpha`)** |
 | **2.3** | **Mobile / Engine** | Suporte a Escala de Resolução 3D (Scaling 3D / FSR 1.0) nas configurações de usuário | **Alto** | **Médio** | `scripts/ui/settings_modal.gd` & `project.godot` |
 | **3.1** | **Vegetação / VRAM** | Gerenciamento de `visible_instance_count` nos MultiMeshes de aparas cortadas | **Médio** | **Médio** | `scripts/plants/vegetation_grid.gd` |
 | **3.2** | **Partículas / CPU** | Calibração do pool e contagem de partículas de corte | **Médio** | **Baixo** | `scripts/plants/plant.gd` |

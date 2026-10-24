@@ -428,7 +428,7 @@ static func _get_or_create_clippings_mesh(v_type: String) -> ArrayMesh:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = leaf_color
 	mat.roughness = 0.90
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.cull_mode = BaseMaterial3D.CULL_BACK
 	st.set_material(mat)
 
 	# 6 lâminas fatiadas deitadas no plano XZ em posições e orientações aleatórias

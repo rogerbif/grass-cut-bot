@@ -1,5 +1,7 @@
 shader_type spatial;
-render_mode cull_disabled;
+// cull_disabled é essencial para preservar o volume foliar das 39 lâminas de face única (grass_01.glb)
+// sem falhas de transparência e sem flickering ao balançar no vento.
+render_mode cull_disabled, diffuse_toon;
 
 // Posição e raio do cortador via Global Shader Parameters (Zero Overhead GDScript)
 global uniform vec3 global_cutter_pos;
