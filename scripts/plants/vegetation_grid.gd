@@ -1046,6 +1046,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 	var max_cz: int = ceili((center.z + hit_radius) / GRID_STEP)
 
 	var now_sec: float = float(Time.get_ticks_msec()) * 0.001
+	var particles_spawned_this_frame: int = 0
 
 	for cx: int in range(min_cx, max_cx + 1):
 		for cz: int in range(min_cz, max_cz + 1):
@@ -1088,7 +1089,9 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 							if mmi_idx < _clipping_counts.size():
 								_clipping_counts[mmi_idx] = c_idx
 							clip_mm.visible_instance_count = c_idx
-					_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
+					if particles_spawned_this_frame < 2:
+						_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
+						particles_spawned_this_frame += 1
 
 					# Acumulador unificado: 10 tufos físicos = 1 unidade de meta
 					var p_key: String = _plant_keys[p_idx]

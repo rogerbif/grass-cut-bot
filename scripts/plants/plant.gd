@@ -150,10 +150,10 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.name = "PooledCutParticles_%d" % i
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
-		p.amount = 21
-		p.lifetime = 0.55
+		p.amount = 14
+		p.lifetime = 0.42
 		p.one_shot = true
-		p.explosiveness = 0.92
+		p.explosiveness = 0.95
 		p.mesh = LEAF_MESH
 		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_RING
 		p.emission_ring_axis = Vector3(0.0, 1.0, 0.0)
@@ -164,7 +164,7 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.direction = Vector3(0.0, 1.0, 0.0)
 		p.spread = 85.0
 		p.gravity = Vector3(0.0, -9.8, 0.0)
-		p.initial_velocity_min = 1.8
+		p.initial_velocity_min = 2.0
 		p.initial_velocity_max = 3.6
 		p.angular_velocity_min = -540.0
 		p.angular_velocity_max = 540.0
