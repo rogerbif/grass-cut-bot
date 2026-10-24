@@ -87,12 +87,14 @@ func _sync_ui_from_material() -> void:
 		return
 
 	var w_scale: float = float(water_material.get_shader_parameter("world_scale"))
-	var beer: float = float(water_material.get_shader_parameter("beer_factor"))
+	var beer_v: Variant = water_material.get_shader_parameter("beer_factor")
+	var beer: float = float(beer_v) if beer_v != null else 0.0
 	var cutoff: float = float(water_material.get_shader_parameter("surface_noise_cutoff"))
 	var dist: float = float(water_material.get_shader_parameter("surface_distortion_amount"))
 	var scr_v: Variant = water_material.get_shader_parameter("surface_noise_scroll")
 	var scr_spd: float = (scr_v as Vector3).x if scr_v is Vector3 else 0.04
-	var foam_d: float = float(water_material.get_shader_parameter("foam_max_distance"))
+	var foam_v: Variant = water_material.get_shader_parameter("foam_max_distance")
+	var foam_d: float = float(foam_v) if foam_v != null else 0.0
 	var rgh: float = float(water_material.get_shader_parameter("roughness"))
 	var coords_param: Variant = water_material.get_shader_parameter("use_world_coords")
 	_use_world_coords = bool(coords_param) if coords_param != null else true
@@ -226,30 +228,26 @@ func _generate_parameters_text() -> String:
 	if water_material == null:
 		return ""
 	var w_scale: float = float(water_material.get_shader_parameter("world_scale"))
-	var beer: float = float(water_material.get_shader_parameter("beer_factor"))
 	var cutoff: float = float(water_material.get_shader_parameter("surface_noise_cutoff"))
 	var dist: float = float(water_material.get_shader_parameter("surface_distortion_amount"))
 	var scr_v: Variant = water_material.get_shader_parameter("surface_noise_scroll")
 	var scr_spd: float = (scr_v as Vector3).x if scr_v is Vector3 else 0.04
-	var foam_d: float = float(water_material.get_shader_parameter("foam_max_distance"))
 	var rgh: float = float(water_material.get_shader_parameter("roughness"))
 	var c_sh: Color = water_material.get_shader_parameter("_DepthGradientShallow") as Color
 	var c_dp: Color = water_material.get_shader_parameter("_DepthGradientDeep") as Color
 	var c_fm: Color = water_material.get_shader_parameter("foam_color") as Color
 
-	var txt: String = """PARÂMETROS TOON WATER SHADER (ROYSTAN / HGOUVEIA):
+	var txt: String = """PARÂMETROS TOON WATER SHADER OTIMIZADO MOBILE:
 world_scale = %.3f
-beer_factor = %.2f
 surface_noise_cutoff = %.3f
 surface_distortion_amount = %.2f
 surface_noise_scroll = Vector3(%.3f, %.3f, 0.0)
-foam_max_distance = %.2f
 roughness = %.2f
 use_world_coords = %s
 _DepthGradientShallow = Color(%.3f, %.3f, %.3f, 1.0) # #%s
 _DepthGradientDeep = Color(%.3f, %.3f, %.3f, 1.0) # #%s
 foam_color = Color(%.3f, %.3f, %.3f, 1.0) # #%s""" % [
-		w_scale, beer, cutoff, dist, scr_spd, scr_spd, foam_d, rgh,
+		w_scale, cutoff, dist, scr_spd, scr_spd, rgh,
 		str(_use_world_coords),
 		c_sh.r, c_sh.g, c_sh.b, c_sh.to_html(false),
 		c_dp.r, c_dp.g, c_dp.b, c_dp.to_html(false),

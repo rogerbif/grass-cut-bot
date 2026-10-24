@@ -85,6 +85,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`087_subviewport_trilha_sob_demanda.md`](./087_subviewport_trilha_sob_demanda.md) | Otimização de Performance: SubViewport da Trilha de Solo Sob Demanda (Tarefa 1.2) | Eliminação de 3.600 passes/minuto de renderização ociosa do SubViewport 256x256 configurando UPDATE_ONCE ativado exclusivamente ao adicionar novos pontos de corte. |
 | [`088_global_shader_parameters_cortador.md`](./088_global_shader_parameters_cortador.md) | Otimização de Performance: Global Shader Parameters para Interação da Serra (Tarefa 1.3) | Substituição de 18 chamadas GDScript em 9 materiais por 2 chamadas nativas em C++ via RenderingServer.global_shader_parameter_set, com UBO global na GPU e remoção de preloads. |
 | [`089_cache_cutter_coin_manager.md`](./089_cache_cutter_coin_manager.md) | Otimização de Performance: Cache de Referência do Cortador no FloatingCoinManager (Tarefa 1.4) | Eliminação de varreduras repetitivas na SceneTree (`get_first_node_in_group`) a cada popup de moeda através de lazy cache local com validação defensiva. |
+| [`090_desacoplar_depth_texture_oceano.md`](./090_desacoplar_depth_texture_oceano.md) | Otimização de Performance: Desacoplar depth_texture do Toon Water para Mobile (Tarefa 2.1) | Eliminação de Depth Prepass e quebra de TBDR em mobile desacoplando depth_texture e dFdx/dFdy no shader de oceano, preservando cristas cel-shaded e anel CoastalFoamRibbon. |
 
 ---
 

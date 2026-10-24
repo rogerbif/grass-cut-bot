@@ -23,11 +23,11 @@ Este documento estabelece o diagnóstico técnico, a matriz de priorização por
 
 | ID | Subsistema | Tarefa / Otimização | Impacto | Esforço | Alvo Principal |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| **1.1** | **Física / CPU** | Cache pré-calculado de obstáculos (eliminar `get_nodes_in_group` e `get_node_or_null` em tick de 60Hz) | **Alto** | **Baixo** | `scripts/cutter/cutter.gd` |
-| **1.2** | **Render / GPU** | SubViewport de trilha de corte em modo sob demanda (`UPDATE_ONCE` / dirty) | **Alto** | **Baixo** | `scripts/level/lawn_cut_trail.gd` |
-| **1.3** | **Shaders / CPU** | Migração de parâmetros da lâmina para `RenderingServer.global_shader_parameter_set` | **Alto** | **Baixo** | `scripts/cutter/cutter.gd` & Shaders |
-| **1.4** | **Efeitos / CPU** | Cache de referência do cortador no `FloatingCoinManager` | **Médio** | **Mínimo** | `scripts/effects/floating_coin_manager.gd` |
-| **2.1** | **Shaders / GPU** | Desacoplar `depth_texture` da água do mar em mobile (aproveitando `CoastalFoamRibbon`) | **Crítico** | **Médio** | `shaders/toon_water.gdshader` |
+| **1.1** | **Física / CPU** | Cache pré-calculado de obstáculos (eliminar `get_nodes_in_group` e `get_node_or_null` em tick de 60Hz) | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.9-alpha`)** |
+| **1.2** | **Render / GPU** | SubViewport de trilha de corte em modo sob demanda (`UPDATE_ONCE` / dirty) | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.11-alpha`)** |
+| **1.3** | **Shaders / CPU** | Migração de parâmetros da lâmina para `RenderingServer.global_shader_parameter_set` | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.12-alpha`)** |
+| **1.4** | **Efeitos / CPU** | Cache de referência do cortador no `FloatingCoinManager` | **Médio** | **Mínimo** | ✅ **Concluído (`v0.12.13-alpha`)** |
+| **2.1** | **Shaders / GPU** | Desacoplar `depth_texture` da água do mar em mobile (aproveitando `CoastalFoamRibbon`) | **Crítico** | **Médio** | ✅ **Concluído (`v0.12.14-alpha`)** |
 | **2.2** | **Render / GPU** | Avaliação de Backface Culling (`cull_back`) nas malhas de grama e aparas de solo | **Alto** | **Médio** | `shaders/interactive_grass.gdshader` |
 | **2.3** | **Mobile / Engine** | Suporte a Escala de Resolução 3D (Scaling 3D / FSR 1.0) nas configurações de usuário | **Alto** | **Médio** | `scripts/ui/settings_modal.gd` & `project.godot` |
 | **3.1** | **Vegetação / VRAM** | Gerenciamento de `visible_instance_count` nos MultiMeshes de aparas cortadas | **Médio** | **Médio** | `scripts/plants/vegetation_grid.gd` |
