@@ -246,7 +246,7 @@ static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 	return offsets
 
 ## Gera polígono vetorial analítico fechado para carimbos no plano XZ
-static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector2) -> PackedVector2Array:
+static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector2, rotation_deg: float = 0.0) -> PackedVector2Array:
 	var poly: PackedVector2Array = PackedVector2Array()
 	var clamped_size: int = clampi(brush_size, 1, 4)
 	var r: float = float(clamped_size) * 0.35 + 0.15
@@ -313,6 +313,15 @@ static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector
 			for i: int in range(segs):
 				var a: float = float(i) * TAU / float(segs)
 				poly.append(center + Vector2(cos(a), sin(a)) * r)
+
+	if not is_zero_approx(rotation_deg):
+		var rot_rad: float = deg_to_rad(rotation_deg)
+		var rotated_poly: PackedVector2Array = PackedVector2Array()
+		rotated_poly.resize(poly.size())
+		for i: int in range(poly.size()):
+			var rel: Vector2 = poly[i] - center
+			rotated_poly[i] = center + rel.rotated(rot_rad)
+		return rotated_poly
 
 	return poly
 

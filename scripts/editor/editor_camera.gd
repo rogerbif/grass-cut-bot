@@ -38,6 +38,7 @@ func restore_editor_view() -> void:
 
 func toggle_top_down() -> bool:
 	is_top_down = not is_top_down
+	_update_camera_transform(1.0)
 	return is_top_down
 
 func center_on_origin() -> void:
@@ -82,6 +83,8 @@ func handle_camera_input(event: InputEvent, ui_has_focus: bool, mouse_over_ui: b
 
 func _process(delta: float) -> void:
 	if follow_target != null and is_instance_valid(follow_target):
+		projection = Camera3D.PROJECTION_PERSPECTIVE
+		fov = 46.0
 		var play_offset: Vector3 = Vector3(0.0, 7.2, 8.5)
 		var desired_pos: Vector3 = follow_target.global_position + play_offset
 		global_position = global_position.lerp(desired_pos, clampf(8.0 * delta, 0.0, 1.0))
@@ -114,8 +117,16 @@ func _process(delta: float) -> void:
 
 func _update_camera_transform(delta: float) -> void:
 	current_distance = lerpf(current_distance, target_distance, clampf(12.0 * delta, 0.0, 1.0))
-	var pitch_rad: float = deg_to_rad(86.0 if is_top_down else 42.0)
-	var offset_y: float = sin(pitch_rad) * current_distance
-	var offset_z: float = cos(pitch_rad) * current_distance
-	var cam_pos: Vector3 = focus_point + Vector3(0.0, offset_y, offset_z)
-	look_at_from_position(cam_pos, focus_point, Vector3.UP)
+	if is_top_down:
+		projection = Camera3D.PROJECTION_ORTHOGONAL
+		size = current_distance * 0.85
+		var cam_pos: Vector3 = focus_point + Vector3(0.0, 35.0, 0.0)
+		transform = Transform3D(Basis.looking_at(Vector3.DOWN, Vector3.FORWARD), cam_pos)
+	else:
+		projection = Camera3D.PROJECTION_PERSPECTIVE
+		fov = 46.0
+		var pitch_rad: float = deg_to_rad(42.0)
+		var offset_y: float = sin(pitch_rad) * current_distance
+		var offset_z: float = cos(pitch_rad) * current_distance
+		var cam_pos: Vector3 = focus_point + Vector3(0.0, offset_y, offset_z)
+		look_at_from_position(cam_pos, focus_point, Vector3.UP)

@@ -96,9 +96,9 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `4`), suporte
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular. |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
-| **Girar Tile ($90^\circ$)** | `R` | Alterna a orientação entre $0^\circ, 90^\circ, 180^\circ, 270^\circ$. |
+| **Girar Pincel / Tile** | `R` | Rotaciona em sentido horário de $5^\circ$ em $5^\circ$ (Pincel/Vegetação) ou $90^\circ$ (Tiles de Terreno). |
 | **Escala do Pincel** | `[` e `]` (ou `Alt + Scroll`) | Diminui ou aumenta o tamanho do carimbo. |
-| **Alternar Câmera** | `V` | Alterna entre Visão Isométrica 3D ($56^\circ$) e Visão Top-Down 2D ($86^\circ$). |
+| **Alternar Câmera** | `V` | Alterna entre Visão Isométrica 3D (Perspectiva $42^\circ$) e Visão Top-Down 2D (Ortogonal pura de topo). |
 | **Mover Câmera (Pan)** | `WASD` / Botão Meio / Botão Direito | Desloca o foco sobre o mapa. |
 | **Zoom da Câmera** | `Scroll do Mouse` | Aproxima ou afasta a câmera ($5.5\text{m}$ a $28.0\text{m}$). |
 | **Desfazer / Refazer** | `Ctrl + Z` / `Ctrl + Y` | Histórico de até 30 operações. |

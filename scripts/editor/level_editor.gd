@@ -252,7 +252,10 @@ func _connect_ui_signals() -> void:
 	)
 
 func _rotate_active_step() -> void:
-	current_rot_deg = (current_rot_deg + 90) % 360
+	if active_layer == EditLayer.TERRAIN:
+		current_rot_deg = (current_rot_deg + 90) % 360
+	else:
+		current_rot_deg = (current_rot_deg + 5) % 360
 	_sync_all_ui()
 	_refresh_hover_preview()
 
@@ -530,12 +533,12 @@ func _refresh_hover_preview() -> void:
 		var preview_poly: PackedVector2Array = PackedVector2Array()
 
 		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg))
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			preview_poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
 		else:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg))
 
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
 		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
@@ -586,12 +589,12 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		var poly: PackedVector2Array = PackedVector2Array()
 
 		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d)
+			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg))
 		elif _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
 		else:
-			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d)
+			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg))
 
 		if poly.size() < 3:
 			return

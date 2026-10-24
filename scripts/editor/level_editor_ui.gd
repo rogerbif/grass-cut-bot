@@ -798,9 +798,12 @@ func sync_state(
 	if lbl_brush_size != null:
 		lbl_brush_size.text = "Escala: %d" % brush_size
 	if btn_rotate != null:
-		btn_rotate.text = "🔄 Girar Tile [R]: %d°" % rot_deg
+		if active_layer == 0:
+			btn_rotate.text = "🔄 Girar Tile [R]: %d° (+90°)" % rot_deg
+		else:
+			btn_rotate.text = "🔄 Girar Pincel [R]: %d° (+5°)" % rot_deg
 	if btn_cam_view != null:
-		btn_cam_view.text = "🎥 Câmera [V]: Top-Down 2D" if is_top_down else "🎥 Câmera [V]: Isométrica 3D"
+		btn_cam_view.text = "🎥 Câmera [V]: Top-Down Ortogonal" if is_top_down else "🎥 Câmera [V]: Isométrica 3D"
 
 func update_level_header(level_id: int, width: int, height: int, time_limit: float) -> void:
 	if spin_level != null:

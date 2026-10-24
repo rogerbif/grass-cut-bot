@@ -241,8 +241,8 @@ func update_brush_preview(cells: Array[Vector2i], center_cell: Vector2i, rot_deg
 	if center_cell.x >= 0 and center_cell.x < current_width and center_cell.y >= 0 and center_cell.y < current_height:
 		var c_wp: Vector3 = LevelJsonLoader.grid_to_world(center_cell.x, center_cell.y, current_width, current_height, cell_size)
 		var rad: float = deg_to_rad(float(rot_deg))
-		var fwd: Vector3 = Vector3(-sin(rad), 0.0, -cos(rad))
-		var right_v: Vector3 = Vector3(cos(rad), 0.0, -sin(rad))
+		var fwd: Vector3 = Vector3(sin(rad), 0.0, -cos(rad))
+		var right_v: Vector3 = Vector3(cos(rad), 0.0, sin(rad))
 		var tip: Vector3 = Vector3(c_wp.x, y_h + 0.02, c_wp.z) + fwd * (half * 0.78)
 		var tail: Vector3 = Vector3(c_wp.x, y_h + 0.02, c_wp.z) - fwd * (half * 0.45)
 		var wing_l: Vector3 = tip - fwd * 0.14 - right_v * 0.12
