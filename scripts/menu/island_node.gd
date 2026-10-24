@@ -28,6 +28,8 @@ static var _mat_static_red: ShaderMaterial = null
 static var _mat_static_black: ShaderMaterial = null
 static var _mat_static_wheat: ShaderMaterial = null
 static var _mat_rock: StandardMaterial3D = null
+static var _vector_materials: Dictionary = {}
+static var _rock_mesh: Mesh = null
 
 @export var level_number: int = 1
 @export var is_unlocked: bool = true
@@ -50,6 +52,16 @@ var map_plaque_pos: Vector3 = Vector3(4.5, 0.25, 3.5)
 var plaque_tween: Tween = null
 var grass_mesh_records: Array[Dictionary] = []
 var is_built: bool = false
+
+var vector_ground_container: Node3D = null
+var veg_3d_container: Node3D = null
+var is_3d_veg_built: bool = false
+var _cached_level_data: Dictionary = {}
+var _cached_width: int = 12
+var _cached_height: int = 8
+var _cached_cell_size: float = 0.8
+var _cached_offset_x: float = 0.0
+var _cached_offset_z: float = 0.0
 
 
 func _ready() -> void:
@@ -93,6 +105,54 @@ func ensure_content_loaded() -> void:
 	is_built = true
 	build_miniature_from_json(level_number)
 	set_view_mode(is_map_mode, is_active_island, false)
+
+
+static func _ensure_rock_mesh() -> void:
+	if _rock_mesh == null:
+		var r_inst: Node = ROCK_MODEL.instantiate()
+		var mesh_node: MeshInstance3D = r_inst.get_node_or_null("rock_export") as MeshInstance3D
+		if mesh_node == null:
+			for child: Node in r_inst.get_children():
+				if child is MeshInstance3D and (child as MeshInstance3D).mesh != null:
+					mesh_node = child as MeshInstance3D
+					break
+		if mesh_node != null:
+			_rock_mesh = mesh_node.mesh
+		r_inst.free()
+
+
+static func _get_vector_material(v_type: String) -> StandardMaterial3D:
+	if _vector_materials.has(v_type):
+		return _vector_materials[v_type] as StandardMaterial3D
+
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.roughness = 0.90
+	mat.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+
+	match v_type:
+		"grass_yellow":
+			mat.albedo_color = Color(0.88, 0.78, 0.18, 1.0)
+		"grass_blue":
+			mat.albedo_color = Color(0.20, 0.55, 0.90, 1.0)
+		"grass_purple":
+			mat.albedo_color = Color(0.65, 0.28, 0.85, 1.0)
+		"grass_white":
+			mat.albedo_color = Color(0.92, 0.94, 0.96, 1.0)
+		"grass_red":
+			mat.albedo_color = Color(0.88, 0.22, 0.24, 1.0)
+		"grass_black":
+			mat.albedo_color = Color(0.18, 0.18, 0.22, 1.0)
+		"wheat":
+			mat.albedo_color = Color(0.92, 0.72, 0.20, 1.0)
+		"flower":
+			mat.albedo_color = Color(0.95, 0.35, 0.65, 1.0)
+		_:
+			mat.albedo_color = Color(0.24, 0.72, 0.28, 1.0) # grass_green
+
+	_vector_materials[v_type] = mat
+	return mat
 
 
 static func _init_materials() -> void:
@@ -277,15 +337,18 @@ func build_miniature_from_json(lvl: int) -> void:
 		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		mmi.name = "MiniTileMMI_%s" % t_id
 		mmi.multimesh = mm
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		miniature_container.add_child(mmi)
 
 	# Gera a fita de espuma costeira animada (CoastalFoamRibbon) na base exata das falésias
 	var foam_inst: MeshInstance3D = LevelJsonLoader.build_coastal_foam_mesh_instance(occupied_cells, width, height, cell_size)
 	if foam_inst != null:
+		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		miniature_container.add_child(foam_inst)
 
-	# 2. Agrupa vegetação em MultiMeshInstance3D a partir do VegetationField (0.20m) e instancia rochas
+	# 2. Agrupa rochas em MultiMeshInstance3D único (1 draw call por ilha)
 	var objects_arr: Array = data.get("objects", []) as Array
+	var rock_transforms: Array[Transform3D] = []
 
 	for obj_item: Variant in objects_arr:
 		if not (obj_item is Dictionary):
@@ -301,14 +364,120 @@ func build_miniature_from_json(lvl: int) -> void:
 		var base_pos: Vector3 = Vector3(local_ox, 0.0, local_oz)
 
 		if otype == "rock":
-			var r_inst: Node3D = ROCK_MODEL.instantiate() as Node3D
-			if r_inst != null:
-				for child: Node in r_inst.get_children():
-					if child is MeshInstance3D:
-						(child as MeshInstance3D).material_override = _mat_rock
-				r_inst.position = base_pos
-				r_inst.rotation_degrees.y = float(orot)
-				miniature_container.add_child(r_inst)
+			var r_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(orot)))
+			rock_transforms.append(Transform3D(r_basis, base_pos))
+
+	if not rock_transforms.is_empty():
+		_ensure_rock_mesh()
+		if _rock_mesh != null:
+			var r_mm: MultiMesh = MultiMesh.new()
+			r_mm.transform_format = MultiMesh.TRANSFORM_3D
+			r_mm.mesh = _rock_mesh
+			r_mm.instance_count = rock_transforms.size()
+			for idx: int in range(rock_transforms.size()):
+				r_mm.set_instance_transform(idx, rock_transforms[idx])
+
+			var r_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+			r_mmi.name = "MiniRocksMMI"
+			r_mmi.multimesh = r_mm
+			r_mmi.material_override = _mat_rock
+			r_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			miniature_container.add_child(r_mmi)
+
+	# 3. Cacheia metadados e constrói containers de vegetação vetorial e 3D
+	_cached_level_data = data
+	_cached_width = width
+	_cached_height = height
+	_cached_cell_size = cell_size
+	_cached_offset_x = offset_x
+	_cached_offset_z = offset_z
+	is_3d_veg_built = false
+
+	vector_ground_container = Node3D.new()
+	vector_ground_container.name = "VectorGroundContainer"
+	miniature_container.add_child(vector_ground_container)
+
+	veg_3d_container = Node3D.new()
+	veg_3d_container.name = "Veg3DContainer"
+	miniature_container.add_child(veg_3d_container)
+
+	# Constrói imediatamente o chão vetorial 2D plano (ultra-rápido, ~0.3ms)
+	_build_vector_ground(data, width, height, cell_size)
+
+	# Se for a ilha ativa na visão do robô, constrói a grama 3D antecipadamente
+	if not is_map_mode and is_active_island:
+		_ensure_3d_veg_built()
+
+	_apply_mode_visibility()
+
+
+func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: float) -> void:
+	if vector_ground_container == null:
+		return
+
+	for c: Node in vector_ground_container.get_children():
+		c.queue_free()
+
+	if not data.has("grass_vectors") or not (data["grass_vectors"] is Array):
+		return
+
+	var vector_field: RefCounted = VectorGrassFieldScript.new()
+	vector_field.call("from_dict_list", data["grass_vectors"] as Array)
+
+	var objects_arr: Array = data.get("objects", []) as Array
+
+	# Remove polígonos sob rochas para manter recorte estético limpo
+	for obj_item: Variant in objects_arr:
+		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
+			var rx: int = int((obj_item as Dictionary).get("gx", 0))
+			var rz: int = int((obj_item as Dictionary).get("gz", 0))
+			var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
+			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+				BrushPatterns.ShapeType.CIRCLE,
+				1,
+				Vector2(r_world.x, r_world.z)
+			)
+			vector_field.call("clip_shapes", rock_clip_poly)
+
+	# Adiciona flores de tile como selos circulares na malha vetorial
+	for obj_item: Variant in objects_arr:
+		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
+			var fx: int = int((obj_item as Dictionary).get("gx", 0))
+			var fz: int = int((obj_item as Dictionary).get("gz", 0))
+			var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
+			var flower_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+				BrushPatterns.ShapeType.CIRCLE,
+				1,
+				Vector2(f_pos.x, f_pos.z)
+			)
+			vector_field.call("add_shape", "flower", flower_poly)
+
+	var ground_meshes: Dictionary = vector_field.call("generate_ground_meshes") as Dictionary
+	for v_type_var: Variant in ground_meshes.keys():
+		var vt: String = String(v_type_var)
+		var mesh_res: Mesh = ground_meshes[vt] as Mesh
+		if mesh_res == null:
+			continue
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "VectorGroundMesh_%s" % vt
+		mi.mesh = mesh_res
+		mi.material_override = _get_vector_material(vt)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		vector_ground_container.add_child(mi)
+
+
+func _ensure_3d_veg_built() -> void:
+	if is_3d_veg_built or veg_3d_container == null or _cached_level_data.is_empty():
+		return
+	is_3d_veg_built = true
+
+	var data: Dictionary = _cached_level_data
+	var width: int = _cached_width
+	var height: int = _cached_height
+	var cell_size: float = _cached_cell_size
+	var offset_x: float = _cached_offset_x
+	var offset_z: float = _cached_offset_z
+	var objects_arr: Array = data.get("objects", []) as Array
 
 	var veg_transforms_by_type: Dictionary = {}
 	for v_type: String in VegetationGrid.VEG_TYPES:
@@ -316,11 +485,9 @@ func build_miniature_from_json(lvl: int) -> void:
 		veg_transforms_by_type[v_type] = empty_xforms
 
 	if data.has("grass_vectors") and data["grass_vectors"] is Array:
-		# Modo Vetorial v3 (Poisson Disk + Polígonos 2D contínuos)
 		var vector_field: RefCounted = VectorGrassFieldScript.new()
 		vector_field.call("from_dict_list", data["grass_vectors"] as Array)
 
-		# Remove polígonos sob rochas
 		for obj_item: Variant in objects_arr:
 			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
 				var rx: int = int((obj_item as Dictionary).get("gx", 0))
@@ -333,7 +500,6 @@ func build_miniature_from_json(lvl: int) -> void:
 				)
 				vector_field.call("clip_shapes", rock_clip_poly)
 
-		# Adiciona flores de tile (0.80m) definidas em objects
 		for obj_item: Variant in objects_arr:
 			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
 				var fx: int = int((obj_item as Dictionary).get("gx", 0))
@@ -371,7 +537,7 @@ func build_miniature_from_json(lvl: int) -> void:
 			var g_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
 			(veg_transforms_by_type[v_type] as Array[Transform3D]).append(Transform3D(g_basis, pos))
 	else:
-		# Modo Legado v1/v2 (VegetationField discreto)
+		# Modo Legado v1/v2
 		var veg_field: RefCounted = null
 		if data.has("vegetation") and data["vegetation"] is Dictionary:
 			var vdict: Dictionary = data["vegetation"] as Dictionary
@@ -382,7 +548,6 @@ func build_miniature_from_json(lvl: int) -> void:
 			veg_field = VegetationFieldScript.new(width, height)
 			veg_field.call("from_legacy_objects", objects_arr, width, height)
 
-		# Remove vegetação sob rochas
 		for obj_item: Variant in objects_arr:
 			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
 				var rx: int = int((obj_item as Dictionary).get("gx", 0))
@@ -394,10 +559,8 @@ func build_miniature_from_json(lvl: int) -> void:
 		var cols: int = int(veg_field.get("cols"))
 		var rows: int = int(veg_field.get("rows"))
 		var sdf: PackedFloat32Array = veg_field.call("compute_sdf_depth_map") as PackedFloat32Array
-
 		var processed_flowers: Dictionary = {}
 
-		# Adiciona flores de tile (0.80m) definidas em objects
 		for obj_item: Variant in objects_arr:
 			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
 				var fx: int = int((obj_item as Dictionary).get("gx", 0))
@@ -475,13 +638,45 @@ func build_miniature_from_json(lvl: int) -> void:
 		mmi.name = "MiniVegMMI_%s" % v_type
 		mmi.multimesh = mm
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		miniature_container.add_child(mmi)
+		veg_3d_container.add_child(mmi)
 
 		if v_type.begins_with("grass_") or v_type == "wheat":
 			grass_mesh_records.append({"mesh": mmi, "type": v_type})
 
-	# Atualiza o estado da animação de vento conforme o modo e atividade da ilha
 	set_grass_animated(not is_map_mode and is_active_island)
+
+
+func _apply_mode_visibility() -> void:
+	if is_map_mode:
+		if vector_ground_container != null:
+			vector_ground_container.visible = true
+		if veg_3d_container != null:
+			veg_3d_container.visible = false
+		set_grass_animated(false)
+	else:
+		if is_active_island:
+			_ensure_3d_veg_built()
+			if vector_ground_container != null:
+				vector_ground_container.visible = false
+			if veg_3d_container != null:
+				veg_3d_container.visible = true
+			set_grass_animated(true)
+		else:
+			if vector_ground_container != null:
+				vector_ground_container.visible = true
+			if veg_3d_container != null:
+				veg_3d_container.visible = false
+			set_grass_animated(false)
+
+
+func set_active_in_tree(is_active: bool) -> void:
+	if click_area != null:
+		click_area.monitoring = is_active
+		click_area.monitorable = is_active
+		var col: CollisionShape3D = click_area.get_node_or_null("CollisionShape3D") as CollisionShape3D
+		if col != null:
+			col.disabled = not is_active
+	process_mode = Node.PROCESS_MODE_INHERIT if is_active else Node.PROCESS_MODE_DISABLED
 
 
 func update_visuals() -> void:
@@ -520,8 +715,7 @@ func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -
 	is_map_mode = map_view
 	is_active_island = active_island
 
-	# Animação de vento da grama ativa EXCLUSIVAMENTE na ilha onde o robô estiver na visão do bot
-	set_grass_animated(not is_map_mode and is_active_island)
+	_apply_mode_visibility()
 
 	if plaque_root == null:
 		return

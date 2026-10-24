@@ -325,54 +325,69 @@ func sample_all_tufts(min_dist: float = MIN_TUFT_DISTANCE) -> Array[Dictionary]:
 ## Gera uma malha plana 2D/3D (ArrayMesh) rente ao piso triangulando os polígonos de cada cor
 func generate_ground_meshes() -> Dictionary:
 	var meshes_by_type: Dictionary = {}
-	# Agrupa polígonos por tipo
-	var polys_by_type: Dictionary = {}
+	var shapes_by_type: Dictionary = {}
 	for s: Dictionary in shapes:
 		var t: String = String(s.get("type", "grass_green"))
-		if not polys_by_type.has(t):
-			var arr: Array[PackedVector2Array] = []
-			polys_by_type[t] = arr
-		(polys_by_type[t] as Array[PackedVector2Array]).append(s.get("polygon", PackedVector2Array()) as PackedVector2Array)
+		if not shapes_by_type.has(t):
+			var arr: Array[Dictionary] = []
+			shapes_by_type[t] = arr
+		(shapes_by_type[t] as Array[Dictionary]).append(s)
 
-	for t: String in polys_by_type.keys():
-		var plist: Array[PackedVector2Array] = polys_by_type[t] as Array[PackedVector2Array]
+	for t: String in shapes_by_type.keys():
+		var slist: Array[Dictionary] = shapes_by_type[t] as Array[Dictionary]
 		var st: SurfaceTool = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var has_vertices: bool = false
 
-		for poly: PackedVector2Array in plist:
+		for s: Dictionary in slist:
+			var poly: PackedVector2Array = s.get("polygon", PackedVector2Array()) as PackedVector2Array
 			if poly.size() < 3:
 				continue
-			var indices: PackedInt32Array = Geometry2D.triangulate_polygon(poly)
-			if indices.is_empty():
-				continue
+			var holes: Array = s.get("holes", []) as Array
+			var polys_to_triangulate: Array[PackedVector2Array] = [poly]
+			if not holes.is_empty():
+				for h_item: Variant in holes:
+					if h_item is PackedVector2Array and (h_item as PackedVector2Array).size() >= 3:
+						var new_polys: Array[PackedVector2Array] = []
+						for p: PackedVector2Array in polys_to_triangulate:
+							new_polys.append_array(Geometry2D.clip_polygons(p, h_item as PackedVector2Array))
+						polys_to_triangulate = new_polys
 
-			# Mapeia vértices no SurfaceTool
-			var v_count: int = poly.size()
-			for i_idx: int in range(0, indices.size(), 3):
-				var i0: int = indices[i_idx]
-				var i1: int = indices[i_idx + 1]
-				var i2: int = indices[i_idx + 2]
-				if i0 >= v_count or i1 >= v_count or i2 >= v_count:
+			for p: PackedVector2Array in polys_to_triangulate:
+				if p.size() < 3:
+					continue
+				var indices: PackedInt32Array = Geometry2D.triangulate_polygon(p)
+				if indices.is_empty():
 					continue
 
-				var p0: Vector2 = poly[i0]
-				var p1: Vector2 = poly[i1]
-				var p2: Vector2 = poly[i2]
+				var v_count: int = p.size()
+				for i_idx: int in range(0, indices.size(), 3):
+					var i0: int = indices[i_idx]
+					var i1: int = indices[i_idx + 1]
+					var i2: int = indices[i_idx + 2]
+					if i0 >= v_count or i1 >= v_count or i2 >= v_count:
+						continue
 
-				st.set_normal(Vector3.UP)
-				st.set_uv(Vector2(p0.x * 0.5, p0.y * 0.5))
-				st.add_vertex(Vector3(p0.x, 0.002, p0.y))
+					var p0: Vector2 = p[i0]
+					var p1: Vector2 = p[i1]
+					var p2: Vector2 = p[i2]
 
-				st.set_normal(Vector3.UP)
-				st.set_uv(Vector2(p1.x * 0.5, p1.y * 0.5))
-				st.add_vertex(Vector3(p1.x, 0.002, p1.y))
+					st.set_normal(Vector3.UP)
+					st.set_uv(Vector2(p0.x * 0.5, p0.y * 0.5))
+					st.add_vertex(Vector3(p0.x, 0.005, p0.y))
 
-				st.set_normal(Vector3.UP)
-				st.set_uv(Vector2(p2.x * 0.5, p2.y * 0.5))
-				st.add_vertex(Vector3(p2.x, 0.002, p2.y))
+					st.set_normal(Vector3.UP)
+					st.set_uv(Vector2(p1.x * 0.5, p1.y * 0.5))
+					st.add_vertex(Vector3(p1.x, 0.005, p1.y))
 
-		var mesh_res: ArrayMesh = st.commit()
-		meshes_by_type[t] = mesh_res
+					st.set_normal(Vector3.UP)
+					st.set_uv(Vector2(p2.x * 0.5, p2.y * 0.5))
+					st.add_vertex(Vector3(p2.x, 0.005, p2.y))
+					has_vertices = true
+
+		if has_vertices:
+			var mesh_res: ArrayMesh = st.commit()
+			meshes_by_type[t] = mesh_res
 
 	return meshes_by_type
 

@@ -293,6 +293,8 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 				continue
 			var is_current: bool = (isl.level_number == selected_level)
 			isl.visible = is_current
+			if isl.has_method("set_active_in_tree"):
+				isl.set_active_in_tree(is_current)
 			if isl.has_method("set_grass_animated"):
 				isl.set_grass_animated(is_current) # Grama animada SOMENTE na visão bot na ilha atual
 		if clouds_end_node != null:
@@ -308,6 +310,8 @@ func _update_islands_visibility(is_map: bool, focal_level: int) -> void:
 				continue
 			var in_window: bool = (isl.level_number >= min_vis and isl.level_number <= max_vis)
 			isl.visible = in_window
+			if isl.has_method("set_active_in_tree"):
+				isl.set_active_in_tree(in_window)
 			if isl.has_method("set_grass_animated"):
 				isl.set_grass_animated(false) # Visão map não anima a grama
 
