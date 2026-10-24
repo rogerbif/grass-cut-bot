@@ -26,7 +26,8 @@ static func save_level_json(
 	terrain_grid: Dictionary,
 	object_grid: Dictionary,
 	veg_field: RefCounted = null,
-	vector_field: RefCounted = null
+	vector_field: RefCounted = null,
+	custom_goals: Dictionary = {}
 ) -> bool:
 	var global_dir: String = ProjectSettings.globalize_path(LEVELS_JSON_DIR)
 	if not DirAccess.dir_exists_absolute(global_dir):
@@ -95,6 +96,9 @@ static func save_level_json(
 		"objects": objects_list
 	}
 
+	if not custom_goals.is_empty():
+		payload["goals"] = custom_goals
+
 	if vector_field != null and vector_field.has_method("to_dict_list"):
 		payload["grass_vectors"] = vector_field.call("to_dict_list")
 	elif not existing_grass_vectors.is_empty():
@@ -134,7 +138,8 @@ static func bake_to_tscn(
 	terrain_grid: Dictionary,
 	object_grid: Dictionary,
 	veg_field: RefCounted = null,
-	vector_field: RefCounted = null
+	vector_field: RefCounted = null,
+	custom_goals: Dictionary = {}
 ) -> bool:
 	return save_level_json(
 		level_id,
@@ -147,5 +152,6 @@ static func bake_to_tscn(
 		terrain_grid,
 		object_grid,
 		veg_field,
-		vector_field
+		vector_field,
+		custom_goals
 	)

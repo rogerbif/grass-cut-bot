@@ -45,8 +45,15 @@ var object_buttons: Dictionary = {}
 var lbl_brush_size: Label
 var btn_rotate: Button
 var btn_cam_view: Button
-var lbl_goals_summary: Label
 var lbl_status: Label
+
+var lbl_active_layer_banner: Label
+var _goal_checkboxes: Dictionary = {}
+var _goal_spinboxes: Dictionary = {}
+var _goal_total_labels: Dictionary = {}
+var _goal_manually_edited: Dictionary = { "grass": false, "wheat": false, "flower": false }
+var _last_detected_counts: Dictionary = { "grass": 0, "wheat": 0, "flower": 0 }
+var lbl_world_metrics: Label
 
 var section_terrain: VBoxContainer
 var section_grass: VBoxContainer
@@ -276,19 +283,26 @@ func _build_top_bar() -> void:
 
 func _build_left_panel() -> void:
 	var left_panel: PanelContainer = PanelContainer.new()
-	left_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	left_panel.set_anchors_preset(Control.PRESET_LEFT_WIDE)
 	left_panel.offset_left = 12
-	left_panel.offset_top = 74
-	left_panel.offset_right = 278
-	left_panel.offset_bottom = 980
+	left_panel.offset_top = 70
+	left_panel.offset_right = 292
+	left_panel.offset_bottom = -52
 	left_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	left_panel.add_theme_stylebox_override("panel", _make_panel_style(Color(0.09, 0.12, 0.16, 0.94), Color(0.25, 0.65, 0.85, 0.75)))
 	editor_panels_root.add_child(left_panel)
 	_interactive_panels.append(left_panel)
 
+	var scroll_left: ScrollContainer = ScrollContainer.new()
+	scroll_left.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll_left.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left_panel.add_child(scroll_left)
+
 	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.add_theme_constant_override("separation", 8)
-	left_panel.add_child(vbox)
+	scroll_left.add_child(vbox)
 
 	# 1. Seletor de Camada
 	var lbl_layer: Label = Label.new()
@@ -349,7 +363,7 @@ func _build_left_panel() -> void:
 
 	for sh in BrushPatterns.SHAPE_INFO:
 		var s_id: int = int(sh["id"])
-		var s_btn: Button = _create_styled_button("%s %s" % [String(sh["icon"]), String(sh["name"])], Color(0.45, 0.75, 0.98), Vector2(116, 34))
+		var s_btn: Button = _create_styled_button("%s %s" % [String(sh["icon"]), String(sh["name"])], Color(0.45, 0.75, 0.98), Vector2(120, 34))
 		s_btn.pressed.connect(func() -> void: brush_shape_changed.emit(s_id))
 		grid_shapes.add_child(s_btn)
 		shape_buttons[s_id] = s_btn
@@ -360,7 +374,7 @@ func _build_left_panel() -> void:
 	hbox_size.add_theme_constant_override("separation", 8)
 	vbox.add_child(hbox_size)
 
-	var btn_sz_minus: Button = _create_styled_button("➖ [", Color(0.5, 0.7, 0.9), Vector2(54, 32))
+	var btn_sz_minus: Button = _create_styled_button("➖ [", Color(0.5, 0.7, 0.9), Vector2(56, 32))
 	btn_sz_minus.pressed.connect(func() -> void: brush_size_changed.emit(-1))
 	hbox_size.add_child(btn_sz_minus)
 
@@ -370,7 +384,7 @@ func _build_left_panel() -> void:
 	lbl_brush_size.custom_minimum_size = Vector2(95, 28)
 	hbox_size.add_child(lbl_brush_size)
 
-	var btn_sz_plus: Button = _create_styled_button("➕ ]", Color(0.5, 0.7, 0.9), Vector2(54, 32))
+	var btn_sz_plus: Button = _create_styled_button("➕ ]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
 	btn_sz_plus.pressed.connect(func() -> void: brush_size_changed.emit(1))
 	hbox_size.add_child(btn_sz_plus)
 
@@ -401,42 +415,62 @@ func _build_left_panel() -> void:
 
 func _build_right_panel() -> void:
 	var right_panel: PanelContainer = PanelContainer.new()
-	right_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	right_panel.offset_left = -298
-	right_panel.offset_top = 74
+	right_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	right_panel.offset_left = -326
+	right_panel.offset_top = 70
 	right_panel.offset_right = -12
-	right_panel.offset_bottom = 980
+	right_panel.offset_bottom = -52
 	right_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	right_panel.add_theme_stylebox_override("panel", _make_panel_style(Color(0.09, 0.12, 0.16, 0.94), Color(0.25, 0.65, 0.85, 0.75)))
 	editor_panels_root.add_child(right_panel)
 	_interactive_panels.append(right_panel)
 
+	var scroll_right: ScrollContainer = ScrollContainer.new()
+	scroll_right.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll_right.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_panel.add_child(scroll_right)
+
 	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
-	right_panel.add_child(vbox)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_theme_constant_override("separation", 8)
+	scroll_right.add_child(vbox)
+
+	# 0. Banner de Contexto da Camada Ativa
+	lbl_active_layer_banner = Label.new()
+	lbl_active_layer_banner.text = "🏝️ PALETA: TERRENO DA ILHA (0.8m)"
+	lbl_active_layer_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_active_layer_banner.add_theme_font_size_override("font_size", 13)
+	lbl_active_layer_banner.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
+	var banner_style: StyleBoxFlat = _make_panel_style(Color(0.12, 0.18, 0.22, 0.85), Color(0.3, 0.75, 0.5), 6)
+	banner_style.content_margin_top = 5
+	banner_style.content_margin_bottom = 5
+	lbl_active_layer_banner.add_theme_stylebox_override("normal", banner_style)
+	vbox.add_child(lbl_active_layer_banner)
 
 	# 1. Seção de Terreno (0.80m)
 	section_terrain = VBoxContainer.new()
+	section_terrain.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	section_terrain.add_theme_constant_override("separation", 6)
 	vbox.add_child(section_terrain)
 
 	var lbl_t_pal: Label = Label.new()
 	lbl_t_pal.text = "🏝️ BLOCOS DE ILHA (TERRENO 0.8m)"
-	lbl_t_pal.add_theme_font_size_override("font_size", 12)
+	lbl_t_pal.add_theme_font_size_override("font_size", 13)
 	lbl_t_pal.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
 	section_terrain.add_child(lbl_t_pal)
 
 	var grid_terrain: GridContainer = GridContainer.new()
 	grid_terrain.columns = 2
 	grid_terrain.add_theme_constant_override("h_separation", 6)
-	grid_terrain.add_theme_constant_override("v_separation", 4)
+	grid_terrain.add_theme_constant_override("v_separation", 6)
 	section_terrain.add_child(grid_terrain)
 
 	for item in TilePaletteDB.TERRAIN_ITEMS:
 		var t_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 28))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 11)
+		b.add_theme_font_size_override("font_size", 13)
 		b.tooltip_text = String(item.get("desc", ""))
 		b.pressed.connect(func() -> void: terrain_tile_selected.emit(t_id))
 		grid_terrain.add_child(b)
@@ -444,28 +478,29 @@ func _build_right_panel() -> void:
 
 	# 2. Seção de Grama Orgânica (0.20m)
 	section_grass = VBoxContainer.new()
+	section_grass.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	section_grass.add_theme_constant_override("separation", 6)
 	vbox.add_child(section_grass)
 
 	var lbl_g_pal: Label = Label.new()
 	lbl_g_pal.text = "🌿 GRAMA COMUM (1x HP - CAMPO 0.2m)"
-	lbl_g_pal.add_theme_font_size_override("font_size", 12)
+	lbl_g_pal.add_theme_font_size_override("font_size", 13)
 	lbl_g_pal.add_theme_color_override("font_color", Color(0.35, 0.90, 1.0))
 	section_grass.add_child(lbl_g_pal)
 
 	var grid_grass: GridContainer = GridContainer.new()
 	grid_grass.columns = 2
 	grid_grass.add_theme_constant_override("h_separation", 6)
-	grid_grass.add_theme_constant_override("v_separation", 4)
+	grid_grass.add_theme_constant_override("v_separation", 6)
 	section_grass.add_child(grid_grass)
 
 	for item in TilePaletteDB.GRASS_ITEMS:
 		var g_id: String = String(item["id"])
 		if g_id == "wheat":
 			continue
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(128, 28))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 11)
+		b.add_theme_font_size_override("font_size", 13)
 		b.pressed.connect(func() -> void: grass_item_selected.emit(g_id))
 		grid_grass.add_child(b)
 		grass_buttons[g_id] = b
@@ -474,7 +509,7 @@ func _build_right_panel() -> void:
 
 	var lbl_w_pal: Label = Label.new()
 	lbl_w_pal.text = "🌾 VEGETAÇÃO DE META (2x HP - 3 MOEDAS)"
-	lbl_w_pal.add_theme_font_size_override("font_size", 12)
+	lbl_w_pal.add_theme_font_size_override("font_size", 13)
 	lbl_w_pal.add_theme_color_override("font_color", Color(1.0, 0.82, 0.28))
 	section_grass.add_child(lbl_w_pal)
 
@@ -484,10 +519,10 @@ func _build_right_panel() -> void:
 		var b_wheat: Button = _create_styled_button(
 			"%s %s" % [String(w_dict["icon"]), String(w_dict["name"])],
 			w_dict["color"] as Color,
-			Vector2(262, 34)
+			Vector2(294, 36)
 		)
 		b_wheat.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b_wheat.add_theme_font_size_override("font_size", 12)
+		b_wheat.add_theme_font_size_override("font_size", 13)
 		b_wheat.pressed.connect(func() -> void: grass_item_selected.emit("wheat"))
 		section_grass.add_child(b_wheat)
 		grass_buttons["wheat"] = b_wheat
@@ -495,50 +530,126 @@ func _build_right_panel() -> void:
 	var btn_convert: Button = _create_styled_button(
 		"🔄 Converter Grama Amarela ➔ Trigo",
 		Color(0.85, 0.65, 0.25),
-		Vector2(262, 28)
+		Vector2(294, 32)
 	)
 	btn_convert.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	btn_convert.add_theme_font_size_override("font_size", 11)
+	btn_convert.add_theme_font_size_override("font_size", 12)
 	btn_convert.tooltip_text = "Converte polígonos de Grama Amarela no mapa em Trigo Maduro (para contagem de metas)"
 	btn_convert.pressed.connect(func() -> void: convert_yellow_to_wheat_requested.emit())
 	section_grass.add_child(btn_convert)
 
 	# 3. Seção de Objetos no Tile (0.80m)
 	section_objects = VBoxContainer.new()
+	section_objects.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	section_objects.add_theme_constant_override("separation", 6)
 	vbox.add_child(section_objects)
 
 	var lbl_o_pal: Label = Label.new()
 	lbl_o_pal.text = "🪨 OBJETOS NO TILE (0.8m)"
-	lbl_o_pal.add_theme_font_size_override("font_size", 12)
+	lbl_o_pal.add_theme_font_size_override("font_size", 13)
 	lbl_o_pal.add_theme_color_override("font_color", Color(1.0, 0.75, 0.35))
 	section_objects.add_child(lbl_o_pal)
 
-	var hbox_objects: HBoxContainer = HBoxContainer.new()
-	hbox_objects.add_theme_constant_override("separation", 6)
-	section_objects.add_child(hbox_objects)
+	var grid_objects: GridContainer = GridContainer.new()
+	grid_objects.columns = 3
+	grid_objects.add_theme_constant_override("h_separation", 6)
+	grid_objects.add_theme_constant_override("v_separation", 6)
+	section_objects.add_child(grid_objects)
 
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var o_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(86, 32))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(94, 34))
 		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.add_theme_font_size_override("font_size", 11)
+		b.add_theme_font_size_override("font_size", 12)
 		b.pressed.connect(func() -> void: object_item_selected.emit(o_id))
-		hbox_objects.add_child(b)
+		grid_objects.add_child(b)
 		object_buttons[o_id] = b
 
 	vbox.add_child(HSeparator.new())
 
+	# 4. Seção de Metas & Métricas da Fase com Checkboxes e SpinBoxes
+	_build_goals_metric_section(vbox)
+
+func _build_goals_metric_section(parent_box: VBoxContainer) -> void:
 	var lbl_meta_hdr: Label = Label.new()
-	lbl_meta_hdr.text = "📊 CONTAGEM AUTOMÁTICA DE METAS"
+	lbl_meta_hdr.text = "🎯 METAS DA FASE (OBJETIVOS)"
 	lbl_meta_hdr.add_theme_font_size_override("font_size", 13)
 	lbl_meta_hdr.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
-	vbox.add_child(lbl_meta_hdr)
+	parent_box.add_child(lbl_meta_hdr)
 
-	lbl_goals_summary = Label.new()
-	lbl_goals_summary.text = "🌿 Gramas: 0\n🌾 Trigo: 0\n🌸 Flores: 0\n🪨 Rochas: 0\n🏝️ Tiles Ilha: 0"
-	lbl_goals_summary.add_theme_font_size_override("font_size", 14)
-	vbox.add_child(lbl_goals_summary)
+	var goals_meta: Array[Dictionary] = [
+		{ "key": "grass", "name": "🌿 Grama", "color": Color(0.35, 0.90, 0.45) },
+		{ "key": "wheat", "name": "🌾 Trigo", "color": Color(1.0, 0.82, 0.28) },
+		{ "key": "flower", "name": "🌸 Flores", "color": Color(1.0, 0.50, 0.75) }
+	]
+
+	for gm in goals_meta:
+		var g_key: String = String(gm["key"])
+		var g_name: String = String(gm["name"])
+		var g_color: Color = gm["color"] as Color
+
+		var card: PanelContainer = PanelContainer.new()
+		card.add_theme_stylebox_override("panel", _make_panel_style(Color(0.11, 0.15, 0.20, 0.9), g_color.darkened(0.5), 6))
+		parent_box.add_child(card)
+
+		var hbox: HBoxContainer = HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 6)
+		card.add_child(hbox)
+
+		var chk: CheckBox = CheckBox.new()
+		chk.text = g_name
+		chk.button_pressed = true
+		chk.focus_mode = Control.FOCUS_NONE
+		chk.add_theme_font_size_override("font_size", 13)
+		chk.add_theme_color_override("font_color", g_color)
+		chk.tooltip_text = "Marque se colher este item é obrigatório para vencer a fase"
+		hbox.add_child(chk)
+		_goal_checkboxes[g_key] = chk
+
+		var lbl_slash: Label = Label.new()
+		lbl_slash.text = "/ 0"
+		lbl_slash.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl_slash.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		lbl_slash.add_theme_font_size_override("font_size", 12)
+		lbl_slash.add_theme_color_override("font_color", Color(0.7, 0.8, 0.85))
+		lbl_slash.tooltip_text = "Total deste item presente no mapa atualmente"
+		hbox.add_child(lbl_slash)
+		_goal_total_labels[g_key] = lbl_slash
+
+		var spin: SpinBox = SpinBox.new()
+		spin.min_value = 1
+		spin.max_value = 9999
+		spin.step = 1
+		spin.value = 1
+		spin.custom_minimum_size = Vector2(72, 30)
+		spin.tooltip_text = "Quantidade necessária para bater a meta da fase"
+		hbox.add_child(spin)
+		_goal_spinboxes[g_key] = spin
+
+		chk.toggled.connect(func(toggled_on: bool) -> void:
+			spin.editable = toggled_on
+			spin.modulate.a = 1.0 if toggled_on else 0.4
+			if toggled_on and not _goal_manually_edited[g_key]:
+				var detected: int = int(_last_detected_counts.get(g_key, 0))
+				if detected > 0:
+					spin.value = detected
+		)
+
+		spin.value_changed.connect(func(_val: float) -> void:
+			_goal_manually_edited[g_key] = true
+		)
+
+	# Métricas informativas de construção (rochas e solo)
+	var card_world: PanelContainer = PanelContainer.new()
+	card_world.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.15, 0.85), Color(0.3, 0.45, 0.55, 0.6), 6))
+	parent_box.add_child(card_world)
+
+	lbl_world_metrics = Label.new()
+	lbl_world_metrics.text = "🪨 Rochas: 0  |  🏝️ Blocos Ilha: 0"
+	lbl_world_metrics.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_world_metrics.add_theme_font_size_override("font_size", 12)
+	lbl_world_metrics.add_theme_color_override("font_color", Color(0.75, 0.85, 0.95))
+	card_world.add_child(lbl_world_metrics)
 
 func _build_bottom_bar() -> void:
 	var bot_panel: PanelContainer = PanelContainer.new()
@@ -626,6 +737,17 @@ func set_active_layer(layer_idx: int) -> void:
 		section_grass.visible = (layer_idx == 1)
 	if section_objects != null:
 		section_objects.visible = (layer_idx == 2)
+	if lbl_active_layer_banner != null:
+		match layer_idx:
+			0:
+				lbl_active_layer_banner.text = "🏝️ PALETA: TERRENO DA ILHA (0.8m)"
+				lbl_active_layer_banner.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
+			1:
+				lbl_active_layer_banner.text = "🌿 PALETA: GRAMAS VETORIAIS (0.2m)"
+				lbl_active_layer_banner.add_theme_color_override("font_color", Color(0.35, 0.90, 1.0))
+			2:
+				lbl_active_layer_banner.text = "🪨 PALETA: OBJETOS NO TILE (0.8m)"
+				lbl_active_layer_banner.add_theme_color_override("font_color", Color(1.0, 0.75, 0.35))
 
 func sync_state(
 	active_layer: int,
@@ -696,8 +818,6 @@ func update_goals_summary(
 	veg_field: RefCounted = null,
 	vector_field: RefCounted = null
 ) -> void:
-	if lbl_goals_summary == null:
-		return
 	var grass_tufts: int = 0
 	var wheat_tufts: int = 0
 	var flower_c: int = 0
@@ -736,9 +856,70 @@ func update_goals_summary(
 		elif t == "rock":
 			rock_c += 1
 
-	lbl_goals_summary.text = "🌿 Grama: %d\n🌾 Trigo: %d\n🌸 Flores: %d\n🪨 Rochas: %d\n🏝️ Blocos Ilha: %d" % [
-		grass_tufts, wheat_tufts, flower_c, rock_c, terrain_count
-	]
+	_last_detected_counts["grass"] = grass_tufts
+	_last_detected_counts["wheat"] = wheat_tufts
+	_last_detected_counts["flower"] = flower_c
+
+	var counts_map: Dictionary = {
+		"grass": grass_tufts,
+		"wheat": wheat_tufts,
+		"flower": flower_c
+	}
+
+	for k: String in ["grass", "wheat", "flower"]:
+		var cnt: int = int(counts_map[k])
+		if _goal_total_labels.has(k) and _goal_total_labels[k] != null:
+			(_goal_total_labels[k] as Label).text = "/ %d" % cnt
+		if _goal_spinboxes.has(k) and _goal_spinboxes[k] != null:
+			var spin: SpinBox = _goal_spinboxes[k] as SpinBox
+			if not _goal_manually_edited.get(k, false):
+				if cnt > 0:
+					spin.set_value_no_signal(float(cnt))
+				else:
+					spin.set_value_no_signal(1.0)
+
+	if lbl_world_metrics != null:
+		lbl_world_metrics.text = "🪨 Rochas: %d  |  🏝️ Blocos Ilha: %d" % [rock_c, terrain_count]
+
+func get_configured_goals() -> Dictionary:
+	var res: Dictionary = {}
+	for k: String in ["grass", "wheat", "flower"]:
+		var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
+		var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
+		if chk != null and chk.button_pressed and spin != null:
+			res[k] = int(spin.value)
+	return res
+
+func set_configured_goals(goals: Dictionary) -> void:
+	if not goals.is_empty():
+		for k: String in ["grass", "wheat", "flower"]:
+			var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
+			var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
+			if chk == null or spin == null:
+				continue
+			if goals.has(k):
+				chk.set_pressed_no_signal(true)
+				spin.editable = true
+				spin.modulate.a = 1.0
+				spin.set_value_no_signal(float(goals[k]))
+				_goal_manually_edited[k] = true
+			else:
+				chk.set_pressed_no_signal(false)
+				spin.editable = false
+				spin.modulate.a = 0.4
+				_goal_manually_edited[k] = false
+	else:
+		for k: String in ["grass", "wheat", "flower"]:
+			_goal_manually_edited[k] = false
+			var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
+			var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
+			var detected: int = int(_last_detected_counts.get(k, 0))
+			if chk != null:
+				chk.set_pressed_no_signal(detected > 0)
+			if spin != null:
+				spin.editable = (detected > 0)
+				spin.modulate.a = 1.0 if (detected > 0) else 0.4
+				spin.set_value_no_signal(float(maxi(1, detected)))
 
 func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> void:
 	if lbl_status == null:

@@ -38,8 +38,8 @@ var _last_cut_haptic_time: int = 0
 var _last_ui_haptic_time: int = 0
 
 func _enter_tree() -> void:
-	# Registro defensivo dos Global Shader Parameters em tempo de execução
-	if RenderingServer.has_method("global_shader_parameter_get_list"):
+	# Registro defensivo dos Global Shader Parameters apenas se executado dentro do editor
+	if Engine.is_editor_hint() and RenderingServer.has_method("global_shader_parameter_get_list"):
 		var existing: PackedStringArray = RenderingServer.global_shader_parameter_get_list()
 		if not existing.has("global_cutter_pos"):
 			RenderingServer.global_shader_parameter_add(&"global_cutter_pos", RenderingServer.GLOBAL_VAR_TYPE_VEC3, Vector3(0.0, -9999.0, 0.0))

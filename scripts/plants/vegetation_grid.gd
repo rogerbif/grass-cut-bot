@@ -377,6 +377,15 @@ func build_from_level_json(
 	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
 	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells)
 
+	# Se o JSON possui metas personalizadas definidas pelo editor, substitui as metas padrão
+	if data.has("goals") and data["goals"] is Dictionary:
+		var custom_goals: Dictionary = data["goals"] as Dictionary
+		if not custom_goals.is_empty():
+			goals.clear()
+			for g_key: Variant in custom_goals:
+				var k_str: String = String(g_key)
+				goals[k_str] = int(custom_goals[g_key])
+
 	# 5. Posiciona o cortador no spawn
 	var spawn_dict: Dictionary = data.get("spawn", {}) as Dictionary
 	var sp_x: int = int(spawn_dict.get("gx", int(float(width) / 2.0)))

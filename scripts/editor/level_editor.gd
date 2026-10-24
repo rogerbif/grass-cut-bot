@@ -1021,6 +1021,9 @@ func _load_or_init_level(lvl_id: int) -> void:
 
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
+		var saved_goals: Dictionary = data.get("goals", {}) as Dictionary
+		if ui != null and ui.has_method("set_configured_goals"):
+			ui.set_configured_goals(saved_goals)
 		if ui != null:
 			ui.show_toast("📂 Fase %02d carregada (%s)" % [lvl_id, json_path.get_file()], Color(0.35, 0.85, 1.0))
 	else:
@@ -1028,6 +1031,8 @@ func _load_or_init_level(lvl_id: int) -> void:
 		_build_default_island_for_level(lvl_id)
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
+		if ui != null and ui.has_method("set_configured_goals"):
+			ui.set_configured_goals({})
 		if ui != null:
 			ui.show_toast("✨ Nova Fase %02d iniciada (Ilha 3D)" % lvl_id, Color(0.4, 0.95, 0.6))
 
@@ -1068,6 +1073,7 @@ func _build_default_island_for_level(lvl_id: int) -> void:
 
 func save_current_level_json() -> void:
 	IslandAutotiler.apply_autotile(terrain_grid)
+	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
 	var ok: bool = LevelSerializer.save_level_json(
 		current_level_id,
 		"Fase %02d" % current_level_id,
@@ -1079,7 +1085,8 @@ func save_current_level_json() -> void:
 		terrain_grid,
 		object_grid,
 		veg_field,
-		vector_grass
+		vector_grass,
+		configured_goals
 	)
 	if ok:
 		ui.show_toast("💾 Salvo em res://data/levels/level_%02d.json" % current_level_id, Color(0.25, 0.95, 0.5))
@@ -1087,7 +1094,8 @@ func save_current_level_json() -> void:
 		ui.show_toast("❌ Erro ao salvar JSON da fase!", Color(0.95, 0.3, 0.3))
 
 func bake_current_level_tscn() -> void:
-	save_current_level_json()
+	IslandAutotiler.apply_autotile(terrain_grid)
+	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
 	var ok: bool = LevelSerializer.bake_to_tscn(
 		current_level_id,
 		time_limit,
@@ -1098,7 +1106,8 @@ func bake_current_level_tscn() -> void:
 		terrain_grid,
 		object_grid,
 		veg_field,
-		vector_grass
+		vector_grass,
+		configured_goals
 	)
 	if ok:
 		ui.show_toast("📦 Cena exportada: res://scenes/levels/level_%02d.tscn" % current_level_id, Color(0.7, 0.5, 1.0))
@@ -1156,7 +1165,10 @@ func _start_playtest() -> void:
 		_playtest_joystick.connect("joystick_moved", Callable(_playtest_cutter, "set_input_direction"))
 
 	if GameManager != null:
-		if not _last_editor_goals.is_empty():
+		var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+		if not configured_goals.is_empty():
+			goals = configured_goals.duplicate()
+		elif not _last_editor_goals.is_empty():
 			goals = _last_editor_goals.duplicate()
 		if goals.is_empty():
 			goals = { "grass": 1 }
