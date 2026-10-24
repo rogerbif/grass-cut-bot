@@ -99,6 +99,7 @@ var _veg_mmi_nodes: Array[MultiMeshInstance3D] = []
 # MultiMeshes de aparas de folhas cortadas deitadas no chão
 var _clipping_multimeshes: Array[MultiMesh] = []
 var _clipping_mmi_nodes: Array[MultiMeshInstance3D] = []
+var _clipping_counts: PackedInt32Array = PackedInt32Array()
 static var _clipping_meshes: Dictionary = {}
 
 # Decalque de solo orgânico e trilha
@@ -221,6 +222,7 @@ func _clear_state() -> void:
 	_veg_mmi_nodes.clear()
 	_clipping_multimeshes.clear()
 	_clipping_mmi_nodes.clear()
+	_clipping_counts.clear()
 	_grid.clear()
 	_last_vegetation_on = true
 	_last_density_step = 1
@@ -551,6 +553,8 @@ func _build_from_vector_field(
 	_veg_mmi_nodes.resize(VEG_TYPES.size())
 	_clipping_multimeshes.resize(VEG_TYPES.size())
 	_clipping_mmi_nodes.resize(VEG_TYPES.size())
+	_clipping_counts.resize(VEG_TYPES.size())
+	_clipping_counts.fill(0)
 
 	for mmi_idx: int in range(VEG_TYPES.size()):
 		var v_type: String = VEG_TYPES[mmi_idx]
@@ -577,6 +581,7 @@ func _build_from_vector_field(
 		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
 		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
 		clip_mm.instance_count = count
+		clip_mm.visible_instance_count = 0
 
 		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		clip_mmi.name = "ClippingsMMI_%s" % v_type
@@ -832,6 +837,8 @@ func _build_from_vegetation_field(
 	_veg_mmi_nodes.resize(VEG_TYPES.size())
 	_clipping_multimeshes.resize(VEG_TYPES.size())
 	_clipping_mmi_nodes.resize(VEG_TYPES.size())
+	_clipping_counts.resize(VEG_TYPES.size())
+	_clipping_counts.fill(0)
 
 	for mmi_idx: int in range(VEG_TYPES.size()):
 		var v_type: String = VEG_TYPES[mmi_idx]
@@ -858,6 +865,7 @@ func _build_from_vegetation_field(
 		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
 		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
 		clip_mm.instance_count = count
+		clip_mm.visible_instance_count = 0
 
 		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		clip_mmi.name = "ClippingsMMI_%s" % v_type
@@ -1073,7 +1081,13 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 					var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 					if clip_mm != null:
-						clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
+						var c_idx: int = _clipping_counts[mmi_idx] if mmi_idx < _clipping_counts.size() else 0
+						if c_idx < clip_mm.instance_count:
+							clip_mm.set_instance_transform(c_idx, _cut_transforms[p_idx])
+							c_idx += 1
+							if mmi_idx < _clipping_counts.size():
+								_clipping_counts[mmi_idx] = c_idx
+							clip_mm.visible_instance_count = c_idx
 					_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
 
 					# Acumulador unificado: 10 tufos físicos = 1 unidade de meta
@@ -1192,6 +1206,15 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 			if clip_mm != null:
 				clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
+	for mmi_idx: int in range(_clipping_multimeshes.size()):
+		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
+		if clip_mm != null:
+			if not vegetation_on:
+				clip_mm.visible_instance_count = 0
+			else:
+				var c_cnt: int = _clipping_counts[mmi_idx] if mmi_idx < _clipping_counts.size() else 0
+				clip_mm.visible_instance_count = c_cnt
+
 
 func reset_all_plants() -> void:
 	var total: int = _positions.size()
@@ -1219,6 +1242,13 @@ func reset_all_plants() -> void:
 
 	if _lawn_cut_trail != null and is_instance_valid(_lawn_cut_trail):
 		_lawn_cut_trail.call("reset_trail")
+
+	for mmi_idx: int in range(_clipping_multimeshes.size()):
+		if mmi_idx < _clipping_counts.size():
+			_clipping_counts[mmi_idx] = 0
+		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
+		if clip_mm != null:
+			clip_mm.visible_instance_count = 0
 
 	set_benchmark_visibility(_last_vegetation_on, _last_density_step)
 

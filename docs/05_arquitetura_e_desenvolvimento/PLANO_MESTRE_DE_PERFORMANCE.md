@@ -30,7 +30,7 @@ Este documento estabelece o diagnóstico técnico, a matriz de priorização por
 | **2.1** | **Shaders / GPU** | Desacoplar `depth_texture` da água do mar em mobile (aproveitando `CoastalFoamRibbon`) | **Crítico** | **Médio** | ✅ **Concluído (`v0.12.14-alpha`)** |
 | **2.2** | **Render / GPU** | Avaliação de Backface Culling (`cull_back`) nas malhas de grama e aparas de solo | **Alto** | **Médio** | ✅ **Concluído (`v0.12.15-alpha`)** |
 | **2.3** | **Mobile / Engine** | Suporte a Escala de Resolução 3D (Scaling 3D / FSR 1.0) nas configurações de usuário | **Alto** | **Médio** | ✅ **Concluído (`v0.12.16-alpha`)** |
-| **3.1** | **Vegetação / VRAM** | Gerenciamento de `visible_instance_count` nos MultiMeshes de aparas cortadas | **Médio** | **Médio** | `scripts/plants/vegetation_grid.gd` |
+| **3.1** | **Vegetação / VRAM** | Gerenciamento de `visible_instance_count` nos MultiMeshes de aparas cortadas | **Médio** | **Médio** | ✅ **Concluído (`v0.12.17-alpha`)** |
 | **3.2** | **Partículas / CPU** | Calibração do pool e contagem de partículas de corte | **Médio** | **Baixo** | `scripts/plants/plant.gd` |
 | **4.1** | **Arquitetura** | Perfil experimental de renderizador OpenGL ES 3.0 (`gl_compatibility`) | **Médio** | **Alto** | `project.godot` |
 
