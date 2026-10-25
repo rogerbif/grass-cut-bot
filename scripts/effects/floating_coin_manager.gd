@@ -102,20 +102,20 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	var tween: Tween = create_tween()
 	_tweens[idx] = tween
 
-	# 1. Aparecer em fase (Fade-in rápido: 0.0 -> 1.0 em 0.08s)
-	tween.tween_property(label, "modulate:a", 1.0, 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 1. Aparecer em fase (Fade-in rápido: 0.0 -> 1.0 em 0.04s)
+	tween.tween_property(label, "modulate:a", 1.0, 0.04).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 2. Crescer depois diminuir (Pop elástico: 0.35 -> 1.30 em 0.10s, depois 1.30 -> 1.0 em 0.08s)
-	tween.parallel().tween_property(label, "scale", Vector3(1.30, 1.30, 1.30), 0.10).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.chain().tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	# 2. Crescer depois diminuir (Pop elástico: 0.35 -> 1.30 em 0.05s, depois 1.30 -> 1.0 em 0.04s)
+	tween.parallel().tween_property(label, "scale", Vector3(1.30, 1.30, 1.30), 0.05).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.chain().tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.04).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
-	# 3. Subir verticalmente (+0.70m durante 0.60s)
-	var target_y: float = spawn_pos.y + 0.70
-	tween.parallel().tween_property(label, "global_position:y", target_y, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 3. Subir verticalmente (+0.55m durante 0.30s)
+	var target_y: float = spawn_pos.y + 0.55
+	tween.parallel().tween_property(label, "global_position:y", target_y, 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 4. Desaparecer em fase (Fade-out transparente: sustentação inicial e fade 1.0 -> 0.0 em 0.28s)
-	tween.chain().tween_interval(0.14)
-	tween.chain().tween_property(label, "modulate:a", 0.0, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# 4. Desaparecer em fase (Fade-out transparente: sustentação curta de 0.07s e fade 1.0 -> 0.0 em 0.14s)
+	tween.chain().tween_interval(0.07)
+	tween.chain().tween_property(label, "modulate:a", 0.0, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 	# 5. Oculta ao finalizar
 	tween.tween_callback(func() -> void:
