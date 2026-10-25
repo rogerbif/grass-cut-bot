@@ -8,11 +8,47 @@ const LevelSerializer = preload("res://scripts/editor/level_serializer.gd")
 const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
+const ROCK_SCENE: PackedScene = preload("res://scenes/obstacles/rock.tscn")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
 const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.tscn")
 const MAX_UNDO_STEPS: int = 30
 const CELL_SIZE: float = 0.80
+
+static var _editor_vector_materials: Dictionary = {}
+
+static func _get_editor_vector_material(v_type: String) -> StandardMaterial3D:
+	if _editor_vector_materials.has(v_type):
+		return _editor_vector_materials[v_type] as StandardMaterial3D
+
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.roughness = 0.90
+	mat.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+
+	match v_type:
+		"grass_yellow":
+			mat.albedo_color = Color(0.88, 0.78, 0.18, 1.0)
+		"grass_blue":
+			mat.albedo_color = Color(0.20, 0.55, 0.90, 1.0)
+		"grass_purple":
+			mat.albedo_color = Color(0.65, 0.28, 0.85, 1.0)
+		"grass_white":
+			mat.albedo_color = Color(0.92, 0.94, 0.96, 1.0)
+		"grass_red":
+			mat.albedo_color = Color(0.88, 0.22, 0.24, 1.0)
+		"grass_black":
+			mat.albedo_color = Color(0.18, 0.18, 0.22, 1.0)
+		"wheat":
+			mat.albedo_color = Color(0.92, 0.72, 0.20, 1.0)
+		"flower":
+			mat.albedo_color = Color(0.95, 0.35, 0.65, 1.0)
+		_:
+			mat.albedo_color = Color(0.24, 0.72, 0.28, 1.0) # grass_green
+
+	_editor_vector_materials[v_type] = mat
+	return mat
 
 enum EditLayer {
 	TERRAIN = 0,
@@ -768,45 +804,74 @@ func _rebuild_3d_world() -> void:
 	# 4. Constrói barreiras invisíveis de contenção costeira (Layer 1) e espumas na água
 	LevelJsonLoader.build_coastal_colliders_and_foam(coastal_limits_body, terrain_grid, grid_width, grid_height, CELL_SIZE)
 
-	# 5. Instancia vegetação via VegetationGrid oficial (MultiMesh WYSIWYG) e rochas
-	var veg_json: Dictionary = {
-		"grid": { "width": grid_width, "height": grid_height, "cell_size": CELL_SIZE },
-		"terrain": [],
-		"objects": [],
-		"grass_vectors": vector_grass.call("to_dict_list") if vector_grass != null else []
-	}
-
-	# Inclui rochas e flores em objects (discretos por tile de 0.80m)
+	# 5. Instancia obstáculos (Rochas 3D) em obstacles_container
 	for cell_key: Variant in object_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock" or o_type == "flower":
-			veg_json["objects"].append({
-				"gx": cell.x,
-				"gz": cell.y,
-				"type": o_type,
-				"rot": int(entry.get("rot", 0))
-			})
+		if o_type == "rock":
+			var r_inst: Node3D = ROCK_SCENE.instantiate() as Node3D
+			if r_inst != null:
+				r_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+				r_inst.rotation_degrees.y = float(entry.get("rot", 0))
+				obstacles_container.add_child(r_inst)
 
-	var veg_grid_inst: Node3D = VegetationGridScript.new() as Node3D
-	veg_grid_inst.name = "EditorVegGrid"
-	plants_container.add_child(veg_grid_inst)
-	_active_veg_grid = veg_grid_inst
-	# Desativa água e limites costeiros do grid filho para não duplicar os do editor
-	_last_editor_goals = veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null) as Dictionary
-	var child_water: Node = veg_grid_inst.get_node_or_null("WaterOcean")
-	if child_water != null:
-		child_water.queue_free()
-	var child_limits: Node = veg_grid_inst.get_node_or_null("CoastalLimits")
-	if child_limits != null:
-		child_limits.queue_free()
+	# 6. Constrói a prancheta vetorial plana colorida (Modo Edição Instantâneo, <0.5ms)
+	_build_editor_vector_ground()
 
-	# 6. Posiciona indicador visual do Spawn
+	# 7. Posiciona indicador visual do Spawn
 	if spawn_marker_visual != null:
 		var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
 		spawn_marker_visual.position = Vector3(sp_world.x, 0.02, sp_world.z)
 		spawn_marker_visual.rotation_degrees.y = float(spawn_rot)
+
+
+func _build_editor_vector_ground() -> void:
+	for c: Node in plants_container.get_children():
+		plants_container.remove_child(c)
+		c.queue_free()
+
+	_active_veg_grid = null
+
+	if vector_grass == null or not vector_grass.has_method("to_dict_list"):
+		return
+
+	var vector_field_clone: RefCounted = VectorGrassFieldScript.new()
+	vector_field_clone.call("from_dict_list", vector_grass.call("to_dict_list"))
+
+	# Remove polígonos sob rochas e adiciona flores
+	for cell_key: Variant in object_grid.keys():
+		var cell: Vector2i = cell_key as Vector2i
+		var entry: Dictionary = object_grid[cell] as Dictionary
+		var o_type: String = String(entry.get("type", ""))
+		if o_type == "rock":
+			var r_world: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+				BrushPatterns.ShapeType.CIRCLE,
+				1,
+				Vector2(r_world.x, r_world.z)
+			)
+			vector_field_clone.call("clip_shapes", rock_clip_poly)
+		elif o_type == "flower":
+			var f_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+			var flower_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+				BrushPatterns.ShapeType.CIRCLE,
+				1,
+				Vector2(f_pos.x, f_pos.z)
+			)
+			vector_field_clone.call("add_shape", "flower", flower_poly)
+
+	var ground_meshes: Dictionary = vector_field_clone.call("generate_ground_meshes") as Dictionary
+	for vt_var: Variant in ground_meshes.keys():
+		var vt: String = String(vt_var)
+		var mesh_res: Mesh = ground_meshes[vt] as Mesh
+		if mesh_res == null:
+			continue
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.name = "EditorGroundMesh_%s" % vt
+		mi.mesh = mesh_res
+		mi.material_override = _get_editor_vector_material(vt)
+		plants_container.add_child(mi)
 
 func _push_undo_snapshot() -> void:
 	var snap: Dictionary = {
@@ -1137,16 +1202,46 @@ func _start_playtest() -> void:
 	spawn_marker_visual.visible = false
 	ui.set_playtest_mode(true)
 
-	# Calcula metas reais da ilha a partir do VegetationGrid
-	var goals: Dictionary = {}
-	var editor_vg: Node3D = _active_veg_grid
-	if editor_vg == null or not is_instance_valid(editor_vg) or editor_vg.is_queued_for_deletion():
-		for c in plants_container.get_children():
-			if not c.is_queued_for_deletion() and c is Node3D:
-				editor_vg = c as Node3D
-				break
-		if editor_vg == null:
-			editor_vg = plants_container.get_node_or_null("EditorVegGrid") as Node3D
+	# 1. Limpa malhas vetoriais temporárias de edição
+	for c: Node in plants_container.get_children():
+		plants_container.remove_child(c)
+		c.queue_free()
+
+	# 2. Prepara dados e limpa obstáculos para instanciação do VegetationGrid oficial
+	var veg_json: Dictionary = {
+		"grid": { "width": grid_width, "height": grid_height, "cell_size": CELL_SIZE },
+		"terrain": [],
+		"objects": [],
+		"grass_vectors": vector_grass.call("to_dict_list") if vector_grass != null else []
+	}
+	for cell_key: Variant in object_grid.keys():
+		var cell: Vector2i = cell_key as Vector2i
+		var entry: Dictionary = object_grid[cell] as Dictionary
+		var o_type: String = String(entry.get("type", ""))
+		if o_type == "rock" or o_type == "flower":
+			veg_json["objects"].append({
+				"gx": cell.x,
+				"gz": cell.y,
+				"type": o_type,
+				"rot": int(entry.get("rot", 0))
+			})
+
+	for c: Node in obstacles_container.get_children():
+		obstacles_container.remove_child(c)
+		c.queue_free()
+
+	var veg_grid_inst: Node3D = VegetationGridScript.new() as Node3D
+	veg_grid_inst.name = "PlaytestVegGrid"
+	plants_container.add_child(veg_grid_inst)
+	_active_veg_grid = veg_grid_inst
+
+	_last_editor_goals = veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null) as Dictionary
+	var child_water: Node = veg_grid_inst.get_node_or_null("WaterOcean")
+	if child_water != null:
+		child_water.queue_free()
+	var child_limits: Node = veg_grid_inst.get_node_or_null("CoastalLimits")
+	if child_limits != null:
+		child_limits.queue_free()
 
 	# Instancia o Cortador
 	_playtest_cutter = CUTTER_SCENE.instantiate() as CharacterBody3D
@@ -1157,8 +1252,8 @@ func _start_playtest() -> void:
 	add_child(_playtest_cutter)
 	if _playtest_cutter.has_method("rebuild_obstacles_cache"):
 		_playtest_cutter.call("rebuild_obstacles_cache")
-	if editor_vg != null:
-		_playtest_cutter.set("vegetation_grid", editor_vg)
+	if _active_veg_grid != null:
+		_playtest_cutter.set("vegetation_grid", _active_veg_grid)
 
 	# Instancia o Joystick para suporte a mouse/touch e teclado WASD/Setas
 	_playtest_joystick = JOYSTICK_SCENE.instantiate() as Control
@@ -1167,6 +1262,7 @@ func _start_playtest() -> void:
 	if _playtest_joystick.has_signal("joystick_moved"):
 		_playtest_joystick.connect("joystick_moved", Callable(_playtest_cutter, "set_input_direction"))
 
+	var goals: Dictionary = {}
 	if GameManager != null:
 		var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
 		if not configured_goals.is_empty():

@@ -73,6 +73,10 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
     - **Persistência em JSON v3 (`"goals"`):** O dicionário de metas configurado é serializado no JSON do nível e respeitado tanto no Playtest quanto no jogo final (`VegetationGrid.build_from_level_json()`).
     - **Métricas Informativas de Construção:** Exibe no rodapé as quantidades de obstáculos (`🪨 Rochas`) e solo construído (`🏝️ Blocos Ilha`).
 
+### 2.3 Prancheta Vetorial no Modo Edição vs. Grama 3D no Playtest (F1)
+- **Modo Edição (Prancheta Vetorial):** A vegetação é exibida exclusivamente através de superfícies vetoriais planas coloridas (`VectorGrassField.generate_ground_meshes()`) a $Y = 0.005\text{m}$, com materiais foscos (`roughness = 0.90`) e recorte exato sob as rochas. O tempo de resposta ao pintar com pincel ou carimbo cai de $\sim 35\text{ms}$ para **$< 0.5\text{ms}$** (zero lag), mantendo a grade, o spawn e os encaixes de blocos 100% visíveis.
+- **Modo Playtest ([F1] ou [F5]):** Ao acionar o teste, o `VegetationGrid` oficial 3D volumétrico (com física de corte, partículas em arco, moedas e colheitadeira) é instanciado na hora. Ao sair pressionando `ESC` ou `F1`, a vegetação de teste é liberada da memória e o editor retorna instantaneamente à prancheta vetorial limpa com a fase intacta.
+
 ---
 
 ## 3. Pincéis e Carimbos de Formas Analíticas (`brush_patterns.gd`)
