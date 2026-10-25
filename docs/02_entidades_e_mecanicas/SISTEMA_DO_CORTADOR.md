@@ -14,15 +14,16 @@ O cortador é instanciado a partir de um `CharacterBody3D` posicionado rente ao 
 ```
 Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 ├── BodyCollision (CollisionShape3D - Cylinder r=0.45m, h=0.5m)
-├── VisualPivot (Node3D - Escala 0.70x)
+├── VisualPivot (Node3D - Escala 0.62x)
 │   └── GrassBot (Instância de grass_bot.glb)
 │       └── Robot (Node3D)
-│           ├── Body (Node3D - Chassi, Cabeça, Paralama, Bateria, Container)
-│           │   └── wheel (MeshInstance3D - Rolagem contínua no eixo X por velocidade)
-│           └── BladeSpinner (Node3D - Rotação omnidirecional em Y: 1200°/s em movimento, 90°/s em idle)
-│               ├── blade_tier_1 (MeshInstance3D - Nv. 1-2: Lâmina Tripla de Aço 3 pontas)
-│               ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Lâmina Quádrupla Ninja 4 pontas)
-│               └── blade_tier_3 (MeshInstance3D - Nv. 5+: Lâmina Estelar de Titânio)
+│           └── Body (Node3D - Chassi, Cabeça, Paralama, Bateria, Container)
+│               ├── wheel (MeshInstance3D - Rolagem contínua no eixo X por velocidade)
+│               └── BladeSpinner (Node3D - Reparentado no _ready() sob Body: herda pitch/roll/suspensão; rotação local em Y)
+│                   ├── blade_tier_1 (MeshInstance3D - Nv. 1-2: Lâmina Tripla de Aço 3 pontas)
+│                   ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Lâmina Quádrupla Ninja 4 pontas)
+│                   ├── blade_tier_3 (MeshInstance3D - Nv. 5-6: Lâmina Estelar de Titânio 5 pontas)
+│                   └── blade_tier_4 (MeshInstance3D - Nv. 7+: Lâmina Vortex Ninja 6 pontas)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
 │   └── CollisionShape3D (Cylinder r=0.90m dinâmico, h=0.4m em Y=0.45m)
 └── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
@@ -69,6 +70,9 @@ O chassi e suas peças reagem organicamente às forças de inércia e relevo do 
 4. **Articulação de Braços e Cabeça:**
    - Braços da suspensão (`low_arm` e `up_arm`) rotacionam sutilmente em $X$ acompanhando o curso dos pistões.
    - O pescoço (`neck`) absorve o pitch para estabilizar a visão, e a cabeça (`head`) apresenta leve inércia/antecipação no Yaw ao virar.
+5. **Sincronização da Serra com o Chassi (`BladeSpinner`):**
+   - Reparentada sob `Body` no `_ready()`, a serra acompanha diretamente o *pitch* frontal/traseiro, o *roll* lateral e o *bobbing* vertical.
+   - A lâmina de corte permanece rigorosamente coplanar com a carenagem protetora amarela (`blade_container`), eliminando clipping visual em acelerações e curvas enquanto a serra gira continuamente ao redor de seu eixo normal local.
 
 ---
 

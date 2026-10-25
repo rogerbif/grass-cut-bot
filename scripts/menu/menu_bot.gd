@@ -60,6 +60,8 @@ var _expression_timer: float = 0.0
 
 func _ready() -> void:
 	base_position = position
+	if blade_spinner != null and robot_body != null:
+		blade_spinner.reparent(robot_body, true)
 	if robot_body != null:
 		robot_body.rotation.y = 0.0 # Rosto e serra voltados para a câmera do menu
 

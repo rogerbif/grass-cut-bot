@@ -84,6 +84,8 @@ func _ready() -> void:
 	add_to_group("cutter")
 	current_blade_speed = idle_rotation_speed
 	_cached_cutter_speed = base_speed
+	if blade_spinner != null and robot_body != null:
+		blade_spinner.reparent(robot_body, true)
 	if robot_body:
 		robot_body.rotation.y = 0.0 # Virado de frente para a câmera (+Z)
 		initial_body_y = robot_body.position.y
