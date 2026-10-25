@@ -248,7 +248,7 @@ func _connect_ui_signals() -> void:
 		_refresh_hover_preview()
 	)
 	ui.brush_size_changed.connect(func(delta_sz: int) -> void:
-		brush_size = clampi(brush_size + delta_sz, 1, 4)
+		brush_size = clampi(brush_size + delta_sz, 1, 20)
 		_sync_all_ui()
 		_refresh_hover_preview()
 	)
@@ -366,11 +366,11 @@ func _input(event: InputEvent) -> void:
 						editor_camera.toggle_top_down()
 						_sync_all_ui()
 					KEY_BRACKETLEFT:
-						brush_size = clampi(brush_size - 1, 1, 4)
+						brush_size = clampi(brush_size - 1, 1, 20)
 						_sync_all_ui()
 						_refresh_hover_preview()
 					KEY_BRACKETRIGHT:
-						brush_size = clampi(brush_size + 1, 1, 4)
+						brush_size = clampi(brush_size + 1, 1, 20)
 						_sync_all_ui()
 						_refresh_hover_preview()
 
@@ -385,12 +385,12 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and Input.is_key_pressed(KEY_ALT) and not over_ui:
 		var mb_alt: InputEventMouseButton = event as InputEventMouseButton
 		if mb_alt.pressed and mb_alt.button_index == MOUSE_BUTTON_WHEEL_UP:
-			brush_size = clampi(brush_size + 1, 1, 4)
+			brush_size = clampi(brush_size + 1, 1, 20)
 			_sync_all_ui()
 			_refresh_hover_preview()
 			return
 		elif mb_alt.pressed and mb_alt.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			brush_size = clampi(brush_size - 1, 1, 4)
+			brush_size = clampi(brush_size - 1, 1, 20)
 			_sync_all_ui()
 			_refresh_hover_preview()
 			return

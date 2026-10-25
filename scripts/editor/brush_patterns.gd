@@ -83,7 +83,7 @@ const STAR_LARGE: Array[String] = [
 
 static func get_brush_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 	var offsets: Array[Vector2i] = []
-	var clamped_size: int = clampi(brush_size, 1, 4)
+	var clamped_size: int = clampi(brush_size, 1, 20)
 
 	match shape:
 		ShapeType.SINGLE:
@@ -170,7 +170,7 @@ static func _bitmap_to_offsets(rows: Array[String]) -> Array[Vector2i]:
 # Retorna offsets em resolução fina de 0.20m usando geometria analítica contínua
 static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 	var offsets: Array[Vector2i] = []
-	var clamped_size: int = clampi(brush_size, 1, 4)
+	var clamped_size: int = clampi(brush_size, 1, 20)
 
 	# Raio do pincel no mundo: 1 -> 0.40m (2 células 0.20m), 2 -> 0.70m, 3 -> 1.00m, 4 -> 1.30m
 	var radius_m: float = 0.40 + float(clamped_size - 1) * 0.30
@@ -248,7 +248,7 @@ static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 ## Gera polígono vetorial analítico fechado para carimbos no plano XZ
 static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector2, rotation_deg: float = 0.0) -> PackedVector2Array:
 	var poly: PackedVector2Array = PackedVector2Array()
-	var clamped_size: int = clampi(brush_size, 1, 4)
+	var clamped_size: int = clampi(brush_size, 1, 20)
 	var r: float = float(clamped_size) * 0.35 + 0.15
 
 	match shape:

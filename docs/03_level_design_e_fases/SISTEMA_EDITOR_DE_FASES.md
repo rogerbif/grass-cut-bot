@@ -81,7 +81,7 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
 
 ## 3. Pincéis e Carimbos de Formas Analíticas (`brush_patterns.gd`)
 
-O editor inclui formatos matemáticos com escala ajustável (`1` a `4`), suporte a offsets em passos de $0.20\text{m}$ para vegetação orgânica e preview holográfico em tempo real sobre a grade (`grid_overlay.gd`):
+O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suporte a offsets em passos de $0.20\text{m}$ para vegetação orgânica e preview holográfico em tempo real sobre a grade (`grid_overlay.gd`):
 - `⏺️ Único (1x1)`
 - `⬛ Quadrado`
 - `⚪ Círculo Analítico` (projeção contínua $dx^2 + dz^2 \le R^2$, eliminando pontas em cruz)
