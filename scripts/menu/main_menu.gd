@@ -94,9 +94,9 @@ func _detect_levels_and_build_archipelago() -> void:
 		c.queue_free()
 	island_nodes.clear()
 
-	# Identifica quantidade de fases existentes (cobre as 20 fases canônicas)
+	# Identifica quantidade de fases existentes (cobre as fases canônicas e detecta novas fases criadas)
 	var level_count: int = 0
-	for lvl: int in range(1, 21):
+	for lvl: int in range(1, 101):
 		var json_path: String = "res://data/levels/level_%02d.json" % lvl
 		if FileAccess.file_exists(json_path):
 			level_count = lvl
