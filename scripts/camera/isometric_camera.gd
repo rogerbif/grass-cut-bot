@@ -4,12 +4,16 @@ extends Camera3D
 @export var offset: Vector3 = Vector3(0.0, 7.2, 8.5)
 @export var follow_speed: float = 8.0
 
+const VICTORY_OFFSET: Vector3 = Vector3(0.0, 1.25, 4.0)
+const VICTORY_ROTATION: Vector3 = Vector3(-8.0, 0.0, 0.0)
+
 var target: Node3D
 var shake_intensity: float = 0.0
 var shake_duration: float = 0.0
 
 var _in_victory_cam: bool = false
 var _current_offset: Vector3 = Vector3(0.0, 7.2, 8.5)
+var _current_rotation: Vector3 = Vector3.ZERO
 var _victory_tween: Tween = null
 
 func _ready() -> void:
@@ -28,6 +32,7 @@ func _ready() -> void:
 		look_at_from_position(global_position, target.global_position, Vector3.UP)
 	else:
 		look_at_from_position(global_position, global_position - offset, Vector3.UP)
+	_current_rotation = rotation_degrees
 
 func _on_state_changed(new_state: int) -> void:
 	if new_state == GameManager.GameState.PLAYING:
@@ -44,10 +49,13 @@ func transition_to_victory_cam() -> void:
 	if _victory_tween != null and _victory_tween.is_valid():
 		_victory_tween.kill()
 
+	_current_offset = global_position - target.global_position
+	_current_rotation = rotation_degrees
+
 	_victory_tween = create_tween().set_parallel(true)
-	# Sobe um pouco a câmera e afasta suavemente para enquadramento heroico perfeito
-	var target_victory_offset: Vector3 = Vector3(0.0, 1.85, 2.85)
-	_victory_tween.tween_property(self, "_current_offset", target_victory_offset, 0.85).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	# Transiciona com suavidade cubica para o enquadramento e angulacao exatos da tela Home
+	_victory_tween.tween_property(self, "_current_offset", VICTORY_OFFSET, 0.85).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_victory_tween.tween_property(self, "_current_rotation", VICTORY_ROTATION, 0.85).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func reset_cam() -> void:
 	_in_victory_cam = false
@@ -56,6 +64,9 @@ func reset_cam() -> void:
 	_current_offset = offset
 	if target:
 		look_at_from_position(target.global_position + offset, target.global_position, Vector3.UP)
+	else:
+		look_at_from_position(global_position, global_position - offset, Vector3.UP)
+	_current_rotation = rotation_degrees
 
 func _on_shake_requested(intensity: float, duration: float) -> void:
 	shake_intensity = intensity
@@ -66,11 +77,9 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if _in_victory_cam:
-		# Enquadramento suave em close frontal no herói
-		var look_target: Vector3 = target.global_position + Vector3(0.0, 0.42, 0.0)
-		var desired_pos: Vector3 = target.global_position + _current_offset
-		global_position = global_position.lerp(desired_pos, clampf(follow_speed * delta * 2.0, 0.0, 1.0))
-		look_at(look_target, Vector3.UP)
+		# Enquadramento heroico identico a visao do bot na tela Home (offset 0, 1.25, 4.0 e pitch -8 deg)
+		global_position = target.global_position + _current_offset
+		rotation_degrees = _current_rotation
 		return
 
 	# Translada suavemente em sincronia com o physics_process do cortador para eliminar micro-travamentos

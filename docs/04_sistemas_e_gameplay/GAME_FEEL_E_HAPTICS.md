@@ -39,6 +39,11 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 - **Camera Shake Procedural Translacional:**
   - Em impactos com obstáculos, o `GameManager` emite um sinal de tremor com intensidade $0.35$ e duração $0.20\text{s}$.
   - A perturbação aplica offsets aleatórios de translação apenas em $X$ e $Z$, preservando a rotação 100% rígida e sem náuseas visuais.
+- **Transição Cinematográfica de Vitória (Enquadramento Idêntico à Home):**
+  - Na vitória da fase (`GameManager.level_won`), a câmera executa um tween cúbico desacelerado de $0.85\text{s}$ interpolando simultaneamente posição e rotação para o enquadramento canônico do robô na tela Home:
+    - Offset relativo ao robô: `Vector3(0.0, 1.25, 4.0)`
+    - Rotação: `Vector3(-8.0, 0.0, 0.0)` (pitch suave de $-8^\circ$)
+    - FOV: `48.0°` (completamente desobstruído para arcos de estrelas superiores e bottom bar de ações)
 
 ---
 
