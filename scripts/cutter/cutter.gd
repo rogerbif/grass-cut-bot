@@ -86,6 +86,9 @@ func _ready() -> void:
 	_cached_cutter_speed = base_speed
 	if blade_spinner != null and robot_body != null:
 		blade_spinner.reparent(robot_body, true)
+		for child: Node in blade_spinner.get_children():
+			if child is GeometryInstance3D:
+				(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if robot_body:
 		robot_body.rotation.y = 0.0 # Virado de frente para a câmera (+Z)
 		initial_body_y = robot_body.position.y
@@ -731,8 +734,8 @@ func _process_cutting() -> void:
 		if fully_cut:
 			_overlapping_vegetation.remove_at(i)
 
-## Calcula a coordenada 3D exata no anel interno da lâmina (Esquerda, Centro ou Direita)
-## baseando-se na projeção lateral do corte relativo à orientação do robô
+## Calcula a coordenada 3D exata imediatamente ao lado do corpo do robô (Esquerda, Centro ou Direita)
+## garantindo que os números flutuantes brotem sempre próximos ao chassi mecânico.
 func get_inner_blade_point(cut_pos: Vector3) -> Vector3:
 	var yaw: float = robot_body.rotation.y if robot_body != null else rotation.y
 	var forward: Vector3 = Vector3(sin(yaw), 0.0, cos(yaw))
@@ -742,19 +745,19 @@ func get_inner_blade_point(cut_pos: Vector3) -> Vector3:
 	to_cut.y = 0.0
 	var lateral_dot: float = to_cut.dot(right)
 
-	# Classifica nos 3 setores anotados na referência
+	# Posiciona estritamente ao lado do corpo do robô (chassi/paralamas)
 	var sector_offset: Vector3 = Vector3.ZERO
 	if lateral_dot < -0.16:
-		# Setor Esquerda: frente-esquerda no círculo interno
-		sector_offset = forward * 0.42 - right * 0.38
+		# Setor Esquerda: imediatamente à esquerda do corpo
+		sector_offset = forward * 0.15 - right * 0.45
 	elif lateral_dot > 0.16:
-		# Setor Direita: frente-direita no círculo interno
-		sector_offset = forward * 0.42 + right * 0.38
+		# Setor Direita: imediatamente à direita do corpo
+		sector_offset = forward * 0.15 + right * 0.45
 	else:
-		# Setor Centro: frente central no círculo interno
-		sector_offset = forward * 0.50
+		# Setor Centro: frente ao bico do chassi
+		sector_offset = forward * 0.48
 
 	var jitter_x: float = randf_range(-0.03, 0.03)
 	var jitter_z: float = randf_range(-0.03, 0.03)
-	return global_position + sector_offset + Vector3(jitter_x, 0.28, jitter_z)
+	return global_position + sector_offset + Vector3(jitter_x, 0.45, jitter_z)
 

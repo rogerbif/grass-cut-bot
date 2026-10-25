@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://test_floating_coins_01"]
+
+[ext_resource type="Script" path="res://tests/test_floating_coin_manager.gd" id="1_test"]
+
+[node name="TestFloatingCoinManager" type="Node"]
+script = ExtResource("1_test")

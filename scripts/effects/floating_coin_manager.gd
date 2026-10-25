@@ -4,11 +4,13 @@ extends Node3D
 ## Gerencia o pool de números flutuantes cartoon 3D (+1, +3, +5).
 ## Estilo cel-shaded cartoon com contorno preto grosso no círculo interno da lâmina.
 
-const POOL_SIZE: int = 32
+const POOL_SIZE: int = 64
 
 const COLOR_GRASS: Color = Color(1.0, 1.0, 1.0, 1.0)
 const COLOR_WHEAT: Color = Color(1.0, 0.90, 0.20, 1.0)
 const COLOR_FLOWER: Color = Color(1.0, 0.40, 0.85, 1.0)
+
+@export var cutter_path: NodePath = NodePath("../LevelController/Cutter")
 
 var _pool: Array[Label3D] = []
 var _tweens: Array[Tween] = []
@@ -18,7 +20,7 @@ var _cached_cutter: CharacterBody3D = null
 
 func _ready() -> void:
 	_init_pool()
-	call_deferred("_get_cutter")
+	_get_cutter()
 	if GameManager:
 		GameManager.coin_popup_requested.connect(_on_coin_popup_requested)
 
@@ -44,16 +46,35 @@ func _init_pool() -> void:
 
 
 func _get_cutter() -> CharacterBody3D:
-	if _cached_cutter == null or not is_instance_valid(_cached_cutter):
-		var tree: SceneTree = get_tree()
-		if tree != null:
-			_cached_cutter = tree.get_first_node_in_group("cutter") as CharacterBody3D
+	if _cached_cutter != null and is_instance_valid(_cached_cutter):
+		return _cached_cutter
+	if has_node(cutter_path):
+		_cached_cutter = get_node(cutter_path) as CharacterBody3D
+		if _cached_cutter != null:
+			return _cached_cutter
+	var tree: SceneTree = get_tree()
+	if tree != null:
+		_cached_cutter = tree.get_first_node_in_group("cutter") as CharacterBody3D
+		if _cached_cutter == null and tree.current_scene != null:
+			_cached_cutter = tree.current_scene.find_child("Cutter", true, false) as CharacterBody3D
 	return _cached_cutter
 
 
 func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: String) -> void:
 	if _pool.is_empty():
 		return
+
+	# Garante que NUNCA spawna solto no chão ou no centro da fase:
+	# O spawn ocorre estritamente ancorado às coordenadas relativas ao lado do corpo do robô.
+	var cutter: CharacterBody3D = _get_cutter()
+	if cutter == null or not is_instance_valid(cutter):
+		return
+
+	var spawn_pos: Vector3
+	if cutter.has_method("get_inner_blade_point"):
+		spawn_pos = cutter.get_inner_blade_point(world_pos)
+	else:
+		spawn_pos = cutter.global_position + Vector3(0.0, 0.45, 0.0)
 
 	var idx: int = _next_index
 	_next_index = (_next_index + 1) % POOL_SIZE
@@ -74,15 +95,9 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	label.text = "+" + str(amount)
 	label.modulate = Color(base_color.r, base_color.g, base_color.b, 0.0)
 	label.scale = Vector3(0.35, 0.35, 0.35)
-	label.visible = true
-
-	# Calcula o ponto no círculo interno da lâmina (Esquerda, Centro ou Direita)
-	var spawn_pos: Vector3 = world_pos + Vector3(0.0, 0.28, 0.0)
-	var cutter: CharacterBody3D = _get_cutter()
-	if cutter != null and is_instance_valid(cutter) and cutter.has_method("get_inner_blade_point"):
-		spawn_pos = cutter.get_inner_blade_point(world_pos)
-
+	# Posiciona o label na coordenada do robô ANTES de torná-lo visível para evitar qualquer flash
 	label.global_position = spawn_pos
+	label.visible = true
 
 	var tween: Tween = create_tween()
 	_tweens[idx] = tween
@@ -95,7 +110,7 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	tween.chain().tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
 	# 3. Subir verticalmente (+0.70m durante 0.60s)
-	var target_y: float = label.global_position.y + 0.70
+	var target_y: float = spawn_pos.y + 0.70
 	tween.parallel().tween_property(label, "global_position:y", target_y, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	# 4. Desaparecer em fase (Fade-out transparente: sustentação inicial e fade 1.0 -> 0.0 em 0.28s)

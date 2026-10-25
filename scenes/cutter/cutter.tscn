@@ -55,7 +55,7 @@ height = 0.14
 radial_segments = 8
 rings = 4
 
-[node name="Cutter" type="CharacterBody3D" unique_id=1165301562]
+[node name="Cutter" type="CharacterBody3D" groups=["cutter"] unique_id=1165301562]
 collision_layer = 2
 collision_mask = 9
 script = ExtResource("1_cutter")
