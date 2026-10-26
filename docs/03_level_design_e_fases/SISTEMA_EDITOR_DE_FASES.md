@@ -47,10 +47,18 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
 
 - **Camada 2 — Objetos & Obstáculos no Tile ($0.80\text{m} \times 0.80\text{m}$):**
   - Itens discretos centralizados por bloco de terreno:
-    - **`rock` (Rocha Sólida):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo vetorial com corte circular para não atravessar a pedra.
-    - **`flower` (Flor Nobre):** Vegetação nobre de alto valor econômico (3 hits, 5 moedas) com despetalação progressiva e contagem 1:1.
-    - **`wheat` (Trigo Maduro):** Cultura agrícola dourada de 2 hits (3 moedas) com contagem direta 1:1 na meta do HUD.
-    - **`cutter_spawn` (Spawn do Robô):** Marcador de início do robô cortador (único por fase).
+    - **`rock` (Rocha Sólida 🪨):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo vetorial com corte circular para não atravessar a pedra.
+    - **Família de Flores Nobres (3 hits, 5 moedas):** Vegetação de alto valor econômico com despetalação progressiva em 2 levas na GPU (Hit 1 e Hit 2), preservação de caule/folhas verdes e ceifa fatal no Hit 3:
+      - **`flower` (Flor Silvestre 🌸):** Duas hastes inclinadas com 16 pétalas intercaladas.
+      - **`flower_rose` (Rosa Nobre 🌹):** Arbusto nobre com caule folhoso e rosa em camadas.
+      - **`flower_daisy` (Margarida do Campo 🌼):** Haste alta com miolo ouro e 36 pétalas radiais.
+      - **`flower_sunflower` (Girassol Solar 🌻):** Disco central avelã e pétalas em leque dourado.
+      - **`flower_bell` (Flor Sino / Campânula 🔔):** Formato em sino pendente azul celeste com 16 pétalas.
+      - **`flower_corolla` (Cravo Corola 🏵️):** Flor espalmada aberta em tom coral damasco.
+      - **`flower_tulip` (Tulipa Imperial 🌷):** Cálice ereto em taça vermelha rubi.
+      - **`flower_bed` (Canteiro Florido 🪻):** Tufo horizontal salpicado com folhagem verde e 9 florzinhas lilás violeta.
+    - **`wheat` (Trigo Maduro 🌾):** Cultura agrícola dourada de 2 hits (3 moedas) com contagem direta 1:1 na meta do HUD.
+    - **`cutter_spawn` (Spawn do Robô 🤖):** Marcador de início do robô cortador (único por fase).
   - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra, flor ou trigo em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar itens instantaneamente!
 
 - **Persistência Híbrida JSON v3 e Blindagem de Bake (`LevelSerializer`):**

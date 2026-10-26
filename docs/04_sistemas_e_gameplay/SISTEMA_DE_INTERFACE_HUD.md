@@ -22,7 +22,17 @@ TopBar (PanelContainer)
    - Alerta Crítico: Quando o tempo restante é menor ou igual a 15 segundos, o texto muda dinamicamente para vermelho vivo (`Color(1.0, 0.3, 0.3)`), sinalizando urgência.
 2. **Cards Dinâmicos de Metas:**
    - Criados sob demanda pelo `HUD` conforme as espécies exigidas no nível atual.
-   - Cada card possui o emoji da planta e a quantidade pendente.
+   - Cada card possui o emoji da planta e a quantidade pendente:
+     - `🌿` Grama Clássica e variantes cosméticas (`grass`)
+     - `🌾` Trigo Maduro (`wheat`)
+     - `🌸` Flor Silvestre (`flower`)
+     - `🌹` Rosa Nobre (`flower_rose`)
+     - `🌼` Margarida do Campo (`flower_daisy`)
+     - `🌻` Girassol Solar (`flower_sunflower`)
+     - `🔔` Flor Sino / Campânula (`flower_bell`)
+     - `🏵️` Cravo Corola (`flower_corolla`)
+     - `🌷` Tulipa Imperial (`flower_tulip`)
+     - `🪻` Canteiro Florido (`flower_bed`)
    - **Efeito Visual de Pop:** A cada tufo ceifado, o card correspondente sofre uma rápida animação de escala (`1.15x` -> `1.0x` em 0.1s).
    - **Meta Batida:** Ao zerar o contador, o número é substituído por um check verde (`✔`) e o fundo do card ganha tonalidade verde esmeralda.
 3. **Contador de Moedas:**
