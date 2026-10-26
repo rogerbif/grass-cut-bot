@@ -4,6 +4,7 @@ enum PlantType { GRASS, WHEAT, FLOWER }
 
 const POOL_SIZE: int = 16
 const LEAF_MESH: ArrayMesh = preload("res://assets/models/cut_leaf_piece.obj")
+static var _petal_mesh: Mesh = null
 
 static var _particle_pool: Array[CPUParticles3D] = []
 static var _pool_idx: int = 0
@@ -46,21 +47,39 @@ func _ready() -> void:
 		var random_scale: float = randf_range(0.48, 0.58)
 		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 
+static func _get_petal_mesh() -> Mesh:
+	if _petal_mesh == null:
+		var scene: PackedScene = load("res://assets/models/cut_petal_piece.glb")
+		if scene != null:
+			var inst: Node = scene.instantiate()
+			var mi: MeshInstance3D = inst.find_child("*", true, false) as MeshInstance3D
+			if mi != null:
+				_petal_mesh = mi.mesh
+			inst.free()
+		if _petal_mesh == null:
+			_petal_mesh = LEAF_MESH
+	return _petal_mesh
+
 func _apply_visual_material(target: Node) -> void:
 	if target == null:
 		return
 	if target is MeshInstance3D:
 		var mi: MeshInstance3D = target as MeshInstance3D
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		if custom_material != null:
-			if mi.material_override != custom_material:
-				mi.material_override = custom_material
-		elif mi.material_override == null and mi.get_active_material(0) == null:
-			if _fallback_material == null:
-				_fallback_material = StandardMaterial3D.new()
-				_fallback_material.albedo_color = Color(0.22, 0.68, 0.24, 1.0)
-				_fallback_material.roughness = 0.9
-			mi.material_override = _fallback_material
+		if type == PlantType.FLOWER:
+			# Para flores com 2 slots (0: Caule Verde, 1: Pétalas Customizáveis)
+			if custom_material != null:
+				mi.set_surface_override_material(1, custom_material)
+		else:
+			if custom_material != null:
+				if mi.material_override != custom_material:
+					mi.material_override = custom_material
+			elif mi.material_override == null and mi.get_active_material(0) == null:
+				if _fallback_material == null:
+					_fallback_material = StandardMaterial3D.new()
+					_fallback_material.albedo_color = Color(0.22, 0.68, 0.24, 1.0)
+					_fallback_material.roughness = 0.9
+				mi.material_override = _fallback_material
 	for child in target.get_children():
 		_apply_visual_material(child)
 
@@ -72,10 +91,24 @@ func cut(power: int) -> void:
 	if health <= 0:
 		_perform_cut()
 	else:
+		if type == PlantType.FLOWER:
+			_apply_flower_damage_stage(health)
+
 		# Feedback de dano para plantas resistentes
 		var tween: Tween = create_tween()
 		tween.tween_property(visual_mesh, "scale", visual_mesh.scale * 1.25, 0.05)
 		tween.tween_property(visual_mesh, "scale", visual_mesh.scale, 0.05)
+
+func _apply_flower_damage_stage(remaining_hp: int) -> void:
+	var stage: float = 1.0 if remaining_hp == 2 else 2.0
+	_set_flower_stage_recursive(visual_mesh, stage)
+	_spawn_petal_burst(6)
+
+func _set_flower_stage_recursive(target: Node, stage: float) -> void:
+	if target is GeometryInstance3D:
+		(target as GeometryInstance3D).set_instance_shader_parameter("instance_hit_stage", stage)
+	for child in target.get_children():
+		_set_flower_stage_recursive(child, stage)
 
 func _perform_cut() -> void:
 	is_cut = true
@@ -98,14 +131,37 @@ func _perform_cut() -> void:
 func _resolve_particle_color() -> Color:
 	if custom_material is ShaderMaterial:
 		var sm: ShaderMaterial = custom_material as ShaderMaterial
+		var petal_variant: Variant = sm.get_shader_parameter("petal_color")
+		if petal_variant is Color:
+			return petal_variant as Color
 		var col_variant: Variant = sm.get_shader_parameter("color_top")
 		if col_variant is Color:
 			return col_variant as Color
 	if type == PlantType.WHEAT:
 		return Color(0.96, 0.75, 0.15, 1.0)
 	if type == PlantType.FLOWER:
-		return Color(0.95, 0.35, 0.65, 1.0)
+		return Color(0.92, 0.22, 0.58, 1.0)
 	return particle_color
+
+func _spawn_petal_burst(amount: int = 6) -> void:
+	var scene_root: Node = get_tree().current_scene
+	if scene_root == null:
+		return
+
+	if _particle_pool.is_empty() or not is_instance_valid(_particle_pool[0]) or not _particle_pool[0].is_inside_tree():
+		_init_particle_pool(scene_root)
+
+	var emitter: CPUParticles3D = _particle_pool[_pool_idx]
+	_pool_idx = (_pool_idx + 1) % POOL_SIZE
+
+	var col: Color = _resolve_particle_color()
+	emitter.mesh = _get_petal_mesh()
+	emitter.amount = amount
+	emitter.emitting = false
+	emitter.material_override = _get_or_create_particle_material(col)
+	emitter.global_position = global_position + Vector3(0.0, 0.25, 0.0)
+	emitter.reset_physics_interpolation()
+	emitter.restart()
 
 func _spawn_cut_particles() -> void:
 	var scene_root: Node = get_tree().current_scene

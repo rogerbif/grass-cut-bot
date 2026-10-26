@@ -9,6 +9,7 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
 const ROCK_SCENE: PackedScene = preload("res://scenes/obstacles/rock.tscn")
+const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
 const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.tscn")
@@ -815,6 +816,12 @@ func _rebuild_3d_world() -> void:
 				r_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				r_inst.rotation_degrees.y = float(entry.get("rot", 0))
 				obstacles_container.add_child(r_inst)
+		elif o_type == "flower":
+			var f_inst: Node3D = FLOWER_SCENE.instantiate() as Node3D
+			if f_inst != null:
+				f_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+				f_inst.rotation_degrees.y = float(entry.get("rot", 0))
+				obstacles_container.add_child(f_inst)
 
 	# 6. Constrói a prancheta vetorial plana colorida (Modo Edição Instantâneo, <0.5ms)
 	_build_editor_vector_ground()

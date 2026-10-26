@@ -16,7 +16,7 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 | **Grama Vermelha Rubi** | `grass_red` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Vermelho rubi | Variação cosmética para áreas intensas. |
 | **Grama Preta Vulcânica** | `grass_black` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Grafite carvão | Variação cosmética dramática. |
 | **Trigo Dourado (Meta 2x)** | `wheat` | 2 golpes | 10 físicos = 1 meta = 3 🪙 | Dourado ouro | Exige duas passadas ou lâmina com upgrade de potência $\ge 2$. Cota obrigatória de colheita. |
-| **Flores do Campo (Nobre)** | `flower` | 2 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Vegetação nobre com alto valor econômico. Cota de colheita individual nos níveis avançados. |
+| **Flores do Campo (Nobre)** | `flower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas dedicadas na cor da flor | Vegetação nobre em 3 hits. Hit 1: voam 8 pétalas externas. Hit 2: voam 8 pétalas internas. Hit 3: caule ceifado, miolo + folhas voando, 5 moedas. Caule e folhas 100% verdes com pétalas customizáveis. |
 
 ---
 

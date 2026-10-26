@@ -577,6 +577,7 @@ func _build_from_vector_field(
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if v_type == "flower":
+			mm.use_custom_data = true
 			mm.mesh = _flower_mesh
 		else:
 			mm.mesh = _grass_mesh
@@ -612,7 +613,7 @@ func _build_from_vector_field(
 		_clipping_mmi_nodes[mmi_idx] = clip_mmi
 
 		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
-		var max_hp: int = 1 if is_grass else 2
+		var max_hp: int = 1 if is_grass else (3 if v_type == "flower" else 2)
 		var p_col: Color = _resolve_type_particle_color(v_type)
 
 		for inst_idx: int in range(count):
@@ -865,6 +866,7 @@ func _build_from_vegetation_field(
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if v_type == "flower":
+			mm.use_custom_data = true
 			mm.mesh = _flower_mesh
 		else:
 			mm.mesh = _grass_mesh
@@ -900,7 +902,7 @@ func _build_from_vegetation_field(
 		_clipping_mmi_nodes[mmi_idx] = clip_mmi
 
 		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
-		var max_hp: int = 1 if is_grass else 2
+		var max_hp: int = 1 if is_grass else (3 if v_type == "flower" else 2)
 		var p_col: Color = _resolve_type_particle_color(v_type)
 
 		for inst_idx: int in range(count):
@@ -1155,6 +1157,11 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 								GameManager.register_cut("flower", 5, Vector3.ZERO)
 				else:
 					if mm != null:
+						var p_key: String = _plant_keys[p_idx]
+						if p_key == "flower":
+							var stage: float = 1.0 if new_hp == 2 else 2.0
+							mm.set_instance_custom_data(inst_idx, Color(stage, 0.0, 0.0, 0.0))
+							_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
 						var init_xform: Transform3D = _initial_transforms[p_idx]
 						var squash_xform: Transform3D = Transform3D(
 							init_xform.basis.scaled(Vector3(1.25, 1.25, 1.25)),
