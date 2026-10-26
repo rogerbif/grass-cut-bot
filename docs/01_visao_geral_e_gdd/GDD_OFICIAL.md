@@ -78,11 +78,11 @@ Jogadores casuais de dispositivos móveis que buscam sessões rápidas de descom
 - **Distribuição Orgânica Poisson Disk:** A vegetação é instanciada através de `MultiMeshInstance3D` sobre superfícies poligonais contínuas no plano $XZ$, sem rigidez de grid matricial.
 - **Espécies Vegetais e Economia:**
   - **🌿 Grama Comum:** Vegetação fundamental de corte em 1 golpe. Disponível em 7 cores cosméticas (Verde, Amarela, Azul, Roxa, Branca, Vermelha, Preta).
-  - **🌾 Trigo Maduro:** Vegetação dourada resistente de 2 golpes (exige duas passadas ou upgrade de Potência $\ge 2$).
-  - **🌸 Flores do Campo:** Vegetação nobre de 2 golpes com pétalas magenta e alto valor econômico.
-- **Regra Canônica de Agrupamento em Lotes (Melhoria 082):**
+  - **🌾 Trigo Maduro:** Cultura agrícola de tile (Camada 2) resistente de 2 golpes (exige duas passadas ou upgrade de Potência $\ge 2$). Meta direta 1:1 e alto valor econômico.
+  - **🌸 Flores do Campo:** Vegetação nobre de 3 golpes com despetalação progressiva e alto valor econômico.
+- **Regra Canônica de Colheita e Lotes:**
   - **Grama Comum:** 10 tufos físicos ceifados = 1 unidade abatida na meta do HUD = $+1$ moeda base (número flutuante branco `+1`).
-  - **Trigo Maduro:** 10 tufos físicos ceifados = 1 unidade abatida na meta do HUD = $+3$ moedas base (número flutuante dourado `+3`).
+  - **Trigo Maduro:** 1 tufo físico ceifado = 1 unidade abatida na meta do HUD = $+3$ moedas base (número flutuante dourado `+3`).
   - **Flores Nobres:** 1 tufo físico ceifado = 1 unidade abatida na meta do HUD = $+5$ moedas base (número flutuante magenta `+5`).
 - **Efeito Visual de Grama Cortada:** Ao ceifar um lote, o tufo é removido, tocos aparados são revelados no solo e lâminas fatiadas deitadas horizontalmente surgem no chão (`_clipping_multimeshes`), criando o rastro autêntico de grama cortada.
 

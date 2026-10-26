@@ -24,7 +24,7 @@ Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/
 | Fase | Nome Temático | Silhueta / Geometria da Ilha | Grid ($W \times H$) | Tipos de Vegetação | Qtd. Rochas | Metas do HUD | Tempo | Lição / Foco de Design |
 | :---: | :--- | :--- | :---: | :--- | :---: | :--- | :---: | :--- |
 | **01** | *Praia Inicial* | Retângulo Amplo Acolhedor | $14 \times 10$ | Grama Verde | 0 | 🌿 59 Gramas | 90s | Tutorial de toque e fluxo de corte contínuo. |
-| **02** | *Baía Amarela* | Ovalada com Enseada Sul | $15 \times 12$ | Verde + Amarela | 2 | 🌿 62 Gramas | 85s | Variação estética e primeiras rochas isoladas. |
+| **02** | *Baía Amarela* | Ilha Quadrada com Recortes | $17 \times 17$ | Verde + Trigo | 4 | 🌿 25 Gramas<br>🌾 36 Trigos | 85s | Introdução do Trigo Dourado e rochas periféricas. |
 | **03** | *Campos Dourados* | Retângulo chanfrado com Terra | $16 \times 12$ | Verde + Trigo | 4 | 🌿 42 Gramas<br>🌾 29 Trigos | 85s | Mecânica de 2 golpes do trigo. |
 | **04** | *Jardim das Orquídeas* | Cruz Grega com Pátio Central | $15 \times 15$ | Verde + Trigo + Flor | 4 | 🌿 20 Gramas<br>🌾 24 Trigos<br>🌸 36 Flores | 80s | Introdução das Flores Nobres e meta tripla. |
 | **05** | *Ilhas Gêmeas* | 2 Círculos Unidos por Ponte de Terra | $18 \times 11$ | Verde + Amarela + Trigo | 3 | 🌿 66 Gramas<br>🌾 8 Trigos | 85s | Navegação em istmos estreitos (2 blocos). |
