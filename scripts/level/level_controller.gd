@@ -35,6 +35,9 @@ func generate_level(level_num: int) -> void:
 	if default_terrain != null:
 		default_terrain.visible = false
 		default_terrain.process_mode = Node.PROCESS_MODE_DISABLED
+		if default_terrain is CollisionObject3D:
+			(default_terrain as CollisionObject3D).collision_layer = 0
+			(default_terrain as CollisionObject3D).collision_mask = 0
 
 	var json_path: String = "res://data/levels/level_%02d.json" % level_num
 	if not FileAccess.file_exists(json_path):

@@ -165,6 +165,7 @@ static func build_coastal_foam_mesh_instance(
 	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
 		var foam_inst: MeshInstance3D = MeshInstance3D.new()
 		foam_inst.name = "CoastalFoamRibbon"
+		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		foam_inst.mesh = foam_mesh
 		var foam_shader: Shader = preload("res://shaders/coastal_foam.gdshader")
 		var foam_mat: ShaderMaterial = ShaderMaterial.new()

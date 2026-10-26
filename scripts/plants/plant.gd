@@ -119,8 +119,10 @@ func _spawn_cut_particles() -> void:
 	_pool_idx = (_pool_idx + 1) % POOL_SIZE
 
 	var col: Color = _resolve_particle_color()
+	emitter.emitting = false
 	emitter.material_override = _get_or_create_particle_material(col)
 	emitter.global_position = global_position + Vector3(0.0, 0.15, 0.0)
+	emitter.reset_physics_interpolation()
 	emitter.restart()
 
 static func _get_or_create_particle_material(col: Color) -> StandardMaterial3D:
@@ -148,6 +150,7 @@ static func _init_particle_pool(scene_root: Node) -> void:
 	for i: int in range(POOL_SIZE):
 		var p: CPUParticles3D = CPUParticles3D.new()
 		p.name = "PooledCutParticles_%d" % i
+		p.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
 		p.amount = 14

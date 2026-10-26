@@ -2,9 +2,11 @@ class_name FloatingCoinManager
 extends Node3D
 
 ## Gerencia o pool de números flutuantes cartoon 3D (+1, +3, +5).
-## Estilo cel-shaded cartoon com contorno preto grosso no círculo interno da lâmina.
+## Ancorado diretamente ao espaço local do cortador com physics_interpolation desativado
+## para impedir qualquer flash fantasma no centro da fase ou rastro escuro distante.
 
 const POOL_SIZE: int = 64
+const MAX_LOCAL_RADIUS_XZ: float = 0.48
 
 const COLOR_GRASS: Color = Color(1.0, 1.0, 1.0, 1.0)
 const COLOR_WHEAT: Color = Color(1.0, 0.90, 0.20, 1.0)
@@ -19,10 +21,27 @@ var _cached_cutter: CharacterBody3D = null
 
 
 func _ready() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_init_pool()
-	_get_cutter()
+	_sync_to_cutter()
 	if GameManager:
 		GameManager.coin_popup_requested.connect(_on_coin_popup_requested)
+
+
+func _process(_delta: float) -> void:
+	_sync_to_cutter()
+
+
+func _physics_process(_delta: float) -> void:
+	_sync_to_cutter()
+
+
+func _sync_to_cutter() -> CharacterBody3D:
+	var cutter: CharacterBody3D = _get_cutter()
+	if cutter != null and is_instance_valid(cutter):
+		global_position = cutter.global_position
+		reset_physics_interpolation()
+	return cutter
 
 
 func _init_pool() -> void:
@@ -30,15 +49,19 @@ func _init_pool() -> void:
 	_tweens.clear()
 	for i in range(POOL_SIZE):
 		var label: Label3D = Label3D.new()
+		label.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		label.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		label.no_depth_test = true
 		label.render_priority = 25
 		label.font_size = 56
 		label.pixel_size = 0.005
 		label.outline_size = 14
-		label.outline_modulate = Color(0.0, 0.0, 0.0, 1.0)
+		label.modulate = Color(1.0, 1.0, 1.0, 0.0)
+		label.outline_modulate = Color(0.0, 0.0, 0.0, 0.0)
 		label.shaded = false
 		label.double_sided = true
+		label.position = Vector3(0.0, 0.45, 0.0)
 		label.visible = false
 		add_child(label)
 		_pool.append(label)
@@ -64,17 +87,25 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	if _pool.is_empty():
 		return
 
-	# Garante que NUNCA spawna solto no chão ou no centro da fase:
-	# O spawn ocorre estritamente ancorado às coordenadas relativas ao lado do corpo do robô.
-	var cutter: CharacterBody3D = _get_cutter()
+	# Sincroniza imediatamente a origem do manager com o chassi do robô
+	var cutter: CharacterBody3D = _sync_to_cutter()
 	if cutter == null or not is_instance_valid(cutter):
 		return
 
-	var spawn_pos: Vector3
-	if cutter.has_method("get_inner_blade_point"):
-		spawn_pos = cutter.get_inner_blade_point(world_pos)
+	var local_offset: Vector3
+	if cutter.has_method("get_body_side_local_offset"):
+		local_offset = cutter.get_body_side_local_offset(world_pos)
+	elif cutter.has_method("get_inner_blade_point"):
+		local_offset = cutter.get_inner_blade_point(world_pos) - cutter.global_position
 	else:
-		spawn_pos = cutter.global_position + Vector3(0.0, 0.45, 0.0)
+		local_offset = Vector3(0.0, 0.45, 0.44)
+
+	# Trava matemática de segurança: jamais permite offset horizontal maior que MAX_LOCAL_RADIUS_XZ
+	var horiz: Vector2 = Vector2(local_offset.x, local_offset.z)
+	if horiz.length() > MAX_LOCAL_RADIUS_XZ:
+		horiz = horiz.normalized() * MAX_LOCAL_RADIUS_XZ
+		local_offset.x = horiz.x
+		local_offset.z = horiz.y
 
 	var idx: int = _next_index
 	_next_index = (_next_index + 1) % POOL_SIZE
@@ -94,30 +125,35 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 
 	label.text = "+" + str(amount)
 	label.modulate = Color(base_color.r, base_color.g, base_color.b, 0.0)
+	label.outline_modulate = Color(0.0, 0.0, 0.0, 0.0)
 	label.scale = Vector3(0.35, 0.35, 0.35)
-	# Posiciona o label na coordenada do robô ANTES de torná-lo visível para evitar qualquer flash
-	label.global_position = spawn_pos
+	label.position = local_offset
+	label.reset_physics_interpolation()
 	label.visible = true
 
-	var tween: Tween = create_tween()
+	var tween: Tween = create_tween().set_parallel(true)
 	_tweens[idx] = tween
 
-	# 1. Aparecer em fase (Fade-in rápido: 0.0 -> 1.0 em 0.04s)
-	tween.tween_property(label, "modulate:a", 1.0, 0.04).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 1. Subida vertical contínua em espaço local (+0.42m durante toda a vida útil de 0.26s)
+	var target_local_y: float = local_offset.y + 0.42
+	tween.tween_property(label, "position:y", target_local_y, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 2. Crescer depois diminuir (Pop elástico: 0.35 -> 1.30 em 0.05s, depois 1.30 -> 1.0 em 0.04s)
-	tween.parallel().tween_property(label, "scale", Vector3(1.30, 1.30, 1.30), 0.05).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.chain().tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.04).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	# 2. Fade-in simultâneo do preenchimento e do contorno preto (0.0 -> 1.0 em 0.03s)
+	tween.tween_property(label, "modulate:a", 1.0, 0.03).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "outline_modulate:a", 1.0, 0.03).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 3. Subir verticalmente (+0.55m durante 0.30s)
-	var target_y: float = spawn_pos.y + 0.55
-	tween.parallel().tween_property(label, "global_position:y", target_y, 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 3. Pop elástico de escala (0.35 -> 1.25 em 0.05s, depois 1.25 -> 1.0 em 0.04s)
+	tween.tween_property(label, "scale", Vector3(1.25, 1.25, 1.25), 0.05).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.04).set_delay(0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 
-	# 4. Desaparecer em fase (Fade-out transparente: sustentação curta de 0.07s e fade 1.0 -> 0.0 em 0.14s)
-	tween.chain().tween_interval(0.07)
-	tween.chain().tween_property(label, "modulate:a", 0.0, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# 4. Fade-out simultâneo do preenchimento E do contorno preto (inicia em 0.16s, dura 0.10s)
+	tween.tween_property(label, "modulate:a", 0.0, 0.10).set_delay(0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(label, "outline_modulate:a", 0.0, 0.10).set_delay(0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
-	# 5. Oculta ao finalizar
+	# 5. Oculta e reseta ao finalizar em 0.26s
 	tween.tween_callback(func() -> void:
 		label.visible = false
-	)
+		label.modulate.a = 0.0
+		label.outline_modulate.a = 0.0
+		label.position = Vector3(0.0, 0.45, 0.0)
+	).set_delay(0.26)

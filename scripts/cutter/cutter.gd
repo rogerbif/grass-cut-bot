@@ -97,6 +97,7 @@ func _ready() -> void:
 		initial_wheel_y = wheel_mesh.position.y
 	if spark_particles != null:
 		spark_particles.top_level = true
+		spark_particles.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	if blade_area != null:
 		if not blade_area.area_entered.is_connected(_on_blade_area_entered):
 			blade_area.area_entered.connect(_on_blade_area_entered)
@@ -201,10 +202,16 @@ func play_victory_celebration() -> void:
 	if robot_eyes != null:
 		robot_eyes.trigger_victory_reaction()
 
-	# Gira o corpo suavemente para a frente da câmera (+Z)
+	# Gira o corpo suavemente para a frente da câmera (+Z) e nivela pitch/roll para não cortar o solo
+	current_pitch = 0.0
+	current_roll = 0.0
+	shock_compression = 0.0
 	if robot_body != null:
-		var turn_tween: Tween = create_tween()
+		var turn_tween: Tween = create_tween().set_parallel(true)
 		turn_tween.tween_property(robot_body, "rotation:y", 0.0, 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		turn_tween.tween_property(robot_body, "rotation:x", 0.0, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		turn_tween.tween_property(robot_body, "rotation:z", 0.0, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		turn_tween.tween_property(robot_body, "position:y", initial_body_y, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 	# Dispara confetes e fogos de artifício
 	if confetti_particles != null:
@@ -354,8 +361,8 @@ func update_upgrades() -> void:
 	elif blade_shape.shape is SphereShape3D:
 		blade_shape.shape.radius = radius
 	
-	# Escala da malha visual da serra para refletir o upgrade de raio (base 1.18m)
-	var visual_scale: float = radius / 1.18
+	# Escala da malha visual da serra 1:1 com o raio físico (compensando VisualPivot 0.62 * 1.66m = 1.03m)
+	var visual_scale: float = radius / 1.03
 	if blade_spinner:
 		blade_spinner.scale = Vector3(visual_scale, 1.0, visual_scale)
 	
@@ -490,17 +497,22 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 		return
 
 	# --- 1. Dinâmica de Inclinação (Pitch & Roll / Lean) ---
+	# Limite geométrico seguro para que a ponta da serra jamais penetre o solo (Y <= 0.0) em raios grandes
+	var max_safe_tilt_rad: float = atan2(0.055, maxf(0.90, _cached_blade_radius))
+	var eff_max_pitch_rad: float = minf(deg_to_rad(max_pitch_deg), max_safe_tilt_rad)
+	var eff_max_roll_rad: float = minf(deg_to_rad(max_roll_deg), max_safe_tilt_rad)
+
 	# Direção frontal do robô (no glTF, +Z local com rotation.y atual)
 	var forward_dir := Vector3(sin(robot_body.rotation.y), 0.0, cos(robot_body.rotation.y))
 	var forward_speed := velocity.dot(forward_dir)
 	var speed_ratio := clampf(forward_speed / maxf(target_speed, 0.1), -1.0, 1.0)
-	var target_pitch := speed_ratio * deg_to_rad(max_pitch_deg)
+	var target_pitch := speed_ratio * eff_max_pitch_rad
 
 	# Taxa angular de curva (Yaw delta) para calcular o Roll lateral
 	var yaw_delta := angle_difference(last_body_yaw, robot_body.rotation.y)
 	last_body_yaw = robot_body.rotation.y
 	var turn_rate := yaw_delta / maxf(delta, 0.0001)
-	var target_roll := clampf(turn_rate * 0.025, -deg_to_rad(max_roll_deg), deg_to_rad(max_roll_deg))
+	var target_roll := clampf(turn_rate * 0.025, -eff_max_roll_rad, eff_max_roll_rad)
 
 	# Interpolação suave com amortecimento
 	current_pitch = lerp(current_pitch, target_pitch, tilt_responsiveness * delta)
@@ -668,10 +680,12 @@ func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO)
 
 	# Efeito de faíscas metálicas no ponto de contato dente-de-serra contra rocha
 	if spark_particles:
+		spark_particles.emitting = false
 		if spark_pos != Vector3.ZERO:
 			spark_particles.global_position = spark_pos
 		else:
 			spark_particles.global_position = global_position - normal * (_cached_blade_radius * 0.85)
+		spark_particles.reset_physics_interpolation()
 		spark_particles.restart()
 
 	# Vibração de impacto no celular e tremor de câmera
@@ -734,9 +748,9 @@ func _process_cutting() -> void:
 		if fully_cut:
 			_overlapping_vegetation.remove_at(i)
 
-## Calcula a coordenada 3D exata imediatamente ao lado do corpo do robô (Esquerda, Centro ou Direita)
+## Calcula o deslocamento local 3D estritamente ao lado do corpo do robô (Esquerda, Centro ou Direita)
 ## garantindo que os números flutuantes brotem sempre próximos ao chassi mecânico.
-func get_inner_blade_point(cut_pos: Vector3) -> Vector3:
+func get_body_side_local_offset(cut_pos: Vector3) -> Vector3:
 	var yaw: float = robot_body.rotation.y if robot_body != null else rotation.y
 	var forward: Vector3 = Vector3(sin(yaw), 0.0, cos(yaw))
 	var right: Vector3 = Vector3(cos(yaw), 0.0, -sin(yaw))
@@ -749,15 +763,20 @@ func get_inner_blade_point(cut_pos: Vector3) -> Vector3:
 	var sector_offset: Vector3 = Vector3.ZERO
 	if lateral_dot < -0.16:
 		# Setor Esquerda: imediatamente à esquerda do corpo
-		sector_offset = forward * 0.15 - right * 0.45
+		sector_offset = forward * 0.14 - right * 0.42
 	elif lateral_dot > 0.16:
 		# Setor Direita: imediatamente à direita do corpo
-		sector_offset = forward * 0.15 + right * 0.45
+		sector_offset = forward * 0.14 + right * 0.42
 	else:
 		# Setor Centro: frente ao bico do chassi
-		sector_offset = forward * 0.48
+		sector_offset = forward * 0.44
 
-	var jitter_x: float = randf_range(-0.03, 0.03)
-	var jitter_z: float = randf_range(-0.03, 0.03)
-	return global_position + sector_offset + Vector3(jitter_x, 0.45, jitter_z)
+	var jitter_x: float = randf_range(-0.025, 0.025)
+	var jitter_z: float = randf_range(-0.025, 0.025)
+	return sector_offset + Vector3(jitter_x, 0.45, jitter_z)
+
+
+## Calcula a coordenada 3D global imediatamente ao lado do corpo do robô.
+func get_inner_blade_point(cut_pos: Vector3) -> Vector3:
+	return global_position + get_body_side_local_offset(cut_pos)
 

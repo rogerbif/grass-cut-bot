@@ -44,12 +44,13 @@ const VEG_TYPES: Array[String] = [
 ]
 
 const GRID_STEP: float = 0.40
-const TUFT_HIT_RADIUS_BONUS: float = 0.18
+const TUFT_HIT_RADIUS_BONUS: float = 0.0
 const MULTI_HIT_COOLDOWN_SEC: float = 0.22
 const HIDDEN_TRANSFORM: Transform3D = Transform3D(
-	Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO),
-	Vector3(0.0, -9999.0, 0.0)
+	Basis(Vector3(0.0001, 0.0, 0.0), Vector3(0.0, 0.0001, 0.0), Vector3(0.0, 0.0, 0.0001)),
+	Vector3(0.0, -50.0, 0.0)
 )
+const FIXED_ISLAND_AABB: AABB = AABB(Vector3(-35.0, -5.0, -35.0), Vector3(70.0, 12.0, 70.0))
 
 static var _grass_mesh: Mesh = null
 static var _wheat_mesh: ArrayMesh = null
@@ -290,7 +291,9 @@ func build_from_level_json(
 		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		mmi.name = "TileMMI_%s" % t_id
 		mmi.multimesh = mm
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		mmi.custom_aabb = FIXED_ISLAND_AABB
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(mmi)
 
 	# 2. Contenção costeira unificada + espuma + 1 único colisor de piso para toda a ilha
@@ -393,6 +396,7 @@ func build_from_level_json(
 	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_x, sp_z, width, height, cell_size)
 	if cutter != null:
 		cutter.position = Vector3(sp_world.x, 0.1, sp_world.z)
+		cutter.reset_physics_interpolation()
 		if cutter.has_method("reset_orientation_to_camera"):
 			cutter.reset_orientation_to_camera()
 		if "vegetation_grid" in cutter:
@@ -461,7 +465,7 @@ static func _get_or_create_clippings_mesh(v_type: String) -> ArrayMesh:
 
 		var fwd := Vector3(cos(angle), 0.0, sin(angle))
 		var right := Vector3(-sin(angle), 0.0, cos(angle))
-		var center := Vector3(cx, 0.005, cz)
+		var center := Vector3(cx, 0.016, cz)
 
 		# 4 vértices do losango fino deitado no chão
 		var p_back := center - fwd * (length * 0.45)
@@ -581,6 +585,8 @@ func _build_from_vector_field(
 		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		mmi.name = "VegMMI_%s" % v_type
 		mmi.multimesh = mm
+		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		mmi.custom_aabb = FIXED_ISLAND_AABB
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if GRASS_MATERIALS.has(v_type):
 			mmi.material_override = GRASS_MATERIALS[v_type] as Material
@@ -590,11 +596,13 @@ func _build_from_vector_field(
 		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
 		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
 		clip_mm.instance_count = count
-		clip_mm.visible_instance_count = 0
+		clip_mm.visible_instance_count = -1
 
 		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		clip_mmi.name = "ClippingsMMI_%s" % v_type
 		clip_mmi.multimesh = clip_mm
+		clip_mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		clip_mmi.custom_aabb = FIXED_ISLAND_AABB
 		clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(clip_mmi)
 
@@ -865,6 +873,8 @@ func _build_from_vegetation_field(
 		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		mmi.name = "VegMMI_%s" % v_type
 		mmi.multimesh = mm
+		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		mmi.custom_aabb = FIXED_ISLAND_AABB
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if GRASS_MATERIALS.has(v_type):
 			mmi.material_override = GRASS_MATERIALS[v_type] as Material
@@ -874,11 +884,13 @@ func _build_from_vegetation_field(
 		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
 		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
 		clip_mm.instance_count = count
-		clip_mm.visible_instance_count = 0
+		clip_mm.visible_instance_count = -1
 
 		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		clip_mmi.name = "ClippingsMMI_%s" % v_type
 		clip_mmi.multimesh = clip_mm
+		clip_mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		clip_mmi.custom_aabb = FIXED_ISLAND_AABB
 		clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(clip_mmi)
 
@@ -1091,15 +1103,15 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 					var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 					if clip_mm != null:
-						var c_idx: int = _clipping_counts[mmi_idx] if mmi_idx < _clipping_counts.size() else 0
-						if c_idx < clip_mm.instance_count:
-							clip_mm.set_instance_transform(c_idx, _cut_transforms[p_idx])
-							c_idx += 1
-							if mmi_idx < _clipping_counts.size():
-								_clipping_counts[mmi_idx] = c_idx
-							clip_mm.visible_instance_count = c_idx
+						clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
 					if particles_spawned_this_frame < 2:
-						_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
+						var max_p_dist: float = blade_radius * 0.75
+						var dist_xz: float = sqrt(dx * dx + dz * dz)
+						var safe_p_pos: Vector3 = p_pos
+						if dist_xz > max_p_dist and dist_xz > 0.001:
+							var ratio: float = max_p_dist / dist_xz
+							safe_p_pos = Vector3(center.x + dx * ratio, p_pos.y, center.z + dz * ratio)
+						_spawn_cut_particles_at(safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1
 
 					# Acumulador unificado: 10 tufos físicos = 1 unidade de meta
@@ -1132,15 +1144,15 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 							if GameManager != null and _get_remaining_goal_safe("grass") > 0:
 								GameManager.register_cut("grass", 1, p_pos)
 
-					# Proteção anti-trava: se todos os tufos físicos foram ceifados, fecha metas residuais
+					# Proteção anti-trava: se todos os tufos físicos foram ceifados, fecha metas residuais silenciosamente (sem pop-up fantasma)
 					if _remaining_physical_grass <= 0 and _remaining_physical_wheat <= 0 and _remaining_physical_flower <= 0:
 						if GameManager != null:
 							while _get_remaining_goal_safe("grass") > 0:
-								GameManager.register_cut("grass", 1, p_pos)
+								GameManager.register_cut("grass", 1, Vector3.ZERO)
 							while _get_remaining_goal_safe("wheat") > 0:
-								GameManager.register_cut("wheat", 3, p_pos)
+								GameManager.register_cut("wheat", 3, Vector3.ZERO)
 							while _get_remaining_goal_safe("flower") > 0:
-								GameManager.register_cut("flower", 5, p_pos)
+								GameManager.register_cut("flower", 5, Vector3.ZERO)
 				else:
 					if mm != null:
 						var init_xform: Transform3D = _initial_transforms[p_idx]
@@ -1179,8 +1191,11 @@ func _spawn_cut_particles_at(world_pos: Vector3, col: Color) -> void:
 	var emitter: CPUParticles3D = PlantScript._particle_pool[PlantScript._pool_idx]
 	PlantScript._pool_idx = (PlantScript._pool_idx + 1) % PlantScript.POOL_SIZE
 
+	emitter.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	emitter.emitting = false
 	emitter.material_override = PlantScript._get_or_create_particle_material(col)
 	emitter.global_position = world_pos + Vector3(0.0, 0.15, 0.0)
+	emitter.reset_physics_interpolation()
 	emitter.restart()
 
 
@@ -1221,11 +1236,7 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 	for mmi_idx: int in range(_clipping_multimeshes.size()):
 		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 		if clip_mm != null:
-			if not vegetation_on:
-				clip_mm.visible_instance_count = 0
-			else:
-				var c_cnt: int = _clipping_counts[mmi_idx] if mmi_idx < _clipping_counts.size() else 0
-				clip_mm.visible_instance_count = c_cnt
+			clip_mm.visible_instance_count = 0 if not vegetation_on else -1
 
 
 func reset_all_plants() -> void:
@@ -1260,7 +1271,7 @@ func reset_all_plants() -> void:
 			_clipping_counts[mmi_idx] = 0
 		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 		if clip_mm != null:
-			clip_mm.visible_instance_count = 0
+			clip_mm.visible_instance_count = -1
 
 	set_benchmark_visibility(_last_vegetation_on, _last_density_step)
 

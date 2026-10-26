@@ -57,6 +57,12 @@ func _ready() -> void:
 	assert(is_equal_approx(menu_angle_diff, 0.0), "A lâmina do MenuBot deve acompanhar o pitch no menu!")
 	print("✔ Teste 5: MenuBot reparentado e inclinação da serra validada no menu inicial.")
 
+	# 6. Testa nivelamento imediato ao iniciar comemoração de vitória
+	cutter.call("play_victory_celebration")
+	assert(is_equal_approx(float(cutter.get("current_pitch")), 0.0), "current_pitch deve ser zerado na vitória!")
+	assert(is_equal_approx(float(cutter.get("current_roll")), 0.0), "current_roll deve ser zerado na vitória!")
+	print("✔ Teste 6: Nivelamento de pitch/roll na comemoração de vitória validado.")
+
 	print("==================================================")
 	print(">>> TODOS OS TESTES DE INCLINAÇÃO DA SERRA PASSARAM COM 100% DE SUCESSO! <<<")
 	print("==================================================")

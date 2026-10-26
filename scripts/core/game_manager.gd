@@ -61,20 +61,16 @@ func apply_graphics_quality(profile: String) -> void:
 	var vp: Viewport = get_viewport()
 	if vp == null:
 		return
-	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR
+	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	match profile:
 		"high":
 			vp.scaling_3d_scale = 1.0
-			vp.fsr_sharpness = 0.2
 		"balanced":
 			vp.scaling_3d_scale = 0.85
-			vp.fsr_sharpness = 0.2
 		"eco":
 			vp.scaling_3d_scale = 0.70
-			vp.fsr_sharpness = 0.3
 		_:
 			vp.scaling_3d_scale = 0.85
-			vp.fsr_sharpness = 0.2
 
 func _on_scene_node_added(node: Node) -> void:
 	if node is BaseButton:

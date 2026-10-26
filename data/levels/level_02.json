@@ -2505,14 +2505,14 @@
 			"gx": 15,
 			"gz": 0,
 			"rot": 0,
-			"tile_id": "island_corner_out"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 15,
 			"gz": 1,
-			"rot": 270,
-			"tile_id": "island_corner_in"
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -2622,9 +2622,16 @@
 		{
 			"auto": true,
 			"gx": 16,
-			"gz": 1,
+			"gz": 0,
 			"rot": 0,
 			"tile_id": "island_corner_out"
+		},
+		{
+			"auto": true,
+			"gx": 16,
+			"gz": 1,
+			"rot": 270,
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
