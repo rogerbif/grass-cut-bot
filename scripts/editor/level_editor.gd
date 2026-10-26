@@ -13,6 +13,10 @@ const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn"
 const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
 const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
+const FLOWER_BELL_SCENE: PackedScene = preload("res://scenes/plants/flower_bell.tscn")
+const FLOWER_COROLLA_SCENE: PackedScene = preload("res://scenes/plants/flower_corolla.tscn")
+const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tulip.tscn")
+const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
@@ -828,6 +832,14 @@ func _rebuild_3d_world() -> void:
 				f_scene = FLOWER_DAISY_SCENE
 			elif o_type == "flower_sunflower":
 				f_scene = FLOWER_SUNFLOWER_SCENE
+			elif o_type == "flower_bell":
+				f_scene = FLOWER_BELL_SCENE
+			elif o_type == "flower_corolla":
+				f_scene = FLOWER_COROLLA_SCENE
+			elif o_type == "flower_tulip":
+				f_scene = FLOWER_TULIP_SCENE
+			elif o_type == "flower_bed":
+				f_scene = FLOWER_BED_SCENE
 			var f_inst: Node3D = f_scene.instantiate() as Node3D
 			if f_inst != null:
 				f_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)

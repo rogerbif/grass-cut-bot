@@ -148,6 +148,13 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 		"grass": icon_label.text = "🌿"
 		"wheat": icon_label.text = "🌾"
 		"flower": icon_label.text = "🌸"
+		"flower_rose": icon_label.text = "🌹"
+		"flower_daisy": icon_label.text = "🌼"
+		"flower_sunflower": icon_label.text = "🌻"
+		"flower_bell": icon_label.text = "🔔"
+		"flower_corolla": icon_label.text = "🏵️"
+		"flower_tulip": icon_label.text = "🌷"
+		"flower_bed": icon_label.text = "🪻"
 		_: icon_label.text = "🌱"
 	icon_label.add_theme_font_size_override("font_size", 24)
 

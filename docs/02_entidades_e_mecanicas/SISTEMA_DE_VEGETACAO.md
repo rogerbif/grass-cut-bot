@@ -20,6 +20,10 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 | **Rosa Encantada** | `flower_rose` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas carmim rubi | Arbusto nobre com caule folhoso e rosa em camadas. Despetalação externa (Hit 1) e interna (Hit 2). |
 | **Margarida do Campo** | `flower_daisy` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas brancas | Haste alta com miolo ouro e 36 pétalas radiais alternadas em 2 levas. |
 | **Girassol Solar** | `flower_sunflower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar | Disco central avelã e pétalas em leque dourado, ceifa fatal no 3º golpe. |
+| **Flor Sino (Campânula)** | `flower_bell` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas azul campânula | Hastes inclinadas com pétalas em sino azul celeste. Despetalação em 2 levas (Hit 1 e 2). |
+| **Cravo Corola** | `flower_corolla` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas coral damasco | Pétalas espalmadas em coroa aberta exuberante. 3 golpes com despetalação progressiva. |
+| **Tulipa Imperial** | `flower_tulip` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas vermelho rubi | Flor ereta em cálice imperial com taça externa (Hit 1) e interna (Hit 2). |
+| **Canteiro Florido** | `flower_bed` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas lilás violeta | Tufo largo rasteiro salpicado com 9 florzinhas em 2 levas e ceifa rente ao solo. |
 
 ---
 

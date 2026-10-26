@@ -163,6 +163,38 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"category": "plant"
 	},
 	{
+		"id": "flower_bell",
+		"name": "Flor Sino",
+		"icon": "🔔",
+		"color": Color(0.22, 0.58, 0.95),
+		"goal_key": "flower_bell",
+		"category": "plant"
+	},
+	{
+		"id": "flower_corolla",
+		"name": "Cravo Corola",
+		"icon": "🏵️",
+		"color": Color(0.98, 0.52, 0.18),
+		"goal_key": "flower_corolla",
+		"category": "plant"
+	},
+	{
+		"id": "flower_tulip",
+		"name": "Tulipa Imperial",
+		"icon": "🌷",
+		"color": Color(0.92, 0.18, 0.24),
+		"goal_key": "flower_tulip",
+		"category": "plant"
+	},
+	{
+		"id": "flower_bed",
+		"name": "Canteiro Florido",
+		"icon": "🪻",
+		"color": Color(0.78, 0.38, 0.92),
+		"goal_key": "flower_bed",
+		"category": "plant"
+	},
+	{
 		"id": "wheat",
 		"name": "Trigo Maduro",
 		"icon": "🌾",

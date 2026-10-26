@@ -13,6 +13,10 @@ const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn"
 const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
 const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
+const FLOWER_BELL_SCENE: PackedScene = preload("res://scenes/plants/flower_bell.tscn")
+const FLOWER_COROLLA_SCENE: PackedScene = preload("res://scenes/plants/flower_corolla.tscn")
+const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tulip.tscn")
+const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 
 const GRASS_MATERIALS: Dictionary = {
 	"grass_green": preload("res://shaders/interactive_grass_material.tres"),
@@ -46,7 +50,11 @@ const VEG_TYPES: Array[String] = [
 	"flower",
 	"flower_rose",
 	"flower_daisy",
-	"flower_sunflower"
+	"flower_sunflower",
+	"flower_bell",
+	"flower_corolla",
+	"flower_tulip",
+	"flower_bed"
 ]
 
 const GRID_STEP: float = 0.40
@@ -64,6 +72,10 @@ static var _flower_mesh: ArrayMesh = null
 static var _flower_rose_mesh: ArrayMesh = null
 static var _flower_daisy_mesh: ArrayMesh = null
 static var _flower_sunflower_mesh: ArrayMesh = null
+static var _flower_bell_mesh: ArrayMesh = null
+static var _flower_corolla_mesh: ArrayMesh = null
+static var _flower_tulip_mesh: ArrayMesh = null
+static var _flower_bed_mesh: ArrayMesh = null
 static var _tile_meshes: Dictionary = {}
 
 # Dados por planta (SoA - Structure of Arrays para zero overhead de nós)
@@ -166,6 +178,34 @@ static func _ensure_static_meshes() -> void:
 		if visual_root != null:
 			_flower_sunflower_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
 		sun_inst.free()
+
+	if _flower_bell_mesh == null:
+		var bell_inst: Node = FLOWER_BELL_SCENE.instantiate()
+		var visual_root: Node3D = bell_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_bell_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		bell_inst.free()
+
+	if _flower_corolla_mesh == null:
+		var corolla_inst: Node = FLOWER_COROLLA_SCENE.instantiate()
+		var visual_root: Node3D = corolla_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_corolla_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		corolla_inst.free()
+
+	if _flower_tulip_mesh == null:
+		var tulip_inst: Node = FLOWER_TULIP_SCENE.instantiate()
+		var visual_root: Node3D = tulip_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_tulip_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		tulip_inst.free()
+
+	if _flower_bed_mesh == null:
+		var bed_inst: Node = FLOWER_BED_SCENE.instantiate()
+		var visual_root: Node3D = bed_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_bed_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		bed_inst.free()
 
 	if _tile_meshes.is_empty():
 		var model_scale_xform: Transform3D = Transform3D().scaled(Vector3(1.0, 2.0, 1.0))
@@ -367,8 +407,8 @@ func build_from_level_json(
 						obstacles_container.add_child(rock_inst)
 					else:
 						add_child(rock_inst)
-			elif o_type == "flower":
-				flower_cells[Vector2i(gx, gz)] = o_rot
+			elif o_type.begins_with("flower"):
+				flower_cells[Vector2i(gx, gz)] = o_type
 			elif o_type == "wheat":
 				wheat_cells[Vector2i(gx, gz)] = o_rot
 
@@ -461,6 +501,20 @@ static func _resolve_clipping_color(v_type: String) -> Color:
 			return Color(0.64, 0.46, 0.10, 1.0)
 		"flower":
 			return Color(0.85, 0.22, 0.55, 1.0)
+		"flower_rose":
+			return Color(0.72, 0.12, 0.25, 1.0)
+		"flower_daisy":
+			return Color(0.85, 0.85, 0.88, 1.0)
+		"flower_sunflower":
+			return Color(0.82, 0.65, 0.08, 1.0)
+		"flower_bell":
+			return Color(0.18, 0.45, 0.75, 1.0)
+		"flower_corolla":
+			return Color(0.85, 0.42, 0.15, 1.0)
+		"flower_tulip":
+			return Color(0.75, 0.12, 0.18, 1.0)
+		"flower_bed":
+			return Color(0.65, 0.28, 0.78, 1.0)
 		_:
 			return Color(0.12, 0.36, 0.12, 1.0)
 
@@ -545,9 +599,11 @@ func _build_from_vector_field(
 	# Adiciona flores de tile caso existam no JSON
 	for f_cell: Vector2i in tile_flowers.keys():
 		var f_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
+		var f_val: Variant = tile_flowers[f_cell]
+		var f_type: String = String(f_val) if (f_val is String and not String(f_val).is_empty()) else "flower"
 		tufts.append({
 			"pos": f_pos,
-			"type": "flower",
+			"type": f_type,
 			"scale_factor": 1.0,
 			"seed": float(f_cell.x * 79 + f_cell.y * 31)
 		})
@@ -629,6 +685,14 @@ func _build_from_vector_field(
 				mm.mesh = _flower_daisy_mesh
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
+			elif v_type == "flower_bell":
+				mm.mesh = _flower_bell_mesh
+			elif v_type == "flower_corolla":
+				mm.mesh = _flower_corolla_mesh
+			elif v_type == "flower_tulip":
+				mm.mesh = _flower_tulip_mesh
+			elif v_type == "flower_bed":
+				mm.mesh = _flower_bed_mesh
 			else:
 				mm.mesh = _flower_mesh
 		elif v_type == "wheat":
@@ -928,6 +992,14 @@ func _build_from_vegetation_field(
 				mm.mesh = _flower_daisy_mesh
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
+			elif v_type == "flower_bell":
+				mm.mesh = _flower_bell_mesh
+			elif v_type == "flower_corolla":
+				mm.mesh = _flower_corolla_mesh
+			elif v_type == "flower_tulip":
+				mm.mesh = _flower_tulip_mesh
+			elif v_type == "flower_bed":
+				mm.mesh = _flower_bed_mesh
 			else:
 				mm.mesh = _flower_mesh
 		elif v_type == "wheat":
@@ -1118,6 +1190,14 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 		return Color(0.97, 0.97, 0.98, 1.0)
 	if v_type == "flower_sunflower":
 		return Color(1.0, 0.82, 0.10, 1.0)
+	if v_type == "flower_bell":
+		return Color(0.22, 0.58, 0.95, 1.0)
+	if v_type == "flower_corolla":
+		return Color(0.98, 0.52, 0.18, 1.0)
+	if v_type == "flower_tulip":
+		return Color(0.92, 0.18, 0.24, 1.0)
+	if v_type == "flower_bed":
+		return Color(0.78, 0.38, 0.92, 1.0)
 	if v_type == "flower":
 		return Color(0.95, 0.35, 0.65, 1.0)
 	return Color(0.25, 0.75, 0.3, 1.0)

@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://flw_tulip_mat_01"]
+
+[ext_resource type="Shader" path="res://shaders/interactive_flower.gdshader" id="1_flower_shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_flower_shader")
+shader_parameter/interact_power = 0.22
+shader_parameter/wind_speed = 1.8
+shader_parameter/wind_strength = 0.08
+shader_parameter/petal_color = Color(0.92, 0.18, 0.24, 1)
+shader_parameter/center_color = Color(0.55, 0.08, 0.14, 1)
+shader_parameter/roughness = 0.9
+shader_parameter/specular = 0.15
