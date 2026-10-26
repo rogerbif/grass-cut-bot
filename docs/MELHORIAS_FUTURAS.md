@@ -73,6 +73,16 @@ Este documento contém o planejamento de evolução do jogo organizado por impac
 - **🧘 Modo Zen / Anti-Estresse:** Jogo livre em ilha ampla sem cronômetro, sem metas obrigatórias e sem risco de derrota, focado 100% no prazer relaxante de aparar toda a vegetação com som das ondas.
 - **⏱️ Desafio Diário (Time Attack):** Fase especial gerada ou selecionada rotativamente por dia com contagem de milissegundos e tabela local de recordes pessoais.
 
+### 4.4 Modo Construtor Mobile: "Bot Arquiteto" (Editor de Fases Jogável One-Thumb)
+- **🚜 Conceito Diegético Jogável:** Em vez de depender de janelas e precisão de mouse do PC, o jogador pilota o próprio Bot usando o joystick virtual na metade inferior da tela para terraformar e desenhar fases de forma relaxante e tátil.
+- **🏝️ Terraplanagem & Auto-Tile em Tempo Real:** Conforme o robô se desloca sobre o oceano com propulsores flutuantes, imprime blocos de ilha 3D e aciona o auto-tile dinamicamente (falésias, cantos arredondados e espuma litorânea calculados no rastro).
+- **🌿 Semeador de Vegetação:** O robô espalha grama verde ou trigo maduro sob as esteiras, com largura de traço ajustável (1 a 3 blocos de cobertura).
+- **🪨 Ejeção Rápida de Obstáculos & Itens:** Botões de ação rápida no polegar para ejetar rochas sólidas, plantar flores nobres ou marcar o ponto de início (`cutter_spawn`).
+- **🌊 Draga / Cavação (Borracha):** Modo reverso que cava o solo sob o robô, restaurando o mar aberto e removendo obstáculos em um único passe.
+- **🔄 Loop Instantâneo "Construir ➔ Testar (1 Toque)":** Alternância imediata entre a ferramenta de semeadura e a lâmina de corte. O cálculo das metas de vitória é automático com base no total plantado na fase.
+- **🔍 Navegação Livre & Drone:** Gesto de pinça (*pinch-to-zoom*) para subir a câmera em visão panorâmica aérea de satélite, com botão de recentralização instantânea no robô.
+- **💾 Salvamento e Compartilhamento:** Persistência em `user://custom_levels/*.json` com geração de códigos curtos/QR para troca de mapas entre jogadores.
+
 ---
 
 ## ✅ Histórico de Metas Antigas Concluídas

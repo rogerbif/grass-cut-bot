@@ -108,3 +108,12 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Desfazer / Refazer** | `Ctrl + Z` / `Ctrl + Y` | Histórico de até 30 operações. |
 | **Salvar Fase (JSON)** | `Ctrl + S` | Grava `res://data/levels/level_%02d.json`. |
 | **Playtest In-Editor** | `F1` ou `F5` (e `ESC` p/ sair) | Spawna o robô cortador para teste real e restaura a ilha intacta ao sair. |
+
+---
+
+## 5. Roadmap Futuro: Editor Mobile "Bot Arquiteto"
+
+Para viabilizar a criação de fases diretamente no celular sem depender da interface de janelas do PC, está planejado o **Modo Construtor Mobile** (ver especificações completas em [`docs/MELHORIAS_FUTURAS.md`](../MELHORIAS_FUTURAS.md#44-modo-construtor-mobile-bot-arquiteto-editor-de-fases-jogável-one-thumb)):
+- **Editor Diegético:** O jogador controla o Bot com o joystick virtual de uma mão (*one-thumb*), terraformando ilhas sobre o oceano, semeando grama/trigo por onde passa e ejetando rochas.
+- **Auto-Tile Dinâmico:** Os blocos de terra e falésias se adaptam em tempo real ao rastro do robô.
+- **Playtest Imediato em 1 Toque:** Alterna instantaneamente entre o modo semeador e a lâmina de corte.
