@@ -59,7 +59,7 @@ const VEG_TYPES: Array[String] = [
 
 const GRID_STEP: float = 0.40
 const TUFT_HIT_RADIUS_BONUS: float = 0.0
-const MULTI_HIT_COOLDOWN_SEC: float = 0.22
+const MULTI_HIT_COOLDOWN_SEC: float = 1.0
 const HIDDEN_TRANSFORM: Transform3D = Transform3D(
 	Basis(Vector3(0.0001, 0.0, 0.0), Vector3(0.0, 0.0001, 0.0), Vector3(0.0, 0.0, 0.0001)),
 	Vector3(0.0, -50.0, 0.0)
@@ -92,6 +92,7 @@ var _is_hidden_by_density: PackedByteArray = PackedByteArray()
 var _last_hit_time: PackedFloat32Array = PackedFloat32Array()
 var _plant_keys: PackedStringArray = PackedStringArray()
 var _particle_colors: PackedColorArray = PackedColorArray()
+var _actively_shaking_tufts: PackedInt32Array = PackedInt32Array()
 
 # Mapeamento do tufo para a célula lógica de 0.40m
 var _tuft_logical_cell: PackedInt32Array = PackedInt32Array()
@@ -282,6 +283,7 @@ func _clear_state() -> void:
 	_last_hit_time.clear()
 	_plant_keys.clear()
 	_particle_colors.clear()
+	_actively_shaking_tufts.clear()
 	_tuft_logical_cell.clear()
 	_cell_remaining_tufts.clear()
 	_cell_keys.clear()
@@ -1203,8 +1205,18 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 	return Color(0.25, 0.75, 0.3, 1.0)
 
 
+func _get_game_manager() -> Node:
+	if not is_inside_tree():
+		return null
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.root == null:
+		return null
+	return tree.root.get_node_or_null("GameManager")
+
+
 func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
-	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
+	var gm: Node = _get_game_manager()
+	if gm != null and int(gm.get("current_state")) != 1:
 		return
 
 	# Pinta a trilha contínua da serra no solo
@@ -1220,6 +1232,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 
 	var now_sec: float = float(Time.get_ticks_msec()) * 0.001
 	var particles_spawned_this_frame: int = 0
+	var new_shaking_tufts: PackedInt32Array = PackedInt32Array()
 
 	for cx: int in range(min_cx, max_cx + 1):
 		for cz: int in range(min_cz, max_cz + 1):
@@ -1239,6 +1252,19 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 					continue
 
 				if now_sec - _last_hit_time[p_idx] < MULTI_HIT_COOLDOWN_SEC:
+					# Enquanto a serra estiver em contato antes de fechar o tempo de 1s, treme sutilmente a planta resistente
+					if _max_health[p_idx] > 1 and _is_cut[p_idx] == 0 and _health[p_idx] > 0:
+						var jitter_amp: float = 0.022
+						var jitter_x: float = sin(now_sec * 65.0 + float(p_idx) * 13.0) * jitter_amp
+						var jitter_z: float = cos(now_sec * 65.0 + float(p_idx) * 17.0) * jitter_amp
+						var mmi_idx: int = _mmi_indices[p_idx]
+						var inst_idx: int = _instance_indices[p_idx]
+						var mm: MultiMesh = _veg_multimeshes[mmi_idx]
+						if mm != null:
+							var init_xform: Transform3D = _initial_transforms[p_idx]
+							var shake_xform: Transform3D = Transform3D(init_xform.basis, init_xform.origin + Vector3(jitter_x, 0.0, jitter_z))
+							mm.set_instance_transform(inst_idx, shake_xform)
+							new_shaking_tufts.append(p_idx)
 					continue
 
 				_last_hit_time[p_idx] = now_sec
@@ -1270,38 +1296,38 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 					var p_key: String = _plant_keys[p_idx]
 					if p_key == "wheat":
 						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
-						if GameManager != null:
-							GameManager.register_cut("wheat", 3, p_pos)
+						if gm != null:
+							gm.call("register_cut", "wheat", 3, p_pos)
 					elif p_key.begins_with("flower"):
 						_remaining_physical_flower = maxi(0, _remaining_physical_flower - 1)
-						if GameManager != null:
-							GameManager.register_cut(p_key, 5, p_pos)
+						if gm != null:
+							gm.call("register_cut", p_key, 5, p_pos)
 					else:
 						# Qualquer tipo/cor de grama
 						_remaining_physical_grass = maxi(0, _remaining_physical_grass - 1)
 						_grass_cut_accumulator += 1
 						if _grass_cut_accumulator >= 10:
 							_grass_cut_accumulator -= 10
-							if GameManager != null:
-								GameManager.register_cut("grass", 1, p_pos)
+							if gm != null:
+								gm.call("register_cut", "grass", 1, p_pos)
 						elif _remaining_physical_grass <= 0 and _grass_cut_accumulator > 0:
 							_grass_cut_accumulator = 0
-							if GameManager != null and _get_remaining_goal_safe("grass") > 0:
-								GameManager.register_cut("grass", 1, p_pos)
+							if gm != null and _get_remaining_goal_safe("grass") > 0:
+								gm.call("register_cut", "grass", 1, p_pos)
 
 					# Proteção anti-trava por categoria independente:
 					if _remaining_physical_wheat <= 0 and _get_remaining_goal_safe("wheat") > 0:
-						if GameManager != null:
+						if gm != null:
 							while _get_remaining_goal_safe("wheat") > 0:
-								GameManager.register_cut("wheat", 3, Vector3.ZERO)
+								gm.call("register_cut", "wheat", 3, Vector3.ZERO)
 					if _remaining_physical_flower <= 0 and _get_remaining_goal_safe("flower") > 0:
-						if GameManager != null:
+						if gm != null:
 							while _get_remaining_goal_safe("flower") > 0:
-								GameManager.register_cut("flower", 5, Vector3.ZERO)
+								gm.call("register_cut", "flower", 5, Vector3.ZERO)
 					if _remaining_physical_grass <= 0 and _get_remaining_goal_safe("grass") > 0:
-						if GameManager != null:
+						if gm != null:
 							while _get_remaining_goal_safe("grass") > 0:
-								GameManager.register_cut("grass", 1, Vector3.ZERO)
+								gm.call("register_cut", "grass", 1, Vector3.ZERO)
 				else:
 					if mm != null:
 						var p_key: String = _plant_keys[p_idx]
@@ -1319,6 +1345,12 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 					if tree != null:
 						tree.create_timer(0.08).timeout.connect(_restore_plant_transform.bind(p_idx))
 
+	# Restaura qualquer tufo que estava tremendo no frame anterior mas não está mais em contato
+	for old_p_idx: int in _actively_shaking_tufts:
+		if not new_shaking_tufts.has(old_p_idx):
+			_restore_plant_transform(old_p_idx)
+	_actively_shaking_tufts = new_shaking_tufts
+
 
 func _restore_plant_transform(p_idx: int) -> void:
 	if p_idx < 0 or p_idx >= _positions.size():
@@ -1329,6 +1361,53 @@ func _restore_plant_transform(p_idx: int) -> void:
 		var mm: MultiMesh = _veg_multimeshes[mmi_idx]
 		if mm != null:
 			mm.set_instance_transform(inst_idx, _initial_transforms[p_idx])
+
+
+## Resolve a colisão física contra plantas rígidas (> 1 vida vivas) para impedir que o cortador as atravesse.
+func resolve_rigid_plant_collision(cutter_pos: Vector3, cutter_vel: Vector3, body_radius: float, plant_radius: float = 0.18) -> Dictionary:
+	var total_radius: float = body_radius + plant_radius
+	var total_radius_sq: float = total_radius * total_radius
+	var min_cx: int = floori((cutter_pos.x - total_radius) / GRID_STEP)
+	var max_cx: int = ceili((cutter_pos.x + total_radius) / GRID_STEP)
+	var min_cz: int = floori((cutter_pos.z - total_radius) / GRID_STEP)
+	var max_cz: int = ceili((cutter_pos.z + total_radius) / GRID_STEP)
+
+	var resolved_pos: Vector3 = cutter_pos
+	var resolved_vel: Vector3 = cutter_vel
+
+	for cx: int in range(min_cx, max_cx + 1):
+		for cz: int in range(min_cz, max_cz + 1):
+			var cell_key: Vector2i = Vector2i(cx, cz)
+			if not _grid.has(cell_key):
+				continue
+			var bucket: PackedInt32Array = _grid[cell_key] as PackedInt32Array
+			for i: int in range(bucket.size()):
+				var p_idx: int = bucket[i]
+				if _max_health[p_idx] <= 1 or _is_cut[p_idx] == 1 or _health[p_idx] <= 0:
+					continue
+
+				var p_pos: Vector3 = _positions[p_idx]
+				var dx: float = resolved_pos.x - p_pos.x
+				var dz: float = resolved_pos.z - p_pos.z
+				var dist_sq: float = dx * dx + dz * dz
+
+				if dist_sq < total_radius_sq and dist_sq > 0.000001:
+					var dist: float = sqrt(dist_sq)
+					var norm_x: float = dx / dist
+					var norm_z: float = dz / dist
+					var penetration: float = total_radius - dist
+
+					resolved_pos.x += norm_x * penetration
+					resolved_pos.z += norm_z * penetration
+
+					var norm3: Vector3 = Vector3(norm_x, 0.0, norm_z)
+					if resolved_vel.dot(-norm3) > 0.0:
+						resolved_vel = resolved_vel.slide(norm3)
+
+	return {
+		"position": resolved_pos,
+		"velocity": resolved_vel
+	}
 
 
 func _spawn_cut_particles_at(world_pos: Vector3, col: Color) -> void:
@@ -1431,14 +1510,20 @@ func reset_all_plants() -> void:
 
 
 static func _get_remaining_goal_safe(p_type: String) -> int:
-	if GameManager == null:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree == null or tree.root == null:
 		return 0
-	if GameManager.has_method("get_remaining_goal"):
-		return GameManager.get_remaining_goal(p_type)
-	var g_val: Variant = GameManager.goals.get(p_type, null)
-	if g_val is Dictionary:
-		var gd: Dictionary = g_val as Dictionary
-		return maxi(0, int(gd.get("target", 0)) - int(gd.get("current", 0)))
-	elif g_val is int:
-		return maxi(0, int(g_val))
+	var gm: Node = tree.root.get_node_or_null("GameManager")
+	if gm == null:
+		return 0
+	if gm.has_method("get_remaining_goal"):
+		return int(gm.call("get_remaining_goal", p_type))
+	var goals_dict: Variant = gm.get("goals")
+	if goals_dict is Dictionary:
+		var g_val: Variant = (goals_dict as Dictionary).get(p_type, null)
+		if g_val is Dictionary:
+			var gd: Dictionary = g_val as Dictionary
+			return maxi(0, int(gd.get("target", 0)) - int(gd.get("current", 0)))
+		elif g_val is int:
+			return maxi(0, int(g_val))
 	return 0

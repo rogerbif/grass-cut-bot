@@ -21,6 +21,7 @@ static var _fallback_material: StandardMaterial3D = null
 
 var health: int = 1
 var is_cut: bool = false
+var _last_hit_time: float = -10.0
 
 @onready var visual_mesh: Node3D = $VisualMesh
 @onready var area: Area3D = $Area3D
@@ -86,6 +87,11 @@ func _apply_visual_material(target: Node) -> void:
 func cut(power: int) -> void:
 	if is_cut:
 		return
+
+	var now_sec: float = float(Time.get_ticks_msec()) * 0.001
+	if max_health > 1 and (now_sec - _last_hit_time) < 1.0:
+		return
+	_last_hit_time = now_sec
 
 	health -= power
 	if health <= 0:

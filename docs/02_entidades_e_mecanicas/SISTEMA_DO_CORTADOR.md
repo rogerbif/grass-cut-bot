@@ -38,9 +38,9 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 | `base_speed` | `6.5 m/s` | Velocidade máxima de deslocamento linear. Escalável via upgrade de Velocidade. |
 | `acceleration` | `24.0 m/s²` | Rapidez com que o cortador atinge a velocidade desejada após o toque. |
 | `friction` | `18.0 m/s²` | Desaceleração suave quando o jogador solta o joystick. |
-| `rotation_speed`| `1200.0 °/s` | Rotação angular de alta velocidade da serra em torno do eixo Y durante a condução. |
+| `rotation_speed`| `600.0 °/s` | Rotação angular equilibrada da serra em torno do eixo Y durante a condução (reduzida em 50% para visualização nítida dos dentes). |
 | `idle_rotation_speed`| `90.0 °/s` | Rotação suave e lenta da lâmina em torno do eixo Y quando o robô estiver parado (idle). |
-| `knockback_force`| `9.5 m/s` | Impulso reverso ampliado aplicado na direção normal da colisão ao tocar obstáculos sólidos com a serra. |
+| `knockback_force`| `4.75 m/s` | Impulso reverso equilibrado aplicado na direção normal da colisão ao tocar obstáculos sólidos com a serra (reduzido em 50% para recuo ágil). |
 
 ### Lógica de Vetor de Movimento e Orientação Frontal
 Ao iniciar qualquer fase (no `_ready()`, no spawn de `vegetation_grid.gd` ou ao reiniciar a partida via `reset_orientation_to_camera()`), o Cutter Bit é garantido **olhando diretamente de frente para a câmera isométrica ($+Z$, `robot_body.rotation.y = 0.0`)**, estabelecendo contato visual imediato e carismático com os olhos de LED.
@@ -108,10 +108,10 @@ Todas as lâminas compartilham a mesma identidade visual: alcance radial idênti
 
 Ao colidir contra obstáculos sólidos (como rochas do grupo `"obstacles"`), seja pelo perímetro da lâmina giratória (`_cached_blade_radius + obs_radius`, onde `obs_radius = 0.18m` para rochas) ou pelo corpo do cortador:
 1. **Detecção Perimétrica da Lâmina:** A borda externa da serra é monitorada continuamente com base no colisor do obstáculo ($R = 0.18\text{m}$). Ao tocar a borda de uma rocha, um bloqueio elástico instantâneo reposiciona o robô para fora da malha da pedra, impedindo qualquer penetração visual fantasma.
-2. **Interrupção de Inércia e Atordoamento Estendido:** O estado `is_stunned` é ativado por 0.24s (com cooldown de 0.32s), permitindo a leitura visual clara do impacto antes da retomada do joystick.
-3. **Impulso Reverso Violento (Knockback Ampliado):** A velocidade do cortador recebe um impulso reverso de `9.5 m/s` na direção normal do impacto, arremessando o robô cerca de $1.2\text{m}$ para trás com atrito elástico:
+2. **Interrupção de Inércia e Atordoamento:** O estado `is_stunned` é ativado por 0.18s (com cooldown de 0.25s), permitindo a leitura visual clara do impacto antes da retomada do joystick.
+3. **Impulso Reverso Calibrado (Knockback de 4.75 m/s):** A velocidade do cortador recebe um impulso reverso de `4.75 m/s` na direção normal do impacto, arremessando o robô cerca de $0.6\text{m}$ para trás com atrito elástico:
    $$\vec{v}_{\text{choque}} = \vec{n}_{\text{colisão}} \times \text{knockback\_force}$$
-4. **Compressão da Suspensão:** O chassi sofre afundamento vertical repentino (`shock_compression = -0.07`), transmitindo o recuo físico da batida mecânica.
+4. **Compressão da Suspensão:** O chassi sofre afundamento vertical repentino (`shock_compression = -0.045`), transmitindo o recuo físico da batida mecânica.
 5. **Emissão de Faíscas no Ponto de Contato:** O nó `SparkParticles` é reposicionado exatamente no ponto de fricção dente-de-serra contra rocha (`top_level = true`) e ativado instantaneamente.
 6. **Vibração Tátil e Tremer de Câmera:** O `GameManager` emite vibração de 60ms (`Input.vibrate_handheld(60)`) e solicita um camera shake de intensidade 0.35 por 0.2s.
 

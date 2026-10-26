@@ -3,9 +3,9 @@ extends CharacterBody3D
 @export var base_speed: float = 3.25
 @export var acceleration: float = 24.0
 @export var friction: float = 18.0
-@export var rotation_speed: float = 1200.0 # Graus por segundo de rotação da serra em velocidade máxima (em movimento)
+@export var rotation_speed: float = 600.0 # Graus por segundo de rotação da serra em velocidade máxima (em movimento)
 @export var idle_rotation_speed: float = 90.0 # Graus por segundo de rotação suave da serra quando parado (marcha lenta)
-@export var knockback_force: float = 9.5 # Arremesso ampliado ao colidir a lâmina com rochas
+@export var knockback_force: float = 4.75 # Afastamento/ricochete calibrado ao colidir a lâmina com rochas
 
 @export_group("Procedural Motion")
 @export var max_pitch_deg: float = 6.0         # Inclinação máxima para frente/trás (graus)
@@ -438,6 +438,10 @@ func _physics_process(delta: float) -> void:
 		# Aplica atrito durante o recuo
 		velocity = velocity.move_toward(Vector3.ZERO, friction * 2.0 * delta)
 		move_and_slide()
+		if vegetation_grid != null and is_instance_valid(vegetation_grid) and vegetation_grid.has_method("resolve_rigid_plant_collision"):
+			var col_result: Dictionary = vegetation_grid.call("resolve_rigid_plant_collision", global_position, velocity, 0.30, 0.18)
+			global_position = col_result["position"]
+			velocity = col_result["velocity"]
 		_process_procedural_motion(delta, target_speed)
 		_check_obstacle_collisions()
 		_update_shader_globals()
@@ -467,6 +471,11 @@ func _physics_process(delta: float) -> void:
 	_process_procedural_motion(delta, target_speed)
 
 	move_and_slide()
+	if vegetation_grid != null and is_instance_valid(vegetation_grid) and vegetation_grid.has_method("resolve_rigid_plant_collision"):
+		var col_result: Dictionary = vegetation_grid.call("resolve_rigid_plant_collision", global_position, velocity, 0.30, 0.18)
+		global_position = col_result["position"]
+		velocity = col_result["velocity"]
+
 	if AudioManager != null and GameManager != null and GameManager.current_state == GameManager.GameState.PLAYING:
 		var speed_ratio: float = velocity.length() / maxf(1.0, _cached_cutter_speed)
 		AudioManager.update_engine_speed(speed_ratio)
@@ -669,10 +678,10 @@ func _check_slide_collisions() -> void:
 
 func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO) -> void:
 	is_stunned = true
-	stun_timer = 0.24 # Duração estendida do choque para absorver o recuo
-	_shock_cooldown = 0.32 # Cooldown defensivo para evitar múltiplos choques consecutivos
-	velocity = normal * knockback_force # Força aumentada (9.5 m/s) para arremessar o robô para longe
-	shock_compression = -0.07 # Afundamento elástico pronunciado da suspensão
+	stun_timer = 0.18 # Duração do choque calibrada com o afastamento reduzido
+	_shock_cooldown = 0.25 # Cooldown defensivo para evitar múltiplos choques consecutivos
+	velocity = normal * knockback_force # Força calibrada (4.75 m/s) para afastamento curto
+	shock_compression = -0.045 # Afundamento elástico proporcional da suspensão
 	
 	# Dispara expressão brava com olhos vermelhos e faíscas elétricas
 	if robot_eyes:
