@@ -10,6 +10,9 @@ const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.g
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
 const ROCK_SCENE: PackedScene = preload("res://scenes/obstacles/rock.tscn")
 const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
+const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
+const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
+const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
@@ -817,8 +820,15 @@ func _rebuild_3d_world() -> void:
 				r_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				r_inst.rotation_degrees.y = float(entry.get("rot", 0))
 				obstacles_container.add_child(r_inst)
-		elif o_type == "flower":
-			var f_inst: Node3D = FLOWER_SCENE.instantiate() as Node3D
+		elif o_type.begins_with("flower"):
+			var f_scene: PackedScene = FLOWER_SCENE
+			if o_type == "flower_rose":
+				f_scene = FLOWER_ROSE_SCENE
+			elif o_type == "flower_daisy":
+				f_scene = FLOWER_DAISY_SCENE
+			elif o_type == "flower_sunflower":
+				f_scene = FLOWER_SUNFLOWER_SCENE
+			var f_inst: Node3D = f_scene.instantiate() as Node3D
 			if f_inst != null:
 				f_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				f_inst.rotation_degrees.y = float(entry.get("rot", 0))
@@ -866,14 +876,14 @@ func _build_editor_vector_ground() -> void:
 				Vector2(r_world.x, r_world.z)
 			)
 			vector_field_clone.call("clip_shapes", rock_clip_poly)
-		elif o_type == "flower":
+		elif o_type.begins_with("flower"):
 			var f_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 			var flower_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
 				BrushPatterns.ShapeType.CIRCLE,
 				1,
 				Vector2(f_pos.x, f_pos.z)
 			)
-			vector_field_clone.call("add_shape", "flower", flower_poly)
+			vector_field_clone.call("add_shape", o_type, flower_poly)
 
 	var ground_meshes: Dictionary = vector_field_clone.call("generate_ground_meshes") as Dictionary
 	for vt_var: Variant in ground_meshes.keys():
@@ -1079,7 +1089,7 @@ func _load_or_init_level(lvl_id: int) -> void:
 				var d: Dictionary = item as Dictionary
 				var o_type: String = String(d.get("type", ""))
 				# Só guarda em object_grid os objetos discretos de tile: rock, flower e wheat
-				if o_type == "rock" or o_type == "flower" or o_type == "wheat":
+				if o_type == "rock" or o_type.begins_with("flower") or o_type == "wheat":
 					var c: Vector2i = Vector2i(int(d.get("gx", 0)), int(d.get("gz", 0)))
 					object_grid[c] = {
 						"type": o_type,
@@ -1232,7 +1242,7 @@ func _start_playtest() -> void:
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock" or o_type == "flower" or o_type == "wheat":
+		if o_type == "rock" or o_type.begins_with("flower") or o_type == "wheat":
 			veg_json["objects"].append({
 				"gx": cell.x,
 				"gz": cell.y,

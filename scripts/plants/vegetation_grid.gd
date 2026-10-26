@@ -10,6 +10,9 @@ const PlantScript = preload("res://scripts/plants/plant.gd")
 const GRASS_MODEL: PackedScene = preload("res://assets/models/grass_01.glb")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
+const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
+const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
+const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
 
 const GRASS_MATERIALS: Dictionary = {
 	"grass_green": preload("res://shaders/interactive_grass_material.tres"),
@@ -40,7 +43,10 @@ const VEG_TYPES: Array[String] = [
 	"grass_red",
 	"grass_black",
 	"wheat",
-	"flower"
+	"flower",
+	"flower_rose",
+	"flower_daisy",
+	"flower_sunflower"
 ]
 
 const GRID_STEP: float = 0.40
@@ -55,6 +61,9 @@ const FIXED_ISLAND_AABB: AABB = AABB(Vector3(-35.0, -5.0, -35.0), Vector3(70.0, 
 static var _grass_mesh: Mesh = null
 static var _wheat_mesh: ArrayMesh = null
 static var _flower_mesh: ArrayMesh = null
+static var _flower_rose_mesh: ArrayMesh = null
+static var _flower_daisy_mesh: ArrayMesh = null
+static var _flower_sunflower_mesh: ArrayMesh = null
 static var _tile_meshes: Dictionary = {}
 
 # Dados por planta (SoA - Structure of Arrays para zero overhead de nós)
@@ -136,6 +145,27 @@ static func _ensure_static_meshes() -> void:
 		if visual_root != null:
 			_flower_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
 		flower_inst.free()
+
+	if _flower_rose_mesh == null:
+		var rose_inst: Node = FLOWER_ROSE_SCENE.instantiate()
+		var visual_root: Node3D = rose_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_rose_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		rose_inst.free()
+
+	if _flower_daisy_mesh == null:
+		var daisy_inst: Node = FLOWER_DAISY_SCENE.instantiate()
+		var visual_root: Node3D = daisy_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_daisy_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		daisy_inst.free()
+
+	if _flower_sunflower_mesh == null:
+		var sun_inst: Node = FLOWER_SUNFLOWER_SCENE.instantiate()
+		var visual_root: Node3D = sun_inst.get_node_or_null("VisualMesh") as Node3D
+		if visual_root != null:
+			_flower_sunflower_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+		sun_inst.free()
 
 	if _tile_meshes.is_empty():
 		var model_scale_xform: Transform3D = Transform3D().scaled(Vector3(1.0, 2.0, 1.0))
@@ -547,8 +577,8 @@ func _build_from_vector_field(
 			if v_type == "wheat":
 				g_key = "wheat"
 				r_coins = 3
-			elif v_type == "flower":
-				g_key = "flower"
+			elif v_type.begins_with("flower"):
+				g_key = v_type
 				r_coins = 5
 
 			logical_cells_map[lkey] = new_cell_idx
@@ -588,11 +618,21 @@ func _build_from_vector_field(
 		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
 		var count: int = entry_list.size()
 
+		var is_flower: bool = v_type.begins_with("flower")
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if v_type == "flower":
+		if is_flower:
 			mm.use_custom_data = true
-			mm.mesh = _flower_mesh
+			if v_type == "flower_rose":
+				mm.mesh = _flower_rose_mesh
+			elif v_type == "flower_daisy":
+				mm.mesh = _flower_daisy_mesh
+			elif v_type == "flower_sunflower":
+				mm.mesh = _flower_sunflower_mesh
+			else:
+				mm.mesh = _flower_mesh
+		elif v_type == "wheat":
+			mm.mesh = _wheat_mesh
 		else:
 			mm.mesh = _grass_mesh
 		mm.instance_count = count
@@ -626,8 +666,8 @@ func _build_from_vector_field(
 		_clipping_multimeshes[mmi_idx] = clip_mm
 		_clipping_mmi_nodes[mmi_idx] = clip_mmi
 
-		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
-		var max_hp: int = 1 if is_grass else (3 if v_type == "flower" else 2)
+		var is_grass: bool = (v_type != "wheat" and not is_flower)
+		var max_hp: int = 1 if is_grass else (3 if is_flower else 2)
 		var p_col: Color = _resolve_type_particle_color(v_type)
 
 		for inst_idx: int in range(count):
@@ -694,7 +734,7 @@ func _build_from_vector_field(
 		var pk: String = _plant_keys[p_idx]
 		if pk == "wheat":
 			_total_physical_wheat += 1
-		elif pk == "flower":
+		elif pk.begins_with("flower"):
 			_total_physical_flower += 1
 		else:
 			_total_physical_grass += 1
@@ -877,11 +917,21 @@ func _build_from_vegetation_field(
 		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
 		var count: int = entry_list.size()
 
+		var is_flower: bool = v_type.begins_with("flower")
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if v_type == "flower":
+		if is_flower:
 			mm.use_custom_data = true
-			mm.mesh = _flower_mesh
+			if v_type == "flower_rose":
+				mm.mesh = _flower_rose_mesh
+			elif v_type == "flower_daisy":
+				mm.mesh = _flower_daisy_mesh
+			elif v_type == "flower_sunflower":
+				mm.mesh = _flower_sunflower_mesh
+			else:
+				mm.mesh = _flower_mesh
+		elif v_type == "wheat":
+			mm.mesh = _wheat_mesh
 		else:
 			mm.mesh = _grass_mesh
 		mm.instance_count = count
@@ -915,8 +965,8 @@ func _build_from_vegetation_field(
 		_clipping_multimeshes[mmi_idx] = clip_mm
 		_clipping_mmi_nodes[mmi_idx] = clip_mmi
 
-		var is_grass: bool = (v_type != "wheat" and v_type != "flower")
-		var max_hp: int = 1 if is_grass else (3 if v_type == "flower" else 2)
+		var is_grass: bool = (v_type != "wheat" and not is_flower)
+		var max_hp: int = 1 if is_grass else (3 if is_flower else 2)
 		var p_col: Color = _resolve_type_particle_color(v_type)
 
 		for inst_idx: int in range(count):
@@ -986,7 +1036,7 @@ func _build_from_vegetation_field(
 		var pk: String = _plant_keys[p_idx]
 		if pk == "wheat":
 			_total_physical_wheat += 1
-		elif pk == "flower":
+		elif pk.begins_with("flower"):
 			_total_physical_flower += 1
 		else:
 			_total_physical_grass += 1
@@ -1062,6 +1112,12 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 				return col_variant as Color
 	if v_type == "wheat":
 		return Color(0.96, 0.75, 0.15, 1.0)
+	if v_type == "flower_rose":
+		return Color(0.92, 0.16, 0.32, 1.0)
+	if v_type == "flower_daisy":
+		return Color(0.97, 0.97, 0.98, 1.0)
+	if v_type == "flower_sunflower":
+		return Color(1.0, 0.82, 0.10, 1.0)
 	if v_type == "flower":
 		return Color(0.95, 0.35, 0.65, 1.0)
 	return Color(0.25, 0.75, 0.3, 1.0)
@@ -1136,10 +1192,10 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
 						if GameManager != null:
 							GameManager.register_cut("wheat", 3, p_pos)
-					elif p_key == "flower":
+					elif p_key.begins_with("flower"):
 						_remaining_physical_flower = maxi(0, _remaining_physical_flower - 1)
 						if GameManager != null:
-							GameManager.register_cut("flower", 5, p_pos)
+							GameManager.register_cut(p_key, 5, p_pos)
 					else:
 						# Qualquer tipo/cor de grama
 						_remaining_physical_grass = maxi(0, _remaining_physical_grass - 1)
@@ -1169,7 +1225,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 				else:
 					if mm != null:
 						var p_key: String = _plant_keys[p_idx]
-						if p_key == "flower":
+						if p_key.begins_with("flower"):
 							var stage: float = 1.0 if new_hp == 2 else 2.0
 							mm.set_instance_custom_data(inst_idx, Color(stage, 0.0, 0.0, 0.0))
 							_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])

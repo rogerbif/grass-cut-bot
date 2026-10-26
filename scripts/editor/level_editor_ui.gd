@@ -817,7 +817,7 @@ func update_goals_summary(
 	for k: Variant in object_grid:
 		var entry: Dictionary = object_grid[k] as Dictionary
 		var t: String = String(entry.get("type", ""))
-		if t == "flower":
+		if t.begins_with("flower"):
 			flower_c += 1
 		elif t == "wheat":
 			wheat_tufts += 1

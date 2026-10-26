@@ -23,6 +23,9 @@ const OBJECT_SCENES: Dictionary = {
 	"grass_black": preload("res://scenes/plants/grass_black.tscn"),
 	"wheat": preload("res://scenes/plants/wheat_tuft.tscn"),
 	"flower": preload("res://scenes/plants/flower_tuft.tscn"),
+	"flower_rose": preload("res://scenes/plants/flower_rose.tscn"),
+	"flower_daisy": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_sunflower": preload("res://scenes/plants/flower_sunflower.tscn"),
 	"rock": preload("res://scenes/obstacles/rock.tscn")
 }
 

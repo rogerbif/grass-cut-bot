@@ -132,10 +132,34 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 	},
 	{
 		"id": "flower",
-		"name": "Flor Nobre",
+		"name": "Flor Silvestre",
 		"icon": "🌸",
 		"color": Color(0.95, 0.38, 0.68),
 		"goal_key": "flower",
+		"category": "plant"
+	},
+	{
+		"id": "flower_rose",
+		"name": "Rosa Nobre",
+		"icon": "🌹",
+		"color": Color(0.92, 0.16, 0.32),
+		"goal_key": "flower_rose",
+		"category": "plant"
+	},
+	{
+		"id": "flower_daisy",
+		"name": "Margarida",
+		"icon": "🌼",
+		"color": Color(0.97, 0.97, 0.98),
+		"goal_key": "flower_daisy",
+		"category": "plant"
+	},
+	{
+		"id": "flower_sunflower",
+		"name": "Girassol",
+		"icon": "🌻",
+		"color": Color(1.0, 0.82, 0.10),
+		"goal_key": "flower_sunflower",
 		"category": "plant"
 	},
 	{
