@@ -496,47 +496,12 @@ func _build_right_panel() -> void:
 
 	for item in TilePaletteDB.GRASS_ITEMS:
 		var g_id: String = String(item["id"])
-		if g_id == "wheat":
-			continue
 		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.add_theme_font_size_override("font_size", 13)
 		b.pressed.connect(func() -> void: grass_item_selected.emit(g_id))
 		grid_grass.add_child(b)
 		grass_buttons[g_id] = b
-
-	section_grass.add_child(HSeparator.new())
-
-	var lbl_w_pal: Label = Label.new()
-	lbl_w_pal.text = "🌾 VEGETAÇÃO DE META (2x HP - 3 MOEDAS)"
-	lbl_w_pal.add_theme_font_size_override("font_size", 13)
-	lbl_w_pal.add_theme_color_override("font_color", Color(1.0, 0.82, 0.28))
-	section_grass.add_child(lbl_w_pal)
-
-	var wheat_item: Variant = TilePaletteDB.get_item_by_id("wheat")
-	if wheat_item != null and wheat_item is Dictionary:
-		var w_dict: Dictionary = wheat_item as Dictionary
-		var b_wheat: Button = _create_styled_button(
-			"%s %s" % [String(w_dict["icon"]), String(w_dict["name"])],
-			w_dict["color"] as Color,
-			Vector2(294, 36)
-		)
-		b_wheat.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b_wheat.add_theme_font_size_override("font_size", 13)
-		b_wheat.pressed.connect(func() -> void: grass_item_selected.emit("wheat"))
-		section_grass.add_child(b_wheat)
-		grass_buttons["wheat"] = b_wheat
-
-	var btn_convert: Button = _create_styled_button(
-		"🔄 Converter Grama Amarela ➔ Trigo",
-		Color(0.85, 0.65, 0.25),
-		Vector2(294, 32)
-	)
-	btn_convert.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	btn_convert.add_theme_font_size_override("font_size", 12)
-	btn_convert.tooltip_text = "Converte polígonos de Grama Amarela no mapa em Trigo Maduro (para contagem de metas)"
-	btn_convert.pressed.connect(func() -> void: convert_yellow_to_wheat_requested.emit())
-	section_grass.add_child(btn_convert)
 
 	# 3. Seção de Objetos no Tile (0.80m)
 	section_objects = VBoxContainer.new()
@@ -545,21 +510,21 @@ func _build_right_panel() -> void:
 	vbox.add_child(section_objects)
 
 	var lbl_o_pal: Label = Label.new()
-	lbl_o_pal.text = "🪨 OBJETOS NO TILE (0.8m)"
+	lbl_o_pal.text = "🪨 OBJETOS E PLANTAS NO TILE (0.8m)"
 	lbl_o_pal.add_theme_font_size_override("font_size", 13)
 	lbl_o_pal.add_theme_color_override("font_color", Color(1.0, 0.75, 0.35))
 	section_objects.add_child(lbl_o_pal)
 
 	var grid_objects: GridContainer = GridContainer.new()
-	grid_objects.columns = 3
+	grid_objects.columns = 2
 	grid_objects.add_theme_constant_override("h_separation", 6)
 	grid_objects.add_theme_constant_override("v_separation", 6)
 	section_objects.add_child(grid_objects)
 
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var o_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(94, 34))
-		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.add_theme_font_size_override("font_size", 12)
 		b.pressed.connect(func() -> void: object_item_selected.emit(o_id))
 		grid_objects.add_child(b)
@@ -859,12 +824,14 @@ func update_goals_summary(
 		elif t == "rock":
 			rock_c += 1
 
-	_last_detected_counts["grass"] = grass_tufts
+	var grass_goal_units: int = maxi(1, int(ceilf(float(grass_tufts) / 10.0))) if grass_tufts > 0 else 0
+
+	_last_detected_counts["grass"] = grass_goal_units
 	_last_detected_counts["wheat"] = wheat_tufts
 	_last_detected_counts["flower"] = flower_c
 
 	var counts_map: Dictionary = {
-		"grass": grass_tufts,
+		"grass": grass_goal_units,
 		"wheat": wheat_tufts,
 		"flower": flower_c
 	}
@@ -872,7 +839,10 @@ func update_goals_summary(
 	for k: String in ["grass", "wheat", "flower"]:
 		var cnt: int = int(counts_map[k])
 		if _goal_total_labels.has(k) and _goal_total_labels[k] != null:
-			(_goal_total_labels[k] as Label).text = "/ %d" % cnt
+			if k == "grass" and grass_tufts > 0:
+				(_goal_total_labels[k] as Label).text = "/ %d (%d tufos)" % [grass_goal_units, grass_tufts]
+			else:
+				(_goal_total_labels[k] as Label).text = "/ %d" % cnt
 		if _goal_spinboxes.has(k) and _goal_spinboxes[k] != null:
 			var spin: SpinBox = _goal_spinboxes[k] as SpinBox
 			if not _goal_manually_edited.get(k, false):

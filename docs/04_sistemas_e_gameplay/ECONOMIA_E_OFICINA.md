@@ -8,7 +8,7 @@ Este documento detalha o sistema econômico, a aquisição de moedas, a escalabi
 
 As moedas verdes são a moeda corrente do jogo e são obtidas diretamente pelo ato mecânico de corte e colheita. Em conformidade com a **Regra Canônica de Agrupamento em Lotes (Melhoria 082)**, a premiação econômica é consolidada por lote de colheita para manter legibilidade visual e evitar sobrecarga de números na tela:
 - **Grama Comum (Qualquer das 7 Cores):** 10 tufos físicos ceifados = 1 lote de meta = 1 moeda base (número flutuante `+1` em branco puro com contorno preto).
-- **Trigo Dourado (Meta 2x):** 10 tufos físicos ceifados = 1 lote de meta = 3 moedas base (número flutuante `+3` em amarelo ouro).
+- **Trigo Dourado (Meta 2x):** 1 tufo físico de tile ceifado = 1 unidade de meta = 3 moedas base (número flutuante `+3` em amarelo ouro).
 - **Flores do Campo (Nobre):** 1 tufo físico ceifado = 1 lote de meta = 5 moedas base (número flutuante `+5` em rosa magenta).
 
 O rendimento por lote ceifado é calculado como:

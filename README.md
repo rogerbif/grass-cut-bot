@@ -1,6 +1,6 @@
 # Grass Cut Bot 🌿🤖
 
-[![Versão](https://img.shields.io/badge/versão-v0.12.31--alpha-2ECC71.svg)](docs/05_arquitetura_e_desenvolvimento/SISTEMA_DE_VERSIONAMENTO.md)
+[![Versão](https://img.shields.io/badge/versão-v0.12.32--alpha-2ECC71.svg)](docs/05_arquitetura_e_desenvolvimento/SISTEMA_DE_VERSIONAMENTO.md)
 [![Engine](https://img.shields.io/badge/Godot-4.7%20Mobile-478CBF.svg?logo=godotengine&logoColor=white)](https://godotengine.org)
 [![Plataforma](https://img.shields.io/badge/plataforma-Android%20%7C%20PC%20Dev-orange.svg?logo=android&logoColor=white)](docs/05_arquitetura_e_desenvolvimento/PORTABILIDADE_ANDROID.md)
 [![Zero Warnings](https://img.shields.io/badge/Godot%20Console-0%20Warnings-brightgreen.svg)](docs/05_arquitetura_e_desenvolvimento/PADRAO_DE_SCRIPTS.md)

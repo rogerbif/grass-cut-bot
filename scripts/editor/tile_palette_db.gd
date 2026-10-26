@@ -117,14 +117,6 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"color": Color(0.28, 0.28, 0.34),
 		"goal_key": "grass",
 		"category": "grass"
-	},
-	{
-		"id": "wheat",
-		"name": "Trigo Maduro (Meta 2x)",
-		"icon": "🌾",
-		"color": Color(0.92, 0.68, 0.18),
-		"goal_key": "wheat",
-		"category": "grass"
 	}
 ]
 
@@ -144,6 +136,14 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"icon": "🌸",
 		"color": Color(0.95, 0.38, 0.68),
 		"goal_key": "flower",
+		"category": "plant"
+	},
+	{
+		"id": "wheat",
+		"name": "Trigo Maduro",
+		"icon": "🌾",
+		"color": Color(0.92, 0.68, 0.18),
+		"goal_key": "wheat",
 		"category": "plant"
 	},
 	{

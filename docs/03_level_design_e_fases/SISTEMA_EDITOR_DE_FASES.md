@@ -42,18 +42,19 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - **Auto-Geração de Terreno:** Ao pintar grama sobre áreas de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
   - **Amostragem Orgânica Poisson Disk:** A densidade foliar é gerada por algoritmo de Poisson Disk ($r = 0.22\text{m}$), conferindo visual vivo e uniforme sem artefatos de grade.
   - **Visual Limpo sem Decalque Artificial:** O solo permanece com o material e textura naturais dos blocos 3D de terreno (`tile_island_*`), sendo a vegetação composta exclusivamente pelos tufos 3D de grama/trigo/flor; nenhuma malha plana de cor sólida é colada sobre o solo.
-  - **Variedades Suportadas:** As 7 cores de grama (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`) e `wheat` (trigo maduro).
+  - **Variedades Suportadas:** As 7 cores de grama cosmética (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`), com regra de lotes de 10 cortes = 1 meta.
   - **Borracha / Clique Direito:** Recorta e subtrai qualquer polígono vetorial via `Geometry2D.clip_polygons()`.
 
 - **Camada 2 — Objetos & Obstáculos no Tile ($0.80\text{m} \times 0.80\text{m}$):**
   - Itens discretos centralizados por bloco de terreno:
     - **`rock` (Rocha Sólida):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo vetorial com corte circular para não atravessar a pedra.
-    - **`flower` (Flor Nobre):** Vegetação de alto valor econômico (2 hits, 5 moedas) posicionada no centro do tile de $0.80\text{m}$.
+    - **`flower` (Flor Nobre):** Vegetação nobre de alto valor econômico (3 hits, 5 moedas) com despetalação progressiva e contagem 1:1.
+    - **`wheat` (Trigo Maduro):** Cultura agrícola dourada de 2 hits (3 moedas) com contagem direta 1:1 na meta do HUD.
     - **`cutter_spawn` (Spawn do Robô):** Marcador de início do robô cortador (único por fase).
-  - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra/flor em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar pedras e flores instantaneamente!
+  - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra, flor ou trigo em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar itens instantaneamente!
 
 - **Persistência Híbrida JSON v3 e Blindagem de Bake (`LevelSerializer`):**
-  - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower", "rot": ... } ]`.
+  - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower"|"wheat", "rot": ... } ]`.
   - **Blindagem Defensiva contra Sobrescrita:** A rotina de exportação `bake_to_tscn` recebe e repassa `vector_field` obrigatoriamente; caso `vector_field` seja nulo mas o arquivo existente em disco já contenha `"grass_vectors"`, o serializador preserva os dados existentes sem reverter para `version: 2` vazia.
 
 - **Painel Direito Contextual e Sistema de Metas Customizadas:**
@@ -61,10 +62,8 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - **Botões e Tipografia Equalizados:** Botões da paleta padronizados em altura de $34\text{px}$ a $36\text{px}$ com fonte de $13\text{px}$, proporcionando conforto no clique e alta legibilidade em conjunto com banner de contexto dinâmico no topo.
   - **Filtro Contextual por Camada:** O painel lateral direito adapta seus componentes dinamicamente à camada selecionada no painel esquerdo:
     - *Camada 0 (Terreno):* Exibe exclusivamente a paleta de blocos de ilha (`auto_island`, `island_center`, `island_dirt`, `island_edge`, etc.), ocultando gramas e objetos.
-    - *Camada 1 (Grama):* Exibe a paleta estruturada em duas seções nítidas:
-      - `🌿 Gramas Comuns (1x HP - 1 Moeda)`: Grade 2 colunas com as 7 cores cosméticas (Verde, Amarela 1x, Azul, Violeta, Branca, Vermelha, Preta).
-      - `🌾 Vegetação de Meta (2x HP - 3 Moedas)`: Botão de destaque largo para `🌾 Trigo Maduro (Meta 2x)` e botão de ação rápida `🔄 Converter Grama Amarela ➔ Trigo` (converte retroativamente polígonos amarelos desenhados por engano para trigo canônico).
-    - *Camada 2 (Objetos):* Exibe a paleta de objetos discretos no tile (Rocha `rock`, Flor `flower`, Spawn `cutter_spawn`) em grade harmoniosa de 3 colunas de $94\text{px}$.
+    - *Camada 1 (Grama):* Exibe a paleta com as 7 cores cosméticas (Verde, Amarela 1x, Azul, Violeta, Branca, Vermelha, Preta) em grade 2 colunas de $144\text{px}$.
+    - *Camada 2 (Objetos):* Exibe a paleta de objetos e culturas no tile (Rocha `rock`, Flor `flower`, Trigo `wheat`, Spawn `cutter_spawn`) em grade harmoniosa de 2 colunas de $144\text{px}$.
   - **Cards de Metas Personalizadas (CheckBox + SpinBox):**
     - Cada vegetação colhível (`🌿 Grama`, `🌾 Trigo`, `🌸 Flores`) possui seu próprio card com:
       - **CheckBox:** Define se aquele item é ou não meta obrigatória da fase. Se desmarcado, a planta pode existir no mapa para corte e economia de moedas, mas não é exigida para a condição de vitória!

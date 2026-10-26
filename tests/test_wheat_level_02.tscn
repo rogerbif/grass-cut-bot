@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://test_wheat_level_02_uid"]
+
+[ext_resource type="Script" path="res://tests/test_wheat_level_02.gd" id="1_test"]
+
+[node name="TestWheatLevel02" type="Node3D"]
+script = ExtResource("1_test")

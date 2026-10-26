@@ -316,9 +316,10 @@ func build_from_level_json(
 	var goals: Dictionary = {}
 	var objects_arr: Array = data.get("objects", []) as Array
 
-	# Instancia rochas (obstáculos sólidos da Layer 4) e flores (objetos de tile 0.80m)
+	# Instancia rochas (obstáculos sólidos da Layer 4), flores e trigos (objetos de tile 0.80m)
 	var rock_cells: Dictionary = {}
 	var flower_cells: Dictionary = {}
+	var wheat_cells: Dictionary = {}
 	for item: Variant in objects_arr:
 		if item is Dictionary:
 			var od: Dictionary = item as Dictionary
@@ -338,6 +339,8 @@ func build_from_level_json(
 						add_child(rock_inst)
 			elif o_type == "flower":
 				flower_cells[Vector2i(gx, gz)] = o_rot
+			elif o_type == "wheat":
+				wheat_cells[Vector2i(gx, gz)] = o_rot
 
 	# 4. Campo de Vegetação Vetorial v3 ou legado convertido
 	var vector_field: RefCounted = null
@@ -378,7 +381,7 @@ func build_from_level_json(
 		vector_field.clip_shapes(rock_clip_poly)
 
 	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
-	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells)
+	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells, wheat_cells)
 
 	# Se o JSON possui metas personalizadas definidas pelo editor, substitui as metas padrão
 	if data.has("goals") and data["goals"] is Dictionary:
@@ -496,7 +499,8 @@ func _build_from_vector_field(
 	width_blocks: int,
 	height_blocks: int,
 	block_cell_size: float,
-	tile_flowers: Dictionary = {}
+	tile_flowers: Dictionary = {},
+	tile_wheat: Dictionary = {}
 ) -> Dictionary:
 	var goals: Dictionary = {}
 	if vector_field == null:
@@ -516,6 +520,16 @@ func _build_from_vector_field(
 			"type": "flower",
 			"scale_factor": 1.0,
 			"seed": float(f_cell.x * 79 + f_cell.y * 31)
+		})
+
+	# Adiciona trigos de tile (cultura agrícola discreta) caso existam no JSON
+	for w_cell: Vector2i in tile_wheat.keys():
+		var w_pos: Vector3 = LevelJsonLoader.grid_to_world(w_cell.x, w_cell.y, width_blocks, height_blocks, block_cell_size)
+		tufts.append({
+			"pos": w_pos,
+			"type": "wheat",
+			"scale_factor": 1.25,
+			"seed": float(w_cell.x * 67 + w_cell.y * 43)
 		})
 
 	# Agrupa por célula lógica de 0.40m para manter metas consistentes e pontuação justa
@@ -694,7 +708,7 @@ func _build_from_vector_field(
 	goals.clear()
 	goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
 	if _total_physical_wheat > 0:
-		goals["wheat"] = maxi(1, int(ceilf(float(_total_physical_wheat) / 10.0)))
+		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
 		goals["flower"] = _total_physical_flower
 
@@ -986,7 +1000,7 @@ func _build_from_vegetation_field(
 	goals.clear()
 	goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
 	if _total_physical_wheat > 0:
-		goals["wheat"] = maxi(1, int(ceilf(float(_total_physical_wheat) / 10.0)))
+		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
 		goals["flower"] = _total_physical_flower
 
@@ -1116,19 +1130,12 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						_spawn_cut_particles_at(safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1
 
-					# Acumulador unificado: 10 tufos físicos = 1 unidade de meta
+					# Atualização de metas: Trigo e Flores são 1:1 diretos; Grama usa lotes de 10
 					var p_key: String = _plant_keys[p_idx]
 					if p_key == "wheat":
 						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
-						_wheat_cut_accumulator += 1
-						if _wheat_cut_accumulator >= 10:
-							_wheat_cut_accumulator -= 10
-							if GameManager != null:
-								GameManager.register_cut("wheat", 3, p_pos)
-						elif _remaining_physical_wheat <= 0 and _wheat_cut_accumulator > 0:
-							_wheat_cut_accumulator = 0
-							if GameManager != null and _get_remaining_goal_safe("wheat") > 0:
-								GameManager.register_cut("wheat", 3, p_pos)
+						if GameManager != null:
+							GameManager.register_cut("wheat", 3, p_pos)
 					elif p_key == "flower":
 						_remaining_physical_flower = maxi(0, _remaining_physical_flower - 1)
 						if GameManager != null:
@@ -1146,15 +1153,19 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 							if GameManager != null and _get_remaining_goal_safe("grass") > 0:
 								GameManager.register_cut("grass", 1, p_pos)
 
-					# Proteção anti-trava: se todos os tufos físicos foram ceifados, fecha metas residuais silenciosamente (sem pop-up fantasma)
-					if _remaining_physical_grass <= 0 and _remaining_physical_wheat <= 0 and _remaining_physical_flower <= 0:
+					# Proteção anti-trava por categoria independente:
+					if _remaining_physical_wheat <= 0 and _get_remaining_goal_safe("wheat") > 0:
+						if GameManager != null:
+							while _get_remaining_goal_safe("wheat") > 0:
+								GameManager.register_cut("wheat", 3, Vector3.ZERO)
+					if _remaining_physical_flower <= 0 and _get_remaining_goal_safe("flower") > 0:
+						if GameManager != null:
+							while _get_remaining_goal_safe("flower") > 0:
+								GameManager.register_cut("flower", 5, Vector3.ZERO)
+					if _remaining_physical_grass <= 0 and _get_remaining_goal_safe("grass") > 0:
 						if GameManager != null:
 							while _get_remaining_goal_safe("grass") > 0:
 								GameManager.register_cut("grass", 1, Vector3.ZERO)
-							while _get_remaining_goal_safe("wheat") > 0:
-								GameManager.register_cut("wheat", 3, Vector3.ZERO)
-							while _get_remaining_goal_safe("flower") > 0:
-								GameManager.register_cut("flower", 5, Vector3.ZERO)
 				else:
 					if mm != null:
 						var p_key: String = _plant_keys[p_idx]

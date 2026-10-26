@@ -56,8 +56,8 @@ static func save_level_json(
 		var cell: Vector2i = k as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var obj_type: String = String(entry.get("type", ""))
-		# Em v2/v3, rochas e flores ficam em objects (discretos por tile de 0.80m)
-		if obj_type == "rock" or obj_type == "flower":
+		# Em v2/v3, rochas, flores e trigos ficam em objects (discretos por tile de 0.80m)
+		if obj_type == "rock" or obj_type == "flower" or obj_type == "wheat":
 			objects_list.append({
 				"gx": cell.x,
 				"gz": cell.y,

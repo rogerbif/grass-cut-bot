@@ -10,6 +10,7 @@ const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.g
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
 const ROCK_SCENE: PackedScene = preload("res://scenes/obstacles/rock.tscn")
 const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
+const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
 const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.tscn")
@@ -822,6 +823,12 @@ func _rebuild_3d_world() -> void:
 				f_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				f_inst.rotation_degrees.y = float(entry.get("rot", 0))
 				obstacles_container.add_child(f_inst)
+		elif o_type == "wheat":
+			var w_inst: Node3D = WHEAT_SCENE.instantiate() as Node3D
+			if w_inst != null:
+				w_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+				w_inst.rotation_degrees.y = float(entry.get("rot", 0))
+				obstacles_container.add_child(w_inst)
 
 	# 6. Constrói a prancheta vetorial plana colorida (Modo Edição Instantâneo, <0.5ms)
 	_build_editor_vector_ground()
@@ -1071,8 +1078,8 @@ func _load_or_init_level(lvl_id: int) -> void:
 			if item is Dictionary:
 				var d: Dictionary = item as Dictionary
 				var o_type: String = String(d.get("type", ""))
-				# Só guarda em object_grid os objetos discretos de tile: rock e flower
-				if o_type == "rock" or o_type == "flower":
+				# Só guarda em object_grid os objetos discretos de tile: rock, flower e wheat
+				if o_type == "rock" or o_type == "flower" or o_type == "wheat":
 					var c: Vector2i = Vector2i(int(d.get("gx", 0)), int(d.get("gz", 0)))
 					object_grid[c] = {
 						"type": o_type,
@@ -1225,7 +1232,7 @@ func _start_playtest() -> void:
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock" or o_type == "flower":
+		if o_type == "rock" or o_type == "flower" or o_type == "wheat":
 			veg_json["objects"].append({
 				"gx": cell.x,
 				"gz": cell.y,
