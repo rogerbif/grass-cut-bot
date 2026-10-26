@@ -6,15 +6,15 @@ Este documento detalha o sistema econômico, a aquisição de moedas, a escalabi
 
 ## 1. Economia de Moedas Verdes
 
-As moedas verdes são a moeda corrente do jogo e são obtidas diretamente pelo ato mecânico de corte:
-- **Grama Verde:** 1 moeda base (+1 em branco puro).
-- **Trigo Dourado:** 3 moedas base (+3 em amarelo ouro).
-- **Flores do Campo:** 5 moedas base (+5 em rosa magenta).
+As moedas verdes são a moeda corrente do jogo e são obtidas diretamente pelo ato mecânico de corte e colheita. Em conformidade com a **Regra Canônica de Agrupamento em Lotes (Melhoria 082)**, a premiação econômica é consolidada por lote de colheita para manter legibilidade visual e evitar sobrecarga de números na tela:
+- **Grama Comum (Qualquer das 7 Cores):** 10 tufos físicos ceifados = 1 lote de meta = 1 moeda base (número flutuante `+1` em branco puro com contorno preto).
+- **Trigo Dourado (Meta 2x):** 10 tufos físicos ceifados = 1 lote de meta = 3 moedas base (número flutuante `+3` em amarelo ouro).
+- **Flores do Campo (Nobre):** 1 tufo físico ceifado = 1 lote de meta = 5 moedas base (número flutuante `+5` em rosa magenta).
 
-O rendimento por corte é calculado como:
-$$\text{Moedas Ganhas} = \text{Moedas Base da Planta} \times \text{Multiplicador Ativo}$$
+O rendimento por lote ceifado é calculado como:
+$$\text{Moedas Ganhas} = \text{Moedas Base da Espécie} \times \text{Multiplicador Ativo da Oficina}$$
 
-A cada tufo ceifado, o valor final obtido surge como um número flutuante cartoon 3D (`FloatingCoinManager`) com contorno preto sólido de 14px e animação elástica, subindo no ar e esmaecendo suavemente em um rastro contínuo (*number trail*).
+A cada lote ceifado, o valor final obtido surge como um número flutuante cartoon 3D (`FloatingCoinManager`) com contorno preto sólido de 14px e animação elástica, posicionado nas laterais do corpo do robô ($\pm 0.45\text{m}$) e subindo no ar com duração rápida de $0.34\text{s}$ em rastro suave (*number trail*).
 
 ---
 

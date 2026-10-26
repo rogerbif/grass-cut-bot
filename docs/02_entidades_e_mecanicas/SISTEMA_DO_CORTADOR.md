@@ -99,6 +99,8 @@ Todas as lâminas compartilham a mesma identidade visual: alcance radial idênti
 ### Capa Protetora da Serra (`blade_container`)
 - O disco de corte é abraçado por um container protetor amarelo com interior em borracha grafite (`blade_container`), espelhado em Z via modificador `Mirror`.
 - **Calibração Cirúrgica do Vão:** A fenda interna de passagem da lâmina possui abertura de **$0.045\text{m}$** ($z = \pm 0.0225\text{m}$), abraçando a lâmina de $0.042\text{m}$ ($z = \pm 0.0210\text{m}$) com folga mecânica limpa de apenas $1.5\text{mm}$ em cima e embaixo, eliminando vazios e conferindo encaixe aerodinâmico e realista.
+- **Sincronização de Inclinação com o Chassi (Melhoria 102):** O nó `BladeSpinner` é reparentado dinamicamente sob o `Body` no `_ready()`, garantindo que o rotor da serra herde com precisão o pitch, roll e amortecimento de suspensão do robô em tempo real, mantendo coplanaridade perfeita com o bico e eliminando desalinhamentos visuais.
+- **Parâmetros Globais de Shader (Melhoria 088):** A posição do robô e o raio da lâmina são comunicados à GPU através de `RenderingServer.global_shader_parameter_set("cutter_position", pos)` e `("cutter_blade_radius", radius)`, permitindo que centenas de tufos de vegetação flexionem no Vertex Shader sem overhead de chamadas GDScript individuais por material.
 
 ---
 

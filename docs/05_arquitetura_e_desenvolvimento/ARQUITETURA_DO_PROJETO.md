@@ -12,16 +12,21 @@ O projeto adota uma estrutura desacoplada por tipo e domínio:
 grass-cut-bot/
 ├── .agent/                    # Configurações e skills do agente de desenvolvimento
 │   └── skills/atualizar-documentacao/
-├── assets/                    # Modelos 3D, texturas e materiais
+├── assets/                    # Modelos 3D, texturas, áudios e identidade visual
+│   ├── audio/                 # Trilhas musicais (music/) e efeitos sonoros (sfx/)
+│   ├── brand/                 # Ícones comerciais e adaptive icons (1024, 512, 432, 192px)
 │   ├── models/                # Modelos oficiais glTF (.glb)
 │   │   ├── grass_bot.glb      # Modelo oficial do robô (com visor de tela LED) e lâminas
 │   │   ├── terrain_tileset.glb# Biblioteca mestre de tiles e props de terreno
+│   │   ├── rock.glb           # Modelo low poly oficial de rocha sólida
 │   │   └── tiles/             # Modelos unitários (.glb) aplicados no Editor de Fases
 │   └── textures/              # Texturas, mapas e atlas
 │       └── cutter/            # eyes_atlas.svg (Atlas vetorial das 10 expressões de LED)
 ├── shaders/                   # Shaders espaciais (.gdshader) e materiais (.tres)
 │   ├── eye_display.gdshader   # Shader do display de LED com scanlines e piscar procedural
 │   ├── interactive_grass.gdshader # Shader de balanço e gradiente da vegetação
+│   ├── toon_water.gdshader    # Shader procedural do oceano turquesa estilizado
+│   ├── coastal_foam.gdshader  # Shader de espuma costeira 2D minimalista em curva
 │   └── teleport_effect.gdshader # Shader de desintegração e materialização de teleporte
 ├── docs/                      # Hub Central da Wiki e documentação técnica canônica
 │   ├── .gdignore              # Instrução para Godot ignorar a pasta
@@ -30,36 +35,43 @@ grass-cut-bot/
 │   ├── 03_level_design_e_fases/
 │   ├── 04_sistemas_e_gameplay/
 │   ├── 05_arquitetura_e_desenvolvimento/
-│   ├── historico_melhorias/
-│   ├── MELHORIAS_FUTURAS.md
-│   └── PROJETO_GRASS_CUT_BOT.md
+│   ├── historico_melhorias/   # Changelog perpétuo com 106+ relatórios técnicos
+│   ├── MELHORIAS_FUTURAS.md   # Roadmap de novidades e Bot Arquiteto Mobile
+│   └── PROJETO_GRASS_CUT_BOT.md # Hub mestre dos 5 Pilares
 ├── data/                      # Dados serializados do jogo
-│   └── levels/                # Fases em formato JSON (level_01.json, etc.)
+│   └── levels/                # Fases em formato JSON v3 (level_01.json a level_20.json)
 ├── scenes/                    # Cenas montadas (.tscn)
-│   ├── cutter/                # Cortador robótico
+│   ├── cutter/                # Cortador robótico (cutter.tscn)
 │   ├── editor/                # Editor de Fases PC Fullscreen e kit de tiles 3D de ilha
 │   ├── level/                 # Terrenos, oceano (water_ocean.tscn) e ilhas base
-│   ├── levels/                # Fases exportadas como cena Godot (level_01.tscn, etc.)
+│   ├── levels/                # Fases exportadas como cena Godot (level_01.tscn a level_20.tscn)
 │   ├── menu/                  # Menu Inicial (Hub Principal), Câmera Dual, Abas e Ilhas
-│   ├── obstacles/             # Rochas e barreiras
-│   ├── plants/                # Tufos de grama (4 cores), trigo e flores
-│   ├── ui/                    # HUD, joystick virtual e modais
-│   └── main.tscn              # Cena mestre do jogo
-├── scripts/                   # Código fonte GDScript (.gd)
-│   ├── camera/
-│   ├── core/                  # Autoloads e singletons (GameManager, UpgradeManager)
-│   ├── cutter/
+│   ├── obstacles/             # Rochas e barreiras (rock.tscn)
+│   ├── plants/                # Tufos de grama (7 cores), trigo e flores
+│   ├── ui/                    # Top HUD, joystick virtual, modais de pausa/vitória/derrota
+│   └── main.tscn              # Cena mestre de gameplay
+├── scripts/                   # Código fonte GDScript (.gd) com tipagem estática e Zero Warnings
+│   ├── camera/                # Câmera isométrica com translação pura XZ e camera shake
+│   ├── core/                  # Autoloads globais:
+│   │   ├── save_manager.gd    # Persistência atômica com backup .bak e estrelas
+│   │   ├── audio_manager.gd   # Barramentos Master/Music/SFX e pool polifônico
+│   │   ├── game_manager.gd    # Máquina de estados, contadores de tempo e corte
+│   │   └── upgrade_manager.gd # Economia de moedas verdes e atributos da oficina
+│   ├── cutter/                # cutter.gd e robot_eyes.gd
 │   ├── editor/                # Scripts do Editor de Fases PC (autotiler, pincéis, UI)
-│   ├── effects/               # Gerenciadores de efeitos 3D (floating_coin_manager.gd)
-│   ├── level/                 # level_controller.gd e level_json_loader.gd
+│   ├── effects/               # Gerenciadores visuais 3D (floating_coin_manager.gd)
+│   ├── level/                 # level_controller.gd, level_json_loader.gd e vector_grass_field.gd
 │   ├── menu/                  # Scripts do Menu Inicial, câmera dual e navegação de abas
-│   ├── plants/                # vegetation_grid.gd (MultiMesh + Grid 0.40m) e plant.gd
-│   ├── tools/                 # Geradores automatizados e validadores de fases
-│   └── ui/
-├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador de Diretrizes
-├── GDD.md                     # Espelho de referência rápida do GDD
-├── icon.svg                   # Ícone oficial do projeto
-└── project.godot              # Arquivo de configuração da Godot Engine 4
+│   ├── plants/                # vegetation_grid.gd (MultiMesh GPU) e plant.gd
+│   ├── tools/                 # Geradores automatizados, bump_version e validadores
+│   └── ui/                    # Controladores de HUD, modais e joystick flutuante
+├── README.md                  # Vitrine oficial do repositório no GitHub
+├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador Mestre
+├── GDD.md                     # Ponteiro de referência rápida para o GDD canônico
+├── default_bus_layout.tres    # Configuração dos 3 barramentos de áudio da Godot
+├── export_presets.cfg         # Configuração de exportação Android APK/AAB
+├── icon.png                   # Ícone oficial de alta definição
+└── project.godot              # Arquivo de configuração central da Godot Engine 4 (v0.12.31-alpha)
 ```
 
 ---

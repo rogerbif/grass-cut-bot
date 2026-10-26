@@ -6,11 +6,17 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 ## 1. Classificação das Espécies Vegetais
 
-| Variedade | Cena | Saúde Base | Regra de Lote & Moedas | Partículas | Comportamento e Papel no Jogo |
+| Variedade | Cena / Material | Saúde Base | Regra de Lote & Moedas | Partículas | Comportamento e Papel no Jogo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Grama Verde Básica** | `grass_tuft.tscn` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Verde esmeralda | Vegetação fundamental presente em todos os estágios. Ceifada instantaneamente. |
-| **Trigo Dourado** | `wheat_tuft.tscn` | 2 golpes | 10 físicos = 1 meta = 3 🪙 | Dourado ouro | Exige duas passadas ou lâmina com upgrade de potência $\ge 2$. Cota de colheita. |
-| **Flores do Campo** | `flower_tuft.tscn` | 2 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Vegetação nobre com alto valor econômico. Cota de colheita nos níveis avançados. |
+| **Grama Verde Clássica** | `grass_green` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Verde esmeralda | Vegetação fundamental presente em todos os estágios. Ceifada instantaneamente. |
+| **Grama Amarela Solar** | `grass_yellow` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Dourado solar | Variação estética cosmética (1x HP / 1 moeda). |
+| **Grama Azul Celeste** | `grass_blue` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Azul ciano | Vegetação cosmética litorânea (Fases 06+). |
+| **Grama Roxa Mística** | `grass_purple` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Roxo neon | Vegetação cosmética noturna / labiríntica (Fases 10+). |
+| **Grama Branca Algodão** | `grass_white` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Branco puro | Variação cosmética de alto contraste. |
+| **Grama Vermelha Rubi** | `grass_red` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Vermelho rubi | Variação cosmética para áreas intensas. |
+| **Grama Preta Vulcânica** | `grass_black` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Grafite carvão | Variação cosmética dramática. |
+| **Trigo Dourado (Meta 2x)** | `wheat` | 2 golpes | 10 físicos = 1 meta = 3 🪙 | Dourado ouro | Exige duas passadas ou lâmina com upgrade de potência $\ge 2$. Cota obrigatória de colheita. |
+| **Flores do Campo (Nobre)** | `flower` | 2 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Vegetação nobre com alto valor econômico. Cota de colheita individual nos níveis avançados. |
 
 ---
 
@@ -46,7 +52,7 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
      - Dispara o sinal `coin_popup_requested(cut_pos, earned, plant_type)` gerando os números flutuantes cartoon 3D (`+1`, `+3`, `+5`) com contorno preto e rastro contínuo (*number trail*) via `FloatingCoinManager`.
      - Dispara o pulso háptico suave no celular (`Input.vibrate_handheld(15)`).
      - Decrementa a cota pendente no Top HUD da partida.
-   - **Aparas de Folhas Cortadas Deitadas no Solo (Clippings):** Ao ser cortada, a moita alta de vegetação desaparece imediatamente (`HIDDEN_TRANSFORM`), e uma malha de **6 lâminas fatiadas deitadas horizontalmente no plano do solo** ($Y \approx 0.005\text{m}$, com orientações em $360^\circ$ e tom contrastante mais escuro) surge no local via `_clipping_multimeshes`, reproduzindo com fidelidade o rastro salpicado de aparas de grama cortada deitado no chão da ilha.
+   - **Aparas de Folhas Cortadas Deitadas no Solo (Clippings):** Ao ser cortada, a moita alta de vegetação desaparece imediatamente (`HIDDEN_TRANSFORM`), e uma malha de **6 lâminas fatiadas deitadas horizontalmente no plano do solo** ($Y \approx 0.005\text{m}$, com orientações em $360^\circ$ e tom contrastante mais escuro) surge no local via `_clipping_multimeshes`, reproduzindo com fidelidade o rastro salpicado de aparas de grama cortada deitado no chão da ilha. As aparas operam com controle dinâmico de `visible_instance_count` (Melhoria 093), garantindo que a GPU processe apenas os tufos efetivamente ceifados, mantendo 60 FPS estáveis mesmo ao final de fases densas.
 
 ---
 

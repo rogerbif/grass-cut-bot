@@ -15,8 +15,13 @@ $$\text{v}[\text{MAJOR}].[\text{MINOR}].[\text{PATCH}]-[\text{STAGE}]$$
 
 Exemplos práticos:
 - `v0.1.0-pre-alpha` (MVP inicial da física de corte e grama)
-- `v0.7.2-alpha` (**Versão Atual:** 20 fases canônicas, robô articulado com olhos LED, editor PC e savegame)
-- `v0.9.0-beta` (*Feature Complete:* Abas Loja/Coleção prontas, áudio/sfx integrados e caça a bugs)
+- `v0.7.2-alpha` (20 fases canônicas, robô articulado com olhos LED, editor PC e savegame)
+- `v0.8.0-alpha` (Grama orgânica vetorial Poisson/Clipper, oceano toon e aparas de solo)
+- `v0.9.0-alpha` (Sistema de áudio e sonoplastia completo com 20 SFX e trilhas Dyalla)
+- `v0.10.0-alpha` (Calibração háptica Android precisa e suíte de ícones oficiais)
+- `v0.11.0-alpha` (Celebração de vitória 3 ⭐, derrota expressiva, teleporte 3D e moedas cartoon)
+- `v0.12.31-alpha` (**Versão Atual:** Plano Mestre de Performance 60 FPS mobile, prancheta vetorial no editor e ampliação de pincel 20x)
+- `v0.13.0-beta` (*Feature Complete:* Abas Loja/Coleção integradas a moedas e balanceamento final)
 - `v1.0.0-rc.1` (*Feature Freeze:* Testes finais de empacotamento APK/AAB no Android)
 - `v1.0.0` (Lançamento Oficial Comercial na Google Play Store)
 
@@ -94,14 +99,14 @@ Parametrizado nativamente sob a seção `[application]`:
 ```ini
 [application]
 config/name="Grass Cut Bot"
-config/version="0.7.2-alpha"
+config/version="0.12.31-alpha"
 ```
 
 ### 4.3. Presets de Exportação Android (`export_presets.cfg`)
 Configurado para exportação móvel consistente:
 ```ini
-version/code=702
-version/name="0.7.2-alpha"
+version/code=1231
+version/name="0.12.31-alpha"
 ```
 
 ---
@@ -110,7 +115,7 @@ version/name="0.7.2-alpha"
 
 1. **Menu Principal (`main_menu.tscn`):** Um nó `VersionBadge` (`Label`) posicionado de forma limpa e discreta sob a barra superior no canto esquerdo, atualizado via `GameVersion.get_version_string()`.
 2. **Modal de Configurações (`settings_modal.tscn`):** O rodapé sob o botão de suporte exibe dinamicamente:
-   `"Grass Cut Bot v0.7.2-alpha • Mobile Edition"`.
+   `"Grass Cut Bot v0.12.31-alpha • Mobile Edition"`.
 
 ---
 

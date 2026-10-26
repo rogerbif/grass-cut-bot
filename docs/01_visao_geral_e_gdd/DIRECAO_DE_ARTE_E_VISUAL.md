@@ -14,6 +14,9 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 2. **Cores Saturadas e Harmoniosas (Arcade Warm Palette):**
    - A paleta equilibra tons naturais de vegetação com contrastes acentuados entre elementos colhíveis, piso limpo e obstáculos perigosos.
 
+3. **Clareza de Leitura & Feedback Cel-Shaded Cartoon:**
+   - Textos de impacto econômico e pontuação utilizam outline preto grosso (14px) para leitura instantânea contra qualquer fundo de gramado ou mar.
+
 ---
 
 ## 2. Paleta de Cores Canônica
@@ -21,21 +24,27 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 ![Concept Art Canônico - Cutter Bit](../assets/cutter_bit_concept_art.jpg)
 *Figura: Concept Art canônico do robô cortador (Cutter Bit) demonstrando a aplicação dos materiais foscos, cores da carcaça amarela, placas brancas, lâmina de aço e sensores ciano emissivos.*
 
-| Elemento | Código HEX | Amostra | Função no Jogo |
+| Elemento | Código HEX / Cor | Amostra | Função no Jogo |
 | :--- | :--- | :--- | :--- |
-| **Grama Alta (Intacta)** | `#43A047` / `#4CAF50` | 🟢 Verde Esmeralda | Alvo principal comum de corte. |
+| **Grama Verde Esmeralda** | `#43A047` / `#2E7D32` | 🟢 Verde Clássico | Vegetação comum fundamental presente em todos os estágios. |
+| **Grama Amarela Solar** | `#FDD835` / `#FBC02D` | 🟡 Amarelo Claro | Variação estética cosmética (1 golpe). |
+| **Grama Azul Celeste** | `#29B6F6` / `#0288D1` | 🔵 Azul Ciano | Grama de bioma costeiro/aquático. |
+| **Grama Roxa Mística** | `#AB47BC` / `#7B1FA2` | 🟣 Roxo Neon | Grama de bioma noturno e labirintos avançados. |
+| **Grama Branca Algodão** | `#ECEFF1` / `#CFD8DC` | ⚪ Branco Fosco | Grama especial de contraste e destaque. |
+| **Grama Vermelha Rubi** | `#E53935` / `#C62828` | 🔴 Vermelho Vivo | Variação intensa para zonas quentes. |
+| **Grama Preta Vulcânica** | `#263238` / `#1A237E` | ⚫ Grafite Escuro | Grama estilizada para cenários dramáticos. |
 | **Piso Aparado (Cortado)** | `#2E6930` / `#1B5E20` | 🟩 Verde Profundo | Revelado após a passagem da serra (sensação de gramado limpo). |
-| **Trigo Maduro** | `#FBC02D` / `#FFB300` | 🟡 Dourado Quente | Alvo especial com maior valor e resistência. |
-| **Flores do Campo** | `#E91E63` / `#AB47BC` | 🌸 Magenta Vibrante | Alvo raro/valioso com pétalas coloridas. |
+| **Trigo Maduro (Meta 2x)** | `#FFA000` / `#FFB300` | 🌾 Dourado Ouro | Vegetação resistente de 2 golpes com maior valor e cota. |
+| **Flores do Campo (Nobre)** | `#E91E63` / `#C2185B` | 🌸 Magenta Vibrante | Vegetação nobre de alto valor econômico (5 moedas). |
 | **Carcaça do Robô** | `#F5A623` / `#F7A81B` | 🟨 Amarelo Industrial | Carcaça externa em ABS/Policarbonato (cabeça, paralamas, deck). |
 | **Blindagem e Estrutura** | `#E8ECEF` / `#F0F3F6` | ⚪ Branco Metal | Placas protetoras superiores parafusadas e estrutura central. |
 | **Pneu Mono-Wheel & Viseira** | `#141416` / `#0D0E10` | ⬛ Preto Profundo | Pneu com cravos, máscara frontal dos olhos, grelhas e calha da serra. |
-| **Lâminas e Pistões** | `#CBD3DC` / `#B0BEC5` | ⚙️ Aço Temperado | Disco rotor de alta rotação e hastes dos pistões de suspensão. |
+| **Lâminas e Pistões** | `#CBD3DC` / `#B0BEC5` | ⚙️ Aço Temperado | Rotor de alta rotação e hastes dos pistões de suspensão. |
 | **Parafusos e Acabamento** | `#F2C738` / `#FFD54F` | 🟡 Ouro / Titânio | Anel de parafusos da roda e lâminas avançadas da loja. |
-| **Sensores & Visor** | `#18D8F0` / `#00E5FF` | 🔵 Ciano Emissivo | Lentes duplas de visão computacional da cabeça. |
-| **LED Indicador de Status** | `#FF4400` / `#FF5722` | 🔴 Laranja/Vermelho | LED traseiro de telemetria e status. |
+| **Sensores & Visor de LED** | `#18D8F0` / `#00E5FF` | 🔵 Ciano Emissivo | Expressões faciais dinâmicas com scanlines. |
 | **Rochas / Obstáculos** | `#546E7A` / `#455A64` | 🪨 Cinza Ardósia | Indica bloqueio físico imediato e risco de choque. |
-| **Oceano Toon (Wind Waker Calibrado)** | `#2EA6D1` / `#1485BF` / `#E0FAFF` | 🌊 Azul Turquesa & Ondas Finas | Shader procedural espacial (zeludtnecniv) com ondas azuis e anéis de espuma suaves sem texturas. |
+| **Oceano Toon (Wind Waker)** | `#2EA6D1` / `#1485BF` | 🌊 Azul Turquesa | Shader procedural estilizado com reflexos suaves. |
+| **Espuma Costeira 2D** | `#E0FAFF` / `#FFFFFF` | ⚪ Espuma Ciano | Fita geométrica com balanço de maré na beira das falésias. |
 | **Céu / Fundo** | `#B3E5FC` / `#81D4FA` | 🟦 Azul Pastel Suave | Fundo limpo que não distrai os olhos durante a partida. |
 
 ---
@@ -43,25 +52,33 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 ## 3. Iluminação e Renderização
 
 - **DirectionalLight3D:**
-  - Posicionada em ângulo zenital angular (~45° pitch, -35° yaw).
+  - Posicionada em ângulo zenital angular (~$45^\circ$ pitch, $-35^\circ$ yaw).
   - Energia da luz calibrada em `1.1` com tom solar suave (`#FFFDE7`).
-  - Sombras projetadas ativadas (`shadow_enabled = true`) com distância controlada (`directional_shadow_max_distance = 40.0`) para alto desempenho em GPUs mobile.
+  - Sombras projetadas ativadas (`shadow_enabled = true`) em modo ortogonal (`SHADOW_ORTHOGONAL`) com distância máxima de $28.0\text{m}$, mapa $1024 \times 1024$ e filtro rápido, garantindo 60 FPS cravados no mobile.
+  - As malhas de vegetação operam com `cast_shadow = SHADOW_CASTING_SETTING_OFF` (mantendo sombras nítidas exclusivamente no robô, rochas e falésias da ilha), reduzindo drasticamente as primitivas de renderização.
 - **WorldEnvironment:**
-  - `background_mode = 1` (Clear Color) com cor de céu suave.
-  - Luz ambiente (`ambient_light_source = 2`) com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.85`, garantindo que as sombras nunca fiquem pretas ou pesadas.
+  - `background_mode = 1` (Clear Color) com cor de céu tropical suave.
+  - Luz ambiente com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.85`, garantindo que as faces sombreadas nunca fiquem pretas ou pesadas.
   - Tonemap em modo ACES/Filmic para realce das cores vivas sem estourar os brancos.
 
 ---
 
 ## 4. Efeitos Visuais (VFX)
 
-1. **Partículas de Corte (Vegetação):**
-   - Emitidas no ponto de contato radial da lâmina.
-   - Formato de pequenos fragmentos cúbicos/prismáticos (`BoxMesh(0.08, 0.08, 0.08)`).
-   - Velocidade inicial para cima e para fora com gravidade natural (`-9.8 m/s²`), gerando uma dispersão fluida em arco parabólico.
-   - Curva de escala suave reduzindo o tamanho das partículas até desaparecerem em ~0.55s.
-2. **Partículas de Faíscas (Impacto com Obstáculos):**
-   - Emissão instantânea e explosiva (`explosiveness = 0.95`) de fragmentos amarelos/alaranjados incandescentes (`Color(1.0, 0.85, 0.25)`).
-   - Vida útil curta (~0.35s) e dispersão radial ampla.
-3. **Animação Suculenta de Remoção:**
-   - Ao ser ceifado, o tufo passa por uma micro-animação de escala via Tween: estica horizontalmente por 0.06s e contrai a zero em 0.08s, transmitindo a sensação de corte fatiado com precisão.
+1. **Partículas de Corte da Vegetação (`cut_leaf_piece.obj`):**
+   - Emitidas no ponto de contato radial da lâmina via pool estático de 16 emissores compartilhados (`CPUParticles3D`).
+   - Cada disparo ejeta **21 fragmentos estilizados de folhas partidas** distribuídas por anel de $0.18\text{m}$ de raio.
+   - Os pedaços possuem cor sincronizada ao topo da espécie ceifada e giram no ar em 3D sob gravidade natural ($-9.8\text{ m/s}^2$) durante $0.55\text{s}$, simulando folhas recém-fatiadas voando em arco parabólico.
+
+2. **Aparas Cortadas Deitadas no Solo (Clippings MultiMesh):**
+   - No ponto do corte, surge uma composição de 6 lâminas de folhas caídas horizontalmente no solo ($Y \approx 0.005\text{m}$) com tom mais escuro e orientações aleatórias em $360^\circ$, criando o rastro visual de grama aparada.
+
+3. **Números Flutuantes Cartoon 3D de Colheita (`FloatingCoinManager`):**
+   - Textos estilizados 3D cel-shaded (`+1` em branco puro para grama comum, `+3` em ouro para trigo, `+5` em rosa para flores).
+   - Tipografia bold com **contorno preto sólido de 14px**, sombra desativada e animação rápida de pop-in (escala de 0.5x para 1.35x e acomodação em 1.0x), flutuando suavemente para cima com fade-out rápido (duração total de $0.34\text{s}$) para não poluir o campo de visão.
+
+4. **Faíscas de Choque Mecânico (`SparkParticles`):**
+   - Ejetadas da lâmina no ponto exato de colisão contra rochas sólidas (`CPUParticles3D` amarelas/alaranjadas em cone fechado com gravidade e rebote).
+
+5. **Teleporte Estilizado no Mapa (`teleport_effect.gdshader`):**
+   - Efeito de feixe turquesa com ruído de dissolução vertical ao transitar entre as ilhas na visualização do mapa overworld.
