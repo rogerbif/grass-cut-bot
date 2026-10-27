@@ -62,7 +62,7 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
   - Tonemap em modo ACES/Filmic para realce das cores vivas sem estourar os brancos.
 - **IsometricCamera (Câmera Isométrica com Zoom Dinâmico):**
   - Orientação isométrica travada em `pitch = -40.3°` (`Vector3(-40.3, 0.0, 0.0)`).
-  - Zoom dinâmico adaptativo conforme a evolução da lâmina: inicia a 75% de distância ($5.55\text{m}$, `offset = Vector3(0.0, 3.585, 4.2375)`) no Nível 1 (zoom inicial calibrado) e afasta suavemente com interpolação cúbica até 100% ($7.40\text{m}$, `offset = Vector3(0.0, 4.780, 5.650)`) no Nível 6 MAX.
+  - Zoom dinâmico adaptativo conforme a evolução da lâmina: inicia a $6.0\text{m}$ de distância (`offset = Vector3(0.0, 3.8756, 4.5809)`) no Nível 1 e afasta suavemente com interpolação cúbica até $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`) no Nível 6 MAX.
 - **Vegetação (Toon Shader Gradiente Canônico):**
   - `color_light = Color(0.42, 0.88, 0.46)` (Grama verde) / Paletas dedicadas para Amarela, Azul, Roxa, Branca, Vermelha, Preta e Trigo
   - `color_base = Color(0.10, 0.30, 0.15)`

@@ -30,16 +30,16 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
 
-- **Zoom Dinâmico Adaptativo (75% no Lv 1 até 100% no Lv 6 MAX):**
-  - **Nível 1 (Base):** Distância em 75% ($5.55\text{m}$, `offset = Vector3(0.0, 3.585, 4.2375)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento equilibrado, confortável para leitura periférica do terreno e vegetação sem excesso de proximidade.
-  - **Níveis 2 a 5:** Afastamento gradual linear (+5% por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
-    - Lv 1: 75% ($5.55\text{m}$)
-    - Lv 2: 80% ($5.92\text{m}$)
-    - Lv 3: 85% ($6.29\text{m}$)
-    - Lv 4: 90% ($6.66\text{m}$)
-    - Lv 5: 95% ($7.03\text{m}$)
-    - Lv 6: 100% ($7.40\text{m}$)
-  - **Nível 6 (MAX):** Distância canônica integral de 100% ($7.40\text{m}$, `offset = Vector3(0.0, 4.780, 5.650)`), conferindo ampla visão panorâmica para manusear a serra estelar de $1.40\text{m}$ de raio.
+- **Zoom Dinâmico Adaptativo (6.0m no Lv 1 até 12.0m no Lv 6 MAX):**
+  - **Nível 1 (Base):** Distância em $6.0\text{m}$ (`offset = Vector3(0.0, 3.8756, 4.5809)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento com excelente visibilidade do robô e do corredor imediato de vegetação.
+  - **Níveis 2 a 5:** Afastamento gradual linear (+1.2m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
+    - Lv 1: $6.0\text{m}$ (`Vector3(0.0, 3.8756, 4.5809)`)
+    - Lv 2: $7.2\text{m}$ (`Vector3(0.0, 4.6507, 5.4971)`)
+    - Lv 3: $8.4\text{m}$ (`Vector3(0.0, 5.4258, 6.4133)`)
+    - Lv 4: $9.6\text{m}$ (`Vector3(0.0, 6.2009, 7.3295)`)
+    - Lv 5: $10.8\text{m}$ (`Vector3(0.0, 6.9760, 8.2457)`)
+    - Lv 6: $12.0\text{m}$ (`Vector3(0.0, 7.7511, 9.1619)`)
+  - **Nível 6 (MAX):** Distância canônica máxima de $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`), conferindo ampla visão panorâmica para manusear com total destreza e segurança a serra estelar de $1.40\text{m}$ de raio.
   - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por impacto contra obstáculos sólidos.
 - **Posicionamento e Orientação Fixa:**
   - Orientação angular travada com pitch de $-40.3^\circ$ (sem chamada de `look_at()` no `_process()`), eliminando qualquer oscilação ou giro dinâmico quando o cortador manobra.
