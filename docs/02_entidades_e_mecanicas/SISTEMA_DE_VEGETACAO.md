@@ -116,8 +116,15 @@ No Godot, cada tipo vegetal é encapsulado em uma cena própria que instancia a 
 | **Grama Branca** | `grass_white.tscn` | `interactive_grass_white_material.tres` | Branco gelo (`#f5f7ff`) | Flora alpina / contraste luminoso |
 | **Grama Vermelha** | `grass_red.tscn` | `interactive_grass_red_material.tres` | Vermelho rubi (`#f22e33`) | Flora carmesim vibrante |
 | **Grama Preta (90%)** | `grass_black.tscn` | `interactive_grass_black_material.tres` | Cinza antracite escuro (`#1c1c21`) | Contraste escuro fosco (90% preto) |
+| **Trigo Dourado** | `wheat_tuft.tscn` | `interactive_wheat_material.tres` | Dourado trigo (`#f5c430`) | Cultura nobre de tile (`wheat_01.glb`), espiga e folhas 3D |
 
-### C. Animação de Vento e Interatividade com o Cortador no Modelo 3D
+### C. Modelo 3D Dedicado de Trigo (`wheat_01.glb`)
+- **Geometria 3D Completa:** Extraído cirurgicamente como uma haste individual de trigo (`wheat_01_mesh`), contendo caule cilíndrico, folhas laterais e espiga no topo com grãos modelados em low poly (338 vértices e 165 faces).
+- **Origem e Ancoragem:** Pivô rigorosamente ancorado no solo na base da haste em $(0.0, 0.0, 0.0)$, com dimensões calibradas para altura $1.10\text{m}$ e largura $0.36\text{m} \times 0.17\text{m}$, casando com o colisor cilíndrico de raio $0.18\text{m}$ e altura $0.55\text{m}$.
+- **Mapeamento UV Gradiente:** Coordenada $UV.y$ variando de $0.0$ na raiz até $1.0$ no topo da espiga, garantindo sincronização nativa com o shader `interactive_grass.gdshader` (ancoragem física da base, curvatura parabólica com vento/cortador e gradiente `color_base` âmbar para `color_top` dourado brilhante).
+- **Exportação Canônica:** Exportado do Blender para `assets/models/wheat_01.glb` com `export_apply=True` e `export_yup=True`.
+
+### D. Animação de Vento e Interatividade com o Cortador no Modelo 3D
 Conectamos a geometria única ao shader espacial `interactive_grass.gdshader`:
 1. **Mapeamento UV e Ancoragem:** As coordenadas $UV.y$ da malha original variam exatamente de $1.0$ (na raiz em $Y=0.0$) a $0.0$ (no topo em $Y=1.025$). O shader calcula `height_factor = clamp(1.0 - UV.y, 0.0, 1.0)` e `bend_factor = pow(height_factor, 1.8)`, garantindo que as raízes permaneçam firmemente plantadas ao solo enquanto as pontas ondulam com o vento.
 2. **Sincronização em Tempo Real:** O script `cutter.gd` atualiza continuamente `cutter_pos` e `cutter_interact_radius` em todos os materiais de grama, fazendo com que os tufos 3D se curvem suavemente e se comprimam para baixo com a aproximação da serra antes do corte.
