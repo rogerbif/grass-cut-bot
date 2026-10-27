@@ -624,11 +624,88 @@ value = 0.9
 [node name="HSep5" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
 layout_mode = 2
 
+[node name="SecGround" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "🌾 6. SOLO DA ILHA (CHÃO)"
+
+[node name="CardGround" type="PanelContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBoxGround" type="VBoxContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HBoxGroundColor" type="HBoxContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround"]
+layout_mode = 2
+
+[node name="LblGroundColor" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround/HBoxGroundColor"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Cor Base do Solo:"
+
+[node name="PickerColorGround" type="ColorPickerButton" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround/HBoxGroundColor"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 28)
+layout_mode = 2
+color = Color(0.24, 0.58, 0.28, 1)
+
+[node name="LblGroundBrightness" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Brilho do Solo: 1.00"
+
+[node name="SliderGroundBrightness" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.3
+max_value = 2.5
+step = 0.05
+value = 1.0
+
+[node name="CheckGroundPedestal" type="CheckBox" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Aplicar Solo no Pedestal"
+
+[node name="CheckGroundToon" type="CheckBox" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Difusão Toon no Solo"
+
+[node name="HBoxGroundPresets" type="HBoxContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround"]
+layout_mode = 2
+
+[node name="BtnGroundPresetDark" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround/HBoxGroundPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Solo Escuro (Atual)"
+
+[node name="BtnGroundPresetLight" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardGround/VBoxGround/HBoxGroundPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Solo Claro & Vibrante"
+
+[node name="HSep6" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+
 [node name="SecOutline" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
 theme_override_font_sizes/font_size = 14
-text = "✏️ 6. CONTORNO (INVERTED HULL)"
+text = "✏️ 7. CONTORNO (INVERTED HULL)"
 
 [node name="HBoxOutline" type="HBoxContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
 layout_mode = 2
@@ -654,14 +731,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Médio"
 
-[node name="HSep6" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+[node name="HSep7" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
 layout_mode = 2
 
 [node name="SecExtras" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
 theme_override_font_sizes/font_size = 14
-text = "⚙️ 7. EXTRAS & EXPORTAÇÃO"
+text = "⚙️ 8. EXTRAS & EXPORTAÇÃO"
 
 [node name="CheckRim" type="CheckBox" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
 unique_name_in_owner = true

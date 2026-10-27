@@ -39,6 +39,7 @@ enum OutlineMode {
 @onready var turntable: Node3D = $Turntable
 @onready var model_mount: Node3D = $Turntable/ModelMount
 @onready var pedestal: MeshInstance3D = $Pedestal
+@onready var ground_mesh: MeshInstance3D = $GroundMesh
 
 # UI - TopBar e Toast
 @onready var top_bar: HBoxContainer = $CanvasLayer/Control/TopBar
@@ -90,7 +91,7 @@ enum OutlineMode {
 @onready var btn_preset_rock: Button = %BtnPresetRock
 @onready var btn_preset_minions: Button = %BtnPresetMinions
 
-# UI - Painel Direito: Pickers de Cor
+# UI - Painel Direito: Pickers de Cor da Vegetação
 @onready var picker_color_light: ColorPickerButton = %PickerColorLight
 @onready var picker_color_base: ColorPickerButton = %PickerColorBase
 @onready var picker_color_shadow: ColorPickerButton = %PickerColorShadow
@@ -115,6 +116,15 @@ enum OutlineMode {
 @onready var slider_roughness: HSlider = %SliderRoughness
 @onready var lbl_roughness: Label = %LblRoughness
 
+# UI - Painel Direito: Solo da Ilha (Chão)
+@onready var picker_color_ground: ColorPickerButton = %PickerColorGround
+@onready var slider_ground_brightness: HSlider = %SliderGroundBrightness
+@onready var lbl_ground_brightness: Label = %LblGroundBrightness
+@onready var check_ground_pedestal: CheckBox = %CheckGroundPedestal
+@onready var check_ground_toon: CheckBox = %CheckGroundToon
+@onready var btn_ground_preset_dark: Button = %BtnGroundPresetDark
+@onready var btn_ground_preset_light: Button = %BtnGroundPresetLight
+
 # UI - Painel Direito: Outlines e Toggles
 @onready var btn_out_none: Button = %BtnOutNone
 @onready var btn_out_thin: Button = %BtnOutThin
@@ -131,6 +141,13 @@ var current_outline: OutlineMode = OutlineMode.NONE
 var is_turntable_active: bool = false
 var is_rotating_sun: bool = false
 var _active_material: ShaderMaterial = null
+
+# Estado do Solo
+var ground_base_color: Color = Color(0.24, 0.58, 0.28, 1.0)
+var ground_brightness: float = 1.0
+var apply_ground_to_pedestal: bool = true
+var use_ground_toon: bool = true
+var _ground_material: StandardMaterial3D = null
 
 # Cache de Malhas do Modelo Ativo
 var active_mesh_instances: Array[MeshInstance3D] = []
@@ -153,11 +170,13 @@ var _toast_timer: float = 0.0
 func _ready() -> void:
 	_setup_desktop_window()
 	_init_active_material()
+	_init_ground_material()
 	_setup_signals()
 	_apply_preset("grass")
 	_load_model(current_model)
 	_sync_ui_from_material()
 	_sync_lighting_ui()
+	_sync_ground_ui()
 	_update_model_materials()
 	_update_ui_state()
 
@@ -182,38 +201,61 @@ func _init_active_material() -> void:
 	_active_material = ShaderMaterial.new()
 	_active_material.shader = GRADIENT_SHADER
 
+func _init_ground_material() -> void:
+	_ground_material = StandardMaterial3D.new()
+	_ground_material.resource_name = "Mat_TesterGround"
+	_ground_material.roughness = 0.92
+	_ground_material.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	_ground_material.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+	_update_ground_material()
+
+func _update_ground_material() -> void:
+	if _ground_material == null:
+		return
+	var final_color: Color = Color(
+		ground_base_color.r * ground_brightness,
+		ground_base_color.g * ground_brightness,
+		ground_base_color.b * ground_brightness,
+		1.0
+	)
+	_ground_material.albedo_color = final_color
+	_ground_material.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON if use_ground_toon else BaseMaterial3D.DIFFUSE_BURLEY
+
+	if ground_mesh != null:
+		ground_mesh.material_override = _ground_material
+
+	if pedestal != null:
+		if apply_ground_to_pedestal:
+			pedestal.material_override = _ground_material
+		else:
+			pedestal.material_override = null
+
 func _process(delta: float) -> void:
 	var fps: float = Engine.get_frames_per_second()
 	var frame_ms: float = 1000.0 / maxf(fps, 1.0)
 	lbl_fps.text = "FPS: %d (%.1f ms)" % [int(fps), frame_ms]
 
-	# Rotação da lâmina do robô
 	for spinner: Node3D in blade_spinner_nodes:
 		if is_instance_valid(spinner):
 			spinner.rotate_y(deg_to_rad(720.0 * delta))
 
-	# Turntable 360°
 	if is_turntable_active and turntable != null:
 		turntable.rotate_y(deg_to_rad(24.0 * delta))
 
-	# Rotação contínua do Sol
 	if is_rotating_sun and sun_light != null:
 		sun_yaw = wrapf(sun_yaw + 24.0 * delta, -180.0, 180.0)
 		_apply_sun_rotation()
 		if slider_sun_yaw != null:
 			slider_sun_yaw.value = sun_yaw
 
-	# Atualiza rótulo de câmera/sol
 	_update_cam_info_label()
 
-	# Timer do Toast
 	if _toast_timer > 0.0:
 		_toast_timer -= delta
 		if _toast_timer <= 0.0 and toast_label != null:
 			toast_label.visible = false
 
 func _is_mouse_in_central_area(pos: Vector2) -> bool:
-	# O mouse só orbita se estiver no vão central livre (entre os dois painéis)
 	if top_bar != null and pos.y <= 60.0:
 		return false
 	if left_panel != null and pos.x <= left_panel.global_position.x + left_panel.size.x + 8.0:
@@ -326,14 +368,14 @@ func _setup_signals() -> void:
 		is_turntable_active = t
 	)
 
-	# Presets (Painel Direito)
+	# Presets de Vegetação (Painel Direito)
 	btn_preset_grass.pressed.connect(func() -> void: _apply_preset("grass"))
 	btn_preset_wheat.pressed.connect(func() -> void: _apply_preset("wheat"))
 	btn_preset_rose.pressed.connect(func() -> void: _apply_preset("rose"))
 	btn_preset_rock.pressed.connect(func() -> void: _apply_preset("rock"))
 	btn_preset_minions.pressed.connect(func() -> void: _apply_preset("minions"))
 
-	# Cores (Painel Direito)
+	# Cores da Vegetação (Painel Direito)
 	picker_color_light.color_changed.connect(func(c: Color) -> void:
 		_active_material.set_shader_parameter("color_light", c)
 	)
@@ -347,7 +389,7 @@ func _setup_signals() -> void:
 		_active_material.set_shader_parameter("rim_color", c)
 	)
 
-	# Sliders de Gradiente (Painel Direito)
+	# Sliders de Gradiente da Vegetação
 	slider_ramp_offset.value_changed.connect(func(v: float) -> void:
 		_active_material.set_shader_parameter("toon_ramp_offset", v)
 		lbl_ramp_offset.text = "Offset do Corte: %.2f" % v
@@ -373,7 +415,40 @@ func _setup_signals() -> void:
 		lbl_roughness.text = "Rugosidade Fosca: %.2f" % v
 	)
 
-	# Toggles (Painel Direito)
+	# Solo da Ilha (Painel Direito)
+	picker_color_ground.color_changed.connect(func(c: Color) -> void:
+		ground_base_color = c
+		_update_ground_material()
+	)
+	slider_ground_brightness.value_changed.connect(func(v: float) -> void:
+		ground_brightness = v
+		lbl_ground_brightness.text = "Brilho do Solo: %.2f" % v
+		_update_ground_material()
+	)
+	check_ground_pedestal.toggled.connect(func(t: bool) -> void:
+		apply_ground_to_pedestal = t
+		_update_ground_material()
+	)
+	check_ground_toon.toggled.connect(func(t: bool) -> void:
+		use_ground_toon = t
+		_update_ground_material()
+	)
+	btn_ground_preset_dark.pressed.connect(func() -> void:
+		ground_base_color = Color(0.18, 0.40, 0.22, 1.0)
+		ground_brightness = 0.90
+		_sync_ground_ui()
+		_update_ground_material()
+		_show_toast("Solo Escuro (Atual do Jogo) Aplicado!")
+	)
+	btn_ground_preset_light.pressed.connect(func() -> void:
+		ground_base_color = Color(0.26, 0.64, 0.30, 1.0)
+		ground_brightness = 1.25
+		_sync_ground_ui()
+		_update_ground_material()
+		_show_toast("Solo Claro & Vibrante Aplicado!")
+	)
+
+	# Toggles
 	check_rim.toggled.connect(func(t: bool) -> void:
 		_active_material.set_shader_parameter("use_rim", t)
 	)
@@ -381,21 +456,20 @@ func _setup_signals() -> void:
 		_active_material.set_shader_parameter("use_specular", t)
 	)
 
-	# Outlines (Painel Direito)
+	# Outlines
 	btn_out_none.pressed.connect(func() -> void: _set_outline_mode(OutlineMode.NONE))
 	btn_out_thin.pressed.connect(func() -> void: _set_outline_mode(OutlineMode.THIN))
 	btn_out_med.pressed.connect(func() -> void: _set_outline_mode(OutlineMode.MEDIUM))
 
-	# Copiar Parâmetros do Shader (Painel Direito)
+	# Copiar Parâmetros do Shader
 	btn_copy_params.pressed.connect(_on_btn_copy_pressed)
 
 func _align_camera_to_game() -> void:
-	# Ângulo canônico do Grass Cut Bot: pitch de -40.3°, yaw de 0°, sol em -45° pitch / -35° yaw
 	cam_rot_x = -40.3
 	cam_rot_y = 0.0
 	cam_distance = 3.4
-	sun_pitch = -45.0
-	sun_yaw = -35.0
+	sun_pitch = -37.0
+	sun_yaw = 40.0
 	if turntable != null:
 		turntable.rotation_degrees = Vector3.ZERO
 	_update_camera_transform()
@@ -409,7 +483,6 @@ func _align_camera_to_game() -> void:
 	_show_toast("🎮 Ângulo Canônico do Jogo Aplicado!")
 
 func _align_sun_to_camera() -> void:
-	# Ajusta o sol para incidir diretamente do mesmo ponto de vista da câmera
 	sun_pitch = cam_rot_x
 	sun_yaw = cam_rot_y
 	_apply_sun_rotation()
@@ -473,6 +546,17 @@ func _sync_lighting_ui() -> void:
 		lbl_ambient_energy.text = "Intensidade Luz Ambiente: %.2f" % amb
 
 	_update_cam_info_label()
+
+func _sync_ground_ui() -> void:
+	if picker_color_ground != null:
+		picker_color_ground.color = ground_base_color
+	if slider_ground_brightness != null:
+		slider_ground_brightness.value = ground_brightness
+		lbl_ground_brightness.text = "Brilho do Solo: %.2f" % ground_brightness
+	if check_ground_pedestal != null:
+		check_ground_pedestal.button_pressed = apply_ground_to_pedestal
+	if check_ground_toon != null:
+		check_ground_toon.button_pressed = use_ground_toon
 
 func _set_target_model(mod: TargetModel) -> void:
 	current_model = mod
@@ -711,7 +795,7 @@ func _on_btn_copy_pressed() -> void:
 	var r_br: float = float(_active_material.get_shader_parameter("rim_brightness"))
 	var ro: float = float(_active_material.get_shader_parameter("roughness"))
 
-	var code_snippet: String = """# Parâmetros Toon Shader Gradiente
+	var code_snippet: String = """# Parâmetros Toon Shader Vegetação
 color_light = Color(%.2f, %.2f, %.2f)
 color_base = Color(%.2f, %.2f, %.2f)
 color_shadow = Color(%.2f, %.2f, %.2f)
@@ -722,16 +806,24 @@ vertical_gradient_mix = %.2f
 rim_power = %.2f
 rim_brightness = %.2f
 roughness = %.2f
+
+# Parâmetros Solo da Ilha
+ground_color = Color(%.2f, %.2f, %.2f)
+ground_brightness = %.2f
+ground_diffuse_toon = %s
 """ % [
 		cl.r, cl.g, cl.b,
 		cb.r, cb.g, cb.b,
 		cs.r, cs.g, cs.b,
 		cr.r, cr.g, cr.b,
-		r_off, r_sm, v_gr, r_pw, r_br, ro
+		r_off, r_sm, v_gr, r_pw, r_br, ro,
+		ground_base_color.r, ground_base_color.g, ground_base_color.b,
+		ground_brightness,
+		str(use_ground_toon)
 	]
 
 	DisplayServer.clipboard_set(code_snippet)
-	_show_toast("✅ Parâmetros do Shader Copiados!")
+	_show_toast("✅ Parâmetros da Grama e Solo Copiados!")
 
 func _show_toast(msg: String) -> void:
 	if toast_label == null:
