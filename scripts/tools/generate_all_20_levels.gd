@@ -12,7 +12,7 @@ const MIN_ROCK_SPACING: float = 2.80      # 2.00 * 1.40m (diâmetro lâmina nv 6
 const SPAWN_GRASS_CLEAR_RADIUS: float = 0.72 # Clareira sutil no ponto zero para evitar auto-corte no frame 0
 
 func _init() -> void:
-	print("=== INICIANDO GERAÇÃO E AUDITORIA DAS 20 FASES CANÔNICAS ===")
+	print("=== INICIANDO GERAÇÃO E AUDITORIA DAS 20 FASES CANÔNICAS (LEVEL DESIGN REFINADO) ===")
 	var total_errors: int = 0
 	for lvl: int in range(1, 21):
 		var errs: int = generate_level(lvl)
@@ -31,20 +31,20 @@ func generate_level(lvl: int) -> int:
 	var spawn_cell: Vector2i = Vector2i.ZERO
 	var width: int = 15
 	var height: int = 15
-	var time_limit: float = 90.0
+	var base_time_limit: float = 75.0
 	var level_name: String = ""
 
 	match lvl:
 		1:
 			level_name = "Boas-Vindas ao Jardim"
-			width = 13; height = 13; time_limit = 75.0
+			width = 13; height = 13; base_time_limit = 75.0
 			spawn_cell = Vector2i(6, 6)
 			_add_rect_island(terrain_grid, 2, 2, 9, 9)
 			_add_grass_circle(vector_field, "grass_green", 6, 6, width, height, 2.2)
 			_add_grass_ring(vector_field, "grass_yellow", 6, 6, width, height, 2.2, 2.85)
 		2:
 			level_name = "O Prado Bicolor"
-			width = 13; height = 13; time_limit = 80.0
+			width = 13; height = 13; base_time_limit = 80.0
 			spawn_cell = Vector2i(6, 6)
 			_add_chamfered_rect_island(terrain_grid, 2, 2, 9, 9, 2)
 			_add_diagonal_stripes(vector_field, width, height, ["grass_green", "grass_yellow"], 1.35)
@@ -55,11 +55,16 @@ func generate_level(lvl: int) -> int:
 			_add_grass_circle_world(vector_field, "grass_blue", Vector2(1.7, 1.7), 0.90)
 		3:
 			level_name = "Introdução à Resistência"
-			width = 15; height = 15; time_limit = 85.0
+			width = 15; height = 15; base_time_limit = 85.0
 			spawn_cell = Vector2i(7, 7)
 			_add_rect_island(terrain_grid, 2, 2, 11, 11)
 			_add_dirt_cross(terrain_grid, 7, 7, 3, 3, 9, 9)
-			_add_grass_circle(vector_field, "grass_green", 7, 7, width, height, 3.6)
+			# 4 lotes agrícolas verdes emoldurados por faixa dourada junto ao trigo
+			_add_grass_circle(vector_field, "grass_yellow", 7, 7, width, height, 3.6)
+			_add_grass_rect(vector_field, "grass_green", 3, 3, 6, 6, width, height)
+			_add_grass_rect(vector_field, "grass_green", 8, 3, 11, 6, width, height)
+			_add_grass_rect(vector_field, "grass_green", 3, 8, 6, 11, width, height)
+			_add_grass_rect(vector_field, "grass_green", 8, 8, 11, 11, width, height)
 			# 4 linhas de wheat (2 hits) em tiles internos separando quadrantes
 			_add_wheat_line(object_grid, [Vector2i(7, 4), Vector2i(7, 5)])
 			_add_wheat_line(object_grid, [Vector2i(7, 9), Vector2i(7, 10)])
@@ -67,9 +72,16 @@ func generate_level(lvl: int) -> int:
 			_add_wheat_line(object_grid, [Vector2i(9, 7), Vector2i(10, 7)])
 		4:
 			level_name = "O Jardim Nobre"
-			width = 15; height = 15; time_limit = 90.0
+			width = 15; height = 15; base_time_limit = 95.0
 			spawn_cell = Vector2i(7, 7)
 			_add_octagon_island(terrain_grid, 7, 7, 5)
+			# Molduras de terra batida sob os 4 canteiros cardeais
+			_add_dirt_tiles(terrain_grid, [
+				Vector2i(6, 4), Vector2i(8, 4),
+				Vector2i(6, 10), Vector2i(8, 10),
+				Vector2i(4, 6), Vector2i(4, 8),
+				Vector2i(10, 6), Vector2i(10, 8)
+			])
 			_add_grass_circle(vector_field, "grass_blue", 7, 7, width, height, 2.1)
 			_add_grass_ring(vector_field, "grass_purple", 7, 7, width, height, 2.1, 3.5)
 			# 4 canteiros cardeais de flower_daisy e flower_bell em tiles internos
@@ -83,7 +95,7 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(10, 8), "flower_bell")
 		5:
 			level_name = "Mandala Floral Mista"
-			width = 17; height = 17; time_limit = 95.0
+			width = 17; height = 17; base_time_limit = 110.0
 			spawn_cell = Vector2i(8, 8)
 			_add_rounded_cross_island(terrain_grid, 8, 8, 6, 7)
 			_add_grass_circle(vector_field, "grass_white", 8, 8, width, height, 2.3)
@@ -102,9 +114,11 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(13, 8), "flower_sunflower")
 		6:
 			level_name = "O Primeiro Rochedo"
-			width = 19; height = 11; time_limit = 90.0
+			width = 19; height = 11; base_time_limit = 90.0
 			spawn_cell = Vector2i(9, 5)
 			_add_rect_island(terrain_grid, 2, 2, 15, 7)
+			# Bases de terra batida destacando visualmente as 2 primeiras rochas do jogo
+			_add_dirt_tiles(terrain_grid, [Vector2i(5, 5), Vector2i(13, 5)])
 			_add_grass_rect(vector_field, "grass_green", 3, 3, 15, 7, width, height)
 			_add_grass_rect(vector_field, "grass_yellow", 6, 4, 12, 6, width, height)
 			# 2 rochas sólidas em lados opostos da ilha (dist = 6.40m > 2.80m)
@@ -112,31 +126,42 @@ func generate_level(lvl: int) -> int:
 			_add_rock(object_grid, Vector2i(13, 5))
 		7:
 			level_name = "O Triângulo de Pedra"
-			width = 17; height = 17; time_limit = 90.0
+			width = 17; height = 17; base_time_limit = 90.0
 			spawn_cell = Vector2i(8, 8)
 			_add_octagon_island(terrain_grid, 8, 8, 6)
 			_add_grass_circle(vector_field, "grass_blue", 8, 8, width, height, 3.9)
-			_add_grass_star_world(vector_field, "grass_white", Vector2.ZERO, 2.3, 1.1, 5)
+			# Estrela hexagonal de 6 pontas alinhada com os 3 rochedos e as 3 rotas de fuga
+			_add_grass_star_world(vector_field, "grass_white", Vector2.ZERO, 2.5, 1.15, 6)
 			# 3 rochas em formação triangular aberta com amplas rotas de fuga
 			_add_rock(object_grid, Vector2i(8, 4))
 			_add_rock(object_grid, Vector2i(5, 10))
 			_add_rock(object_grid, Vector2i(11, 10))
 		8:
 			level_name = "Caminho Dividido"
-			width = 19; height = 17; time_limit = 95.0
+			width = 19; height = 17; base_time_limit = 100.0
 			spawn_cell = Vector2i(9, 12)
 			_add_u_island(terrain_grid)
+			# Bifurcação em Y de terra batida guiando o jogador para as duas penínsulas
+			_add_dirt_tiles(terrain_grid, [
+				Vector2i(9, 11), Vector2i(8, 11), Vector2i(10, 11),
+				Vector2i(7, 10), Vector2i(6, 10), Vector2i(11, 10), Vector2i(12, 10)
+			])
 			_add_grass_rect(vector_field, "grass_green", 4, 10, 14, 13, width, height)
 			_add_grass_rect(vector_field, "grass_purple", 4, 3, 6, 9, width, height)
 			_add_grass_rect(vector_field, "grass_red", 12, 3, 14, 9, width, height)
 			# 2 rochas posicionadas na entrada de cada península com folga lateral completa
 			_add_rock(object_grid, Vector2i(5, 9))
 			_add_rock(object_grid, Vector2i(13, 9))
+			# Recompensa floral no topo de cada península
+			_add_flower(object_grid, Vector2i(5, 4), "flower_daisy")
+			_add_flower(object_grid, Vector2i(13, 4), "flower_bell")
 		9:
 			level_name = "Pomar Protegido"
-			width = 17; height = 17; time_limit = 100.0
+			width = 17; height = 17; base_time_limit = 100.0
 			spawn_cell = Vector2i(8, 8)
 			_add_chamfered_rect_island(terrain_grid, 2, 2, 13, 13, 2)
+			# Nichos de terra batida sob as 4 flores raras protegidas
+			_add_dirt_tiles(terrain_grid, [Vector2i(8, 3), Vector2i(8, 13), Vector2i(3, 8), Vector2i(13, 8)])
 			_add_grass_circle(vector_field, "grass_green", 8, 8, width, height, 4.3)
 			_add_grass_circle(vector_field, "grass_yellow", 8, 8, width, height, 2.8)
 			# 4 rochas formando anel largo (dist entre adjacentes = 3.39m > 2.80m)
@@ -151,7 +176,7 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(13, 8), "flower_sunflower")
 		10:
 			level_name = "O Labirinto de Trigo e Granito"
-			width = 19; height = 19; time_limit = 105.0
+			width = 19; height = 19; base_time_limit = 115.0
 			spawn_cell = Vector2i(9, 9)
 			_add_rect_island(terrain_grid, 2, 2, 15, 15)
 			_add_dirt_cross(terrain_grid, 9, 9, 4, 4, 11, 11)
@@ -171,7 +196,7 @@ func generate_level(lvl: int) -> int:
 			])
 		11:
 			level_name = "Ilhotas Conectadas"
-			width = 21; height = 13; time_limit = 100.0
+			width = 21; height = 13; base_time_limit = 100.0
 			spawn_cell = Vector2i(5, 6)
 			_add_bridge_island(terrain_grid)
 			_add_grass_rect(vector_field, "grass_blue", 3, 3, 7, 9, width, height)
@@ -188,11 +213,13 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(16, 8), "flower_bell")
 		12:
 			level_name = "Vulcânica"
-			width = 17; height = 17; time_limit = 105.0
+			width = 17; height = 17; base_time_limit = 105.0
 			spawn_cell = Vector2i(8, 8)
 			_add_octagon_island(terrain_grid, 8, 8, 6)
 			_add_grass_circle(vector_field, "grass_black", 8, 8, width, height, 4.1)
-			_add_grass_ring(vector_field, "grass_red", 8, 8, width, height, 2.3, 3.4)
+			# Estrela vulcânica de 8 pontas em grass_red com núcleo de magma grass_yellow
+			_add_grass_star_world(vector_field, "grass_red", Vector2.ZERO, 3.6, 1.8, 8)
+			_add_grass_circle(vector_field, "grass_yellow", 8, 8, width, height, 1.45)
 			# 4 rochas cardeais em distância ampla
 			_add_rock(object_grid, Vector2i(8, 4))
 			_add_rock(object_grid, Vector2i(8, 12))
@@ -205,9 +232,11 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(10, 10), "flower_corolla")
 		13:
 			level_name = "O Relógio de Quatro Pilares"
-			width = 19; height = 19; time_limit = 110.0
+			width = 19; height = 19; base_time_limit = 110.0
 			spawn_cell = Vector2i(9, 9)
 			_add_rounded_cross_island(terrain_grid, 9, 9, 7, 7)
+			# Ponteiros do relógio em island_dirt dividindo os 4 quadrantes
+			_add_dirt_cross(terrain_grid, 9, 9, 4, 4, 11, 11)
 			# 4 quadrantes com cores distintas
 			_add_grass_rect(vector_field, "grass_green", 3, 3, 8, 8, width, height)
 			_add_grass_rect(vector_field, "grass_yellow", 10, 3, 15, 8, width, height)
@@ -225,27 +254,37 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(14, 9), "flower_rose")
 		14:
 			level_name = "Serpente de Trigo"
-			width = 21; height = 13; time_limit = 110.0
+			width = 21; height = 13; base_time_limit = 110.0
 			spawn_cell = Vector2i(4, 6)
 			_add_rect_island(terrain_grid, 2, 2, 17, 9)
-			_add_grass_rect(vector_field, "grass_green", 3, 3, 17, 9, width, height)
-			_add_grass_rect(vector_field, "grass_white", 4, 4, 16, 8, width, height)
-			# 3 rochas no lado interno de cada curva da serpente
-			_add_rock(object_grid, Vector2i(7, 4))
-			_add_rock(object_grid, Vector2i(11, 8))
-			_add_rock(object_grid, Vector2i(15, 4))
-			# Trilha sinuosa contínua de wheat
 			var snake_wheat: Array[Vector2i] = [
 				Vector2i(6, 6), Vector2i(7, 7), Vector2i(8, 7), Vector2i(9, 6),
 				Vector2i(10, 5), Vector2i(11, 4), Vector2i(12, 4), Vector2i(13, 5),
 				Vector2i(14, 6), Vector2i(15, 7), Vector2i(16, 7), Vector2i(17, 6)
 			]
+			# Trilha de terra batida sob a serpente de trigo
+			_add_dirt_tiles(terrain_grid, snake_wheat)
+			_add_grass_rect(vector_field, "grass_green", 3, 3, 17, 9, width, height)
+			_add_grass_rect(vector_field, "grass_white", 4, 4, 16, 8, width, height)
+			# Bolsões de slalom amarelos nas curvas da serpente
+			_add_grass_circle(vector_field, "grass_yellow", 7, 5, width, height, 1.1)
+			_add_grass_circle(vector_field, "grass_yellow", 11, 7, width, height, 1.1)
+			_add_grass_circle(vector_field, "grass_yellow", 15, 5, width, height, 1.1)
+			# 3 rochas no lado interno de cada curva da serpente
+			_add_rock(object_grid, Vector2i(7, 4))
+			_add_rock(object_grid, Vector2i(11, 8))
+			_add_rock(object_grid, Vector2i(15, 4))
 			_add_wheat_line(object_grid, snake_wheat)
 		15:
 			level_name = "O Parque Central de Canteiros"
-			width = 19; height = 17; time_limit = 115.0
+			width = 19; height = 17; base_time_limit = 115.0
 			spawn_cell = Vector2i(9, 8)
 			_add_chamfered_rect_island(terrain_grid, 2, 2, 15, 13, 2)
+			var bed_cells: Array[Vector2i] = [
+				Vector2i(7, 6), Vector2i(11, 6), Vector2i(6, 8),
+				Vector2i(12, 8), Vector2i(7, 10), Vector2i(11, 10)
+			]
+			_add_dirt_tiles(terrain_grid, bed_cells)
 			_add_grass_circle(vector_field, "grass_green", 9, 8, width, height, 4.4)
 			_add_grass_ring(vector_field, "grass_yellow", 9, 8, width, height, 2.0, 2.8)
 			# 5 rochas distribuídas de maneira assimétrica com folga ampla (> 2.80m)
@@ -255,15 +294,11 @@ func generate_level(lvl: int) -> int:
 			_add_rock(object_grid, Vector2i(13, 11))
 			_add_rock(object_grid, Vector2i(9, 4))
 			# 6 canteiros rasteiros (flower_bed)
-			_add_flower(object_grid, Vector2i(7, 6), "flower_bed")
-			_add_flower(object_grid, Vector2i(11, 6), "flower_bed")
-			_add_flower(object_grid, Vector2i(6, 8), "flower_bed")
-			_add_flower(object_grid, Vector2i(12, 8), "flower_bed")
-			_add_flower(object_grid, Vector2i(7, 10), "flower_bed")
-			_add_flower(object_grid, Vector2i(11, 10), "flower_bed")
+			for bc: Vector2i in bed_cells:
+				_add_flower(object_grid, bc, "flower_bed")
 		16:
 			level_name = "O Anel Exterior de Obstáculos"
-			width = 19; height = 19; time_limit = 115.0
+			width = 19; height = 19; base_time_limit = 115.0
 			spawn_cell = Vector2i(9, 9)
 			_add_octagon_island(terrain_grid, 9, 9, 7)
 			_add_grass_circle(vector_field, "grass_yellow", 9, 9, width, height, 2.9)
@@ -284,9 +319,14 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(7, 4), "flower_sunflower")
 		17:
 			level_name = "Alameda Imperial"
-			width = 21; height = 17; time_limit = 120.0
+			width = 21; height = 17; base_time_limit = 120.0
 			spawn_cell = Vector2i(10, 8)
 			_add_h_island(terrain_grid)
+			# Boulevard imperial de terra batida cruzando a ponte central
+			_add_dirt_tiles(terrain_grid, [
+				Vector2i(7, 8), Vector2i(8, 8), Vector2i(9, 8),
+				Vector2i(10, 8), Vector2i(11, 8), Vector2i(12, 8), Vector2i(13, 8)
+			])
 			_add_grass_rect(vector_field, "grass_green", 4, 3, 7, 13, width, height)
 			_add_grass_rect(vector_field, "grass_yellow", 8, 6, 12, 10, width, height)
 			_add_grass_rect(vector_field, "grass_green", 13, 3, 16, 13, width, height)
@@ -304,11 +344,12 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(14, 12), "flower_tulip")
 		18:
 			level_name = "O Labirinto dos Quatro Diamantes"
-			width = 19; height = 19; time_limit = 120.0
+			width = 19; height = 19; base_time_limit = 120.0
 			spawn_cell = Vector2i(9, 9)
 			_add_diamond_island(terrain_grid, 9, 9, 8)
-			_add_grass_circle(vector_field, "grass_white", 9, 9, width, height, 2.3)
-			_add_grass_ring(vector_field, "grass_purple", 9, 9, width, height, 2.3, 4.8)
+			# Losangos (diamantes) concêntricos de grama alinhados com a ilha em Diamante
+			_add_grass_diamond_world(vector_field, "grass_purple", Vector2.ZERO, 5.2)
+			_add_grass_diamond_world(vector_field, "grass_white", Vector2.ZERO, 2.7)
 			# 4 rochas nos eixos dos 4 diamantes
 			_add_rock(object_grid, Vector2i(9, 5))
 			_add_rock(object_grid, Vector2i(9, 13))
@@ -324,13 +365,14 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(15, 9), "flower_bed")
 		19:
 			level_name = "O Oásis Multicolorido"
-			width = 19; height = 19; time_limit = 125.0
+			width = 19; height = 19; base_time_limit = 125.0
 			spawn_cell = Vector2i(9, 9)
 			_add_star_island(terrain_grid, 9, 9, 7, 5)
-			_add_grass_circle(vector_field, "grass_green", 9, 9, width, height, 1.9)
-			_add_grass_ring(vector_field, "grass_blue", 9, 9, width, height, 1.9, 2.9)
-			_add_grass_ring(vector_field, "grass_purple", 9, 9, width, height, 2.9, 3.8)
-			_add_grass_ring(vector_field, "grass_black", 9, 9, width, height, 3.8, 4.6)
+			# Mandala estelar concêntrica de 8 pontas em 4 cores
+			_add_grass_star_world(vector_field, "grass_black", Vector2.ZERO, 4.8, 3.9, 8)
+			_add_grass_star_world(vector_field, "grass_purple", Vector2.ZERO, 3.8, 3.0, 8)
+			_add_grass_star_world(vector_field, "grass_blue", Vector2.ZERO, 2.9, 2.1, 8)
+			_add_grass_star_world(vector_field, "grass_green", Vector2.ZERO, 2.0, 1.3, 8)
 			# 5 rochas em pentágono aberto
 			_add_rock(object_grid, Vector2i(9, 4))
 			_add_rock(object_grid, Vector2i(13, 7))
@@ -345,12 +387,16 @@ func generate_level(lvl: int) -> int:
 			_add_flower(object_grid, Vector2i(4, 7), "flower_corolla")
 		20:
 			level_name = "Arquipélago da Maestria"
-			width = 21; height = 21; time_limit = 135.0
+			width = 21; height = 21; base_time_limit = 135.0
 			spawn_cell = Vector2i(10, 10)
 			_add_clover_island(terrain_grid, 10, 10)
-			_add_grass_circle(vector_field, "grass_yellow", 10, 10, width, height, 2.3)
-			_add_grass_ring(vector_field, "grass_white", 10, 10, width, height, 2.3, 3.6)
-			_add_grass_ring(vector_field, "grass_green", 10, 10, width, height, 3.6, 5.2)
+			# Cada folha do trevo com uma cor vibrante distinta + núcleo imperial dourado/branco
+			_add_grass_rect(vector_field, "grass_green", 7, 2, 13, 7, width, height)   # Folha Norte
+			_add_grass_rect(vector_field, "grass_blue", 7, 13, 13, 18, width, height)  # Folha Sul
+			_add_grass_rect(vector_field, "grass_purple", 2, 7, 7, 13, width, height)  # Folha Oeste
+			_add_grass_rect(vector_field, "grass_red", 13, 7, 18, 13, width, height)   # Folha Leste
+			_add_grass_circle(vector_field, "grass_white", 10, 10, width, height, 3.1)
+			_add_grass_circle(vector_field, "grass_yellow", 10, 10, width, height, 2.0)
 			# 6 rochas em gargalos estratégicos (todas com dist >= 3.39m > 2.80m)
 			_add_rock(object_grid, Vector2i(10, 5))
 			_add_rock(object_grid, Vector2i(10, 15))
@@ -375,14 +421,18 @@ func generate_level(lvl: int) -> int:
 	#    e abre clareira exata no ponto de spawn para evitar auto-corte no frame 0
 	_clip_vector_field_to_island(vector_field, terrain_grid, spawn_cell, width, height)
 
-	# 3. Validações estritas de Level Design e Física
-	var err_count: int = _validate_level(lvl, level_name, spawn_cell, terrain_grid, object_grid, vector_field, width, height)
+	# 3. Validações estritas de Level Design e Física + Calibração de Tempo 3 Estrelas
+	var audit_res: Dictionary = _validate_and_calibrate_level(
+		lvl, level_name, base_time_limit, spawn_cell, terrain_grid, object_grid, vector_field, width, height
+	)
+	var err_count: int = int(audit_res.get("errors", 0))
+	var calibrated_time: float = float(audit_res.get("time_limit", base_time_limit))
 
 	# 4. Salva o arquivo JSON v3
 	var ok: bool = LevelSerializer.save_level_json(
 		lvl,
 		level_name,
-		time_limit,
+		calibrated_time,
 		width,
 		height,
 		spawn_cell,
@@ -488,17 +538,18 @@ func _clip_vector_field_to_island(
 	vf.call("clip_shapes", spawn_clear_poly)
 
 
-# --- Métodos de Validação Estrita (6 Regras de Level Design) ---
-func _validate_level(
+# --- Métodos de Validação Estrita (6 Regras de Level Design) e Calibração de Tempo ---
+func _validate_and_calibrate_level(
 	lvl: int,
 	lvl_name: String,
+	base_time: float,
 	spawn_cell: Vector2i,
 	terrain_grid: Dictionary,
 	object_grid: Dictionary,
 	vf: RefCounted,
 	width: int,
 	height: int
-) -> int:
+) -> Dictionary:
 	var errors: int = 0
 	var sp_pos: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, width, height, CELL_SIZE)
 	var rocks: Array[Vector3] = []
@@ -578,10 +629,17 @@ func _validate_level(
 		elif ot.begins_with("flower"):
 			flower_cnt += 1
 
-	print("Nível %02d OK: '%s' | Grid %dx%d | Grama: %d tufos | Trigo: %d | Flores: %d | Rochas: %d" % [
-		lvl, lvl_name, width, height, sampled.size(), wheat_cnt, flower_cnt, rocks.size()
+	# Calibração matemática para 3 Estrelas (>= 50% de tempo restante)
+	var t_est_nv1: float = 14.0 + 0.032 * float(sampled.size()) + 1.25 * float(wheat_cnt) + 2.25 * float(flower_cnt) + 1.5 * float(rocks.size())
+	var calibrated_time: float = maxf(base_time, ceilf((t_est_nv1 * 2.25) / 5.0) * 5.0)
+
+	print("Nível %02d OK: '%s' | Grid %dx%d | Tempo: %.0fs | Grama: %d | Trigo: %d | Flores: %d | Rochas: %d" % [
+		lvl, lvl_name, width, height, calibrated_time, sampled.size(), wheat_cnt, flower_cnt, rocks.size()
 	])
-	return errors
+	return {
+		"errors": errors,
+		"time_limit": calibrated_time
+	}
 
 
 # --- Geradores de Ilhas Geométricas ---
@@ -614,51 +672,41 @@ func _add_rounded_cross_island(grid: Dictionary, cx: int, cz: int, arm_len: int,
 	for z: int in range(cz - arm_len, cz + arm_len + 1):
 		for x: int in range(cx - hw, cx + hw + 1):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Chanfro suave interno nas axilas da cruz
 	var inner_r: int = hw + 1
 	for x: int in range(cx - inner_r, cx + inner_r + 1):
 		for z: int in range(cz - inner_r, cz + inner_r + 1):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
 
 func _add_u_island(grid: Dictionary) -> void:
-	# Base horizontal ampla (z = 10..14, x = 3..15)
 	for x: int in range(3, 16):
 		for z: int in range(10, 15):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Península esquerda (5 blocos de largura: x = 3..7, z = 2..10)
 	for x: int in range(3, 8):
 		for z: int in range(2, 11):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Península direita (5 blocos de largura: x = 11..15, z = 2..10)
 	for x: int in range(11, 16):
 		for z: int in range(2, 11):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
 
 func _add_bridge_island(grid: Dictionary) -> void:
-	# Ilha oeste (x = 2..8, z = 2..10)
 	for x: int in range(2, 9):
 		for z: int in range(2, 11):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Ilha leste (x = 12..18, z = 2..10)
 	for x: int in range(12, 19):
 		for z: int in range(2, 11):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Istmo central largo (x = 8..12, z = 4..8) com trilha de terra central
 	for x: int in range(8, 13):
 		for z: int in range(4, 9):
 			var tid: String = "island_dirt" if z == 6 else "island_center"
 			grid[Vector2i(x, z)] = { "tile_id": tid, "rot": 0, "auto": true }
 
 func _add_h_island(grid: Dictionary) -> void:
-	# Avenida oeste (x = 3..8, z = 2..14)
 	for x: int in range(3, 9):
 		for z: int in range(2, 15):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Avenida leste (x = 12..17, z = 2..14)
 	for x: int in range(12, 18):
 		for z: int in range(2, 15):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-	# Alameda central (x = 8..12, z = 5..11)
 	for x: int in range(8, 13):
 		for z: int in range(5, 12):
 			grid[Vector2i(x, z)] = { "tile_id": "island_center", "rot": 0, "auto": true }
@@ -676,9 +724,7 @@ func _add_star_island(grid: Dictionary, cx: int, cz: int, outer_r: int, inner_r:
 	_add_rect_island(grid, cx - inner_r, cz - inner_r, inner_r * 2 + 1, inner_r * 2 + 1)
 
 func _add_clover_island(grid: Dictionary, cx: int, cz: int) -> void:
-	# Núcleo central amplo (x = 5..15, z = 5..15)
 	_add_rect_island(grid, cx - 5, cz - 5, 11, 11)
-	# 4 folhas cardeais (x/z alcançando 2..18)
 	_add_rect_island(grid, cx - 3, cz - 8, 7, 4)
 	_add_rect_island(grid, cx - 3, cz + 5, 7, 4)
 	_add_rect_island(grid, cx - 8, cz - 3, 4, 7)
@@ -686,9 +732,17 @@ func _add_clover_island(grid: Dictionary, cx: int, cz: int) -> void:
 
 func _add_dirt_cross(grid: Dictionary, cx: int, cz: int, x0: int, z0: int, w: int, h: int) -> void:
 	for x: int in range(x0, x0 + w):
-		grid[Vector2i(x, cz)] = { "tile_id": "island_dirt", "rot": 0, "auto": true }
+		if grid.has(Vector2i(x, cz)):
+			grid[Vector2i(x, cz)] = { "tile_id": "island_dirt", "rot": 0, "auto": true }
 	for z: int in range(z0, z0 + h):
-		grid[Vector2i(cx, z)] = { "tile_id": "island_dirt", "rot": 0, "auto": true }
+		if grid.has(Vector2i(cx, z)):
+			grid[Vector2i(cx, z)] = { "tile_id": "island_dirt", "rot": 0, "auto": true }
+
+func _add_dirt_tiles(grid: Dictionary, cells: Array) -> void:
+	for item: Variant in cells:
+		var c: Vector2i = item as Vector2i
+		if grid.has(c):
+			grid[c] = { "tile_id": "island_dirt", "rot": 0, "auto": true }
 
 
 # --- Helpers de Vegetação Vetorial (com substituição booleana sem sobreposição) ---
@@ -702,6 +756,15 @@ func _add_grass_circle_world(vf: RefCounted, type_name: String, center: Vector2,
 	for i: int in range(segs):
 		var a: float = float(i) * TAU / float(segs)
 		poly.append(center + Vector2(cos(a), sin(a)) * radius)
+	vf.call("merge_or_add_shape", type_name, poly)
+
+func _add_grass_diamond_world(vf: RefCounted, type_name: String, center: Vector2, half_diag: float) -> void:
+	var poly: PackedVector2Array = PackedVector2Array([
+		center + Vector2(0.0, -half_diag),
+		center + Vector2(half_diag, 0.0),
+		center + Vector2(0.0, half_diag),
+		center + Vector2(-half_diag, 0.0)
+	])
 	vf.call("merge_or_add_shape", type_name, poly)
 
 func _add_grass_star_world(vf: RefCounted, type_name: String, center: Vector2, r_outer: float, r_inner: float, points: int) -> void:

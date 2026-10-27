@@ -817,12 +817,14 @@ func _build_from_vector_field(
 	_total_physical_grass = 0
 	_total_physical_wheat = 0
 	_total_physical_flower = 0
+	var flower_counts_by_type: Dictionary = {}
 	for p_idx: int in range(_positions.size()):
 		var pk: String = _plant_keys[p_idx]
 		if pk == "wheat":
 			_total_physical_wheat += 1
 		elif pk.begins_with("flower"):
 			_total_physical_flower += 1
+			flower_counts_by_type[pk] = int(flower_counts_by_type.get(pk, 0)) + 1
 		else:
 			_total_physical_grass += 1
 
@@ -837,7 +839,11 @@ func _build_from_vector_field(
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
-		goals["flower"] = _total_physical_flower
+		if flower_counts_by_type.size() <= 2:
+			for f_key: Variant in flower_counts_by_type.keys():
+				goals[String(f_key)] = int(flower_counts_by_type[f_key])
+		else:
+			goals["flower"] = _total_physical_flower
 
 	return goals
 
@@ -1132,12 +1138,14 @@ func _build_from_vegetation_field(
 	_total_physical_grass = 0
 	_total_physical_wheat = 0
 	_total_physical_flower = 0
+	var flower_counts_by_type: Dictionary = {}
 	for p_idx: int in range(_positions.size()):
 		var pk: String = _plant_keys[p_idx]
 		if pk == "wheat":
 			_total_physical_wheat += 1
 		elif pk.begins_with("flower"):
 			_total_physical_flower += 1
+			flower_counts_by_type[pk] = int(flower_counts_by_type.get(pk, 0)) + 1
 		else:
 			_total_physical_grass += 1
 
@@ -1152,7 +1160,11 @@ func _build_from_vegetation_field(
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
-		goals["flower"] = _total_physical_flower
+		if flower_counts_by_type.size() <= 2:
+			for f_key: Variant in flower_counts_by_type.keys():
+				goals[String(f_key)] = int(flower_counts_by_type[f_key])
+		else:
+			goals["flower"] = _total_physical_flower
 
 	return goals
 
@@ -1346,10 +1358,14 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 						if gm != null:
 							while _get_remaining_goal_safe("wheat") > 0:
 								gm.call("register_cut", "wheat", 3, Vector3.ZERO)
-					if _remaining_physical_flower <= 0 and _get_remaining_goal_safe("flower") > 0:
-						if gm != null:
-							while _get_remaining_goal_safe("flower") > 0:
-								gm.call("register_cut", "flower", 5, Vector3.ZERO)
+					if _remaining_physical_flower <= 0 and gm != null:
+						var gm_goals: Variant = gm.get("goals")
+						if gm_goals is Dictionary:
+							for g_key_var: Variant in (gm_goals as Dictionary).keys():
+								var g_key_str: String = String(g_key_var)
+								if g_key_str.begins_with("flower"):
+									while _get_remaining_goal_safe(g_key_str) > 0:
+										gm.call("register_cut", g_key_str, 5, Vector3.ZERO)
 					if _remaining_physical_grass <= 0 and _get_remaining_goal_safe("grass") > 0:
 						if gm != null:
 							while _get_remaining_goal_safe("grass") > 0:

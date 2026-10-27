@@ -239,9 +239,21 @@
 	"objects": [
 		{
 			"gx": 5,
+			"gz": 4,
+			"rot": 0,
+			"type": "flower_daisy"
+		},
+		{
+			"gx": 5,
 			"gz": 9,
 			"rot": 0,
 			"type": "rock"
+		},
+		{
+			"gx": 13,
+			"gz": 4,
+			"rot": 0,
+			"type": "flower_bell"
 		},
 		{
 			"gx": 13,
@@ -1272,6 +1284,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 95.0,
+	"time_limit": 100.0,
 	"version": 3
 }

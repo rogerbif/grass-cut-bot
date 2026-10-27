@@ -1,7 +1,7 @@
 # Melhoria 113: Auditoria e Refinamento de Level Design das 20 Fases Canônicas
 
 **Data:** 26 de Outubro de 2026  
-**Versão:** `v0.12.37-alpha`  
+**Versão:** `v0.12.38-alpha`  
 **Domínio:** Level Design, Vegetação Vetorial, Metas de HUD & Miniaturas do Hub Principal
 
 ---
