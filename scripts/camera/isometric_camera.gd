@@ -4,8 +4,8 @@ extends Camera3D
 @export var base_canonical_offset: Vector3 = Vector3(0.0, 7.7511, 9.1619) # 100% canônico (12.0m no Lv 6 MAX)
 @export var follow_speed: float = 8.0
 
-const MIN_DISTANCE_RATIO: float = 0.50 # 50% de distância no Lv 1 (6.0m)
-const MAX_DISTANCE_RATIO: float = 1.00 # 100% de distância no Lv 6 MAX (12.0m)
+const MIN_DISTANCE_RATIO: float = 0.60 # Distância no Lv 1 equivalente ao nível 2 anterior (7.20m)
+const MAX_DISTANCE_RATIO: float = 0.90 # Distância no Lv 6 MAX equivalente ao nível 5 anterior (10.80m)
 const ZOOM_TWEEN_DURATION: float = 0.75
 
 const VICTORY_OFFSET: Vector3 = Vector3(0.0, 1.25, 4.0)
@@ -16,7 +16,7 @@ var shake_intensity: float = 0.0
 var shake_duration: float = 0.0
 
 var _in_victory_cam: bool = false
-var _current_gameplay_offset: Vector3 = Vector3(0.0, 3.8756, 4.5809)
+var _current_gameplay_offset: Vector3 = Vector3(0.0, 4.6507, 5.4971)
 var _victory_offset: Vector3 = Vector3(0.0, 1.25, 4.0)
 var _current_rotation: Vector3 = Vector3.ZERO
 var _victory_tween: Tween = null

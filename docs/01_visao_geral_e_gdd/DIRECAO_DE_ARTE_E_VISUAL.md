@@ -51,18 +51,18 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 ## 3. Iluminação e Renderização
 
-- **DirectionalLight3D (Sol Canônico):**
-  - Posicionada em ângulo zenital calibrado (`pitch = -37.0°`, `yaw = 40.0°`, `roll = 0.0°`), vetor de direção frontal `(-0.513, -0.602, -0.612)`.
-  - Energia da luz calibrada em `1.30` com tom solar suave (`#FFFDE7`).
+- **DirectionalLight3D:**
+  - Posicionada em ângulo zenital angular (~$45^\circ$ pitch, $30^\circ$ yaw / `Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)`).
+  - Energia da luz padrão (`light_energy = 1.0`).
   - Sombras projetadas ativadas (`shadow_enabled = true`) em modo ortogonal (`SHADOW_ORTHOGONAL`) com distância máxima de $28.0\text{m}$, mapa $1024 \times 1024$ e filtro rápido, garantindo 60 FPS cravados no mobile.
   - As malhas de vegetação operam com `cast_shadow = SHADOW_CASTING_SETTING_OFF` (mantendo sombras nítidas exclusivamente no robô, rochas e falésias da ilha), reduzindo drasticamente as primitivas de renderização.
 - **WorldEnvironment:**
   - `background_mode = 1` (Clear Color) com cor de céu tropical suave.
-  - Luz ambiente com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.20`, garantindo alto contraste estilizado de cel shading sem estourar as cores.
+  - Luz ambiente com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.85` no gameplay (`0.90` no menu), garantindo que as faces sombreadas mantenham claridade acolhedora e cores vivas sem pretos pesados.
   - Tonemap em modo ACES/Filmic para realce das cores vivas sem estourar os brancos.
 - **IsometricCamera (Câmera Isométrica com Zoom Dinâmico):**
   - Orientação isométrica travada em `pitch = -40.3°` (`Vector3(-40.3, 0.0, 0.0)`).
-  - Zoom dinâmico adaptativo conforme a evolução da lâmina: inicia a $6.0\text{m}$ de distância (`offset = Vector3(0.0, 3.8756, 4.5809)`) no Nível 1 e afasta suavemente com interpolação cúbica até $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`) no Nível 6 MAX.
+  - Zoom dinâmico adaptativo conforme a evolução da lâmina: inicia a $7.20\text{m}$ de distância (`offset = Vector3(0.0, 4.6507, 5.4971)`) no Nível 1 (equivalente à distância do antigo Nível 2) e afasta suavemente com interpolação cúbica até $10.80\text{m}$ (`offset = Vector3(0.0, 6.9760, 8.2457)`) no Nível 6 MAX (equivalente à distância do antigo Nível 5), com progressão de $+0.72\text{m}$ por nível.
 - **Vegetação (Toon Shader Gradiente Canônico):**
   - `color_light = Color(0.42, 0.88, 0.46)` (Grama verde) / Paletas dedicadas para Amarela, Azul, Roxa, Branca, Vermelha, Preta e Trigo
   - `color_base = Color(0.10, 0.30, 0.15)`
