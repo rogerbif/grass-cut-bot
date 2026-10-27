@@ -167,6 +167,7 @@ var active_mesh_instances: Array[MeshInstance3D] = []
 var blade_spinner_nodes: Array[Node3D] = []
 var _cached_island_mi: MeshInstance3D = null
 var _cached_island_polys: Array[PackedVector2Array] = []
+var _cached_cutter_pos: Vector3 = Vector3.ZERO
 
 # Câmera Orbit e Pan
 var is_dragging_mouse: bool = false
@@ -519,7 +520,7 @@ func _align_camera_to_game() -> void:
 	cam_rot_x = -40.3
 	cam_rot_y = 0.0
 	cam_distance = 7.4
-	cam_target = Vector3.ZERO
+	cam_target = _cached_cutter_pos if current_model == TargetModel.FULL_LEVEL else Vector3.ZERO
 	sun_pitch = -37.0
 	sun_yaw = 40.0
 	if turntable != null:
@@ -735,6 +736,7 @@ func _load_level(level_num: int) -> void:
 	level_container.add_child(cutter)
 
 	veg_grid.build_from_level_json(data, obstacles_container, cutter)
+	_cached_cutter_pos = cutter.position
 
 	# Registra a lâmina do robô para rotação contínua
 	var blade: Node3D = cutter.find_child("BladeSpinner", true, false) as Node3D

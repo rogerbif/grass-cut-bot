@@ -64,6 +64,7 @@ static func get_island_material() -> StandardMaterial3D:
 	_island_material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 	_island_material.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON if ground_diffuse_toon else BaseMaterial3D.DIFFUSE_BURLEY
 	_island_material.vertex_color_use_as_albedo = true
+	_island_material.vertex_color_is_srgb = true
 	_island_material.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
 
 	return _island_material
