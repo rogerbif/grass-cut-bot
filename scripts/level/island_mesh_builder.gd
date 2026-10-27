@@ -24,8 +24,32 @@ const UV_CLIFF_WALL: Vector2 = Vector2(0.189990, 0.169986)
 const PALETTE_TEXTURE_PATH: String = "res://assets/models/tiles/tile_island_center_Image_0.png"
 const FOAM_SHADER_PATH: String = "res://shaders/coastal_foam.gdshader"
 
+# Parâmetros Canônicos do Solo da Ilha e Falésias (Calibrados)
+static var ground_base_color: Color = Color(0.14, 0.59, 0.22, 1.0)
+static var ground_brightness: float = 0.80
+static var ground_diffuse_toon: bool = true
+const CLIFF_COLOR: Color = Color(0.4667, 0.2431, 0.1451, 1.0)
+const DIRT_COLOR: Color = Color(0.38, 0.25, 0.15, 1.0)
+
 static var _island_material: StandardMaterial3D = null
 static var _foam_material: ShaderMaterial = null
+
+
+static func get_final_ground_color() -> Color:
+	return Color(
+		ground_base_color.r * ground_brightness,
+		ground_base_color.g * ground_brightness,
+		ground_base_color.b * ground_brightness,
+		1.0
+	)
+
+
+static func set_ground_parameters(base_color: Color, brightness: float = 0.80, use_toon: bool = true) -> void:
+	ground_base_color = base_color
+	ground_brightness = brightness
+	ground_diffuse_toon = use_toon
+	if _island_material != null:
+		_island_material.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON if ground_diffuse_toon else BaseMaterial3D.DIFFUSE_BURLEY
 
 
 static func get_island_material() -> StandardMaterial3D:
@@ -34,17 +58,13 @@ static func get_island_material() -> StandardMaterial3D:
 
 	_island_material = StandardMaterial3D.new()
 	_island_material.resource_name = "Mat_ProceduralIsland"
-	_island_material.roughness = 0.92
+	_island_material.roughness = 0.90
 	_island_material.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	_island_material.cull_mode = BaseMaterial3D.CULL_BACK
 	_island_material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
-	_island_material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-
-	if ResourceLoader.exists(PALETTE_TEXTURE_PATH):
-		var tex: Texture2D = load(PALETTE_TEXTURE_PATH) as Texture2D
-		_island_material.albedo_texture = tex
-	else:
-		_island_material.albedo_color = Color(0.24, 0.72, 0.28, 1.0)
+	_island_material.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON if ground_diffuse_toon else BaseMaterial3D.DIFFUSE_BURLEY
+	_island_material.vertex_color_use_as_albedo = true
+	_island_material.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
 
 	return _island_material
 
@@ -73,6 +93,7 @@ static func build_island_mesh(
 
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var final_ground_color: Color = get_final_ground_color()
 
 	for poly: PackedVector2Array in polygons:
 		if poly.size() < 3:
@@ -112,14 +133,17 @@ static func build_island_mesh(
 				var p1: Vector2 = p_cap[i1]
 				var p2: Vector2 = p_cap[i2]
 
+				st.set_color(final_ground_color)
 				st.set_normal(Vector3.UP)
 				st.set_uv(UV_GRASS_TOP)
 				st.add_vertex(Vector3(p0.x, 0.0, p0.y))
 
+				st.set_color(final_ground_color)
 				st.set_normal(Vector3.UP)
 				st.set_uv(UV_GRASS_TOP)
 				st.add_vertex(Vector3(p1.x, 0.0, p1.y))
 
+				st.set_color(final_ground_color)
 				st.set_normal(Vector3.UP)
 				st.set_uv(UV_GRASS_TOP)
 				st.add_vertex(Vector3(p2.x, 0.0, p2.y))
@@ -152,6 +176,7 @@ static func build_island_mesh(
 			var wall_norm: Vector3 = Vector3(seg_norm.x, 0.0, seg_norm.y)
 
 			# Triângulos do Chanfro (Grama -> Borda)
+			st.set_color(final_ground_color)
 			# Triângulo 1: top_a, top_b, bev_b
 			st.set_normal(bev_norm_a)
 			st.set_uv(UV_GRASS_TOP)
@@ -179,6 +204,7 @@ static func build_island_mesh(
 			st.add_vertex(bev_a)
 
 			# Triângulos da Parede da Falésia (bev_a / bev_b até bot_a / bot_b)
+			st.set_color(CLIFF_COLOR)
 			# Triângulo 1: bev_a, bev_b, bot_b
 			st.set_normal(wall_norm)
 			st.set_uv(UV_CLIFF_WALL)

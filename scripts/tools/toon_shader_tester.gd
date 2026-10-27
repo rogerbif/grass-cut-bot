@@ -143,8 +143,8 @@ var is_rotating_sun: bool = false
 var _active_material: ShaderMaterial = null
 
 # Estado do Solo
-var ground_base_color: Color = Color(0.24, 0.58, 0.28, 1.0)
-var ground_brightness: float = 1.0
+var ground_base_color: Color = Color(0.14, 0.59, 0.22, 1.0)
+var ground_brightness: float = 0.80
 var apply_ground_to_pedestal: bool = true
 var use_ground_toon: bool = true
 var _ground_material: StandardMaterial3D = null
@@ -685,11 +685,11 @@ func _apply_preset(preset_name: String) -> void:
 			_active_material.set_shader_parameter("color_base", Color(0.12, 0.35, 0.18, 1.0))
 			_active_material.set_shader_parameter("color_shadow", Color(0.18, 0.48, 0.25, 1.0))
 			_active_material.set_shader_parameter("rim_color", Color(0.85, 1.0, 0.65, 1.0))
-			_active_material.set_shader_parameter("toon_ramp_offset", 0.46)
-			_active_material.set_shader_parameter("toon_ramp_smoothness", 0.08)
-			_active_material.set_shader_parameter("vertical_gradient_mix", 0.55)
-			_active_material.set_shader_parameter("rim_power", 2.2)
-			_active_material.set_shader_parameter("rim_brightness", 1.4)
+			_active_material.set_shader_parameter("toon_ramp_offset", 0.97)
+			_active_material.set_shader_parameter("toon_ramp_smoothness", 1.00)
+			_active_material.set_shader_parameter("vertical_gradient_mix", 0.81)
+			_active_material.set_shader_parameter("rim_power", 1.00)
+			_active_material.set_shader_parameter("rim_brightness", 1.00)
 			_active_material.set_shader_parameter("roughness", 0.90)
 
 		"wheat":

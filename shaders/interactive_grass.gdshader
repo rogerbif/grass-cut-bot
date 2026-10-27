@@ -17,11 +17,11 @@ group_uniforms ToonGradiente;
 uniform vec4 color_light : source_color = vec4(0.42, 0.88, 0.46, 1.0);
 uniform vec4 color_base : source_color = vec4(0.12, 0.35, 0.18, 1.0);
 uniform vec4 color_shadow : source_color = vec4(0.18, 0.48, 0.25, 1.0);
-uniform float vertical_gradient_mix : hint_range(0.0, 1.0) = 0.72;
+uniform float vertical_gradient_mix : hint_range(0.0, 1.0) = 0.81;
 
 group_uniforms ToonRamp;
-uniform float toon_ramp_offset : hint_range(0.0, 1.0) = 0.62;
-uniform float toon_ramp_smoothness : hint_range(0.001, 1.0) = 0.72;
+uniform float toon_ramp_offset : hint_range(0.0, 1.0) = 0.97;
+uniform float toon_ramp_smoothness : hint_range(0.001, 1.0) = 1.00;
 uniform vec3 toon_ramp_tinting : source_color = vec3(1.0, 1.0, 1.0);
 
 group_uniforms RimLighting;
