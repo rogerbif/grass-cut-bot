@@ -30,16 +30,16 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
 
-- **Zoom Dinâmico Adaptativo (7.20m no Lv 1 até 10.80m no Lv 6 MAX):**
-  - **Nível 1 (Base):** Distância em $7.20\text{m}$ (`offset = Vector3(0.0, 4.6507, 5.4971)`), correspondente à distância do antigo Nível 2. Proporciona enquadramento mais equilibrado e confortável desde o primeiro segundo da fase, eliminando proximidade excessiva inicial.
-  - **Níveis 2 a 5:** Afastamento gradual linear (+0.72m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
-    - Lv 1: $7.20\text{m}$ (`Vector3(0.0, 4.6507, 5.4971)`) — antigo Nível 2
-    - Lv 2: $7.92\text{m}$ (`Vector3(0.0, 5.1157, 6.0469)`)
-    - Lv 3: $8.64\text{m}$ (`Vector3(0.0, 5.5808, 6.5966)`)
-    - Lv 4: $9.36\text{m}$ (`Vector3(0.0, 6.0459, 7.1463)`)
-    - Lv 5: $10.08\text{m}$ (`Vector3(0.0, 6.5109, 7.6960)`)
-    - Lv 6: $10.80\text{m}$ (`Vector3(0.0, 6.9760, 8.2457)`) — antigo Nível 5
-  - **Nível 6 (MAX):** Distância de $10.80\text{m}$ (`offset = Vector3(0.0, 6.9760, 8.2457)`), correspondente à distância do antigo Nível 5, garantindo visão periférica ideal sem afastar a câmera além do necessário.
+- **Zoom Dinâmico Adaptativo (6.0m no Lv 1 até 12.0m no Lv 6 MAX):**
+  - **Nível 1 (Base):** Distância em $6.0\text{m}$ (`offset = Vector3(0.0, 3.8756, 4.5809)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento com excelente visibilidade do robô e do corredor imediato de vegetação.
+  - **Níveis 2 a 5:** Afastamento gradual linear (+1.2m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
+    - Lv 1: $6.0\text{m}$ (`Vector3(0.0, 3.8756, 4.5809)`)
+    - Lv 2: $7.2\text{m}$ (`Vector3(0.0, 4.6507, 5.4971)`)
+    - Lv 3: $8.4\text{m}$ (`Vector3(0.0, 5.4258, 6.4133)`)
+    - Lv 4: $9.6\text{m}$ (`Vector3(0.0, 6.2009, 7.3295)`)
+    - Lv 5: $10.8\text{m}$ (`Vector3(0.0, 6.9760, 8.2457)`)
+    - Lv 6: $12.0\text{m}$ (`Vector3(0.0, 7.7511, 9.1619)`)
+  - **Nível 6 (MAX):** Distância canônica máxima de $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`), conferindo ampla visão panorâmica para manusear com total destreza e segurança a serra estelar de $1.40\text{m}$ de raio.
   - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por impacto contra obstáculos sólidos.
 - **Posicionamento e Orientação Fixa:**
   - Orientação angular travada com pitch de $-40.3^\circ$ (sem chamada de `look_at()` no `_process()`), eliminando qualquer oscilação ou giro dinâmico quando o cortador manobra.
