@@ -2,709 +2,872 @@
 	"grass_vectors": [
 		{
 			"holes": [],
-			"id": 1,
+			"id": 8,
 			"polygon": [
 				[
-					2.525,
-					-0.169
+					0.0,
+					-0.72
 				],
 				[
-					2.305,
-					-0.7
+					-0.222,
+					-0.685
 				],
 				[
-					1.956,
-					-1.156
+					-0.423,
+					-0.582
 				],
 				[
-					1.5,
-					-1.505
+					-0.582,
+					-0.423
 				],
 				[
-					0.969,
-					-1.725
+					-0.685,
+					-0.222
 				],
 				[
-					0.4,
-					-1.8
+					-0.72,
+					0.0
 				],
 				[
-					-0.169,
-					-1.725
+					-0.685,
+					0.222
 				],
 				[
-					-0.7,
-					-1.505
+					-0.582,
+					0.423
 				],
 				[
-					-1.156,
-					-1.156
+					-0.423,
+					0.582
 				],
 				[
-					-1.505,
-					-0.7
+					-0.222,
+					0.685
 				],
 				[
-					-1.725,
-					-0.169
+					0.0,
+					0.72
 				],
 				[
-					-1.8,
-					0.4
+					0.0,
+					1.9
 				],
 				[
-					-1.725,
-					0.969
+					-0.492,
+					1.835
 				],
 				[
-					-1.505,
-					1.5
+					-0.95,
+					1.645
 				],
 				[
-					-1.156,
-					1.956
+					-1.344,
+					1.344
 				],
 				[
-					-0.7,
-					2.305
+					-1.645,
+					0.95
 				],
 				[
-					-0.169,
-					2.525
+					-1.835,
+					0.492
 				],
 				[
-					0.4,
-					2.6
+					-1.9,
+					0.0
 				],
 				[
-					0.969,
-					2.525
+					-1.835,
+					-0.492
 				],
 				[
-					1.5,
-					2.305
+					-1.645,
+					-0.95
 				],
 				[
-					1.956,
-					1.956
+					-1.344,
+					-1.344
 				],
 				[
-					2.305,
-					1.5
+					-0.95,
+					-1.645
 				],
 				[
-					2.525,
-					0.969
+					-0.492,
+					-1.835
 				],
 				[
-					2.6,
-					0.4
+					0.0,
+					-1.9
 				]
 			],
 			"type": "grass_green"
 		},
 		{
-			"holes": [
+			"holes": [],
+			"id": 9,
+			"polygon": [
 				[
-					[
-						2.6,
-						0.4
-					],
-					[
-						2.525,
-						0.969
-					],
-					[
-						2.305,
-						1.5
-					],
-					[
-						1.956,
-						1.956
-					],
-					[
-						1.5,
-						2.305
-					],
-					[
-						0.969,
-						2.525
-					],
-					[
-						0.4,
-						2.6
-					],
-					[
-						-0.169,
-						2.525
-					],
-					[
-						-0.7,
-						2.305
-					],
-					[
-						-1.156,
-						1.956
-					],
-					[
-						-1.505,
-						1.5
-					],
-					[
-						-1.725,
-						0.969
-					],
-					[
-						-1.8,
-						0.4
-					],
-					[
-						-1.725,
-						-0.169
-					],
-					[
-						-1.505,
-						-0.7
-					],
-					[
-						-1.156,
-						-1.156
-					],
-					[
-						-0.7,
-						-1.505
-					],
-					[
-						-0.169,
-						-1.725
-					],
-					[
-						0.4,
-						-1.8
-					],
-					[
-						0.969,
-						-1.725
-					],
-					[
-						1.5,
-						-1.505
-					],
-					[
-						1.956,
-						-1.156
-					],
-					[
-						2.305,
-						-0.7
-					],
-					[
-						2.525,
-						-0.169
-					]
+					0.492,
+					-1.835
+				],
+				[
+					0.95,
+					-1.645
+				],
+				[
+					1.344,
+					-1.344
+				],
+				[
+					1.645,
+					-0.95
+				],
+				[
+					1.835,
+					-0.492
+				],
+				[
+					1.9,
+					0.0
+				],
+				[
+					1.835,
+					0.492
+				],
+				[
+					1.645,
+					0.95
+				],
+				[
+					1.344,
+					1.344
+				],
+				[
+					0.95,
+					1.645
+				],
+				[
+					0.492,
+					1.835
+				],
+				[
+					0.0,
+					1.9
+				],
+				[
+					0.0,
+					0.72
+				],
+				[
+					0.222,
+					0.685
+				],
+				[
+					0.423,
+					0.582
+				],
+				[
+					0.582,
+					0.423
+				],
+				[
+					0.685,
+					0.222
+				],
+				[
+					0.72,
+					0.0
+				],
+				[
+					0.685,
+					-0.222
+				],
+				[
+					0.582,
+					-0.423
+				],
+				[
+					0.423,
+					-0.582
+				],
+				[
+					0.222,
+					-0.685
+				],
+				[
+					0.0,
+					-0.72
+				],
+				[
+					0.0,
+					-1.9
 				]
 			],
+			"type": "grass_green"
+		},
+		{
+			"holes": [],
 			"id": 2,
 			"polygon": [
 				[
-					3.877,
-					-0.532
+					0.0,
+					-2.9
 				],
 				[
-					3.518,
-					-1.4
+					-0.751,
+					-2.801
 				],
 				[
-					2.946,
-					-2.146
+					-1.45,
+					-2.511
 				],
 				[
-					2.2,
-					-2.718
+					-2.051,
+					-2.051
 				],
 				[
-					1.332,
-					-3.077
+					-2.511,
+					-1.45
 				],
 				[
-					0.4,
-					-3.2
+					-2.801,
+					-0.751
 				],
 				[
-					-0.532,
-					-3.077
+					-2.9,
+					0.0
 				],
 				[
-					-1.4,
-					-2.718
+					-2.801,
+					0.751
 				],
 				[
-					-2.146,
-					-2.146
+					-2.511,
+					1.45
 				],
 				[
-					-2.718,
-					-1.4
+					-2.051,
+					2.051
 				],
 				[
-					-3.077,
-					-0.532
+					-1.45,
+					2.511
 				],
 				[
-					-3.2,
-					0.4
+					-0.751,
+					2.801
 				],
 				[
-					-3.077,
-					1.332
+					0.0,
+					2.9
 				],
 				[
-					-2.718,
-					2.2
+					0.0,
+					1.9
 				],
 				[
-					-2.146,
-					2.946
+					-0.492,
+					1.835
 				],
 				[
-					-1.4,
-					3.518
+					-0.95,
+					1.645
 				],
 				[
-					-0.532,
-					3.877
+					-1.344,
+					1.344
 				],
 				[
-					0.4,
-					4.0
+					-1.645,
+					0.95
 				],
 				[
-					1.332,
-					3.877
+					-1.835,
+					0.492
 				],
 				[
-					2.2,
-					3.518
+					-1.9,
+					0.0
 				],
 				[
-					2.946,
-					2.946
+					-1.835,
+					-0.492
 				],
 				[
-					3.518,
-					2.2
+					-1.645,
+					-0.95
 				],
 				[
-					3.877,
-					1.332
+					-1.344,
+					-1.344
 				],
 				[
-					4.0,
-					0.4
+					-0.95,
+					-1.645
+				],
+				[
+					-0.492,
+					-1.835
+				],
+				[
+					0.0,
+					-1.9
 				]
 			],
 			"type": "grass_blue"
 		},
 		{
-			"holes": [
-				[
-					[
-						4.0,
-						0.4
-					],
-					[
-						3.877,
-						1.332
-					],
-					[
-						3.518,
-						2.2
-					],
-					[
-						2.946,
-						2.946
-					],
-					[
-						2.2,
-						3.518
-					],
-					[
-						1.332,
-						3.877
-					],
-					[
-						0.4,
-						4.0
-					],
-					[
-						-0.532,
-						3.877
-					],
-					[
-						-1.4,
-						3.518
-					],
-					[
-						-2.146,
-						2.946
-					],
-					[
-						-2.718,
-						2.2
-					],
-					[
-						-3.077,
-						1.332
-					],
-					[
-						-3.2,
-						0.4
-					],
-					[
-						-3.077,
-						-0.532
-					],
-					[
-						-2.718,
-						-1.4
-					],
-					[
-						-2.146,
-						-2.146
-					],
-					[
-						-1.4,
-						-2.718
-					],
-					[
-						-0.532,
-						-3.077
-					],
-					[
-						0.4,
-						-3.2
-					],
-					[
-						1.332,
-						-3.077
-					],
-					[
-						2.2,
-						-2.718
-					],
-					[
-						2.946,
-						-2.146
-					],
-					[
-						3.518,
-						-1.4
-					],
-					[
-						3.877,
-						-0.532
-					]
-				]
-			],
+			"holes": [],
 			"id": 3,
 			"polygon": [
 				[
-					5.23,
-					-0.894
+					0.0,
+					-2.9
 				],
 				[
-					4.73,
-					-2.1
+					0.0,
+					-1.9
 				],
 				[
-					3.936,
-					-3.136
+					0.492,
+					-1.835
 				],
 				[
-					2.9,
-					-3.93
+					0.95,
+					-1.645
 				],
 				[
-					1.694,
-					-4.43
+					1.344,
+					-1.344
 				],
 				[
-					0.4,
-					-4.6
+					1.645,
+					-0.95
 				],
 				[
-					-0.894,
-					-4.43
+					1.835,
+					-0.492
 				],
 				[
-					-2.1,
-					-3.93
+					1.9,
+					0.0
 				],
 				[
-					-3.136,
-					-3.136
+					1.835,
+					0.492
 				],
 				[
-					-3.93,
-					-2.1
+					1.645,
+					0.95
 				],
 				[
-					-4.43,
-					-0.894
+					1.344,
+					1.344
 				],
 				[
-					-4.6,
-					0.4
+					0.95,
+					1.645
 				],
 				[
-					-4.43,
-					1.694
+					0.492,
+					1.835
 				],
 				[
-					-3.93,
+					0.0,
+					1.9
+				],
+				[
+					0.0,
 					2.9
 				],
 				[
-					-3.136,
-					3.936
+					0.751,
+					2.801
 				],
 				[
-					-2.1,
-					4.73
+					1.45,
+					2.511
 				],
 				[
-					-0.894,
-					5.23
+					2.051,
+					2.051
 				],
 				[
-					0.4,
-					5.4
+					2.511,
+					1.45
 				],
 				[
-					1.694,
-					5.23
+					2.801,
+					0.751
 				],
 				[
 					2.9,
-					4.73
+					0.0
 				],
 				[
-					3.936,
-					3.936
+					2.801,
+					-0.751
 				],
 				[
-					4.73,
+					2.511,
+					-1.45
+				],
+				[
+					2.051,
+					-2.051
+				],
+				[
+					1.45,
+					-2.511
+				],
+				[
+					0.751,
+					-2.801
+				]
+			],
+			"type": "grass_blue"
+		},
+		{
+			"holes": [],
+			"id": 4,
+			"polygon": [
+				[
+					0.0,
+					-3.8
+				],
+				[
+					-0.984,
+					-3.671
+				],
+				[
+					-1.9,
+					-3.291
+				],
+				[
+					-2.687,
+					-2.687
+				],
+				[
+					-3.291,
+					-1.9
+				],
+				[
+					-3.671,
+					-0.984
+				],
+				[
+					-3.8,
+					0.0
+				],
+				[
+					-3.671,
+					0.984
+				],
+				[
+					-3.291,
+					1.9
+				],
+				[
+					-2.687,
+					2.687
+				],
+				[
+					-1.9,
+					3.291
+				],
+				[
+					-0.984,
+					3.671
+				],
+				[
+					0.0,
+					3.8
+				],
+				[
+					0.0,
 					2.9
 				],
 				[
-					5.23,
-					1.694
+					-0.751,
+					2.801
 				],
 				[
-					5.4,
-					0.4
+					-1.45,
+					2.511
+				],
+				[
+					-2.051,
+					2.051
+				],
+				[
+					-2.511,
+					1.45
+				],
+				[
+					-2.801,
+					0.751
+				],
+				[
+					-2.9,
+					0.0
+				],
+				[
+					-2.801,
+					-0.751
+				],
+				[
+					-2.511,
+					-1.45
+				],
+				[
+					-2.051,
+					-2.051
+				],
+				[
+					-1.45,
+					-2.511
+				],
+				[
+					-0.751,
+					-2.801
+				],
+				[
+					0.0,
+					-2.9
 				]
 			],
 			"type": "grass_purple"
 		},
 		{
-			"holes": [
-				[
-					[
-						5.4,
-						0.4
-					],
-					[
-						5.23,
-						1.694
-					],
-					[
-						4.73,
-						2.9
-					],
-					[
-						3.936,
-						3.936
-					],
-					[
-						2.9,
-						4.73
-					],
-					[
-						1.694,
-						5.23
-					],
-					[
-						0.4,
-						5.4
-					],
-					[
-						-0.894,
-						5.23
-					],
-					[
-						-2.1,
-						4.73
-					],
-					[
-						-3.136,
-						3.936
-					],
-					[
-						-3.93,
-						2.9
-					],
-					[
-						-4.43,
-						1.694
-					],
-					[
-						-4.6,
-						0.4
-					],
-					[
-						-4.43,
-						-0.894
-					],
-					[
-						-3.93,
-						-2.1
-					],
-					[
-						-3.136,
-						-3.136
-					],
-					[
-						-2.1,
-						-3.93
-					],
-					[
-						-0.894,
-						-4.43
-					],
-					[
-						0.4,
-						-4.6
-					],
-					[
-						1.694,
-						-4.43
-					],
-					[
-						2.9,
-						-3.93
-					],
-					[
-						3.936,
-						-3.136
-					],
-					[
-						4.73,
-						-2.1
-					],
-					[
-						5.23,
-						-0.894
-					]
-				]
-			],
-			"id": 4,
+			"holes": [],
+			"id": 5,
 			"polygon": [
 				[
-					6.389,
-					-1.205
+					0.0,
+					-3.8
 				],
 				[
-					5.769,
-					-2.7
+					0.0,
+					-2.9
 				],
 				[
-					4.784,
+					0.751,
+					-2.801
+				],
+				[
+					1.45,
+					-2.511
+				],
+				[
+					2.051,
+					-2.051
+				],
+				[
+					2.511,
+					-1.45
+				],
+				[
+					2.801,
+					-0.751
+				],
+				[
+					2.9,
+					0.0
+				],
+				[
+					2.801,
+					0.751
+				],
+				[
+					2.511,
+					1.45
+				],
+				[
+					2.051,
+					2.051
+				],
+				[
+					1.45,
+					2.511
+				],
+				[
+					0.751,
+					2.801
+				],
+				[
+					0.0,
+					2.9
+				],
+				[
+					0.0,
+					3.8
+				],
+				[
+					0.984,
+					3.671
+				],
+				[
+					1.9,
+					3.291
+				],
+				[
+					2.687,
+					2.687
+				],
+				[
+					3.291,
+					1.9
+				],
+				[
+					3.671,
+					0.984
+				],
+				[
+					3.8,
+					0.0
+				],
+				[
+					3.671,
+					-0.984
+				],
+				[
+					3.291,
+					-1.9
+				],
+				[
+					2.687,
+					-2.687
+				],
+				[
+					1.9,
+					-3.291
+				],
+				[
+					0.984,
+					-3.671
+				]
+			],
+			"type": "grass_purple"
+		},
+		{
+			"holes": [],
+			"id": 6,
+			"polygon": [
+				[
+					0.0,
+					-4.6
+				],
+				[
+					-1.191,
+					-4.443
+				],
+				[
+					-2.3,
 					-3.984
 				],
 				[
-					3.5,
-					-4.969
-				],
-				[
-					2.005,
-					-5.589
-				],
-				[
-					0.4,
-					-5.8
-				],
-				[
-					-1.205,
-					-5.589
-				],
-				[
-					-2.7,
-					-4.969
+					-3.253,
+					-3.253
 				],
 				[
 					-3.984,
+					-2.3
+				],
+				[
+					-4.443,
+					-1.191
+				],
+				[
+					-4.6,
+					0.0
+				],
+				[
+					-4.443,
+					1.191
+				],
+				[
+					-3.984,
+					2.3
+				],
+				[
+					-3.253,
+					3.253
+				],
+				[
+					-2.3,
+					3.984
+				],
+				[
+					-1.191,
+					4.443
+				],
+				[
+					0.0,
+					4.6
+				],
+				[
+					0.0,
+					3.8
+				],
+				[
+					-0.984,
+					3.671
+				],
+				[
+					-1.9,
+					3.291
+				],
+				[
+					-2.687,
+					2.687
+				],
+				[
+					-3.291,
+					1.9
+				],
+				[
+					-3.671,
+					0.984
+				],
+				[
+					-3.8,
+					0.0
+				],
+				[
+					-3.671,
+					-0.984
+				],
+				[
+					-3.291,
+					-1.9
+				],
+				[
+					-2.687,
+					-2.687
+				],
+				[
+					-1.9,
+					-3.291
+				],
+				[
+					-0.984,
+					-3.671
+				],
+				[
+					0.0,
+					-3.8
+				]
+			],
+			"type": "grass_black"
+		},
+		{
+			"holes": [],
+			"id": 7,
+			"polygon": [
+				[
+					0.0,
+					-4.6
+				],
+				[
+					0.0,
+					-3.8
+				],
+				[
+					0.984,
+					-3.671
+				],
+				[
+					1.9,
+					-3.291
+				],
+				[
+					2.687,
+					-2.687
+				],
+				[
+					3.291,
+					-1.9
+				],
+				[
+					3.671,
+					-0.984
+				],
+				[
+					3.8,
+					0.0
+				],
+				[
+					3.671,
+					0.984
+				],
+				[
+					3.291,
+					1.9
+				],
+				[
+					2.687,
+					2.687
+				],
+				[
+					1.9,
+					3.291
+				],
+				[
+					0.984,
+					3.671
+				],
+				[
+					0.0,
+					3.8
+				],
+				[
+					0.0,
+					4.6
+				],
+				[
+					1.191,
+					4.443
+				],
+				[
+					2.3,
+					3.984
+				],
+				[
+					3.253,
+					3.253
+				],
+				[
+					3.984,
+					2.3
+				],
+				[
+					4.443,
+					1.191
+				],
+				[
+					4.6,
+					0.0
+				],
+				[
+					4.443,
+					-1.191
+				],
+				[
+					3.984,
+					-2.3
+				],
+				[
+					3.253,
+					-3.253
+				],
+				[
+					2.3,
 					-3.984
 				],
 				[
-					-4.969,
-					-2.7
-				],
-				[
-					-5.589,
-					-1.205
-				],
-				[
-					-5.8,
-					0.4
-				],
-				[
-					-5.589,
-					2.005
-				],
-				[
-					-4.969,
-					3.5
-				],
-				[
-					-3.984,
-					4.784
-				],
-				[
-					-2.7,
-					5.769
-				],
-				[
-					-1.205,
-					6.389
-				],
-				[
-					0.4,
-					6.6
-				],
-				[
-					2.005,
-					6.389
-				],
-				[
-					3.5,
-					5.769
-				],
-				[
-					4.784,
-					4.784
-				],
-				[
-					5.769,
-					3.5
-				],
-				[
-					6.389,
-					2.005
-				],
-				[
-					6.6,
-					0.4
+					1.191,
+					-4.443
 				]
 			],
 			"type": "grass_black"
@@ -712,15 +875,15 @@
 	],
 	"grid": {
 		"cell_size": 0.8,
-		"height": 20,
-		"width": 20
+		"height": 19,
+		"width": 19
 	},
 	"level_id": 19,
 	"name": "O Oásis Multicolorido",
 	"objects": [
 		{
 			"gx": 4,
-			"gz": 6,
+			"gz": 7,
 			"rot": 0,
 			"type": "flower_corolla"
 		},
@@ -732,415 +895,674 @@
 		},
 		{
 			"gx": 6,
-			"gz": 15,
-			"rot": 0,
-			"type": "flower_tulip"
-		},
-		{
-			"gx": 7,
-			"gz": 14,
+			"gz": 12,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
-			"gx": 10,
+			"gx": 6,
+			"gz": 13,
+			"rot": 0,
+			"type": "flower_tulip"
+		},
+		{
+			"gx": 9,
 			"gz": 3,
 			"rot": 0,
 			"type": "flower_rose"
 		},
 		{
-			"gx": 10,
+			"gx": 9,
 			"gz": 4,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
-			"gx": 13,
-			"gz": 14,
+			"gx": 12,
+			"gz": 12,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
-			"gx": 14,
-			"gz": 15,
+			"gx": 12,
+			"gz": 13,
 			"rot": 0,
 			"type": "flower_sunflower"
 		},
 		{
-			"gx": 15,
+			"gx": 13,
 			"gz": 7,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
-			"gx": 16,
-			"gz": 6,
+			"gx": 14,
+			"gz": 7,
 			"rot": 0,
 			"type": "flower_bell"
 		}
 	],
 	"spawn": {
-		"gx": 10,
-		"gz": 10,
+		"gx": 9,
+		"gz": 9,
 		"rot": 0
 	},
 	"terrain": [
 		{
 			"auto": true,
 			"gx": 2,
-			"gz": 10,
-			"rot": 180,
-			"tile_id": "island_end"
-		},
-		{
-			"auto": true,
-			"gx": 3,
-			"gz": 9,
-			"rot": 90,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 3,
-			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 3,
-			"gz": 11,
-			"rot": 180,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 4,
-			"gz": 8,
-			"rot": 90,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 4,
-			"gz": 9,
-			"rot": 0,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 4,
-			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 4,
-			"gz": 11,
-			"rot": 90,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 4,
-			"gz": 12,
-			"rot": 180,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 7,
-			"rot": 90,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 8,
-			"rot": 0,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 9,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 11,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 12,
-			"rot": 90,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 5,
-			"gz": 13,
-			"rot": 180,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 6,
 			"gz": 6,
 			"rot": 90,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 6,
+			"gx": 2,
 			"gz": 7,
-			"rot": 0,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 6,
-			"gz": 8,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 6,
-			"gz": 9,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 6,
-			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 6,
-			"gz": 11,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 6,
-			"gz": 12,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 6,
-			"gz": 13,
 			"rot": 90,
-			"tile_id": "island_corner_in"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 14,
+			"gx": 2,
+			"gz": 8,
+			"rot": 90,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2,
+			"gz": 9,
+			"rot": 90,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2,
+			"gz": 10,
+			"rot": 90,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2,
+			"gz": 11,
+			"rot": 90,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 5,
 			"rot": 90,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 6,
 			"rot": 0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 7,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 8,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 9,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 10,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 11,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
+			"gx": 3,
 			"gz": 12,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 7,
-			"gz": 13,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 7,
-			"gz": 14,
 			"rot": 90,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 15,
+			"gx": 3,
+			"gz": 13,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 4,
 			"rot": 90,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 5,
 			"rot": 0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 6,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 7,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 8,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 9,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 10,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 11,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 12,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
+			"gx": 4,
 			"gz": 13,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 8,
-			"gz": 14,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 8,
-			"gz": 15,
 			"rot": 90,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 16,
+			"gx": 4,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 9,
+			"gx": 5,
 			"gz": 3,
 			"rot": 90,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 9,
+			"gx": 5,
 			"gz": 4,
 			"rot": 0,
 			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 9,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 10,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 14,
+			"rot": 90,
+			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 15,
+			"rot": 180,
+			"tile_id": "island_corner_out"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 2,
+			"rot": 90,
+			"tile_id": "island_corner_out"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 3,
+			"rot": 0,
+			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 9,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 10,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 14,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 15,
+			"rot": 90,
+			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 16,
+			"rot": 180,
+			"tile_id": "island_corner_out"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 2,
+			"rot": 0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 3,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 9,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 10,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 14,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 15,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 16,
+			"rot": 180,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 2,
+			"rot": 0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 3,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 9,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 10,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 14,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 15,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 16,
+			"rot": 180,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 9,
+			"gz": 2,
+			"rot": 0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 9,
+			"gz": 3,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 9,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -1223,22 +1645,15 @@
 			"auto": true,
 			"gx": 9,
 			"gz": 16,
-			"rot": 90,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 17,
 			"rot": 180,
-			"tile_id": "island_corner_out"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 10,
 			"gz": 2,
-			"rot": 270,
-			"tile_id": "island_end"
+			"rot": 0,
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -1335,36 +1750,29 @@
 			"auto": true,
 			"gx": 10,
 			"gz": 16,
-			"rot": 0,
-			"tile_id": "island_center"
+			"rot": 180,
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 17,
+			"gx": 11,
+			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 18,
-			"rot": 90,
-			"tile_id": "island_end"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 11,
 			"gz": 3,
 			"rot": 0,
-			"tile_id": "island_corner_out"
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
 			"gx": 11,
 			"gz": 4,
-			"rot": 270,
-			"tile_id": "island_corner_in"
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -1448,28 +1856,35 @@
 			"gx": 11,
 			"gz": 16,
 			"rot": 180,
-			"tile_id": "island_corner_in"
-		},
-		{
-			"auto": true,
-			"gx": 11,
-			"gz": 17,
-			"rot": 270,
-			"tile_id": "island_corner_out"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 12,
-			"gz": 4,
+			"gz": 2,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
 			"gx": 12,
-			"gz": 5,
+			"gz": 3,
 			"rot": 270,
 			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 12,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 12,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -1551,16 +1966,30 @@
 		{
 			"auto": true,
 			"gx": 13,
-			"gz": 5,
+			"gz": 3,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
 			"gx": 13,
-			"gz": 6,
+			"gz": 4,
 			"rot": 270,
 			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 13,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 13,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -1628,16 +2057,30 @@
 		{
 			"auto": true,
 			"gx": 14,
-			"gz": 6,
+			"gz": 4,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
 			"gx": 14,
-			"gz": 7,
+			"gz": 5,
 			"rot": 270,
 			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 14,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 14,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -1691,16 +2134,30 @@
 		{
 			"auto": true,
 			"gx": 15,
-			"gz": 7,
+			"gz": 5,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
 			"gx": 15,
-			"gz": 8,
+			"gz": 6,
 			"rot": 270,
 			"tile_id": "island_corner_in"
+		},
+		{
+			"auto": true,
+			"gx": 15,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 15,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
@@ -1740,30 +2197,44 @@
 		{
 			"auto": true,
 			"gx": 16,
-			"gz": 8,
+			"gz": 6,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
 			"gx": 16,
+			"gz": 7,
+			"rot": 270,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 16,
+			"gz": 8,
+			"rot": 270,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 16,
 			"gz": 9,
 			"rot": 270,
-			"tile_id": "island_corner_in"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 16,
 			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_center"
+			"rot": 270,
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 16,
 			"gz": 11,
-			"rot": 180,
-			"tile_id": "island_corner_in"
+			"rot": 270,
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -1771,34 +2242,6 @@
 			"gz": 12,
 			"rot": 270,
 			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 17,
-			"gz": 9,
-			"rot": 0,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 17,
-			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 17,
-			"gz": 11,
-			"rot": 270,
-			"tile_id": "island_corner_out"
-		},
-		{
-			"auto": true,
-			"gx": 18,
-			"gz": 10,
-			"rot": 0,
-			"tile_id": "island_end"
 		}
 	],
 	"time_limit": 125.0,

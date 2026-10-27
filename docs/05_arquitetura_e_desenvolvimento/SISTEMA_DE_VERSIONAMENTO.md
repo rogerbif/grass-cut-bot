@@ -20,7 +20,7 @@ Exemplos práticos:
 - `v0.9.0-alpha` (Sistema de áudio e sonoplastia completo com 20 SFX e trilhas Dyalla)
 - `v0.10.0-alpha` (Calibração háptica Android precisa e suíte de ícones oficiais)
 - `v0.11.0-alpha` (Celebração de vitória 3 ⭐, derrota expressiva, teleporte 3D e moedas cartoon)
-- `v0.12.31-alpha` (**Versão Atual:** Plano Mestre de Performance 60 FPS mobile, prancheta vetorial no editor e ampliação de pincel 20x)
+- `v0.12.37-alpha` (**Versão Atual:** Auditoria e refinamento de Level Design das 20 fases canônicas, recorte costeiro de polígonos vetoriais e contabilização 1:1 de trigo e flores)
 - `v0.13.0-beta` (*Feature Complete:* Abas Loja/Coleção integradas a moedas e balanceamento final)
 - `v1.0.0-rc.1` (*Feature Freeze:* Testes finais de empacotamento APK/AAB no Android)
 - `v1.0.0` (Lançamento Oficial Comercial na Google Play Store)

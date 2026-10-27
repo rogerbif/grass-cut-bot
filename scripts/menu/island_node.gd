@@ -97,6 +97,13 @@ func read_island_metadata(lvl: int) -> void:
 		var half_w: float = island_dimensions.x / 2.0
 		var half_h: float = island_dimensions.y / 2.0
 		map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
+		if data.has("spawn") and data["spawn"] is Dictionary:
+			var sp_dict: Dictionary = data["spawn"] as Dictionary
+			var sp_x: int = int(sp_dict.get("gx", int(float(width) / 2.0)))
+			var sp_z: int = int(sp_dict.get("gz", int(float(height) / 2.0)))
+			var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_x, sp_z, width, height, cell_size)
+			if bot_anchor != null:
+				bot_anchor.position = Vector3(sp_world.x, -0.052, sp_world.z)
 
 
 func ensure_content_loaded() -> void:
@@ -439,18 +446,22 @@ func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: 
 			)
 			vector_field.call("clip_shapes", rock_clip_poly)
 
-	# Adiciona flores de tile como selos circulares na malha vetorial
+	# Adiciona flores e trigos de tile como selos circulares na malha vetorial
 	for obj_item: Variant in objects_arr:
-		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
-			var fx: int = int((obj_item as Dictionary).get("gx", 0))
-			var fz: int = int((obj_item as Dictionary).get("gz", 0))
-			var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
-			var flower_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
-				BrushPatterns.ShapeType.CIRCLE,
-				1,
-				Vector2(f_pos.x, f_pos.z)
-			)
-			vector_field.call("add_shape", "flower", flower_poly)
+		if obj_item is Dictionary:
+			var od: Dictionary = obj_item as Dictionary
+			var o_type: String = String(od.get("type", ""))
+			if o_type.begins_with("flower") or o_type == "wheat":
+				var fx: int = int(od.get("gx", 0))
+				var fz: int = int(od.get("gz", 0))
+				var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
+				var stamp_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
+					BrushPatterns.ShapeType.CIRCLE,
+					1,
+					Vector2(f_pos.x, f_pos.z)
+				)
+				var v_stamp_type: String = "wheat" if o_type == "wheat" else "flower"
+				vector_field.call("add_shape", v_stamp_type, stamp_poly)
 
 	var ground_meshes: Dictionary = vector_field.call("generate_ground_meshes") as Dictionary
 	for v_type_var: Variant in ground_meshes.keys():
@@ -501,12 +512,22 @@ func _ensure_3d_veg_built() -> void:
 				vector_field.call("clip_shapes", rock_clip_poly)
 
 		for obj_item: Variant in objects_arr:
-			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "flower":
-				var fx: int = int((obj_item as Dictionary).get("gx", 0))
-				var fz: int = int((obj_item as Dictionary).get("gz", 0))
-				var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
-				var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
-				(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
+			if obj_item is Dictionary:
+				var od: Dictionary = obj_item as Dictionary
+				var o_type: String = String(od.get("type", ""))
+				if o_type.begins_with("flower"):
+					var fx: int = int(od.get("gx", 0))
+					var fz: int = int(od.get("gz", 0))
+					var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
+					var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+					var f_key: String = o_type if veg_transforms_by_type.has(o_type) else "flower"
+					(veg_transforms_by_type[f_key] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
+				elif o_type == "wheat":
+					var wx: int = int(od.get("gx", 0))
+					var wz: int = int(od.get("gz", 0))
+					var w_pos: Vector3 = LevelJsonLoader.grid_to_world(wx, wz, width, height, cell_size)
+					var w_basis: Basis = Basis(Vector3.UP, fmod(float(wx * 67 + wz * 43), TAU)).scaled(Vector3(0.42, 0.65, 0.42))
+					(veg_transforms_by_type["wheat"] as Array[Transform3D]).append(Transform3D(w_basis, w_pos))
 
 		var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
 		for item: Variant in sampled_tufts:
@@ -626,8 +647,26 @@ func _ensure_3d_veg_built() -> void:
 
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if v_type == "flower":
-			mm.mesh = VegetationGrid._flower_mesh
+		if v_type.begins_with("flower"):
+			mm.use_custom_data = true
+			if v_type == "flower_rose":
+				mm.mesh = VegetationGrid._flower_rose_mesh
+			elif v_type == "flower_daisy":
+				mm.mesh = VegetationGrid._flower_daisy_mesh
+			elif v_type == "flower_sunflower":
+				mm.mesh = VegetationGrid._flower_sunflower_mesh
+			elif v_type == "flower_bell":
+				mm.mesh = VegetationGrid._flower_bell_mesh
+			elif v_type == "flower_corolla":
+				mm.mesh = VegetationGrid._flower_corolla_mesh
+			elif v_type == "flower_tulip":
+				mm.mesh = VegetationGrid._flower_tulip_mesh
+			elif v_type == "flower_bed":
+				mm.mesh = VegetationGrid._flower_bed_mesh
+			else:
+				mm.mesh = VegetationGrid._flower_mesh
+		elif v_type == "wheat":
+			mm.mesh = VegetationGrid._wheat_mesh
 		else:
 			mm.mesh = VegetationGrid._grass_mesh
 		mm.instance_count = xforms.size()

@@ -145,15 +145,19 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 	if AudioManager != null:
 		AudioManager.play_cut_sfx(false)
 
-	# Atualiza metas
-	if goals.has(plant_type):
-		var goal_info: Dictionary = goals[plant_type]
+	# Atualiza metas (suporta tanto espécie específica de flor quanto chave unificada "flower")
+	var goal_key: String = plant_type
+	if not goals.has(goal_key) and plant_type.begins_with("flower") and goals.has("flower"):
+		goal_key = "flower"
+
+	if goals.has(goal_key):
+		var goal_info: Dictionary = goals[goal_key]
 		goal_info["current"] += 1
 		var remaining: int = maxi(0, int(goal_info["target"]) - int(goal_info["current"]))
-		goal_updated.emit(plant_type, remaining, goal_info["target"])
+		goal_updated.emit(goal_key, remaining, goal_info["target"])
 
 		if remaining == 0:
-			goal_completed.emit(plant_type)
+			goal_completed.emit(goal_key)
 			if AudioManager != null:
 				AudioManager.play_sfx("goal_completed")
 

@@ -2,103 +2,206 @@
 	"grass_vectors": [
 		{
 			"holes": [],
-			"id": 1,
+			"id": 2,
 			"polygon": [
 				[
-					3.877,
-					-0.532
+					0.0,
+					-0.72
 				],
 				[
-					3.518,
-					-1.4
+					-0.222,
+					-0.685
 				],
 				[
-					2.946,
-					-2.146
+					-0.423,
+					-0.582
 				],
 				[
-					2.2,
-					-2.718
+					-0.582,
+					-0.423
 				],
 				[
-					1.332,
-					-3.077
+					-0.685,
+					-0.222
 				],
 				[
-					0.4,
-					-3.2
+					-0.72,
+					0.0
 				],
 				[
-					-0.532,
-					-3.077
+					-0.685,
+					0.222
 				],
 				[
-					-1.4,
-					-2.718
+					-0.582,
+					0.423
 				],
 				[
-					-2.146,
-					-2.146
+					-0.423,
+					0.582
 				],
 				[
-					-2.718,
-					-1.4
+					-0.222,
+					0.685
 				],
 				[
-					-3.077,
-					-0.532
+					0.0,
+					0.72
 				],
 				[
-					-3.2,
-					0.4
+					0.0,
+					3.6
 				],
 				[
-					-3.077,
-					1.332
+					-0.932,
+					3.477
 				],
 				[
-					-2.718,
-					2.2
+					-1.8,
+					3.118
 				],
 				[
-					-2.146,
-					2.946
+					-2.546,
+					2.546
 				],
 				[
-					-1.4,
-					3.518
+					-3.118,
+					1.8
 				],
 				[
-					-0.532,
-					3.877
+					-3.477,
+					0.932
 				],
 				[
-					0.4,
-					4.0
+					-3.6,
+					0.0
 				],
 				[
-					1.332,
-					3.877
+					-3.477,
+					-0.932
 				],
 				[
-					2.2,
-					3.518
+					-3.118,
+					-1.8
 				],
 				[
-					2.946,
-					2.946
+					-2.546,
+					-2.546
 				],
 				[
-					3.518,
-					2.2
+					-1.8,
+					-3.118
 				],
 				[
-					3.877,
-					1.332
+					-0.932,
+					-3.477
 				],
 				[
-					4.0,
-					0.4
+					0.0,
+					-3.6
+				]
+			],
+			"type": "grass_green"
+		},
+		{
+			"holes": [],
+			"id": 3,
+			"polygon": [
+				[
+					0.932,
+					-3.477
+				],
+				[
+					1.8,
+					-3.118
+				],
+				[
+					2.546,
+					-2.546
+				],
+				[
+					3.118,
+					-1.8
+				],
+				[
+					3.477,
+					-0.932
+				],
+				[
+					3.6,
+					0.0
+				],
+				[
+					3.477,
+					0.932
+				],
+				[
+					3.118,
+					1.8
+				],
+				[
+					2.546,
+					2.546
+				],
+				[
+					1.8,
+					3.118
+				],
+				[
+					0.932,
+					3.477
+				],
+				[
+					0.0,
+					3.6
+				],
+				[
+					0.0,
+					0.72
+				],
+				[
+					0.222,
+					0.685
+				],
+				[
+					0.423,
+					0.582
+				],
+				[
+					0.582,
+					0.423
+				],
+				[
+					0.685,
+					0.222
+				],
+				[
+					0.72,
+					0.0
+				],
+				[
+					0.685,
+					-0.222
+				],
+				[
+					0.582,
+					-0.423
+				],
+				[
+					0.423,
+					-0.582
+				],
+				[
+					0.222,
+					-0.685
+				],
+				[
+					0.0,
+					-0.72
+				],
+				[
+					0.0,
+					-3.6
 				]
 			],
 			"type": "grass_green"
@@ -106,18 +209,12 @@
 	],
 	"grid": {
 		"cell_size": 0.8,
-		"height": 14,
-		"width": 14
+		"height": 15,
+		"width": 15
 	},
 	"level_id": 3,
 	"name": "Introdução à Resistência",
 	"objects": [
-		{
-			"gx": 3,
-			"gz": 7,
-			"rot": 0,
-			"type": "wheat"
-		},
 		{
 			"gx": 4,
 			"gz": 7,
@@ -125,8 +222,8 @@
 			"type": "wheat"
 		},
 		{
-			"gx": 7,
-			"gz": 3,
+			"gx": 5,
+			"gz": 7,
 			"rot": 0,
 			"type": "wheat"
 		},
@@ -138,24 +235,30 @@
 		},
 		{
 			"gx": 7,
-			"gz": 10,
+			"gz": 5,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
 			"gx": 7,
-			"gz": 11,
+			"gz": 9,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 10,
+			"gx": 7,
+			"gz": 10,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 9,
 			"gz": 7,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 11,
+			"gx": 10,
 			"gz": 7,
 			"rot": 0,
 			"type": "wheat"
@@ -234,6 +337,13 @@
 			"auto": true,
 			"gx": 2,
 			"gz": 11,
+			"rot": 90,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
@@ -304,6 +414,13 @@
 			"auto": true,
 			"gx": 3,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 3,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -374,6 +491,13 @@
 			"auto": true,
 			"gx": 4,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 4,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -444,6 +568,13 @@
 			"auto": true,
 			"gx": 5,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -514,6 +645,13 @@
 			"auto": true,
 			"gx": 6,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -584,6 +722,13 @@
 			"auto": true,
 			"gx": 7,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -654,6 +799,13 @@
 			"auto": true,
 			"gx": 8,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -724,6 +876,13 @@
 			"auto": true,
 			"gx": 9,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 9,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -794,76 +953,167 @@
 			"auto": true,
 			"gx": 10,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 11,
+			"gz": 2,
+			"rot": 0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 3,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 9,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 10,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 12,
+			"rot": 180,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 12,
 			"gz": 2,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 3,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 4,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 5,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 6,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 7,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 8,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 9,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 10,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 11,
+			"rot": 270,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 12,
+			"gz": 12,
 			"rot": 270,
 			"tile_id": "island_corner_out"
 		}

@@ -5,100 +5,425 @@
 			"id": 1,
 			"polygon": [
 				[
-					4.457,
-					-0.687
+					0.0,
+					-4.3
 				],
 				[
-					4.037,
-					-1.7
+					-1.113,
+					-4.153
 				],
 				[
-					3.37,
-					-2.57
+					-2.15,
+					-3.724
 				],
 				[
-					2.5,
-					-3.237
+					-3.041,
+					-3.041
 				],
 				[
-					1.487,
-					-3.657
+					-3.724,
+					-2.15
 				],
 				[
-					0.4,
-					-3.8
+					-4.153,
+					-1.113
 				],
 				[
-					-0.687,
-					-3.657
+					-4.3,
+					0.0
 				],
 				[
-					-1.7,
-					-3.237
+					-4.153,
+					1.113
 				],
 				[
-					-2.57,
-					-2.57
+					-3.724,
+					2.15
 				],
 				[
-					-3.237,
-					-1.7
+					-3.041,
+					3.041
 				],
 				[
-					-3.657,
-					-0.687
+					-2.15,
+					3.724
 				],
 				[
-					-3.8,
-					0.4
+					-1.113,
+					4.153
 				],
 				[
-					-3.657,
-					1.487
+					0.0,
+					4.3
 				],
 				[
-					-3.237,
-					2.5
+					0.0,
+					2.8
 				],
 				[
-					-2.57,
-					3.37
+					-0.725,
+					2.705
 				],
 				[
-					-1.7,
-					4.037
+					-1.4,
+					2.425
 				],
 				[
-					-0.687,
-					4.457
+					-1.98,
+					1.98
 				],
 				[
-					0.4,
-					4.6
+					-2.425,
+					1.4
 				],
 				[
-					1.487,
-					4.457
+					-2.705,
+					0.725
 				],
 				[
-					2.5,
-					4.037
+					-2.8,
+					0.0
 				],
 				[
-					3.37,
-					3.37
+					-2.705,
+					-0.725
 				],
 				[
-					4.037,
-					2.5
+					-2.425,
+					-1.4
 				],
 				[
-					4.457,
-					1.487
+					-1.98,
+					-1.98
 				],
 				[
-					4.6,
-					0.4
+					-1.4,
+					-2.425
+				],
+				[
+					-0.725,
+					-2.705
+				],
+				[
+					0.0,
+					-2.8
+				]
+			],
+			"type": "grass_green"
+		},
+		{
+			"holes": [],
+			"id": 2,
+			"polygon": [
+				[
+					0.0,
+					-4.3
+				],
+				[
+					0.0,
+					-2.8
+				],
+				[
+					0.725,
+					-2.705
+				],
+				[
+					1.4,
+					-2.425
+				],
+				[
+					1.98,
+					-1.98
+				],
+				[
+					2.425,
+					-1.4
+				],
+				[
+					2.705,
+					-0.725
+				],
+				[
+					2.8,
+					0.0
+				],
+				[
+					2.705,
+					0.725
+				],
+				[
+					2.425,
+					1.4
+				],
+				[
+					1.98,
+					1.98
+				],
+				[
+					1.4,
+					2.425
+				],
+				[
+					0.725,
+					2.705
+				],
+				[
+					0.0,
+					2.8
+				],
+				[
+					0.0,
+					4.3
+				],
+				[
+					1.113,
+					4.153
+				],
+				[
+					2.15,
+					3.724
+				],
+				[
+					3.041,
+					3.041
+				],
+				[
+					3.724,
+					2.15
+				],
+				[
+					4.153,
+					1.113
+				],
+				[
+					4.3,
+					0.0
+				],
+				[
+					4.153,
+					-1.113
+				],
+				[
+					3.724,
+					-2.15
+				],
+				[
+					3.041,
+					-3.041
+				],
+				[
+					2.15,
+					-3.724
+				],
+				[
+					1.113,
+					-4.153
+				]
+			],
+			"type": "grass_green"
+		},
+		{
+			"holes": [],
+			"id": 4,
+			"polygon": [
+				[
+					0.0,
+					-0.72
+				],
+				[
+					-0.222,
+					-0.685
+				],
+				[
+					-0.423,
+					-0.582
+				],
+				[
+					-0.582,
+					-0.423
+				],
+				[
+					-0.685,
+					-0.222
+				],
+				[
+					-0.72,
+					0.0
+				],
+				[
+					-0.685,
+					0.222
+				],
+				[
+					-0.582,
+					0.423
+				],
+				[
+					-0.423,
+					0.582
+				],
+				[
+					-0.222,
+					0.685
+				],
+				[
+					0.0,
+					0.72
+				],
+				[
+					0.0,
+					2.8
+				],
+				[
+					-0.725,
+					2.705
+				],
+				[
+					-1.4,
+					2.425
+				],
+				[
+					-1.98,
+					1.98
+				],
+				[
+					-2.425,
+					1.4
+				],
+				[
+					-2.705,
+					0.725
+				],
+				[
+					-2.8,
+					0.0
+				],
+				[
+					-2.705,
+					-0.725
+				],
+				[
+					-2.425,
+					-1.4
+				],
+				[
+					-1.98,
+					-1.98
+				],
+				[
+					-1.4,
+					-2.425
+				],
+				[
+					-0.725,
+					-2.705
+				],
+				[
+					0.0,
+					-2.8
+				]
+			],
+			"type": "grass_yellow"
+		},
+		{
+			"holes": [],
+			"id": 5,
+			"polygon": [
+				[
+					0.725,
+					-2.705
+				],
+				[
+					1.4,
+					-2.425
+				],
+				[
+					1.98,
+					-1.98
+				],
+				[
+					2.425,
+					-1.4
+				],
+				[
+					2.705,
+					-0.725
+				],
+				[
+					2.8,
+					0.0
+				],
+				[
+					2.705,
+					0.725
+				],
+				[
+					2.425,
+					1.4
+				],
+				[
+					1.98,
+					1.98
+				],
+				[
+					1.4,
+					2.425
+				],
+				[
+					0.725,
+					2.705
+				],
+				[
+					0.0,
+					2.8
+				],
+				[
+					0.0,
+					0.72
+				],
+				[
+					0.222,
+					0.685
+				],
+				[
+					0.423,
+					0.582
+				],
+				[
+					0.582,
+					0.423
+				],
+				[
+					0.685,
+					0.222
+				],
+				[
+					0.72,
+					0.0
+				],
+				[
+					0.685,
+					-0.222
+				],
+				[
+					0.582,
+					-0.423
+				],
+				[
+					0.423,
+					-0.582
+				],
+				[
+					0.222,
+					-0.685
+				],
+				[
+					0.0,
+					-0.72
+				],
+				[
+					0.0,
+					-2.8
 				]
 			],
 			"type": "grass_yellow"
@@ -106,8 +431,8 @@
 	],
 	"grid": {
 		"cell_size": 0.8,
-		"height": 16,
-		"width": 16
+		"height": 17,
+		"width": 17
 	},
 	"level_id": 9,
 	"name": "Pomar Protegido",
@@ -119,7 +444,7 @@
 			"type": "flower_sunflower"
 		},
 		{
-			"gx": 4,
+			"gx": 5,
 			"gz": 8,
 			"rot": 0,
 			"type": "rock"
@@ -132,13 +457,13 @@
 		},
 		{
 			"gx": 8,
-			"gz": 4,
+			"gz": 5,
 			"rot": 0,
 			"type": "rock"
 		},
 		{
 			"gx": 8,
-			"gz": 12,
+			"gz": 11,
 			"rot": 0,
 			"type": "rock"
 		},
@@ -149,7 +474,7 @@
 			"type": "flower_tulip"
 		},
 		{
-			"gx": 12,
+			"gx": 11,
 			"gz": 8,
 			"rot": 0,
 			"type": "rock"
@@ -220,6 +545,13 @@
 			"auto": true,
 			"gx": 2,
 			"gz": 11,
+			"rot": 90,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
@@ -283,13 +615,20 @@
 			"auto": true,
 			"gx": 3,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 3,
+			"gz": 12,
 			"rot": 90,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
 			"gx": 3,
-			"gz": 12,
+			"gz": 13,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
@@ -367,13 +706,20 @@
 			"auto": true,
 			"gx": 4,
 			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 4,
+			"gz": 13,
 			"rot": 90,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
 			"gx": 4,
-			"gz": 13,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
@@ -458,6 +804,13 @@
 			"auto": true,
 			"gx": 5,
 			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -542,6 +895,13 @@
 			"auto": true,
 			"gx": 6,
 			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -626,6 +986,13 @@
 			"auto": true,
 			"gx": 7,
 			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -710,6 +1077,13 @@
 			"auto": true,
 			"gx": 8,
 			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -794,6 +1168,13 @@
 			"auto": true,
 			"gx": 9,
 			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 9,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
@@ -878,216 +1259,335 @@
 			"auto": true,
 			"gx": 10,
 			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10,
+			"gz": 14,
 			"rot": 180,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
 			"gx": 11,
+			"gz": 2,
+			"rot": 0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 3,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 4,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 5,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 6,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 7,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 8,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 9,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 10,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 13,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11,
+			"gz": 14,
+			"rot": 180,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 12,
 			"gz": 2,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 3,
 			"rot": 270,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 4,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 5,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 6,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 7,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 8,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 9,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 10,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 11,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 12,
 			"gz": 12,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 12,
+			"gz": 13,
 			"rot": 180,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 13,
+			"gx": 12,
+			"gz": 14,
 			"rot": 270,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 3,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 4,
 			"rot": 270,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 5,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 6,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 7,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 8,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 9,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 10,
 			"rot": 0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
+			"gx": 13,
 			"gz": 11,
+			"rot": 0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 13,
+			"gz": 12,
 			"rot": 180,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 12,
+			"gx": 13,
+			"gz": 13,
 			"rot": 270,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 4,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 5,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 6,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 7,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 8,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 9,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 10,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
+			"gx": 14,
 			"gz": 11,
+			"rot": 270,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 14,
+			"gz": 12,
 			"rot": 270,
 			"tile_id": "island_corner_out"
 		}
