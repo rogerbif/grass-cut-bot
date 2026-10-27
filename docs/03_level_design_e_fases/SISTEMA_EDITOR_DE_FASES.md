@@ -62,19 +62,26 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower"|"wheat", "rot": ... } ]`.
   - **Blindagem Defensiva contra Sobrescrita:** A rotina de exportação `bake_to_tscn` recebe e repassa `vector_field` obrigatoriamente; caso `vector_field` seja nulo mas o arquivo existente em disco já contenha `"grass_vectors"`, o serializador preserva os dados existentes sem reverter para `version: 2` vazia.
 
-- **Painel Direito Contextual e Sistema de Metas Customizadas:**
-  - **ScrollContainer e Responsividade:** Painéis laterais operam dentro de `ScrollContainer` ancorados com margens dinâmicas, garantindo navegação suave e impedindo qualquer corte de botões em telas ou resoluções inferiores a 1080p.
-  - **Botões e Tipografia Equalizados:** Botões da paleta padronizados em altura de $34\text{px}$ a $36\text{px}$ com fonte de $13\text{px}$, proporcionando conforto no clique e alta legibilidade em conjunto com banner de contexto dinâmico no topo.
+- **Painel Direito Contextual e Sistema de Metas Customizadas por Cor de Grama:**
+  - **Largura Expandida e Zero Cortes:** Painel lateral direito calibrado com largura expandida de $364\text{px}$ (`offset_left = -376`, `offset_right = -12`) com botões flexíveis (`SIZE_EXPAND_FILL` e `clip_text = true`), eliminando qualquer corte ou sobreposição no lado direito da tela.
+  - **Botões e Tipografia Equalizados:** Botões da paleta em 2 colunas auto-ajustáveis com altura de $34\text{px}$ e fonte de $12\text{px}$, proporcionando conforto visual e encaixe sem transbordar.
   - **Filtro Contextual por Camada:** O painel lateral direito adapta seus componentes dinamicamente à camada selecionada no painel esquerdo:
     - *Camada 0 (Terreno):* Exibe exclusivamente a paleta de blocos de ilha (`auto_island`, `island_center`, `island_dirt`, `island_edge`, etc.), ocultando gramas e objetos.
-    - *Camada 1 (Grama):* Exibe a paleta com as 7 cores cosméticas (Verde, Amarela 1x, Azul, Violeta, Branca, Vermelha, Preta) em grade 2 colunas de $144\text{px}$.
-    - *Camada 2 (Objetos):* Exibe a paleta de objetos e culturas no tile (Rocha `rock`, Flor `flower`, Trigo `wheat`, Spawn `cutter_spawn`) em grade harmoniosa de 2 colunas de $144\text{px}$.
-  - **Cards de Metas Personalizadas (CheckBox + SpinBox):**
-    - Cada vegetação colhível (`🌿 Grama`, `🌾 Trigo`, `🌸 Flores`) possui seu próprio card com:
-      - **CheckBox:** Define se aquele item é ou não meta obrigatória da fase. Se desmarcado, a planta pode existir no mapa para corte e economia de moedas, mas não é exigida para a condição de vitória!
-      - **Contador Total:** Indica em tempo real a quantidade física total presente no mapa (`/ Total`).
-      - **SpinBox Editável:** Permite calibrar a quantidade exata necessária para a vitória (ex: 30 trigos de um total de 60). Edições manuais congelam a meta sem sobrescrever na pintura.
-    - **Persistência em JSON v3 (`"goals"`):** O dicionário de metas configurado é serializado no JSON do nível e respeitado tanto no Playtest quanto no jogo final (`VegetationGrid.build_from_level_json()`).
+    - *Camada 1 (Grama):* Exibe a paleta com as 7 cores cosméticas (Verde, Amarela 1x, Azul, Violeta, Branca, Vermelha, Preta) em grade de 2 colunas auto-ajustáveis.
+    - *Camada 2 (Objetos):* Exibe a paleta de objetos e culturas no tile (Rocha `rock`, Flor `flower`, Trigo `wheat`, Spawn `cutter_spawn`) em grade de 2 colunas.
+  - **Cards de Metas Independentes por Espécie e Cor (9 Variedades):**
+    - Cada variedade colhível possui seu próprio card com cor e ícone dedicados:
+      - As 7 cores de grama: `🌿 Grama Verde`, `🌼 Grama Amarela`, `💠 Grama Azul`, `🔮 Grama Violeta`, `🤍 Grama Branca`, `❤️ Grama Vermelha`, `🖤 Grama Preta`.
+      - Culturas e flores: `🌾 Trigo`, `🌸 Flores`.
+    - **Exibição do Total de Tufos na Fase:** Exibe em tempo real o total físico exato presente no mapa (ex: `248 tufos`, `8 trigos`, `4 flores`). Se a quantidade for 0, o total é esmaecido e o CheckBox é desabilitado.
+    - **Ativação Dinâmica da Meta:** CheckBox individual para ligar ou desligar aquela variedade como objetivo de vitória.
+    - **Abertura Condicional do Campo de Edição (SpinBox):**
+      - Se a meta estiver **desmarcada**, o campo de edição permanece fechado/oculto (`visible = false`), mantendo a UI limpa e compacta.
+      - Se a meta for **marcada**, o campo abre instantaneamente (`visible = true`).
+    - **Restrição Estrita de Quantidade:**
+      - O valor editável é rigidamente limitado ao intervalo $[1, \text{total}]$: não pode ser zero, não pode ser negativo e não pode exceder o total de tufos existentes na fase.
+      - Se o jogador apagar tufos no mapa reduzindo o total abaixo da meta configurada, o SpinBox ajusta-se automaticamente ao novo teto.
+    - **Execução 1:1 de Metas Personalizadas:** No `VegetationGrid`, fases com metas customizadas (`"goals"`) abatem 1 unidade de meta para cada tufo físico ceifado (em vez do agrupamento legado de 10), garantindo correspondência exata entre o número definido no editor e a contagem de vitória do jogo.
     - **Métricas Informativas de Construção:** Exibe no rodapé as quantidades de obstáculos (`🪨 Rochas`) e solo construído (`🏝️ Blocos Ilha`).
 
 ### 2.3 Prancheta Vetorial no Modo Edição vs. Grama 3D no Playtest (F1)

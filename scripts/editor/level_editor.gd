@@ -1147,6 +1147,8 @@ func _load_or_init_level(lvl_id: int) -> void:
 
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
+		if ui != null:
+			ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 		var saved_goals: Dictionary = data.get("goals", {}) as Dictionary
 		if ui != null and ui.has_method("set_configured_goals"):
 			ui.set_configured_goals(saved_goals)
@@ -1157,6 +1159,8 @@ func _load_or_init_level(lvl_id: int) -> void:
 		_build_default_island_for_level(lvl_id)
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
+		if ui != null:
+			ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 		if ui != null and ui.has_method("set_configured_goals"):
 			ui.set_configured_goals({})
 		if ui != null:
@@ -1293,6 +1297,10 @@ func _start_playtest() -> void:
 	plants_container.add_child(veg_grid_inst)
 	_active_veg_grid = veg_grid_inst
 
+	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+	if not configured_goals.is_empty():
+		veg_json["goals"] = configured_goals
+
 	_last_editor_goals = veg_grid_inst.call("build_from_level_json", veg_json, obstacles_container, null) as Dictionary
 	var child_water: Node = veg_grid_inst.get_node_or_null("WaterOcean")
 	if child_water != null:
@@ -1322,7 +1330,6 @@ func _start_playtest() -> void:
 
 	var goals: Dictionary = {}
 	if GameManager != null:
-		var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
 		if not configured_goals.is_empty():
 			goals = configured_goals.duplicate()
 		elif not _last_editor_goals.is_empty():

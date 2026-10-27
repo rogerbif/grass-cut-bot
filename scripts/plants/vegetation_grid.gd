@@ -118,6 +118,7 @@ var _grass_cut_accumulator_by_type: Dictionary = {}
 
 var _grass_cut_accumulator: int = 0
 var _wheat_cut_accumulator: int = 0
+var _has_custom_goals: bool = false
 
 # MultiMeshes ativos de vegetação (indexados por mmi_idx de 0 a VEG_TYPES.size() - 1)
 var _veg_multimeshes: Array[MultiMesh] = []
@@ -272,6 +273,7 @@ static func _append_meshes_recursive(
 
 
 func _clear_state() -> void:
+	_has_custom_goals = false
 	for child: Node in get_children():
 		child.queue_free()
 	_positions.clear()
@@ -437,9 +439,11 @@ func build_from_level_json(
 	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells, wheat_cells)
 
 	# Se o JSON possui metas personalizadas definidas pelo editor, substitui as metas padrão
+	_has_custom_goals = false
 	if data.has("goals") and data["goals"] is Dictionary:
 		var custom_goals: Dictionary = data["goals"] as Dictionary
 		if not custom_goals.is_empty():
+			_has_custom_goals = true
 			goals.clear()
 			for g_key: Variant in custom_goals:
 				var k_str: String = String(g_key)
@@ -1383,14 +1387,23 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						if gm != null and not _has_goal_safe(p_key) and _has_goal_safe("grass"):
 							target_goal = "grass"
 
-						if acc >= 10:
-							acc -= 10
-							if gm != null:
+						if _has_custom_goals:
+							# Metas personalizadas do editor são medidas em tufos diretos (1 tufo ceifado = 1 meta)
+							if gm != null and _has_goal_safe(target_goal):
 								gm.call("register_cut", target_goal, 1, p_pos)
-						elif g_rem <= 0 and acc > 0:
-							acc = 0
-							if gm != null and _get_remaining_goal_safe(target_goal) > 0:
-								gm.call("register_cut", target_goal, 1, p_pos)
+							if g_rem <= 0 and gm != null:
+								while _get_remaining_goal_safe(target_goal) > 0:
+									gm.call("register_cut", target_goal, 1, p_pos)
+						else:
+							# Modo padrão dos 20 níveis canônicos (lotes de 10 tufos = 1 unidade virtual)
+							if acc >= 10:
+								acc -= 10
+								if gm != null:
+									gm.call("register_cut", target_goal, 1, p_pos)
+							elif g_rem <= 0 and acc > 0:
+								acc = 0
+								if gm != null and _get_remaining_goal_safe(target_goal) > 0:
+									gm.call("register_cut", target_goal, 1, p_pos)
 
 						_grass_cut_accumulator_by_type[p_key] = acc
 

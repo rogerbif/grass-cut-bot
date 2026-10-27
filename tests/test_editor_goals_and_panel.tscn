@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bvsm2m57t8y2e"]
+
+[ext_resource type="Script" path="res://tests/test_editor_goals_and_panel.gd" id="1_test"]
+
+[node name="TestEditorGoalsAndPanel" type="Node"]
+script = ExtResource("1_test")

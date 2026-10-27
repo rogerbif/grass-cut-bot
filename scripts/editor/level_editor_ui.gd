@@ -3,6 +3,18 @@ extends Control
 const TilePaletteDB = preload("res://scripts/editor/tile_palette_db.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 
+const GOALS_CATALOG: Array[Dictionary] = [
+	{ "key": "grass_green", "name": "🌿 Grama Verde", "color": Color(0.36, 0.78, 0.41), "unit": "tufos" },
+	{ "key": "grass_yellow", "name": "🌼 Grama Amarela", "color": Color(0.95, 0.83, 0.35), "unit": "tufos" },
+	{ "key": "grass_blue", "name": "💠 Grama Azul", "color": Color(0.39, 0.74, 0.96), "unit": "tufos" },
+	{ "key": "grass_purple", "name": "🔮 Grama Violeta", "color": Color(0.76, 0.46, 0.92), "unit": "tufos" },
+	{ "key": "grass_white", "name": "🤍 Grama Branca", "color": Color(0.92, 0.94, 0.98), "unit": "tufos" },
+	{ "key": "grass_red", "name": "❤️ Grama Vermelha", "color": Color(0.95, 0.37, 0.38), "unit": "tufos" },
+	{ "key": "grass_black", "name": "🖤 Grama Preta", "color": Color(0.48, 0.48, 0.55), "unit": "tufos" },
+	{ "key": "wheat", "name": "🌾 Trigo", "color": Color(1.0, 0.82, 0.28), "unit": "trigos" },
+	{ "key": "flower", "name": "🌸 Flores", "color": Color(1.0, 0.50, 0.75), "unit": "flores" }
+]
+
 signal level_load_requested(level_id: int)
 signal grid_resize_requested(new_width: int, new_height: int)
 signal time_limit_changed(new_time: float)
@@ -54,8 +66,8 @@ var lbl_active_layer_banner: Label
 var _goal_checkboxes: Dictionary = {}
 var _goal_spinboxes: Dictionary = {}
 var _goal_total_labels: Dictionary = {}
-var _goal_manually_edited: Dictionary = { "grass": false, "wheat": false, "flower": false }
-var _last_detected_counts: Dictionary = { "grass": 0, "wheat": 0, "flower": 0 }
+var _goal_manually_edited: Dictionary = {}
+var _last_detected_counts: Dictionary = {}
 var lbl_world_metrics: Label
 
 var section_terrain: VBoxContainer
@@ -476,7 +488,7 @@ func _build_left_panel() -> void:
 func _build_right_panel() -> void:
 	var right_panel: PanelContainer = PanelContainer.new()
 	right_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
-	right_panel.offset_left = -326
+	right_panel.offset_left = -376
 	right_panel.offset_top = 70
 	right_panel.offset_right = -12
 	right_panel.offset_bottom = -52
@@ -500,7 +512,9 @@ func _build_right_panel() -> void:
 	lbl_active_layer_banner = Label.new()
 	lbl_active_layer_banner.text = "🏝️ PALETA: TERRENO DA ILHA (0.8m)"
 	lbl_active_layer_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_active_layer_banner.add_theme_font_size_override("font_size", 13)
+	lbl_active_layer_banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl_active_layer_banner.clip_text = true
+	lbl_active_layer_banner.add_theme_font_size_override("font_size", 12)
 	lbl_active_layer_banner.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
 	var banner_style: StyleBoxFlat = _make_panel_style(Color(0.12, 0.18, 0.22, 0.85), Color(0.3, 0.75, 0.5), 6)
 	banner_style.content_margin_top = 5
@@ -522,15 +536,18 @@ func _build_right_panel() -> void:
 
 	var grid_terrain: GridContainer = GridContainer.new()
 	grid_terrain.columns = 2
+	grid_terrain.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid_terrain.add_theme_constant_override("h_separation", 6)
 	grid_terrain.add_theme_constant_override("v_separation", 6)
 	section_terrain.add_child(grid_terrain)
 
 	for item in TilePaletteDB.TERRAIN_ITEMS:
 		var t_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(0, 34))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 13)
+		b.add_theme_font_size_override("font_size", 12)
+		b.clip_text = true
 		b.tooltip_text = String(item.get("desc", ""))
 		b.pressed.connect(func() -> void: terrain_tile_selected.emit(t_id))
 		grid_terrain.add_child(b)
@@ -550,15 +567,18 @@ func _build_right_panel() -> void:
 
 	var grid_grass: GridContainer = GridContainer.new()
 	grid_grass.columns = 2
+	grid_grass.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid_grass.add_theme_constant_override("h_separation", 6)
 	grid_grass.add_theme_constant_override("v_separation", 6)
 	section_grass.add_child(grid_grass)
 
 	for item in TilePaletteDB.GRASS_ITEMS:
 		var g_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(0, 34))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 13)
+		b.add_theme_font_size_override("font_size", 12)
+		b.clip_text = true
 		b.pressed.connect(func() -> void: grass_item_selected.emit(g_id))
 		grid_grass.add_child(b)
 		grass_buttons[g_id] = b
@@ -577,15 +597,18 @@ func _build_right_panel() -> void:
 
 	var grid_objects: GridContainer = GridContainer.new()
 	grid_objects.columns = 2
+	grid_objects.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid_objects.add_theme_constant_override("h_separation", 6)
 	grid_objects.add_theme_constant_override("v_separation", 6)
 	section_objects.add_child(grid_objects)
 
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var o_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(144, 34))
+		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(0, 34))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.add_theme_font_size_override("font_size", 12)
+		b.clip_text = true
 		b.pressed.connect(func() -> void: object_item_selected.emit(o_id))
 		grid_objects.add_child(b)
 		object_buttons[o_id] = b
@@ -602,67 +625,89 @@ func _build_goals_metric_section(parent_box: VBoxContainer) -> void:
 	lbl_meta_hdr.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
 	parent_box.add_child(lbl_meta_hdr)
 
-	var goals_meta: Array[Dictionary] = [
-		{ "key": "grass", "name": "🌿 Grama", "color": Color(0.35, 0.90, 0.45) },
-		{ "key": "wheat", "name": "🌾 Trigo", "color": Color(1.0, 0.82, 0.28) },
-		{ "key": "flower", "name": "🌸 Flores", "color": Color(1.0, 0.50, 0.75) }
-	]
-
-	for gm in goals_meta:
+	for gm in GOALS_CATALOG:
 		var g_key: String = String(gm["key"])
 		var g_name: String = String(gm["name"])
 		var g_color: Color = gm["color"] as Color
+		var g_unit: String = String(gm.get("unit", "tufos"))
 
 		var card: PanelContainer = PanelContainer.new()
-		card.add_theme_stylebox_override("panel", _make_panel_style(Color(0.11, 0.15, 0.20, 0.9), g_color.darkened(0.5), 6))
+		card.add_theme_stylebox_override("panel", _make_panel_style(Color(0.10, 0.14, 0.18, 0.9), g_color.darkened(0.55), 6))
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		parent_box.add_child(card)
 
 		var hbox: HBoxContainer = HBoxContainer.new()
 		hbox.add_theme_constant_override("separation", 6)
+		hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.add_child(hbox)
 
 		var chk: CheckBox = CheckBox.new()
 		chk.text = g_name
-		chk.button_pressed = true
+		chk.button_pressed = false
 		chk.focus_mode = Control.FOCUS_NONE
-		chk.add_theme_font_size_override("font_size", 13)
+		chk.add_theme_font_size_override("font_size", 12)
 		chk.add_theme_color_override("font_color", g_color)
-		chk.tooltip_text = "Marque se colher este item é obrigatório para vencer a fase"
+		chk.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		chk.tooltip_text = "Ative para exigir a colheita desta espécie para vencer a fase"
 		hbox.add_child(chk)
 		_goal_checkboxes[g_key] = chk
 
-		var lbl_slash: Label = Label.new()
-		lbl_slash.text = "/ 0"
-		lbl_slash.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		lbl_slash.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		lbl_slash.add_theme_font_size_override("font_size", 12)
-		lbl_slash.add_theme_color_override("font_color", Color(0.7, 0.8, 0.85))
-		lbl_slash.tooltip_text = "Total deste item presente no mapa atualmente"
-		hbox.add_child(lbl_slash)
-		_goal_total_labels[g_key] = lbl_slash
+		var lbl_total: Label = Label.new()
+		lbl_total.text = "0 %s" % g_unit
+		lbl_total.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl_total.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		lbl_total.add_theme_font_size_override("font_size", 11)
+		lbl_total.add_theme_color_override("font_color", Color(0.55, 0.65, 0.72))
+		lbl_total.tooltip_text = "Total desta espécie presente no mapa atualmente"
+		hbox.add_child(lbl_total)
+		_goal_total_labels[g_key] = lbl_total
 
 		var spin: SpinBox = SpinBox.new()
 		spin.min_value = 1
-		spin.max_value = 9999
+		spin.max_value = 1
 		spin.step = 1
 		spin.value = 1
-		spin.custom_minimum_size = Vector2(72, 30)
-		spin.tooltip_text = "Quantidade necessária para bater a meta da fase"
+		spin.custom_minimum_size = Vector2(74, 28)
+		spin.size_flags_horizontal = Control.SIZE_SHRINK_END
+		spin.visible = false
+		spin.tooltip_text = "Meta de colheita (deve ser entre 1 e o total presente na fase)"
 		hbox.add_child(spin)
 		_goal_spinboxes[g_key] = spin
 
 		chk.toggled.connect(func(toggled_on: bool) -> void:
-			spin.editable = toggled_on
-			spin.modulate.a = 1.0 if toggled_on else 0.4
-			if toggled_on and not _goal_manually_edited[g_key]:
-				var detected: int = int(_last_detected_counts.get(g_key, 0))
-				if detected > 0:
-					spin.value = detected
+			var total: int = int(_last_detected_counts.get(g_key, 0))
+			if toggled_on:
+				if total <= 0:
+					chk.set_pressed_no_signal(false)
+					spin.visible = false
+					return
+				spin.visible = true
+				spin.min_value = 1
+				spin.max_value = total
+				if not _goal_manually_edited.get(g_key, false) or spin.value > total or spin.value < 1:
+					spin.value = total
+			else:
+				spin.visible = false
 		)
 
-		spin.value_changed.connect(func(_val: float) -> void:
+		spin.value_changed.connect(func(val: float) -> void:
 			_goal_manually_edited[g_key] = true
+			var total: int = int(_last_detected_counts.get(g_key, 0))
+			if total > 0 and val > total:
+				spin.set_value_no_signal(float(total))
+			elif val < 1:
+				spin.set_value_no_signal(1.0)
 		)
+
+		var le: LineEdit = spin.get_line_edit()
+		if le != null:
+			le.text_submitted.connect(func(_new_text: String) -> void:
+				var total: int = int(_last_detected_counts.get(g_key, 0))
+				if total > 0 and spin.value > total:
+					spin.value = total
+				elif spin.value < 1:
+					spin.value = 1
+			)
 
 	# Métricas informativas de construção (rochas e solo)
 	var card_world: PanelContainer = PanelContainer.new()
@@ -849,8 +894,11 @@ func update_goals_summary(
 	veg_field: RefCounted = null,
 	vector_field: RefCounted = null
 ) -> void:
-	var grass_tufts: int = 0
 	var grass_by_type: Dictionary = {}
+	for gm in GOALS_CATALOG:
+		var k_str: String = String(gm["key"])
+		if k_str.begins_with("grass_"):
+			grass_by_type[k_str] = 0
 	var wheat_tufts: int = 0
 	var flower_c: int = 0
 	var rock_c: int = 0
@@ -863,11 +911,12 @@ func update_goals_summary(
 				var t_type: String = String(td.get("type", "grass_green"))
 				if t_type == "wheat":
 					wheat_tufts += 1
-				elif t_type == "flower":
+				elif t_type == "flower" or t_type.begins_with("flower"):
 					flower_c += 1
+				elif grass_by_type.has(t_type):
+					grass_by_type[t_type] = int(grass_by_type[t_type]) + 1
 				else:
-					grass_tufts += 1
-					grass_by_type[t_type] = int(grass_by_type.get(t_type, 0)) + 1
+					grass_by_type["grass_green"] = int(grass_by_type.get("grass_green", 0)) + 1
 	elif veg_field != null:
 		var cols: int = int(veg_field.get("cols"))
 		var rows: int = int(veg_field.get("rows"))
@@ -875,7 +924,6 @@ func update_goals_summary(
 			for c: int in range(cols):
 				var tid: int = int(veg_field.call("get_cell", c, r))
 				if tid >= 1 and tid <= 7:
-					grass_tufts += 1
 					grass_by_type["grass_green"] = int(grass_by_type.get("grass_green", 0)) + 1
 				elif tid == 8:
 					wheat_tufts += 1
@@ -890,82 +938,110 @@ func update_goals_summary(
 		elif t == "rock":
 			rock_c += 1
 
-	var grass_goal_units: int = maxi(1, int(ceilf(float(grass_tufts) / 10.0))) if grass_tufts > 0 else 0
+	for gm in GOALS_CATALOG:
+		var g_key: String = String(gm["key"])
+		var g_unit: String = String(gm.get("unit", "tufos"))
+		var total_count: int = 0
+		if g_key.begins_with("grass_"):
+			total_count = int(grass_by_type.get(g_key, 0))
+		elif g_key == "wheat":
+			total_count = wheat_tufts
+		elif g_key == "flower":
+			total_count = flower_c
 
-	_last_detected_counts["grass"] = grass_goal_units
-	_last_detected_counts["wheat"] = wheat_tufts
-	_last_detected_counts["flower"] = flower_c
+		_last_detected_counts[g_key] = total_count
 
-	var counts_map: Dictionary = {
-		"grass": grass_goal_units,
-		"wheat": wheat_tufts,
-		"flower": flower_c
-	}
-
-	for k: String in ["grass", "wheat", "flower"]:
-		var cnt: int = int(counts_map[k])
-		if _goal_total_labels.has(k) and _goal_total_labels[k] != null:
-			if k == "grass" and grass_tufts > 0:
-				if grass_by_type.size() > 1:
-					var parts: Array[String] = []
-					for g_key: Variant in grass_by_type.keys():
-						var g_name: String = String(g_key).replace("grass_", "")
-						parts.append("%s: %d" % [g_name, int(grass_by_type[g_key])])
-					(_goal_total_labels[k] as Label).text = "/ %d (%s)" % [grass_goal_units, ", ".join(parts)]
-				else:
-					(_goal_total_labels[k] as Label).text = "/ %d (%d tufos)" % [grass_goal_units, grass_tufts]
+		if _goal_total_labels.has(g_key) and _goal_total_labels[g_key] != null:
+			var lbl: Label = _goal_total_labels[g_key] as Label
+			if total_count > 0:
+				lbl.text = "%d %s" % [total_count, g_unit]
+				lbl.add_theme_color_override("font_color", Color(0.75, 0.85, 0.95))
 			else:
-				(_goal_total_labels[k] as Label).text = "/ %d" % cnt
-		if _goal_spinboxes.has(k) and _goal_spinboxes[k] != null:
-			var spin: SpinBox = _goal_spinboxes[k] as SpinBox
-			if not _goal_manually_edited.get(k, false):
-				if cnt > 0:
-					spin.set_value_no_signal(float(cnt))
-				else:
+				lbl.text = "0 %s" % g_unit
+				lbl.add_theme_color_override("font_color", Color(0.45, 0.50, 0.55))
+
+		var chk: CheckBox = _goal_checkboxes.get(g_key, null) as CheckBox
+		var spin: SpinBox = _goal_spinboxes.get(g_key, null) as SpinBox
+
+		if chk != null:
+			if total_count <= 0:
+				chk.disabled = true
+				if chk.button_pressed:
+					chk.set_pressed_no_signal(false)
+			else:
+				chk.disabled = false
+
+		if spin != null:
+			if total_count > 0:
+				spin.min_value = 1
+				spin.max_value = total_count
+				if not _goal_manually_edited.get(g_key, false):
+					spin.set_value_no_signal(float(total_count))
+				elif spin.value > total_count:
+					spin.set_value_no_signal(float(total_count))
+				elif spin.value < 1:
 					spin.set_value_no_signal(1.0)
+			else:
+				spin.min_value = 1
+				spin.max_value = 1
+				spin.set_value_no_signal(1.0)
+
+			if chk != null:
+				spin.visible = chk.button_pressed and total_count > 0
 
 	if lbl_world_metrics != null:
 		lbl_world_metrics.text = "🪨 Rochas: %d  |  🏝️ Blocos Ilha: %d" % [rock_c, terrain_count]
 
 func get_configured_goals() -> Dictionary:
 	var res: Dictionary = {}
-	for k: String in ["grass", "wheat", "flower"]:
+	for gm in GOALS_CATALOG:
+		var k: String = String(gm["key"])
 		var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
 		var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
-		if chk != null and chk.button_pressed and spin != null:
-			res[k] = int(spin.value)
+		var total: int = int(_last_detected_counts.get(k, 0))
+		if chk != null and chk.button_pressed and spin != null and total > 0:
+			res[k] = clampi(int(spin.value), 1, total)
 	return res
 
 func set_configured_goals(goals: Dictionary) -> void:
-	if not goals.is_empty():
-		for k: String in ["grass", "wheat", "flower"]:
-			var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
-			var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
-			if chk == null or spin == null:
-				continue
+	_goal_manually_edited.clear()
+	var has_saved_goals: bool = not goals.is_empty()
+	for gm in GOALS_CATALOG:
+		var k: String = String(gm["key"])
+		var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
+		var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
+		if chk == null or spin == null:
+			continue
+		var total: int = int(_last_detected_counts.get(k, 0))
+		var is_active: bool = false
+		var goal_val: int = total
+
+		if has_saved_goals:
 			if goals.has(k):
-				chk.set_pressed_no_signal(true)
-				spin.editable = true
-				spin.modulate.a = 1.0
-				spin.set_value_no_signal(float(goals[k]))
+				is_active = true
+				goal_val = int(goals[k])
+			elif k == "grass_green" and goals.has("grass"):
+				is_active = true
+				goal_val = int(goals["grass"])
+		else:
+			if total > 0:
+				is_active = true
+				goal_val = total
+
+		if is_active and total > 0:
+			chk.set_pressed_no_signal(true)
+			spin.visible = true
+			spin.min_value = 1
+			spin.max_value = total
+			spin.set_value_no_signal(float(clampi(goal_val, 1, total)))
+			if has_saved_goals:
 				_goal_manually_edited[k] = true
-			else:
-				chk.set_pressed_no_signal(false)
-				spin.editable = false
-				spin.modulate.a = 0.4
-				_goal_manually_edited[k] = false
-	else:
-		for k: String in ["grass", "wheat", "flower"]:
-			_goal_manually_edited[k] = false
-			var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
-			var spin: SpinBox = _goal_spinboxes.get(k, null) as SpinBox
-			var detected: int = int(_last_detected_counts.get(k, 0))
-			if chk != null:
-				chk.set_pressed_no_signal(detected > 0)
-			if spin != null:
-				spin.editable = (detected > 0)
-				spin.modulate.a = 1.0 if (detected > 0) else 0.4
-				spin.set_value_no_signal(float(maxi(1, detected)))
+		else:
+			chk.set_pressed_no_signal(false)
+			spin.visible = false
+			spin.min_value = 1
+			spin.max_value = maxi(1, total)
+			spin.set_value_no_signal(float(maxi(1, total)))
 
 func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> void:
 	if lbl_status == null:
@@ -990,11 +1066,24 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 	for k in goals:
 		var g: Dictionary = goals[k] as Dictionary
 		var rem: int = maxi(0, int(g.get("target", 0)) - int(g.get("current", 0)))
+		var k_str: String = String(k)
 		var icon: String = "🌿"
-		if String(k) == "wheat":
+		if k_str == "wheat":
 			icon = "🌾"
-		elif String(k) == "flower":
+		elif k_str.begins_with("flower"):
 			icon = "🌸"
+		elif k_str == "grass_yellow":
+			icon = "🌼"
+		elif k_str == "grass_blue":
+			icon = "💠"
+		elif k_str == "grass_purple":
+			icon = "🔮"
+		elif k_str == "grass_white":
+			icon = "🤍"
+		elif k_str == "grass_red":
+			icon = "❤️"
+		elif k_str == "grass_black":
+			icon = "🖤"
 		parts.append("%s %d" % [icon, rem])
 	var goals_str: String = "  ".join(parts) if not parts.is_empty() else "Livre"
 	lbl_playtest_info.text = "🎮 PLAYTEST — ⏱️ %d:%02d  |  Metas: %s  |  (WASD / Setas / Mouse)" % [mins, secs, goals_str]
