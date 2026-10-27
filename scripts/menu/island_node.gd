@@ -494,7 +494,7 @@ func _ensure_3d_veg_built() -> void:
 					var wx: int = int(od.get("gx", 0))
 					var wz: int = int(od.get("gz", 0))
 					var w_pos: Vector3 = LevelJsonLoader.grid_to_world(wx, wz, width, height, cell_size)
-					var w_basis: Basis = Basis(Vector3.UP, fmod(float(wx * 67 + wz * 43), TAU)).scaled(Vector3(0.42, 0.65, 0.42))
+					var w_basis: Basis = Basis(Vector3.UP, fmod(float(wx * 67 + wz * 43), TAU)).scaled(Vector3(0.84, 1.30, 0.84))
 					(veg_transforms_by_type["wheat"] as Array[Transform3D]).append(Transform3D(w_basis, w_pos))
 
 		var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
@@ -512,8 +512,8 @@ func _ensure_3d_veg_built() -> void:
 
 			var scale_vec: Vector3
 			if v_type == "wheat":
-				var scale_y: float = lerpf(0.55, 0.70, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.34, 0.46, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				var scale_y: float = lerpf(1.10, 1.40, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.68, 0.92, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			elif not v_type.begins_with("flower"):
 				var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
@@ -594,8 +594,8 @@ func _ensure_3d_veg_built() -> void:
 
 				var scale_vec: Vector3
 				if v_type == "wheat":
-					var scale_y: float = lerpf(0.55, 0.70, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
-					var scale_xz: float = lerpf(0.34, 0.46, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
+					var scale_y: float = lerpf(1.10, 1.40, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
+					var scale_xz: float = lerpf(0.68, 0.92, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
 					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 				elif not v_type.begins_with("flower"):
 					var scale_y: float = lerpf(0.48, 0.62, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))

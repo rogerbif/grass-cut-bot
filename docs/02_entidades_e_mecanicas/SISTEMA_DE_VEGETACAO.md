@@ -48,8 +48,9 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
 
 ## 3. Ciclo de Dano e Corte
 
-1. **Rigidez Física Ativa, Escala de Flores (+30%) & Knockback Curto no 1º Hit:**
-   - Todas as 8 espécies de flores nobres operam com escala visual ampliada em **+30%** (`0.52 -> 0.676` no `VegetationGrid` e `IslandNode`, e `0.624..0.754` em `plant.gd`), destacando suas silhuetas e cores sobre o gramado.
+1. **Rigidez Física Ativa, Escala Visual (Trigo +100%, Flores +30%) & Knockback Curto no 1º Hit:**
+   - **Trigo Ampliado em +100% (Escala Dobrada):** O modelo 3D de trigo (`wheat_01.glb`) opera com escala visual ampliada em **+100%** (`scale_y: 1.10..1.40`, `scale_xz: 0.68..0.92` em `VegetationGrid` e `IslandNode`, e `0.96..1.16` em `plant.gd`), conferindo espigas altas, fartas e volumosas com presença imponente de plantação sobre a ilha.
+   - **Flores Ampliadas em +30%:** Todas as 8 espécies de flores nobres operam com escala visual ampliada em **+30%** (`0.52 -> 0.676` no `VegetationGrid` e `IslandNode`, e `0.624..0.754` em `plant.gd`), destacando suas silhuetas e cores sobre o gramado.
    - Plantas resistentes com mais de 1 ponto de vida (trigo e flores) atuam como corpos rígidos na grade espacial (`resolve_rigid_plant_collision`) enquanto estiverem vivas (`health > 0` e `is_cut == 0`).
    - O corpo do cortador ($R_{\text{body}} = 0.30\text{m}$) é impedido de avançar por cima da planta ($R_{\text{wheat}} = 0.18\text{m}$, $R_{\text{flower}} = 0.23\text{m}$). O robô desliza suavemente ao contornar, mas não consegue atravessar até destruí-la.
    - **Knockback Curto no Primeiro Hit:** Ao atingir pela primeira vez uma planta resistente intacta (`old_hp == max_health` e `max_health > 1` com `new_hp > 0`), o cortador recebe um micro-recuo tátil bem curto (`_trigger_plant_first_hit_knockback`: `stun_timer = 0.08s`, `velocity = dir * 2.15 m/s`, `shock_compression = -0.022`), sinalizando fisicamente a dureza inicial do caule antes da mastigação contínua.

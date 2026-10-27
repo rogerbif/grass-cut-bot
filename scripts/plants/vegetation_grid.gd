@@ -748,8 +748,9 @@ func _build_from_vector_field(
 				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			elif v_type == "wheat":
-				var scale_y: float = lerpf(0.55, 0.70, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.34, 0.46, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				# Escala aumentada em 100% (dobrada: 0.55~0.70 -> 1.10~1.40 Y, 0.34~0.46 -> 0.68~0.92 XZ)
+				var scale_y: float = lerpf(1.10, 1.40, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.68, 0.92, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
 				var sf: float = 0.676 * scale_factor
@@ -1080,8 +1081,9 @@ func _build_from_vegetation_field(
 				var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			elif v_type == "wheat":
-				var scale_y: float = lerpf(0.55, 0.70, edge_t) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.34, 0.46, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
+				# Escala aumentada em 100% (dobrada: 0.55~0.70 -> 1.10~1.40 Y, 0.34~0.46 -> 0.68~0.92 XZ)
+				var scale_y: float = lerpf(1.10, 1.40, edge_t) * (0.95 + fmod(s_seed * 0.13, 0.10))
+				var scale_xz: float = lerpf(0.68, 0.92, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
 				# Flor (+30% de escala visual: 0.52 * 1.30 = 0.676)

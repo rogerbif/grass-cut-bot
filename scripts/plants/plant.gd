@@ -51,8 +51,8 @@ func _ready() -> void:
 		var flower_scale: float = randf_range(0.624, 0.754)
 		visual_mesh.scale = Vector3(flower_scale, flower_scale, flower_scale)
 	else:
-		# Trigo proporcional ao slot de célula de 0.40m
-		var random_scale: float = randf_range(0.48, 0.58)
+		# Trigo aumentado em 100% (+100% de escala visual: 0.48~0.58 -> 0.96~1.16)
+		var random_scale: float = randf_range(0.96, 1.16)
 		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 
 static func _ensure_particle_meshes() -> void:

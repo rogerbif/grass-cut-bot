@@ -13,6 +13,8 @@ const FOAM_INSET: float = 0.025
 const FOAM_WIDTH: float = 0.195
 const BOUNDARY_WALL_HEIGHT: float = 1.20
 const BOUNDARY_WALL_THICKNESS: float = 0.06
+const DEFAULT_CORNER_RADIUS: float = 0.28
+const DEFAULT_CORNER_ARC_STEPS: int = 5
 
 # Coordenadas UV canônicas no atlas de cores GRADIENT (tile_island_center_Image_0.png)
 const UV_GRASS_TOP: Vector2 = Vector2(0.819989, 0.789990)
@@ -334,7 +336,9 @@ static func convert_tile_grid_to_polygons(
 	terrain_list: Array,
 	width: int,
 	height: int,
-	cell_size: float = 0.80
+	cell_size: float = 0.80,
+	corner_radius: float = DEFAULT_CORNER_RADIUS,
+	arc_steps: int = DEFAULT_CORNER_ARC_STEPS
 ) -> Array[PackedVector2Array]:
 	if terrain_list.is_empty():
 		return []
@@ -388,7 +392,87 @@ static func convert_tile_grid_to_polygons(
 		else:
 			merged_polys = next_list
 
+	if corner_radius > 0.001:
+		var rounded_polys: Array[PackedVector2Array] = []
+		for p: PackedVector2Array in merged_polys:
+			rounded_polys.append(round_polygon_corners(p, corner_radius, arc_steps))
+		return rounded_polys
+
 	return merged_polys
+
+
+## Arredonda cantos externos convexos de um polígono com arcos tangentes circulares suaves
+static func round_polygon_corners(
+	poly: PackedVector2Array,
+	radius: float = DEFAULT_CORNER_RADIUS,
+	arc_steps: int = DEFAULT_CORNER_ARC_STEPS
+) -> PackedVector2Array:
+	if poly.size() < 3 or radius <= 0.001:
+		return poly
+
+	var p_clean: PackedVector2Array = poly
+	var was_cw: bool = Geometry2D.is_polygon_clockwise(p_clean)
+	if not was_cw:
+		p_clean = _reverse_polygon(p_clean)
+
+	var n: int = p_clean.size()
+	var out: PackedVector2Array = PackedVector2Array()
+
+	for i: int in range(n):
+		var prev_i: int = (i - 1 + n) % n
+		var next_i: int = (i + 1) % n
+
+		var p_curr: Vector2 = p_clean[i]
+		var v_in: Vector2 = p_curr - p_clean[prev_i]
+		var v_out: Vector2 = p_clean[next_i] - p_curr
+
+		var len_in: float = v_in.length()
+		var len_out: float = v_out.length()
+		if len_in < 0.001 or len_out < 0.001:
+			out.append(p_curr)
+			continue
+
+		var dir_in: Vector2 = v_in / len_in
+		var dir_out: Vector2 = v_out / len_out
+
+		var cross: float = dir_in.x * dir_out.y - dir_in.y * dir_out.x
+		# Em polígono CW, cantos convexos (voltados para fora da ilha) possuem cross < -0.01
+		if cross >= -0.01:
+			out.append(p_curr)
+			continue
+
+		var dot: float = clampf(dir_in.dot(dir_out), -1.0, 1.0)
+		if dot > 0.999:
+			out.append(p_curr)
+			continue
+
+		# Distância de tangência segura (no máximo 45% do menor segmento adjacente)
+		var max_d: float = minf(len_in * 0.45, len_out * 0.45)
+		var d_tan: float = minf(radius, max_d)
+
+		var start_pt: Vector2 = p_curr - dir_in * d_tan
+		var end_pt: Vector2 = p_curr + dir_out * d_tan
+
+		# Centro do arco (normal à direita de dir_in no sentido horário)
+		var norm_in: Vector2 = Vector2(dir_in.y, -dir_in.x)
+		var arc_center: Vector2 = start_pt + norm_in * d_tan
+
+		var ang_start: float = (start_pt - arc_center).angle()
+		var ang_end: float = (end_pt - arc_center).angle()
+
+		var sweep: float = ang_end - ang_start
+		while sweep > 0.0:
+			sweep -= TAU
+
+		for s: int in range(arc_steps + 1):
+			var t: float = float(s) / float(arc_steps)
+			var a: float = ang_start + sweep * t
+			out.append(arc_center + Vector2(cos(a), sin(a)) * d_tan)
+
+	if not was_cw:
+		return _reverse_polygon(out)
+
+	return out
 
 
 ## Redução iterativa de polígonos que se sobrepõem
