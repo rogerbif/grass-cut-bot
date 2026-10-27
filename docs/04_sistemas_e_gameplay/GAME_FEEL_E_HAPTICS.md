@@ -30,9 +30,15 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
 
-- **Zoom Dinâmico Adaptativo (50% no Lv 1 até 100% no Lv 6 MAX):**
-  - **Nível 1 (Base):** Distância em 50% ($3.70\text{m}$, `offset = Vector3(0.0, 2.390, 2.825)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento íntimo, imersivo e de alta fidelidade visual com os detalhes do robô e da vegetação.
-  - **Níveis 2 a 5:** Afastamento gradual linear (+10% por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`).
+- **Zoom Dinâmico Adaptativo (75% no Lv 1 até 100% no Lv 6 MAX):**
+  - **Nível 1 (Base):** Distância em 75% ($5.55\text{m}$, `offset = Vector3(0.0, 3.585, 4.2375)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento equilibrado, confortável para leitura periférica do terreno e vegetação sem excesso de proximidade.
+  - **Níveis 2 a 5:** Afastamento gradual linear (+5% por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
+    - Lv 1: 75% ($5.55\text{m}$)
+    - Lv 2: 80% ($5.92\text{m}$)
+    - Lv 3: 85% ($6.29\text{m}$)
+    - Lv 4: 90% ($6.66\text{m}$)
+    - Lv 5: 95% ($7.03\text{m}$)
+    - Lv 6: 100% ($7.40\text{m}$)
   - **Nível 6 (MAX):** Distância canônica integral de 100% ($7.40\text{m}$, `offset = Vector3(0.0, 4.780, 5.650)`), conferindo ampla visão panorâmica para manusear a serra estelar de $1.40\text{m}$ de raio.
   - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por impacto contra obstáculos sólidos.
 - **Posicionamento e Orientação Fixa:**
