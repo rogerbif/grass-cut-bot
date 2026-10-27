@@ -60,8 +60,9 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
   - `background_mode = 1` (Clear Color) com cor de céu tropical suave.
   - Luz ambiente com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.20`, garantindo alto contraste estilizado de cel shading sem estourar as cores.
   - Tonemap em modo ACES/Filmic para realce das cores vivas sem estourar os brancos.
-- **IsometricCamera (Câmera Canônica):**
-  - Orientação isométrica travada em `pitch = -40.3°` (`Vector3(-40.3, 0.0, 0.0)`), distância focal `7.40m` (`offset = Vector3(0.0, 4.78, 5.65)`).
+- **IsometricCamera (Câmera Isométrica com Zoom Dinâmico):**
+  - Orientação isométrica travada em `pitch = -40.3°` (`Vector3(-40.3, 0.0, 0.0)`).
+  - Zoom dinâmico adaptativo conforme a evolução da lâmina: inicia a 50% de distância ($3.70\text{m}$, `offset = Vector3(0.0, 2.390, 2.825)`) no Nível 1 e afasta suavemente com interpolação cúbica até 100% ($7.40\text{m}$, `offset = Vector3(0.0, 4.780, 5.650)`) no Nível 6 MAX.
 - **Vegetação (Toon Shader Gradiente Canônico):**
   - `color_light = Color(0.42, 0.88, 0.46)` (Grama verde) / Paletas dedicadas para Amarela, Azul, Roxa, Branca, Vermelha, Preta e Trigo
   - `color_base = Color(0.10, 0.30, 0.15)`

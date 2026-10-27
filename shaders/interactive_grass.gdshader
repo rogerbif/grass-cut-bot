@@ -8,6 +8,7 @@ global uniform vec3 global_cutter_pos;
 global uniform float global_cutter_interact_radius;
 
 // Parâmetros de curvatura e interação
+uniform bool invert_height = false;
 uniform float interact_power : hint_range(0.0, 2.0) = 0.29;
 uniform float wind_speed : hint_range(0.0, 10.0) = 2.0;
 uniform float wind_strength : hint_range(0.0, 1.0) = 0.12;
@@ -43,8 +44,10 @@ void vertex() {
 	// Converte para coordenadas globais de mundo
 	vec3 world_vert = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
-	// Altura normalizada da folha: 0.0 na raiz (UV.y = 0.0) até 1.0 na ponta (UV.y = 1.0)
-	float h = clamp(UV.y, 0.0, 1.0);
+	// Altura normalizada da folha: 0.0 na raiz até 1.0 na ponta
+	// Se invert_height for true (como no modelo wheat_01.glb), inverte o UV.y para ancorar a raiz no solo
+	float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
+	float h = clamp(raw_h, 0.0, 1.0);
 
 	// A base da folha fica 100% estática, agindo rigorosamente como uma dobradiça/eixo na raiz.
 	// Vértices abaixo de 6% de altura possuem deslocamento rigorosamente zero.
@@ -57,8 +60,10 @@ void vertex() {
 	float blade_angle = 0.0;
 	float blade_freq = 1.0;
 
-	// Verifica se a malha possui atributos de vertice assados
-	bool has_baked_attr = !(COLOR.r > 0.999 && COLOR.g > 0.999 && COLOR.b > 0.999);
+	// Verifica se a malha possui atributos de vertice assados válidos (não dummy todo preto nem todo branco)
+	bool is_all_black = (COLOR.r < 0.001 && COLOR.g < 0.001 && COLOR.b < 0.001);
+	bool is_all_white = (COLOR.r > 0.999 && COLOR.g > 0.999 && COLOR.b > 0.999);
+	bool has_baked_attr = !is_all_black && !is_all_white;
 	if (has_baked_attr) {
 		blade_phase = COLOR.r * 6.2831853;
 		blade_angle = (COLOR.g - 0.5) * 6.2831853;
@@ -124,7 +129,8 @@ void vertex() {
 
 void fragment() {
 	// Gradiente vertical de altura foliar (Base escura visível no corpo inferior -> Topo iluminado na ponta)
-	float h = clamp(UV.y, 0.0, 1.0);
+	float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
+	float h = clamp(raw_h, 0.0, 1.0);
 	// Curva quadrática que mantém color_base bem visível até ~45% da altura da folha antes de subir para color_light
 	float grad_t = smoothstep(0.10, 0.92, h * h);
 	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
@@ -154,7 +160,8 @@ void light() {
 
 	// Rim Lighting estilizado opcional (silhueta suave restrita às pontas das folhas)
 	if (use_rim) {
-		float h_mask = clamp(UV.y, 0.0, 1.0);
+		float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
+		float h_mask = clamp(raw_h, 0.0, 1.0);
 		h_mask = h_mask * h_mask;
 		float NdotV = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
 		float rim = (1.0 - NdotV) * pow(max(NdotL, 0.001), rim_power * 0.5);

@@ -28,14 +28,18 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ---
 
-## 3. Câmera Isométrica Elevada com Translação Pura (X e Z)
+## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
 
+- **Zoom Dinâmico Adaptativo (50% no Lv 1 até 100% no Lv 6 MAX):**
+  - **Nível 1 (Base):** Distância em 50% ($3.70\text{m}$, `offset = Vector3(0.0, 2.390, 2.825)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento íntimo, imersivo e de alta fidelidade visual com os detalhes do robô e da vegetação.
+  - **Níveis 2 a 5:** Afastamento gradual linear (+10% por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`).
+  - **Nível 6 (MAX):** Distância canônica integral de 100% ($7.40\text{m}$, `offset = Vector3(0.0, 4.780, 5.650)`), conferindo ampla visão panorâmica para manusear a serra estelar de $1.40\text{m}$ de raio.
+  - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por impacto contra obstáculos sólidos.
 - **Posicionamento e Orientação Fixa:**
-  - Câmera 3D em perspectiva isométrica clássica ($Y = +7.2\text{m}$, $Z = +8.5\text{m}$ relativo ao cortador, resultando em inclinação de pitch de $40.2^\circ$).
-  - **Rotação Travada:** A orientação angular é fixada estritamente no `_ready()` (sem chamada de `look_at()` no `_process()`), eliminando qualquer oscilação ou giro dinâmico quando o cortador manobra.
+  - Orientação angular travada com pitch de $-40.3^\circ$ (sem chamada de `look_at()` no `_process()`), eliminando qualquer oscilação ou giro dinâmico quando o cortador manobra.
   - FOV de $48^\circ$, proporcionando excelente amplitude, destaque vertical para as falésias de terra marrom e profundidade da ilha sem distorção excessiva de perspectiva em telas verticais (Portrait).
-- **Amortecimento com Interpolação Linear (`lerp`) Exclusivo em X e Z:**
-  - A câmera translada suavemente acompanhando a coordenada do cortador apenas nos eixos $X$ e $Z$ com `follow_speed = 8.0 * delta`, mantendo a altura $Y$ constante e a imagem perfeitamente estável.
+- **Amortecimento com Interpolação Linear (`lerp`) nos Eixos X, Y e Z:**
+  - A câmera translada suavemente acompanhando a coordenada do cortador com `follow_speed = 8.0 * delta`, ajustando dinamicamente $Y$ e $Z$ ao offset de zoom ativo.
 - **Camera Shake Procedural Translacional:**
   - Em impactos com obstáculos, o `GameManager` emite um sinal de tremor com intensidade $0.35$ e duração $0.20\text{s}$.
   - A perturbação aplica offsets aleatórios de translação apenas em $X$ e $Z$, preservando a rotação 100% rígida e sem náuseas visuais.

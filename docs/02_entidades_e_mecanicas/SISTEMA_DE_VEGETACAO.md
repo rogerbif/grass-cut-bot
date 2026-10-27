@@ -126,7 +126,11 @@ No Godot, cada tipo vegetal é encapsulado em uma cena própria que instancia a 
 ### C. Modelo 3D Dedicado de Trigo (`wheat_01.glb`)
 - **Geometria 3D Completa:** Extraído cirurgicamente como uma haste individual de trigo (`wheat_01_mesh`), contendo caule cilíndrico, folhas laterais e espiga no topo com grãos modelados em low poly (338 vértices e 165 faces).
 - **Origem e Ancoragem:** Pivô rigorosamente ancorado no solo na base da haste em $(0.0, 0.0, 0.0)$, com dimensões calibradas para altura $1.10\text{m}$ e largura $0.36\text{m} \times 0.17\text{m}$, casando com o colisor cilíndrico de raio $0.18\text{m}$ e altura $0.55\text{m}$.
-- **Mapeamento UV Gradiente:** Coordenada $UV.y$ variando de $0.0$ na raiz até $1.0$ no topo da espiga, garantindo sincronização nativa com o shader `interactive_grass.gdshader` (ancoragem física da base, curvatura parabólica com vento/cortador e gradiente `color_base` âmbar para `color_top` dourado brilhante).
+- **Mapeamento UV e Parâmetro `invert_height`:** Na malha `wheat_01.glb`, a coordenada $UV.y$ é orientada de $1.0$ na base/solo ($Y=0.0$) até $0.0$ no topo da espiga ($Y=1.10$). O material `interactive_wheat_material.tres` define `shader_parameter/invert_height = true`. O shader `interactive_grass.gdshader` computa `float raw_h = invert_height ? (1.0 - UV.y) : UV.y;`, garantindo:
+  - **Base 100% Firme no Solo:** $bend\_factor = 0.0$ na raiz, impedindo qualquer deslocamento ou descolamento do solo.
+  - **Espiga com Balanço Livre no Topo:** $bend\_factor = 1.0$ na ponta, balançando harmonicamente ao vento e flexionando-se quando o robô cortador se aproxima.
+  - **Fase Orgânica por Posição de Mundo:** O shader detecta que a cor de vértice do trigo não possui rotação assada (`is_all_black`), atribuindo a cada tufo de trigo uma fase espacial única (`world_vert.x * 1.7 + world_vert.z * 2.3`).
+  - **Gradiente Vertical Fiel:** O gradiente toon colore a base com âmbar terroso (`color_base`) e a espiga superior com dourado radiante (`color_light`).
 - **Exportação Canônica:** Exportado do Blender para `assets/models/wheat_01.glb` com `export_apply=True` e `export_yup=True`.
 
 ### D. Animação de Vento e Interatividade com o Cortador no Modelo 3D
