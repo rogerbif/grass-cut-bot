@@ -15,27 +15,29 @@ uniform float wind_strength : hint_range(0.0, 1.0) = 0.12;
 // Parâmetros Toon Shader Gradiente (Calibrados)
 group_uniforms ToonGradiente;
 uniform vec4 color_light : source_color = vec4(0.42, 0.88, 0.46, 1.0);
-uniform vec4 color_base : source_color = vec4(0.12, 0.35, 0.18, 1.0);
-uniform vec4 color_shadow : source_color = vec4(0.18, 0.48, 0.25, 1.0);
-uniform float vertical_gradient_mix : hint_range(0.0, 1.0) = 0.81;
+uniform vec4 color_base : source_color = vec4(0.10, 0.30, 0.15, 1.0);
+uniform vec4 color_shadow : source_color = vec4(0.18, 0.50, 0.25, 1.0);
+uniform float vertical_gradient_mix : hint_range(0.0, 1.0) = 0.85;
 
 group_uniforms ToonRamp;
-uniform float toon_ramp_offset : hint_range(0.0, 1.0) = 0.97;
-uniform float toon_ramp_smoothness : hint_range(0.001, 1.0) = 1.00;
+uniform float toon_ramp_offset : hint_range(0.0, 1.0) = 0.50;
+uniform float toon_ramp_smoothness : hint_range(0.001, 1.0) = 0.28;
 uniform vec3 toon_ramp_tinting : source_color = vec3(1.0, 1.0, 1.0);
 
 group_uniforms RimLighting;
-uniform bool use_rim = true;
+uniform bool use_rim = false;
 uniform vec4 rim_color : source_color = vec4(0.85, 1.0, 0.65, 1.0);
-uniform float rim_power : hint_range(0.1, 8.0) = 1.0;
+uniform float rim_power : hint_range(0.1, 8.0) = 1.5;
 uniform float rim_cutoff : hint_range(0.0, 1.0) = 0.45;
 uniform float rim_smoothness : hint_range(0.001, 1.0) = 0.15;
-uniform float rim_brightness : hint_range(0.0, 4.0) = 1.0;
+uniform float rim_brightness : hint_range(0.0, 4.0) = 0.5;
 
 group_uniforms Surface;
 uniform float roughness : hint_range(0.0, 1.0) = 0.90;
-uniform float specular : hint_range(0.0, 1.0) = 0.15;
+uniform float specular : hint_range(0.0, 1.0) = 0.10;
 uniform float vibrancy : hint_range(0.0, 1.0) = 0.0;
+
+varying vec3 v_geo_normal_view;
 
 void vertex() {
 	// Converte para coordenadas globais de mundo
@@ -112,12 +114,20 @@ void vertex() {
 		VERTEX += model_dir * (power * interact_power * bend_factor);
 		VERTEX.y -= power * interact_power * 0.14 * bend_factor;
 	}
+
+	// Normal 3D radial por folha (usando dir_fwd horizontal assado em 360° + componente vertical)
+	// Garante que dentro de cada tufo haja folhas claramente iluminadas (color_light) e folhas sombreadas (color_shadow).
+	vec3 world_blade_dir = normalize((MODEL_MATRIX * vec4(dir_fwd, 0.0)).xyz);
+	vec3 blade_normal_world = normalize(mix(vec3(0.0, 1.0, 0.0), world_blade_dir, 0.80));
+	v_geo_normal_view = normalize((VIEW_MATRIX * vec4(blade_normal_world, 0.0)).xyz);
 }
 
 void fragment() {
-	// Gradiente vertical de altura foliar (Base escura -> Topo iluminado)
+	// Gradiente vertical de altura foliar (Base escura visível no corpo inferior -> Topo iluminado na ponta)
 	float h = clamp(UV.y, 0.0, 1.0);
-	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, h, vertical_gradient_mix));
+	// Curva quadrática que mantém color_base bem visível até ~45% da altura da folha antes de subir para color_light
+	float grad_t = smoothstep(0.10, 0.92, h * h);
+	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
 
 	ALBEDO = base_surface;
 	EMISSION = base_surface * vibrancy;
@@ -126,23 +136,30 @@ void fragment() {
 }
 
 void light() {
-	// Cálculo do Toon Ramp Gradiente
-	float NdotL = clamp(dot(NORMAL, LIGHT), 0.0, 1.0);
+	// Cálculo do Toon Ramp Gradiente usando a normal geométrica real em 360° (Half-Lambert)
+	vec3 geo_n = normalize(v_geo_normal_view);
+	float NdotL = clamp(dot(geo_n, LIGHT) * 0.5 + 0.5, 0.0, 1.0);
 	float half_smooth = max(toon_ramp_smoothness * 0.5, 0.001);
 	float toon_ramp = smoothstep(toon_ramp_offset - half_smooth, toon_ramp_offset + half_smooth, NdotL * ATTENUATION);
 
-	// Modulação direta entre a cor de sombra e a cor iluminada
-	vec3 diffuse_light = mix(color_shadow.rgb, LIGHT_COLOR * toon_ramp_tinting, toon_ramp);
+	// Em Godot 4, LIGHT_COLOR inclui multiplicação por PI (3.14159); normalizamos por PI
+	// para evitar superexposição (estouro branco/neon) e preservar as cores reais escolhidas.
+	vec3 light_norm = (LIGHT_COLOR / PI) * toon_ramp_tinting;
+
+	// Razão cromática entre color_shadow e color_light para que ALBEDO * diffuse_light
+	// exiba fielmente color_shadow no lado sombreado e color_light no lado iluminado.
+	vec3 shadow_ratio = clamp(color_shadow.rgb / max(color_light.rgb, vec3(0.02)), vec3(0.08), vec3(1.2));
+	vec3 diffuse_light = mix(shadow_ratio * light_norm, light_norm, toon_ramp);
 	DIFFUSE_LIGHT += diffuse_light * ATTENUATION;
 
-	// Rim Lighting estilizado (silhueta brilhante suave restrita às pontas das folhas)
+	// Rim Lighting estilizado opcional (silhueta suave restrita às pontas das folhas)
 	if (use_rim) {
 		float h_mask = clamp(UV.y, 0.0, 1.0);
-		h_mask = h_mask * h_mask; // Apenas nas pontas superiores
+		h_mask = h_mask * h_mask;
 		float NdotV = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
 		float rim = (1.0 - NdotV) * pow(max(NdotL, 0.001), rim_power * 0.5);
 		float rim_half_smooth = max(rim_smoothness * 0.5, 0.001);
 		float rim_ramp = smoothstep(rim_cutoff - rim_half_smooth, rim_cutoff + rim_half_smooth, rim);
-		DIFFUSE_LIGHT += rim_color.rgb * rim_ramp * rim_brightness * h_mask * ATTENUATION;
+		DIFFUSE_LIGHT += (rim_color.rgb / PI) * rim_ramp * rim_brightness * h_mask * ATTENUATION;
 	}
 }

@@ -11,7 +11,7 @@ size = Vector2(120, 120)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 diffuse_mode = 3
 roughness = 0.9
-albedo_color = Color(0.112, 0.472, 0.176, 1)
+albedo_color = Color(0.112, 0.36, 0.152, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ground"]
 material = SubResource("StandardMaterial3D_ground")

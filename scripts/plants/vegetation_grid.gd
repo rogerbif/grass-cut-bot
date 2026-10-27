@@ -1226,6 +1226,9 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 	if GRASS_MATERIALS.has(v_type):
 		var sm: ShaderMaterial = GRASS_MATERIALS[v_type] as ShaderMaterial
 		if sm != null:
+			var col_light: Variant = sm.get_shader_parameter("color_light")
+			if col_light is Color:
+				return col_light as Color
 			var col_variant: Variant = sm.get_shader_parameter("color_top")
 			if col_variant is Color:
 				return col_variant as Color

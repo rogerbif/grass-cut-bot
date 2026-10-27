@@ -209,6 +209,9 @@ func _resolve_particle_color() -> Color:
 		var petal_variant: Variant = sm.get_shader_parameter("petal_color")
 		if petal_variant is Color:
 			return petal_variant as Color
+		var col_light: Variant = sm.get_shader_parameter("color_light")
+		if col_light is Color:
+			return col_light as Color
 		var col_variant: Variant = sm.get_shader_parameter("color_top")
 		if col_variant is Color:
 			return col_variant as Color

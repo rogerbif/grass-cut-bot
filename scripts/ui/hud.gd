@@ -42,6 +42,15 @@ func _ready() -> void:
 		GameManager.level_lost.connect(_on_level_lost)
 		GameManager.game_paused.connect(_on_game_paused)
 		GameManager.state_changed.connect(_on_state_changed)
+		if not GameManager.goals.is_empty():
+			_on_state_changed(GameManager.current_state)
+			_on_time_updated(GameManager.time_left)
+			for p_type: Variant in GameManager.goals.keys():
+				var pt_str: String = String(p_type)
+				var g_info: Dictionary = GameManager.goals[p_type] as Dictionary
+				var tgt: int = int(g_info.get("target", 0))
+				var cur: int = int(g_info.get("current", 0))
+				_on_goal_updated(pt_str, maxi(0, tgt - cur), tgt)
 
 	if UpgradeManager != null:
 		UpgradeManager.coins_changed.connect(_on_coins_changed)

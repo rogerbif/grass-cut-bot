@@ -156,7 +156,7 @@ var is_rotating_sun: bool = false
 var _active_material: ShaderMaterial = null
 
 # Estado do Solo
-var ground_base_color: Color = Color(0.14, 0.59, 0.22, 1.0)
+var ground_base_color: Color = Color(0.14, 0.45, 0.19, 1.0)
 var ground_brightness: float = 0.80
 var apply_ground_to_pedestal: bool = true
 var use_ground_toon: bool = true
@@ -215,6 +215,14 @@ func _setup_desktop_window() -> void:
 
 func _init_active_material() -> void:
 	_active_material = GRASS_MATERIAL
+
+func _set_shared_grass_parameter(param_name: String, val: Variant) -> void:
+	if _active_material != null:
+		_active_material.set_shader_parameter(param_name, val)
+	for mat_key: Variant in VegetationGridScript.GRASS_MATERIALS.keys():
+		var sm: ShaderMaterial = VegetationGridScript.GRASS_MATERIALS[mat_key] as ShaderMaterial
+		if sm != null:
+			sm.set_shader_parameter(param_name, val)
 
 func _init_ground_material() -> void:
 	ground_base_color = IslandMeshBuilder.ground_base_color
@@ -426,27 +434,27 @@ func _setup_signals() -> void:
 
 	# Sliders de Gradiente da Vegetação
 	slider_ramp_offset.value_changed.connect(func(v: float) -> void:
-		_active_material.set_shader_parameter("toon_ramp_offset", v)
+		_set_shared_grass_parameter("toon_ramp_offset", v)
 		lbl_ramp_offset.text = "Offset do Corte: %.2f" % v
 	)
 	slider_ramp_smooth.value_changed.connect(func(v: float) -> void:
-		_active_material.set_shader_parameter("toon_ramp_smoothness", v)
+		_set_shared_grass_parameter("toon_ramp_smoothness", v)
 		lbl_ramp_smooth.text = "Suavidade do Gradiente: %.2f" % v
 	)
 	slider_vert_grad.value_changed.connect(func(v: float) -> void:
-		_active_material.set_shader_parameter("vertical_gradient_mix", v)
+		_set_shared_grass_parameter("vertical_gradient_mix", v)
 		lbl_vert_grad.text = "Gradiente Vertical (Base-Topo): %.2f" % v
 	)
 	slider_rim_power.value_changed.connect(func(v: float) -> void:
-		_active_material.set_shader_parameter("rim_power", v)
+		_set_shared_grass_parameter("rim_power", v)
 		lbl_rim_power.text = "Foco Rim Light (Potência): %.1f" % v
 	)
 	slider_rim_brightness.value_changed.connect(func(v: float) -> void:
-		_active_material.set_shader_parameter("rim_brightness", v)
+		_set_shared_grass_parameter("rim_brightness", v)
 		lbl_rim_brightness.text = "Brilho Rim Light: %.2f" % v
 	)
 	slider_roughness.value_changed.connect(func(v: float) -> void:
-		_active_material.set_shader_parameter("roughness", v)
+		_set_shared_grass_parameter("roughness", v)
 		lbl_roughness.text = "Rugosidade Fosca: %.2f" % v
 	)
 
@@ -487,7 +495,7 @@ func _setup_signals() -> void:
 
 	# Toggles
 	check_rim.toggled.connect(func(t: bool) -> void:
-		_active_material.set_shader_parameter("use_rim", t)
+		_set_shared_grass_parameter("use_rim", t)
 	)
 	check_spec.toggled.connect(func(t: bool) -> void:
 		_active_material.set_shader_parameter("use_specular", t)
@@ -789,15 +797,15 @@ func _apply_preset(preset_name: String) -> void:
 	match preset_name:
 		"grass":
 			_active_material.set_shader_parameter("color_light", Color(0.42, 0.88, 0.46, 1.0))
-			_active_material.set_shader_parameter("color_base", Color(0.12, 0.35, 0.18, 1.0))
-			_active_material.set_shader_parameter("color_shadow", Color(0.18, 0.48, 0.25, 1.0))
+			_active_material.set_shader_parameter("color_base", Color(0.10, 0.30, 0.15, 1.0))
+			_active_material.set_shader_parameter("color_shadow", Color(0.18, 0.50, 0.25, 1.0))
 			_active_material.set_shader_parameter("rim_color", Color(0.85, 1.0, 0.65, 1.0))
-			_active_material.set_shader_parameter("toon_ramp_offset", 0.97)
-			_active_material.set_shader_parameter("toon_ramp_smoothness", 1.00)
-			_active_material.set_shader_parameter("vertical_gradient_mix", 0.81)
-			_active_material.set_shader_parameter("rim_power", 1.00)
-			_active_material.set_shader_parameter("rim_brightness", 1.00)
-			_active_material.set_shader_parameter("roughness", 0.90)
+			_set_shared_grass_parameter("toon_ramp_offset", 0.50)
+			_set_shared_grass_parameter("toon_ramp_smoothness", 0.28)
+			_set_shared_grass_parameter("vertical_gradient_mix", 0.85)
+			_set_shared_grass_parameter("rim_power", 1.50)
+			_set_shared_grass_parameter("rim_brightness", 0.50)
+			_set_shared_grass_parameter("roughness", 0.90)
 
 		"wheat":
 			_active_material.set_shader_parameter("color_light", Color(0.98, 0.78, 0.22, 1.0))

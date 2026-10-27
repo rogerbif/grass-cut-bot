@@ -63,19 +63,18 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 - **IsometricCamera (Câmera Canônica):**
   - Orientação isométrica travada em `pitch = -40.3°` (`Vector3(-40.3, 0.0, 0.0)`), distância focal `7.40m` (`offset = Vector3(0.0, 4.78, 5.65)`).
 - **Vegetação (Toon Shader Gradiente Canônico):**
-  - `color_light = Color(0.42, 0.88, 0.46)`
-  - `color_base = Color(0.12, 0.35, 0.18)`
-  - `color_shadow = Color(0.18, 0.48, 0.25)`
+  - `color_light = Color(0.42, 0.88, 0.46)` (Grama verde) / Paletas dedicadas para Amarela, Azul, Roxa, Branca, Vermelha, Preta e Trigo
+  - `color_base = Color(0.10, 0.30, 0.15)`
+  - `color_shadow = Color(0.18, 0.50, 0.25)`
   - `rim_color = Color(0.85, 1.00, 0.65)`
-  - `toon_ramp_offset = 0.97`
-  - `toon_ramp_smoothness = 1.00`
-  - `vertical_gradient_mix = 0.81`
-  - `rim_power = 1.00`
-  - `rim_brightness = 1.00`
+  - `toon_ramp_offset = 0.50`
+  - `toon_ramp_smoothness = 0.28`
+  - `vertical_gradient_mix = 0.85`
+  - `use_rim = false`
   - `roughness = 0.90`
 - **Solo da Ilha (Island Ground Canônico):**
-  - `ground_color = Color(0.14, 0.59, 0.22)`
-  - `ground_brightness = 0.80` (Cor final albedo: `Color(0.112, 0.472, 0.176)`)
+  - `ground_color = Color(0.14, 0.45, 0.19)`
+  - `ground_brightness = 0.80` (Cor final albedo: `Color(0.112, 0.360, 0.152)`)
   - `ground_diffuse_toon = true` (`diffuse_mode = BaseMaterial3D.DIFFUSE_TOON`)
   - Falésias / Paredes verticais: `CLIFF_COLOR = Color(0.4667, 0.2431, 0.1451)`
   - Malha procedural com cores assadas por vértice (`vertex_color_use_as_albedo = true`), eliminando amostragem de textura e garantindo 60 FPS no mobile.
