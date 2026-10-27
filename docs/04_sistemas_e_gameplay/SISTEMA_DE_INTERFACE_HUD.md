@@ -118,7 +118,17 @@ Ao navegar entre as ilhas na Visão de Mapa (`MAP_VIEW`), o Cutter Bot executa u
 
 ### 3.3 Top Bar e Barra de Navegação Inferior (`BottomNavBar`)
 - **Top Bar do Hub:** Exibe moedas, energia e o título da fase atual ("Ilha Tropical") com alinhamento à direita (`alignment = 2`, `horizontal_alignment = 2`), encostado elegantemente junto ao botão de configurações `[⚙️]`.
-- **Barra de Navegação de 4 Abas (`BottomNavBar`):**
+### 3.3 Enquadramento Bot View (`BOT_VIEW`) e Desobstrução Frontal Automática
+
+Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_VIEW`):
+- **Câmera Isométrica Próxima:** A câmera desce e se aproxima do robô (`target_bot_pos + Vector3(0, 1.25, 4.0)` com pitch de $-8^\circ$), focando a lâmina, rodas e expressividade do bot.
+- **Desobstrução Automática do Setor Frontal:** Para garantir que espigas de trigo volumosas, flores altas, tufos de grama densos ou rochas não fiquem na frente do robô nem cubram sua lâmina, olhos e botões da interface, o `IslandNode` aplica um filtro cônico/frontal estrito:
+  - Qualquer elemento posicionado com $z > \text{bot.z} - 0.30\text{m}$ e $|x - \text{bot.x}| < 3.20\text{m}$ é desativado no `BOT_VIEW`.
+  - Tufos de grama, flores e espigas de trigo são excluídos da geração da malha 3D (`veg_transforms_by_type`), mantendo apenas a vegetação ao redor e atrás do robô para profundidade de cena limpa.
+  - Rochas na miniatura (`MiniRocksMMI`) situadas no setor frontal têm suas instâncias escaladas para zero e reposicionadas fora de cena via `_set_rocks_in_front_hidden(true)`.
+  - Ao alternar para o modo mapa (`MAP_VIEW`), todos os elementos e rochas da ilha retornam normalmente ao estado original.
+
+### 3.4 Barra de Navegação de 4 Abas (`BottomNavBar`)
   - Altura expandida para $104\text{px}$ com cantos arredondados ($r=22\text{px}$) e fundo translúcido escuro.
   - **Ícones Grandes em Destaque:** Emojis ampliados com `font_size = 28` centralizados em nós dedicados `IconLabel`.
   - **Legendas Rebaixadas:** Textos com `font_size = 13` rebaixados com espaçamento vertical confortável (`separation = 4`).

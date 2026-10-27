@@ -64,6 +64,10 @@ var _cached_cell_size: float = 0.8
 var _cached_offset_x: float = 0.0
 var _cached_offset_z: float = 0.0
 
+var _rock_transforms: Array[Transform3D] = []
+var _rocks_mmi: MultiMeshInstance3D = null
+var veg_transforms_by_type: Dictionary = {}
+
 
 func _ready() -> void:
 	update_visuals()
@@ -105,6 +109,30 @@ func read_island_metadata(lvl: int) -> void:
 			var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_x, sp_z, width, height, cell_size)
 			if bot_anchor != null:
 				bot_anchor.position = Vector3(sp_world.x, -0.052, sp_world.z)
+
+
+func _is_in_front_of_bot(pos: Vector3) -> bool:
+	if bot_anchor == null:
+		return false
+	var bot_pos: Vector3 = bot_anchor.position
+	var dz: float = pos.z - bot_pos.z
+	var dx: float = absf(pos.x - bot_pos.x)
+	# Na visão BOT_VIEW (modo Home), o robô fica voltado para +Z em direção à câmera.
+	# Qualquer elemento no setor frontal do robô (dz > -0.30m) dentro do enquadramento (dx < 3.2m)
+	# obstrui o corpo, cabeça, lâmina ou a área de avanço frontal do bot.
+	return dz > -0.30 and dx < 3.2
+
+
+func _set_rocks_in_front_hidden(hidden: bool) -> void:
+	if _rocks_mmi == null or _rocks_mmi.multimesh == null or _rock_transforms.is_empty():
+		return
+	var mm: MultiMesh = _rocks_mmi.multimesh
+	for idx: int in range(_rock_transforms.size()):
+		var xform: Transform3D = _rock_transforms[idx]
+		if hidden and _is_in_front_of_bot(xform.origin):
+			mm.set_instance_transform(idx, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3(0, -999.0, 0)))
+		else:
+			mm.set_instance_transform(idx, xform)
 
 
 func ensure_content_loaded() -> void:
@@ -300,6 +328,14 @@ func build_miniature_from_json(lvl: int) -> void:
 	# Posiciona a placa no canto inferior direito da ilha (escala real 1.0x)
 	map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
+	if data.has("spawn") and data["spawn"] is Dictionary:
+		var sp_dict: Dictionary = data["spawn"] as Dictionary
+		var sp_x: int = int(sp_dict.get("gx", int(float(width) / 2.0)))
+		var sp_z: int = int(sp_dict.get("gz", int(float(height) / 2.0)))
+		var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_x, sp_z, width, height, cell_size)
+		if bot_anchor != null:
+			bot_anchor.position = Vector3(sp_world.x, -0.052, sp_world.z)
+
 	# 1. Constrói a miniatura unificada da ilha via IslandMeshBuilder (1 Draw Call)
 	var island_polys: Array[PackedVector2Array] = LevelJsonLoader.get_island_polygons(data)
 	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys)
@@ -323,7 +359,7 @@ func build_miniature_from_json(lvl: int) -> void:
 
 	# 2. Agrupa rochas em MultiMeshInstance3D único (1 draw call por ilha)
 	var objects_arr: Array = data.get("objects", []) as Array
-	var rock_transforms: Array[Transform3D] = []
+	_rock_transforms.clear()
 
 	for obj_item: Variant in objects_arr:
 		if not (obj_item is Dictionary):
@@ -340,24 +376,24 @@ func build_miniature_from_json(lvl: int) -> void:
 
 		if otype == "rock":
 			var r_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(orot)))
-			rock_transforms.append(Transform3D(r_basis, base_pos))
+			_rock_transforms.append(Transform3D(r_basis, base_pos))
 
-	if not rock_transforms.is_empty():
+	if not _rock_transforms.is_empty():
 		_ensure_rock_mesh()
 		if _rock_mesh != null:
 			var r_mm: MultiMesh = MultiMesh.new()
 			r_mm.transform_format = MultiMesh.TRANSFORM_3D
 			r_mm.mesh = _rock_mesh
-			r_mm.instance_count = rock_transforms.size()
-			for idx: int in range(rock_transforms.size()):
-				r_mm.set_instance_transform(idx, rock_transforms[idx])
+			r_mm.instance_count = _rock_transforms.size()
+			for idx: int in range(_rock_transforms.size()):
+				r_mm.set_instance_transform(idx, _rock_transforms[idx])
 
-			var r_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-			r_mmi.name = "MiniRocksMMI"
-			r_mmi.multimesh = r_mm
-			r_mmi.material_override = _mat_rock
-			r_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			miniature_container.add_child(r_mmi)
+			_rocks_mmi = MultiMeshInstance3D.new()
+			_rocks_mmi.name = "MiniRocksMMI"
+			_rocks_mmi.multimesh = r_mm
+			_rocks_mmi.material_override = _mat_rock
+			_rocks_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			miniature_container.add_child(_rocks_mmi)
 
 	# 3. Cacheia metadados e constrói containers de vegetação vetorial e 3D
 	_cached_level_data = data
@@ -458,7 +494,7 @@ func _ensure_3d_veg_built() -> void:
 	var offset_z: float = _cached_offset_z
 	var objects_arr: Array = data.get("objects", []) as Array
 
-	var veg_transforms_by_type: Dictionary = {}
+	veg_transforms_by_type.clear()
 	for v_type: String in VegetationGrid.VEG_TYPES:
 		var empty_xforms: Array[Transform3D] = []
 		veg_transforms_by_type[v_type] = empty_xforms
@@ -487,6 +523,8 @@ func _ensure_3d_veg_built() -> void:
 					var fx: int = int(od.get("gx", 0))
 					var fz: int = int(od.get("gz", 0))
 					var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
+					if _is_in_front_of_bot(f_pos):
+						continue
 					var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.676, 0.676, 0.676))
 					var f_key: String = o_type if veg_transforms_by_type.has(o_type) else "flower"
 					(veg_transforms_by_type[f_key] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
@@ -494,6 +532,8 @@ func _ensure_3d_veg_built() -> void:
 					var wx: int = int(od.get("gx", 0))
 					var wz: int = int(od.get("gz", 0))
 					var w_pos: Vector3 = LevelJsonLoader.grid_to_world(wx, wz, width, height, cell_size)
+					if _is_in_front_of_bot(w_pos):
+						continue
 					var w_basis: Basis = Basis(Vector3.UP, fmod(float(wx * 67 + wz * 43), TAU)).scaled(Vector3(0.84, 1.30, 0.84))
 					(veg_transforms_by_type["wheat"] as Array[Transform3D]).append(Transform3D(w_basis, w_pos))
 
@@ -503,6 +543,8 @@ func _ensure_3d_veg_built() -> void:
 				continue
 			var td: Dictionary = item as Dictionary
 			var pos: Vector3 = td["pos"] as Vector3
+			if _is_in_front_of_bot(pos):
+				continue
 			var v_type: String = String(td.get("type", "grass_green"))
 			if not veg_transforms_by_type.has(v_type):
 				v_type = "grass_green"
@@ -555,6 +597,8 @@ func _ensure_3d_veg_built() -> void:
 				var fx: int = int((obj_item as Dictionary).get("gx", 0))
 				var fz: int = int((obj_item as Dictionary).get("gz", 0))
 				var f_pos: Vector3 = Vector3(offset_x + float(fx) * cell_size, 0.0, offset_z + float(fz) * cell_size)
+				if _is_in_front_of_bot(f_pos):
+					continue
 				var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.676, 0.676, 0.676))
 				(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
 
@@ -578,6 +622,8 @@ func _ensure_3d_veg_built() -> void:
 					var flower_pos: Vector3 = veg_field.call("cell_to_world", lx * 2, lz * 2, cell_size) as Vector3
 					flower_pos.x += 0.10
 					flower_pos.z += 0.10
+					if _is_in_front_of_bot(flower_pos):
+						continue
 					var f_basis: Basis = Basis(Vector3.UP, fmod(float(lx * 79 + lz * 31), TAU)).scaled(Vector3(0.676, 0.676, 0.676))
 					(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, flower_pos))
 					continue
@@ -587,6 +633,8 @@ func _ensure_3d_veg_built() -> void:
 				var j_x: float = (fmod(sub_seed * 0.17, 1.0) - 0.5) * 0.12
 				var j_z: float = (fmod(sub_seed * 0.31, 1.0) - 0.5) * 0.12
 				var tuft_pos: Vector3 = base_pos + Vector3(j_x, 0.0, j_z)
+				if _is_in_front_of_bot(tuft_pos):
+					continue
 
 				var dist_m: float = sdf[r * cols + c]
 				var edge_t: float = smoothstep(0.0, 0.28, dist_m)
@@ -660,6 +708,7 @@ func _apply_mode_visibility() -> void:
 		if veg_3d_container != null:
 			veg_3d_container.visible = false
 		set_grass_animated(false)
+		_set_rocks_in_front_hidden(false)
 	else:
 		if is_active_island:
 			_ensure_3d_veg_built()
@@ -668,12 +717,14 @@ func _apply_mode_visibility() -> void:
 			if veg_3d_container != null:
 				veg_3d_container.visible = true
 			set_grass_animated(true)
+			_set_rocks_in_front_hidden(true)
 		else:
 			if vector_ground_container != null:
 				vector_ground_container.visible = true
 			if veg_3d_container != null:
 				veg_3d_container.visible = false
 			set_grass_animated(false)
+			_set_rocks_in_front_hidden(false)
 
 
 func set_active_in_tree(is_active: bool) -> void:

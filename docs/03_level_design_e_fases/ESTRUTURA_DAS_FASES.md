@@ -78,6 +78,9 @@ Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/
 - **Carregamento Runtime (`LevelController.gd` + `VegetationGrid.gd`):**
   - Carrega `res://data/levels/level_%02d.json` e constrói a ilha e a vegetação em lote via `VegetationGrid` (`MultiMeshInstance3D` por tipo de tile e por espécie vegetal + Grade Espacial Discreta `0.40m`).
   - Mapeia automaticamente as metas no HUD e posiciona o robô cortador no ponto `spawn` da fase em menos de `10 ms`.
+- **Renderização e Miniaturas no Menu Inicial (`IslandNode.gd`):**
+  - O `IslandNode` instancia a geometria da ilha em escala real $1.0\times$, alternando entre o mapa 2D vetorial (`MAP_VIEW`) e a visão volumétrica 3D com robô animado (`BOT_VIEW`).
+  - No `BOT_VIEW`, o filtro frontal `_is_in_front_of_bot` e `_set_rocks_in_front_hidden` desativa automaticamente qualquer vegetação, flor ou rocha em $z > \text{bot.z} - 0.30\text{m}$ e $|x - \text{bot.x}| < 3.20\text{m}$, garantindo visão limpa e desobstruída do cortador.
 - **Gerador Automatizado (`scripts/tools/generate_levels.js`):**
   - Recalcula matematicamente o Autotile canônico (`IslandAutotiler`) de cada célula.
   - Validador embutido (`scripts/tools/verify_levels.js`) que audita a integridade geométrica, limites de grid e ausência de sobreposições em todas as 20 fases.
