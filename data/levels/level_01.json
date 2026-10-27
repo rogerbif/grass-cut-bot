@@ -2,261 +2,386 @@
 	"grass_vectors": [
 		{
 			"holes": [],
-			"id": 2,
+			"id": 1,
 			"polygon": [
 				[
-					0.819,
-					-2.809
+					3.008,
+					-0.299
 				],
 				[
-					0.819,
-					-2.796
+					2.738,
+					-0.95
 				],
 				[
-					1.299,
-					-2.796
+					2.309,
+					-1.509
 				],
 				[
-					1.299,
-					-2.809
+					1.75,
+					-1.938
 				],
 				[
-					3.579,
-					-2.809
+					1.099,
+					-2.208
 				],
 				[
-					3.579,
-					2.796
+					0.4,
+					-2.3
 				],
 				[
-					1.209,
-					2.796
+					-0.299,
+					-2.208
 				],
 				[
-					1.209,
-					1.679
+					-0.95,
+					-1.938
 				],
 				[
-					1.197,
-					1.679
+					-1.509,
+					-1.509
 				],
 				[
-					1.197,
-					-0.413
+					-1.938,
+					-0.95
 				],
 				[
-					1.194,
-					-0.413
+					-2.208,
+					-0.299
 				],
 				[
-					1.194,
-					-1.181
+					-2.3,
+					0.4
 				],
 				[
-					0.475,
-					-1.181
+					-2.208,
+					1.099
 				],
 				[
-					0.475,
-					-1.183
+					-1.938,
+					1.75
 				],
 				[
-					-0.249,
-					-1.183
+					-1.509,
+					2.309
 				],
 				[
-					-0.249,
-					-1.193
+					-0.95,
+					2.738
 				],
 				[
-					-1.199,
-					-1.193
+					-0.299,
+					3.008
 				],
 				[
-					-1.199,
-					-0.401
+					0.4,
+					3.1
 				],
 				[
-					-1.209,
-					-0.401
+					1.099,
+					3.008
 				],
 				[
-					-1.209,
-					2.796
+					1.75,
+					2.738
 				],
 				[
-					-3.489,
-					2.796
+					2.309,
+					2.309
 				],
 				[
-					-3.489,
-					2.783
+					2.738,
+					1.75
 				],
 				[
-					-3.592,
-					2.783
+					3.008,
+					1.099
 				],
 				[
-					-3.592,
-					-2.809
+					3.1,
+					0.4
 				]
 			],
 			"type": "grass_green"
+		},
+		{
+			"holes": [
+				[
+					[
+						3.1,
+						0.4
+					],
+					[
+						3.008,
+						1.099
+					],
+					[
+						2.738,
+						1.75
+					],
+					[
+						2.309,
+						2.309
+					],
+					[
+						1.75,
+						2.738
+					],
+					[
+						1.099,
+						3.008
+					],
+					[
+						0.4,
+						3.1
+					],
+					[
+						-0.299,
+						3.008
+					],
+					[
+						-0.95,
+						2.738
+					],
+					[
+						-1.509,
+						2.309
+					],
+					[
+						-1.938,
+						1.75
+					],
+					[
+						-2.208,
+						1.099
+					],
+					[
+						-2.3,
+						0.4
+					],
+					[
+						-2.208,
+						-0.299
+					],
+					[
+						-1.938,
+						-0.95
+					],
+					[
+						-1.509,
+						-1.509
+					],
+					[
+						-0.95,
+						-1.938
+					],
+					[
+						-0.299,
+						-2.208
+					],
+					[
+						0.4,
+						-2.3
+					],
+					[
+						1.099,
+						-2.208
+					],
+					[
+						1.75,
+						-1.938
+					],
+					[
+						2.309,
+						-1.509
+					],
+					[
+						2.738,
+						-0.95
+					],
+					[
+						3.008,
+						-0.299
+					]
+				]
+			],
+			"id": 2,
+			"polygon": [
+				[
+					3.491,
+					-0.428
+				],
+				[
+					3.171,
+					-1.2
+				],
+				[
+					2.663,
+					-1.863
+				],
+				[
+					2.0,
+					-2.371
+				],
+				[
+					1.228,
+					-2.691
+				],
+				[
+					0.4,
+					-2.8
+				],
+				[
+					-0.428,
+					-2.691
+				],
+				[
+					-1.2,
+					-2.371
+				],
+				[
+					-1.863,
+					-1.863
+				],
+				[
+					-2.371,
+					-1.2
+				],
+				[
+					-2.691,
+					-0.428
+				],
+				[
+					-2.8,
+					0.4
+				],
+				[
+					-2.691,
+					1.228
+				],
+				[
+					-2.371,
+					2.0
+				],
+				[
+					-1.863,
+					2.663
+				],
+				[
+					-1.2,
+					3.171
+				],
+				[
+					-0.428,
+					3.491
+				],
+				[
+					0.4,
+					3.6
+				],
+				[
+					1.228,
+					3.491
+				],
+				[
+					2.0,
+					3.171
+				],
+				[
+					2.663,
+					2.663
+				],
+				[
+					3.171,
+					2.0
+				],
+				[
+					3.491,
+					1.228
+				],
+				[
+					3.6,
+					0.4
+				]
+			],
+			"type": "grass_yellow"
 		}
 	],
 	"grid": {
 		"cell_size": 0.8,
-		"height": 11,
-		"width": 13
+		"height": 12,
+		"width": 12
 	},
 	"level_id": 1,
-	"name": "Fase 01",
+	"name": "Boas-Vindas ao Jardim",
 	"objects": [],
 	"spawn": {
 		"gx": 6,
-		"gz": 5,
+		"gz": 6,
 		"rot": 0
 	},
 	"terrain": [
 		{
 			"auto": true,
-			"gx": 1,
-			"gz": 1,
+			"gx": 2,
+			"gz": 2,
 			"rot": 90,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 1,
-			"gz": 2,
-			"rot": 90,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 3,
 			"rot": 90,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 4,
 			"rot": 90,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 5,
 			"rot": 90,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 6,
 			"rot": 90,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 7,
 			"rot": 90,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 8,
 			"rot": 90,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 1,
+			"gx": 2,
 			"gz": 9,
 			"rot": 180,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 2,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 2,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 3,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 4,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 5,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 6,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 7,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 8,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 2,
-			"gz": 9,
-			"rot": 180,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 3,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
 			"gx": 3,
 			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -310,16 +435,9 @@
 		{
 			"auto": true,
 			"gx": 4,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 4,
 			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -373,16 +491,9 @@
 		{
 			"auto": true,
 			"gx": 5,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 5,
 			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -436,16 +547,9 @@
 		{
 			"auto": true,
 			"gx": 6,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 6,
 			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -499,16 +603,9 @@
 		{
 			"auto": true,
 			"gx": 7,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 7,
 			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -562,16 +659,9 @@
 		{
 			"auto": true,
 			"gx": 8,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 8,
 			"gz": 2,
 			"rot": 0,
-			"tile_id": "island_center"
+			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
@@ -625,193 +715,60 @@
 		{
 			"auto": true,
 			"gx": 9,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 9,
 			"gz": 2,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 3,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 4,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 5,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 6,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 7,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 8,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 9,
-			"gz": 9,
-			"rot": 180,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 1,
-			"rot": 0,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 2,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 3,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 4,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 5,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 6,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 7,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 8,
-			"rot": 0,
-			"tile_id": "island_center"
-		},
-		{
-			"auto": true,
-			"gx": 10,
-			"gz": 9,
-			"rot": 180,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 11,
-			"gz": 1,
 			"rot": 0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 2,
-			"rot": 270,
-			"tile_id": "island_edge"
-		},
-		{
-			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 3,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 4,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 5,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 6,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 7,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 8,
 			"rot": 270,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
+			"gx": 9,
 			"gz": 9,
 			"rot": 270,
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 90.0,
+	"time_limit": 75.0,
 	"version": 3
 }

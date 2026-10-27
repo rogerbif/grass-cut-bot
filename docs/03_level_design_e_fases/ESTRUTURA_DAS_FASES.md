@@ -21,31 +21,33 @@ Este documento detalha o desenho dos estágios, a arquitetura de dados JSON, a p
 
 Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/level_%02d.json` e são carregadas dinamicamente com prioridade 1 pelo `LevelController`:
 
+### Parâmetros Técnicos de Dimensionamento Invariantes
+* **Spawn Seguro Central:** Área circular central com raio livre $R \ge 1.47\text{m}$ ($1.05 \times \text{raio da lâmina nível 6}$ de $1.40\text{m}$). O miolo inicial permanece 100% livre de qualquer obstáculo rígido (`rock`, `wheat`, `flower_*`).
+* **Espaçamento entre Rochas:** Distância mínima centro a centro entre duas rochas sempre superior a $2.80\text{m}$ ($> 2 \times \text{raio da lâmina nível 6}$), garantindo passagem folgada mesmo com o maior alcance de corte.
+* **Regra de Desbloqueio de Obstáculos:** As **Fases 1 a 5** contêm estritamente 0 rochas (apenas vegetações e flores). As rochas sólidas (`rock`) são introduzidas progressivamente a partir da **Fase 6**.
+
 | Fase | Nome Temático | Silhueta / Geometria da Ilha | Grid ($W \times H$) | Tipos de Vegetação | Qtd. Rochas | Metas do HUD | Tempo | Lição / Foco de Design |
 | :---: | :--- | :--- | :---: | :--- | :---: | :--- | :---: | :--- |
-| **01** | *Praia Inicial* | Retângulo Amplo Acolhedor | $14 \times 10$ | Grama Verde | 0 | 🌿 59 Gramas | 90s | Tutorial de toque e fluxo de corte contínuo. |
-| **02** | *Baía Amarela* | Ilha Quadrada com Recortes | $17 \times 17$ | Verde + Trigo | 4 | 🌿 25 Gramas<br>🌾 36 Trigos | 85s | Introdução do Trigo Dourado e rochas periféricas. |
-| **03** | *Campos Dourados* | Retângulo chanfrado com Terra | $16 \times 12$ | Verde + Trigo | 4 | 🌿 42 Gramas<br>🌾 29 Trigos | 85s | Mecânica de 2 golpes do trigo. |
-| **04** | *Jardim das Orquídeas* | Cruz Grega com Pátio Central | $15 \times 15$ | Verde + Trigo + Flor | 4 | 🌿 20 Gramas<br>🌾 24 Trigos<br>🌸 36 Flores | 80s | Introdução das Flores Nobres e meta tripla. |
-| **05** | *Ilhas Gêmeas* | 2 Círculos Unidos por Ponte de Terra | $18 \times 11$ | Verde + Amarela + Trigo | 3 | 🌿 66 Gramas<br>🌾 8 Trigos | 85s | Navegação em istmos estreitos (2 blocos). |
-| **06** | *Lagoa Serena* | Atol Circular em Anel (Donut) | $16 \times 16$ | Verde + Azul + Flor | 6 | 🌿 83 Gramas<br>🌸 14 Flores | 80s | Circulação orbital e introdução da grama azul. |
-| **07** | *Vale da Ampulheta* | 2 Platôs com Gargalo Central | $16 \times 16$ | Amarela + Trigo + Flor | 2 | 🌿 67 Gramas<br>🌾 30 Trigos<br>🌸 8 Flores | 80s | Planejamento de rota (limpar antes de transitar). |
-| **08** | *Três Picos* | Arquipélago Tríade em "Y" | $19 \times 17$ | Verde + Amarela + Azul + Trigo + Flor | 7 | 🌿 67 Gramas<br>🌾 11 Trigos<br>🌸 8 Flores | 85s | Tomada de decisão em encruzilhada tripla. |
-| **09** | *Serpentina de Coral* | Península Longa em "S" | $18 \times 17$ | Verde + Amarela + Trigo | 6 | 🌿 109 Gramas<br>🌾 44 Trigos | 80s | Curvas fechadas com o joystick sem bater. |
-| **10** | *Labirinto das Pedras* | Ilha Quadrada com Muretas de Pedra | $17 \times 17$ | Roxa + Trigo + Flor | 15 | 🌿 123 Gramas<br>🌾 14 Trigos<br>🌸 16 Flores | 85s | Introdução da grama roxa; evitar choques. |
-| **11** | *Trevo da Sorte* | Ilha Trevo de 4 Pétalas | $18 \times 18$ | 4 Cores de Grama + Trigo + Flor | 8 | 🌿 79 Gramas<br>🌾 28 Trigos<br>🌸 8 Flores | 85s | Varredura por quadrantes e retorno ao hub. |
-| **12** | *Estrela do Oceano* | Estrela de 5 Pontas | $19 \times 19$ | Azul + Roxa + Trigo + Flor | 3 | 🌿 27 Gramas<br>🌾 25 Trigos<br>🌸 22 Flores | 80s | Risco vs Recompensa nas pontas estreitas. |
-| **13** | *Tridente de Netuno* | Base Sul com 3 Corredores ao Norte | $18 \times 17$ | Verde + Trigo Denso + Flor | 10 | 🌿 50 Gramas<br>🌾 51 Trigos<br>🌸 25 Flores | 80s | Densidade de trigo; upgrade de potência ajuda. |
-| **14** | *Coração Selvagem* | Formato de Coração Grande | $18 \times 18$ | Roxa + Trigo + Flor | 6 | 🌿 92 Gramas<br>🌾 35 Trigos<br>🌸 16 Flores | 80s | Movimentação cardioide fluida e rítmica. |
-| **15** | *Passadiço dos Abismos* | 4 Ilhotas em Degraus Lineares | $22 \times 12$ | Amarela + Azul + Trigo + Flor | 5 | 🌿 41 Gramas<br>🌾 17 Trigos<br>🌸 11 Flores | 85s | Sprint linear de alta velocidade entre passagens. |
-| **16** | *Fortaleza Espiral* | Espiral em Caracol (do mar ao centro) | $18 \times 18$ | Verde + Roxa + Trigo + Flor Nobre | 8 | 🌿 91 Gramas<br>🌾 44 Trigos<br>🌸 4 Flores | 85s | Movimento centrípeto com raio decrescente. |
-| **17** | *Tabuleiro Proibido* | Grade Xadrez de 9 Ilhotas e Lagoas | $19 \times 19$ | Amarela + Azul + Trigo + Flor | 4 | 🌿 44 Gramas<br>🌾 36 Trigos<br>🌸 32 Flores | 90s | Controle fino em malha de micro-pontes. |
-| **18** | *Santuário Solar* | Disco Solar com 8 Satélites Radiais | $20 \times 20$ | 4 Cores de Grama + Trigo + Flor | 8 | 🌿 79 Gramas<br>🌾 24 Trigos<br>🌸 36 Flores | 90s | Priorização de raios externos de alta pontuação. |
-| **19** | *Labirinto do Minotauro* | Malha de Corredores e Ruelas | $19 \times 19$ | Roxa + Trigo Pesado + Flor | 28 | 🌿 128 Gramas<br>🌾 52 Trigos<br>🌸 16 Flores | 95s | Destreza máxima no joystick e reflexos contra ricochete. |
-| **20** | *A Grande Coroa Real* | Coroa Imperial (5 Torres + Pátio) | $22 \times 20$ | Todas as Gramas + Trigo + Flores | 15 | 🌿 90 Gramas<br>🌾 103 Trigos<br>🌸 29 Flores | 110s | Clímax épico com chuva de moedas e coroação! |
-
-> [!NOTE]
-> **Sincronização de Templates (Fases 03 a 20):** Por solicitação direta de design, todas as fases a partir da Fase 03 foram limpas e sincronizadas com a geometria e layout aprovados da Fase 02 (Grade $17 \times 17$, 4 rochas periféricas, 4 estrelas de trigo e contorno de grama verde), servindo de base limpa uniforme para a reedição artística fase a fase através do Editor de Fases PC.
+| **01** | *Boas-Vindas ao Jardim* | Quadrado suave $12 \times 12$ | $12 \times 12$ | `grass_green` + `grass_yellow` | 0 | 🌿 44 Gramas | 75s | Tutorial de corte básico; ceifa instantânea e movimentação fluida. |
+| **02** | *O Prado Bicolor* | Quadrado chanfrado $14 \times 14$ | $14 \times 14$ | `grass_green` + `yellow` + `blue` | 0 | 🌿 25 Gramas | 80s | Diferenciação visual com faixas diagonais e estrelas nas quinas. |
+| **03** | *Introdução à Resistência* | Ilha quadrada com cruz `island_dirt` | $14 \times 14$ | `grass_green` + `wheat` | 0 | 🌿 50 Gramas<br>🌾 26 Trigos | 85s | Primeiro contato com trigo rígido (2 hits, tremor mecânico). |
+| **04** | *O Jardim Nobre* | Octógono regular $14 \times 14$ | $14 \times 14$ | `grass_blue` + `purple` + `daisy` + `bell` | 0 | 🌿 59 Gramas<br>🌸 23 Flores | 90s | Flores nobres de 3 hits (+5 moedas) e despetalação progressiva. |
+| **05** | *Mandala Floral Mista* | Cruz arredondada ampla $16 \times 16$ | $16 \times 16$ | `white` + `green` + `wheat` + `rose` + `sunflower` | 0 | 🌿 78 Gramas<br>🌾 28 Trigos<br>🌸 6 Flores | 100s | Clímax do primeiro mundo sem rochas; resistência mista. |
+| **06** | *O Primeiro Rochedo* | Retângulo alongado $18 \times 10$ | $18 \times 10$ | `grass_green` + `grass_yellow` | 2 | 🌿 89 Gramas | 90s | Primeira aparição de rochas (Layer 8); choque, faíscas e recuo de 4.75 m/s. |
+| **07** | *O Triângulo de Pedra* | Plataforma hexagonal $16 \times 14$ | $16 \times 14$ | `grass_blue` + `grass_white` | 3 | 🌿 76 Gramas | 90s | Navegação entre 3 rochas triangulares abertas ao redor do spawn. |
+| **08** | *Caminho Dividido* | Formato de U bifurcado (`island_end`) | $18 \times 16$ | `green` (centro) + `purple` + `red` | 2 | 🌿 76 Gramas | 95s | Penínsulas gêmeas; rochas nas entradas com vão central generoso. |
+| **09** | *Pomar Protegido* | Quadrado com cantos recortados | $16 \times 16$ | `yellow` + `flower_tulip` + `sunflower` | 4 | 🌿 69 Gramas<br>🌸 13 Flores | 100s | Coleta de flores raras cercadas por anel de rochas protetoras. |
+| **10** | *O Labirinto de Trigo e Granito* | Ilha quadrada com trilhas de terra | $18 \times 18$ | `grass_yellow` + `wheat` | 4 | 🌿 154 Gramas<br>🌾 52 Trigos | 110s | Labirinto híbrido: paredes temporárias de trigo e pilares de granito. |
+| **11** | *Ilhotas Conectadas* | Duas ilhas unidas por istmo largo | $20 \times 12$ | `grass_blue` + `flower_bell` | 3 | 🌿 55 Gramas<br>🌸 11 Flores | 105s | Precisão de alinhamento ao cruzar o istmo sobre o oceano. |
+| **12** | *Vulcânica* | Círculo irregular com falésias | $16 \times 16$ | `grass_black` + `red` + `corolla` | 4 | 🌿 130 Gramas<br>🌸 22 Flores | 105s | Atmosfera dramática; 4 rochas cardeais e flores corola rígidas. |
+| **13** | *O Relógio de Quatro Pilares* | Cruz simétrica em 4 quadrantes | $18 \times 18$ | 4 cores de grama + `flower_rose` | 4 | 🌿 112 Gramas<br>🌸 4 Flores | 110s | Setorização em 4 quadrantes com marcos divisórios de rocha. |
+| **14** | *Serpente de Trigo* | Retângulo comprido $22 \times 12$ | $22 \times 12$ | `grass_white` + trilha de `wheat` | 3 | 🌿 112 Gramas<br>🌾 37 Trigos | 110s | Zigue-zague contínuo com rochas no lado interno de cada curva. |
+| **15** | *O Parque Central de Canteiros* | Ilha orgânica irregular $18 \times 16$ | $18 \times 16$ | `grass_green` + `flower_bed` | 5 | 🌿 98 Gramas<br>🌸 15 Flores | 115s | Micro-recompensas rápidas em canteiros floridos decorativos. |
+| **16** | *O Anel Exterior de Obstáculos* | Anel circular largo $18 \times 18$ | $18 \times 18$ | `yellow` (centro) + `red` + `sunflower` | 6 | 🌿 145 Gramas<br>🌸 18 Flores | 115s | Centro livre para velocidade; precisão nas bordas falésicas. |
+| **17** | *Alameda Imperial* | Ilha em H com duas avenidas | $20 \times 16$ | `grass_green` + `wheat` + `tulip` | 4 | 🌿 109 Gramas<br>🌾 25 Trigos<br>🌸 11 Flores | 120s | Corredores cerimoniais ladeados por trigo e tulipas nobres. |
+| **18** | *O Labirinto dos Quatro Diamantes*| Diamante amplo $20 \times 20$ | $20 \times 20$ | `purple` + `white` + `flower_bed` | 4 | 🌿 168 Gramas<br>🌸 16 Flores | 120s | Desafio geométrico com 4 rochas como pivôs naturais de curva. |
+| **19** | *O Oásis Multicolorido* | Estrela com pontas suaves $20 \times 20$ | $20 \times 20$ | Degradê concêntrico (4 gramas) + 3 flores | 5 | 🌿 324 Gramas<br>🌸 17 Flores | 125s | Composição densa e exuberante com pentágono aberto de rochas. |
+| **20** | *Arquipélago da Maestria* | Trevo de 4 folhas interligado $22 \times 22$ | $22 \times 22$ | Todas as espécies do catálogo | 6 | 🌿 308 Gramas<br>🌾 28 Trigos<br>🌸 10 Flores | 135s | Clímax supremo integrando reflexos, resistência e navegação fina. |
 
 ---
 

@@ -592,13 +592,9 @@ func _build_from_vector_field(
 	if vector_field == null:
 		return goals
 
-	var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
 	var tufts: Array[Dictionary] = []
-	for item: Variant in sampled_tufts:
-		if item is Dictionary:
-			tufts.append(item as Dictionary)
 
-	# Adiciona flores de tile caso existam no JSON
+	# Adiciona flores de tile caso existam no JSON (prioridade de célula lógica sobre grama)
 	for f_cell: Vector2i in tile_flowers.keys():
 		var f_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
 		var f_val: Variant = tile_flowers[f_cell]
@@ -619,6 +615,11 @@ func _build_from_vector_field(
 			"scale_factor": 1.25,
 			"seed": float(w_cell.x * 67 + w_cell.y * 43)
 		})
+
+	var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
+	for item: Variant in sampled_tufts:
+		if item is Dictionary:
+			tufts.append(item as Dictionary)
 
 	# Agrupa por célula lógica de 0.40m para manter metas consistentes e pontuação justa
 	var logical_cells_map: Dictionary = {}
