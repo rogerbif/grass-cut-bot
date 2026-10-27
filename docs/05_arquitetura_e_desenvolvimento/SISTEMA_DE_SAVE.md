@@ -49,9 +49,11 @@ Para prevenir perda ou corrupção de dados caso o jogo feche inesperadamente ou
     "last_played_level": 4
   },
   "upgrades": {
-    "radius_level": 2,
+    "blade_level": 3,
+    "blade_xp": 45.0,
+    "radius_level": 3,
     "power_level": 1,
-    "speed_level": 2,
+    "speed_level": 3,
     "multiplier_level": 1
   },
   "levels": {

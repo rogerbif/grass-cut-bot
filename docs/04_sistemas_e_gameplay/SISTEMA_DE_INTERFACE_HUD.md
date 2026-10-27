@@ -123,7 +123,7 @@ Ao navegar entre as ilhas na Visão de Mapa (`MAP_VIEW`), o Cutter Bot executa u
   - **Ícones Grandes em Destaque:** Emojis ampliados com `font_size = 28` centralizados em nós dedicados `IconLabel`.
   - **Legendas Rebaixadas:** Textos com `font_size = 13` rebaixados com espaçamento vertical confortável (`separation = 4`).
   - **Abas:**
-    - `Garage` 🔧: Acesso direto à Oficina de Upgrades do `UpgradeManager` (Raio, Potência, Velocidade e Multiplicador).
+    - `Garage` 🔧: Acesso direto à Oficina de Upgrades do `UpgradeManager` (Evolução Unificada da Lâmina até o Nível 5 com Moedas).
     - `Home` 🏠: Tela principal com botão em destaque `"Level X ▶"` e alternância de Câmera (`MAP` / `BOT`).
     - `Collection` 🌿: Herbário ilustrado com as espécies da ilha (Grama Verde, Amarela, Azul, Roxa, Trigo e Flores Nobres).
     - `Store` 🏪: Loja de pacotes de moedas e resgate de recompensas diárias.
@@ -132,3 +132,17 @@ Ao navegar entre as ilhas na Visão de Mapa (`MAP_VIEW`), o Cutter Bot executa u
 - Cobre ~85% da tela com fundo translúcido escuro.
 - Toggles independentes: Música, Som FX e Vibração Háptica.
 - Seção *Save Progress* e suporte ao jogador.
+
+---
+
+## 4. Barra Flutuante 3D de Evolução da Lâmina (`BladeProgressBar3D`)
+
+Instanciada dinamicamente no topo do cortador (`scenes/cutter/blade_progress_bar.tscn`), a barra flutua sobre a cabeça do robô fornecendo telemetria em tempo real da evolução da serra:
+
+- **Renderização e Projeção:** Desenvolvida em `SubViewport` (140x24 pixels) renderizado em um `Sprite3D` unshaded com `billboard = BILLBOARD_ENABLED` e sem culling de sombras, garantindo 60 FPS estáveis no mobile.
+- **Tipografia Interna:** Texto `Lv. 1` a `Lv. 5` ou `MAX` centralizado **dentro da própria barra**, com fonte branca e contorno preto fino (`outline_size = 2`), garantindo legibilidade perfeita tanto sobre o fundo escuro quanto sobre o preenchimento verde-lima/dourado.
+- **Reações Visuais e Game Feel:**
+  - **Level Up:** Pulso elástico na escala da barra (`1.0` ➔ `1.35` ➔ `1.0`).
+  - **Impacto em Rocha (Penalidade):** Piscar vermelho vivo (`#ff4747`) e *shake* horizontal rápido sincronizado ao recuo físico do bot.
+  - **Nível 6 ("MAX"):** Barra 100% preenchida com gradiente dourado radiante e o texto "MAX" em destaque.
+
