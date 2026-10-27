@@ -7,6 +7,7 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
 
 # Shaders oficiais da grama com gradiente vertical (raiz -> topo) e balanço de vento
@@ -299,57 +300,24 @@ func build_miniature_from_json(lvl: int) -> void:
 	# Posiciona a placa no canto inferior direito da ilha (escala real 1.0x)
 	map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
-	# 1. Agrupa blocos de terreno por tile_id em MultiMeshInstance3D
-	var occupied_cells: Dictionary = {}
-	var tile_transforms_by_id: Dictionary = {}
-	for item: Variant in terrain_arr:
-		if not (item is Dictionary):
-			continue
-		var td: Dictionary = item as Dictionary
-		var gx: int = int(td.get("gx", 0))
-		var gz: int = int(td.get("gz", 0))
-		var tile_id: String = String(td.get("tile_id", "island_center"))
-		if not VegetationGrid._tile_meshes.has(tile_id):
-			tile_id = "island_center"
-		var rot: int = int(td.get("rot", 0))
+	# 1. Constrói a miniatura unificada da ilha via IslandMeshBuilder (1 Draw Call)
+	var island_polys: Array[PackedVector2Array] = LevelJsonLoader.get_island_polygons(data)
+	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys)
+	if island_mesh != null:
+		var mini_mi: MeshInstance3D = MeshInstance3D.new()
+		mini_mi.name = "MiniIslandMesh"
+		mini_mi.mesh = island_mesh
+		mini_mi.material_override = IslandMeshBuilder.get_island_material()
+		mini_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		miniature_container.add_child(mini_mi)
 
-		occupied_cells[Vector2i(gx, gz)] = { "tile_id": tile_id, "rot": rot }
-
-		var local_x: float = offset_x + float(gx) * cell_size
-		var local_z: float = offset_z + float(gz) * cell_size
-		var t_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(rot)))
-		var t_xform: Transform3D = Transform3D(t_basis, Vector3(local_x, 0.0, local_z))
-
-		if not tile_transforms_by_id.has(tile_id):
-			var new_list: Array[Transform3D] = []
-			tile_transforms_by_id[tile_id] = new_list
-		(tile_transforms_by_id[tile_id] as Array[Transform3D]).append(t_xform)
-
-	for tile_key: Variant in tile_transforms_by_id.keys():
-		var t_id: String = String(tile_key)
-		var xforms: Array[Transform3D] = tile_transforms_by_id[t_id] as Array[Transform3D]
-		if xforms.is_empty():
-			continue
-		var tile_mesh: ArrayMesh = VegetationGrid._tile_meshes.get(t_id, null) as ArrayMesh
-		if tile_mesh == null:
-			continue
-
-		var mm: MultiMesh = MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		mm.mesh = tile_mesh
-		mm.instance_count = xforms.size()
-		for i: int in range(xforms.size()):
-			mm.set_instance_transform(i, xforms[i])
-
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		mmi.name = "MiniTileMMI_%s" % t_id
-		mmi.multimesh = mm
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		miniature_container.add_child(mmi)
-
-	# Gera a fita de espuma costeira animada (CoastalFoamRibbon) na base exata das falésias
-	var foam_inst: MeshInstance3D = LevelJsonLoader.build_coastal_foam_mesh_instance(occupied_cells, width, height, cell_size)
-	if foam_inst != null:
+	# Fita de espuma costeira animada (CoastalFoamRibbon) na base exata das falésias
+	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys)
+	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
+		var foam_inst: MeshInstance3D = MeshInstance3D.new()
+		foam_inst.name = "CoastalFoamRibbon"
+		foam_inst.mesh = foam_mesh
+		foam_inst.material_override = IslandMeshBuilder.get_foam_material()
 		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		miniature_container.add_child(foam_inst)
 

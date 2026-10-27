@@ -1,6 +1,7 @@
 extends Node3D
 
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const TilePaletteDB = preload("res://scripts/editor/tile_palette_db.gd")
 const IslandAutotiler = preload("res://scripts/editor/island_autotiler.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
@@ -799,19 +800,35 @@ func _rebuild_3d_world() -> void:
 		obstacles_container.remove_child(c)
 		c.queue_free()
 
-	# 3. Instancia blocos 3D da ilha
-	for cell_key in terrain_grid.keys():
+	# 3. Constrói a malha procedural única da ilha (1 Draw Call sem frestas)
+	var terrain_list: Array = []
+	for cell_key: Variant in terrain_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
-		var entry: Dictionary = terrain_grid[cell] as Dictionary
-		var t_id: String = String(entry.get("tile_id", "island_center"))
-		var t_rot: int = int(entry.get("rot", 0))
-		var t_node: Node3D = LevelJsonLoader.instantiate_tile_node(t_id, t_rot)
-		if t_node != null:
-			t_node.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
-			island_tiles_container.add_child(t_node)
+		terrain_list.append({ "gx": cell.x, "gz": cell.y })
 
-	# 4. Constrói barreiras invisíveis de contenção costeira (Layer 1) e espumas na água
-	LevelJsonLoader.build_coastal_colliders_and_foam(coastal_limits_body, terrain_grid, grid_width, grid_height, CELL_SIZE)
+	var island_polys: Array[PackedVector2Array] = IslandMeshBuilder.convert_tile_grid_to_polygons(
+		terrain_list, grid_width, grid_height, CELL_SIZE
+	)
+	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys)
+	if island_mesh != null:
+		var island_mi: MeshInstance3D = MeshInstance3D.new()
+		island_mi.name = "IslandMesh"
+		island_mi.mesh = island_mesh
+		island_mi.material_override = IslandMeshBuilder.get_island_material()
+		island_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		island_tiles_container.add_child(island_mi)
+
+	# 4. Constrói barreiras invisíveis de contenção costeira (Layer 1) e fita de espuma contínua
+	IslandMeshBuilder.build_coastal_colliders(coastal_limits_body, island_polys)
+
+	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys)
+	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
+		var foam_inst: MeshInstance3D = MeshInstance3D.new()
+		foam_inst.name = "CoastalFoamRibbon"
+		foam_inst.mesh = foam_mesh
+		foam_inst.material_override = IslandMeshBuilder.get_foam_material()
+		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		coastal_limits_body.add_child(foam_inst)
 
 	# 5. Instancia obstáculos (Rochas 3D) em obstacles_container
 	for cell_key: Variant in object_grid.keys():

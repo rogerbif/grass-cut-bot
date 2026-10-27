@@ -4,6 +4,7 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const LawnCutTrailScript = preload("res://scripts/level/lawn_cut_trail.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const PlantScript = preload("res://scripts/plants/plant.gd")
 
@@ -318,63 +319,27 @@ func build_from_level_json(
 	var height: int = int(grid_info.get("height", 8))
 	var cell_size: float = float(grid_info.get("cell_size", LevelJsonLoader.DEFAULT_CELL_SIZE))
 
-	# 1. Agrupa blocos de terreno por tile_id e cria MultiMeshInstance3D por tipo de tile
-	var occupied_cells: Dictionary = {}
-	var tile_transforms_by_id: Dictionary = {}
-	var terrain_arr: Array = data.get("terrain", []) as Array
+	# 1. Obtém os polígonos da ilha (formato v4 ou gerados retrocompatíveis a partir de terrain[])
+	var island_polys: Array[PackedVector2Array] = LevelJsonLoader.get_island_polygons(data)
 
-	for item: Variant in terrain_arr:
-		if item is Dictionary:
-			var td: Dictionary = item as Dictionary
-			var gx: int = int(td.get("gx", 0))
-			var gz: int = int(td.get("gz", 0))
-			var t_id: String = String(td.get("tile_id", "island_center"))
-			if not _tile_meshes.has(t_id):
-				t_id = "island_center"
-			var t_rot: int = int(td.get("rot", 0))
-			var cell: Vector2i = Vector2i(gx, gz)
-			occupied_cells[cell] = { "tile_id": t_id, "rot": t_rot }
+	# 2. Constrói a malha procedural única da ilha (ArrayMesh em 1 Draw Call)
+	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys)
+	if island_mesh != null:
+		var island_mi: MeshInstance3D = MeshInstance3D.new()
+		island_mi.name = "IslandMesh"
+		island_mi.mesh = island_mesh
+		island_mi.material_override = IslandMeshBuilder.get_island_material()
+		island_mi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		island_mi.custom_aabb = FIXED_ISLAND_AABB
+		island_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(island_mi)
 
-			var t_pos: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, width, height, cell_size)
-			var t_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(t_rot)))
-			var t_xform: Transform3D = Transform3D(t_basis, t_pos)
-
-			if not tile_transforms_by_id.has(t_id):
-				var list_new: Array[Transform3D] = []
-				tile_transforms_by_id[t_id] = list_new
-			(tile_transforms_by_id[t_id] as Array[Transform3D]).append(t_xform)
-
-	for tile_key: Variant in tile_transforms_by_id.keys():
-		var t_id: String = String(tile_key)
-		var xforms: Array[Transform3D] = tile_transforms_by_id[t_id] as Array[Transform3D]
-		if xforms.is_empty():
-			continue
-		var tile_mesh: ArrayMesh = _tile_meshes.get(t_id, null) as ArrayMesh
-		if tile_mesh == null:
-			continue
-
-		var mm: MultiMesh = MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		mm.mesh = tile_mesh
-		mm.instance_count = xforms.size()
-		for i: int in range(xforms.size()):
-			mm.set_instance_transform(i, xforms[i])
-
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		mmi.name = "TileMMI_%s" % t_id
-		mmi.multimesh = mm
-		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-		mmi.custom_aabb = FIXED_ISLAND_AABB
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(mmi)
-
-	# 2. Contenção costeira unificada + espuma + 1 único colisor de piso para toda a ilha
+	# 3. Contenção costeira unificada (Layer 1) + fita contínua de espuma costeira
 	var coastal_body: StaticBody3D = StaticBody3D.new()
 	coastal_body.name = "CoastalLimits"
 	coastal_body.collision_layer = 1
 	coastal_body.collision_mask = 0
 	add_child(coastal_body)
-	LevelJsonLoader.build_coastal_colliders_and_foam(coastal_body, occupied_cells, width, height, cell_size)
 
 	var floor_col: CollisionShape3D = CollisionShape3D.new()
 	floor_col.name = "IslandFloorCollider"
@@ -383,6 +348,17 @@ func build_from_level_json(
 	floor_col.shape = floor_box
 	floor_col.position = Vector3(0.0, -0.36, 0.0)
 	coastal_body.add_child(floor_col)
+
+	IslandMeshBuilder.build_coastal_colliders(coastal_body, island_polys)
+
+	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys)
+	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
+		var foam_inst: MeshInstance3D = MeshInstance3D.new()
+		foam_inst.name = "CoastalFoamRibbon"
+		foam_inst.mesh = foam_mesh
+		foam_inst.material_override = IslandMeshBuilder.get_foam_material()
+		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		coastal_body.add_child(foam_inst)
 
 	# 3. Processa objetos (rochas e vegetação)
 	var goals: Dictionary = {}

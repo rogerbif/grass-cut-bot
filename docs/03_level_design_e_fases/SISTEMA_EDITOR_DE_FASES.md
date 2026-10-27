@@ -23,17 +23,14 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
 
 Para garantir liberdade criativa, precisão no posicionamento e facilidade na edição (incluindo exclusão pontual de pedras e flores), o editor opera com arquitetura em 3 camadas independentes:
 
-- **Camada 0 — Terreno (Ilha 3D Modular em $0.80\text{m} \times 0.80\text{m}$):**
-  - Modelos 3D estilizados em `assets/models/tiles/*.glb` integrados nas cenas `scenes/editor/tiles/`:
-    - `auto_island`: Pincel inteligente Auto-Tile (`island_autotiler.gd`) que resolve automaticamente entre `island_center`, `island_edge`, `island_corner_out`, `island_corner_in` e `island_end`.
-    - `island_corner_out`: Canto convexo arredondado em arco cilíndrico ($R = 0.28\text{m}$) com acabamento macio (*smooth normals*) e encaixe estanque sem frestas.
-    - `island_corner_in`: Quina interna côncava em arco suave ($R = 0.20\text{m}$) para reentrâncias e baías em "L".
-    - `island_end`: Ponta de península e promontórios de 1 tile com 3 lados de falésia arredondada e espuma.
-    - `island_edge`: Borda de falésia reta com lábio superior de grama sobreposto e espuma ciano na base.
-    - `island_center`: Piso plano de grama verde esmeralda.
-    - `island_dirt`: Piso plano de terra/trilha alaranjada quente.
-  - Todas as peças manuais possuem suporte a giro de $90^\circ$ (`R`).
-  - **Borracha / Clique Direito:** Remove o bloco de terreno (transforma em mar aberto) e apaga automaticamente qualquer objeto ou vegetação contida naquela célula.
+- **Camada 0 — Terreno (Ilha 3D Procedural por Polígono Extrudado `IslandMeshBuilder`):**
+  - O terreno da ilha é renderizado como uma **malha procedural contínua única** (`ArrayMesh` - 1 Draw Call), sem frestas ou emendas entre peças.
+  - No editor, a grade atua como uma **régua de alinhamento inteligente (*Snapping Grid*)**:
+    - Carimbar ou pintar terreno funde automaticamente os formatos via união booleana (`Geometry2D.merge_polygons`).
+    - As paredes de falésia descem até $Y = -0.72\text{m}$ e o teto superior de grama/terra fica em $Y = 0.0\text{m}$.
+    - A fita de espuma costeira (`CoastalFoamRibbon`) e as barreiras invisíveis de contenção física (`Layer 1: Ground & Limits`) são reconstruídas em tempo real acompanhando o perímetro da ilha.
+  - **Borracha / Clique Direito:** Recorta e subtrai partes do terreno via `Geometry2D.clip_polygons()`, permitindo abrir baías, canais ou apagar blocos, removendo automaticamente qualquer objeto contido na área apagada.
+  - **Persistência:** Salva tanto a lista de blocos quanto o polígono contínuo fechado (`island_polygons`) no formato JSON v4.
 
 - **Camada 1 — Grama Orgânica por Coordenadas Vetoriais 2D (`VectorGrassField`):**
   - Desenho vetorial contínuo no plano $XZ$ em metros, sem qualquer amarração a matrizes quadriculadas de grid.

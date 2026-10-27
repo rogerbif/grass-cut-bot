@@ -1,5 +1,6 @@
 extends RefCounted
 
+const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const DEFAULT_CELL_SIZE: float = 0.80
 
 const WATER_OCEAN_SCENE: PackedScene = preload("res://scenes/level/water_ocean.tscn")
@@ -61,6 +62,29 @@ static func load_json_file(path: String) -> Dictionary:
 	if parsed is Dictionary:
 		return parsed as Dictionary
 	return {}
+
+static func get_island_polygons(data: Dictionary) -> Array[PackedVector2Array]:
+	if data.has("island_polygons") and data["island_polygons"] is Array:
+		var raw_list: Array = data["island_polygons"] as Array
+		var result: Array[PackedVector2Array] = []
+		for item: Variant in raw_list:
+			if item is Array:
+				var pts: PackedVector2Array = PackedVector2Array()
+				for pt_var: Variant in (item as Array):
+					if pt_var is Array and (pt_var as Array).size() >= 2:
+						var pt_arr: Array = pt_var as Array
+						pts.append(Vector2(float(pt_arr[0]), float(pt_arr[1])))
+				if pts.size() >= 3:
+					result.append(pts)
+		if not result.is_empty():
+			return result
+
+	var terrain_arr: Array = data.get("terrain", []) as Array
+	var grid_info: Dictionary = data.get("grid", {}) as Dictionary
+	var width: int = int(grid_info.get("width", 12))
+	var height: int = int(grid_info.get("height", 8))
+	var cell_size: float = float(grid_info.get("cell_size", DEFAULT_CELL_SIZE))
+	return IslandMeshBuilder.convert_tile_grid_to_polygons(terrain_arr, width, height, cell_size)
 
 static func instantiate_tile_node(tile_id: String, rot_deg: int) -> Node3D:
 	var scene_key: String = tile_id

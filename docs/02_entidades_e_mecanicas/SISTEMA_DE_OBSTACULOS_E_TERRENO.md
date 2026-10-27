@@ -4,25 +4,25 @@ Este documento descreve a topografia dos gramados, a contenção física da ilha
 
 ---
 
-## 1. Topografia de Ilhas 3D sobre o Oceano (Sem Cercas)
+## 1. Topografia de Ilhas 3D Procedurais por Polígono Vetorial Extrudado (`IslandMeshBuilder`)
 
-Para proporcionar uma experiência limpa, solar e convidativa, cada nível ocorre sobre uma **Ilha 3D Modular sobre o Oceano (`water_ocean.tscn` e kit de tiles em `scenes/editor/tiles/`)**:
+Para proporcionar uma experiência limpa, solar, fluida e de altíssima performance mobile (1 Draw Call), cada nível ocorre sobre uma **Ilha 3D Procedural Unificada (`IslandMeshBuilder.gd` e `water_ocean.tscn`)**:
 - **Oceano Turquesa (`WaterOcean`):**
   - Superfície azul turquesa fosca (`Color(0.18, 0.65, 0.78)`, `roughness = 0.88`) posicionada em `Y = -0.71m` (linha d'água calibrada na base da falésia).
-- **Blocos Modulares de Ilha em GLB ($0.80\text{m} \times 0.80\text{m} \times 0.72\text{m}$):**
-  - Modelos 3D estilizados exportados do Blender (`assets/models/tiles/`) utilizando a paleta de texturas atlas `GRADIENT` compartilhada:
-    - **Quinas Externas Arredondadas (`tile_island_corner_out.glb`):** Curvatura cilíndrica suave ($R = 0.28\text{m}$, 56 triângulos) com simetria diagonal estrita e tolerância zero ($0.000000\text{m}$) de fresta com bordas retas e pisos.
-    - **Quinas Internas Côncavas (`tile_island_corner_in.glb`):** Transição em arco côncavo suave ($R = 0.20\text{m}$, 44 triângulos) para reentrâncias e baías em curvas em "L", exportada com rotação pura (`rot_z_deg = -90`) e escala positiva (`0.40, 0.40, 0.18`) para preservar normais externas voltadas para fora e altura canônica de $0.72\text{m}$ (`scale.y = 2.0`).
-    - **Pontas de Península (`tile_island_end.glb`):** Extremidade semicircular ($R = 0.20\text{m}$, 71 triângulos) de caminhos e promontórios de 1 tile ($0.80\text{m}$) com falésia em 3 lados e altura $0.72\text{m}$.
-    - **Bordas Retas (`tile_island_edge.glb`):** Falésia vertical aberta (8 triângulos) com lábio superior de grama arredondado e face costeira externa.
-    - **Piso Central (`tile_island_center.glb` e `tile_island_dirt.glb`):** Superfície superior plana pura (2 triângulos, 4 vértices em $Y = 0.0\text{m}$) de grama esmeralda ou terra/trilha alaranjada no topo.
-  - **Topologia Aberta Zero Paredes Ocultas:** Todas as paredes verticais internas de fronteira entre blocos vizinhos ($X = \pm 0.40\text{m}$, $Z = \pm 0.40\text{m}$), faces inferiores submersas ($Y = -0.72\text{m}$) e triângulos degenerados foram removidas no Blender 5.2, preservando 100% das normais customizadas dos chanfros e eliminando por completo faces coplanares internas e *z-fighting* entre blocos adjacentes.
-- **Espuma Costeira 2D Minimalista em Curva Contínua (`CoastalFoamRibbon` & `coastal_foam.gdshader`):**
-  - Gerada proceduralmente em malha única (`ArrayMesh` de 1 *draw call*) por `LevelJsonLoader.build_coastal_colliders_and_foam()`, acompanhando a equação exata da curva de cada tile costeiro (`island_edge`, arco convexo de $R = 0.32\text{m}$ em `island_corner_out`, arco côncavo de $R = 0.20\text{m}$ em `island_corner_in`, e semicírculo de $R = 0.20\text{m}$ em `island_end`) com normais radiais suaves por vértice ($C^1$).
-  - Renderizada via `shaders/coastal_foam.gdshader` (`unshaded, depth_draw_never`) em duas faixas nítidas estilo 2D Toon/Minimalista com balanço suave de vai e vem da maré (`sin(TIME * wave_speed)`).
-- **Contenção Física Costeira Invisível (Zero Cercas):**
-  - Todas as bordas da ilha voltadas para a água recebem colisores invisíveis na Camada Física 1 (`Layer 1: Ground & Limits`), gerados por `LevelJsonLoader.build_coastal_colliders_and_foam()`.
-  - Função: Impedir que o robô cortador caia na água sem necessitar de cercas ou muretas visuais.
+- **Malha Procedural Única (`IslandMesh` - 1 Draw Call):**
+  - Gerada proceduralmente em tempo real pela classe utilitária `IslandMeshBuilder.build_island_mesh()` a partir dos polígonos perimetrais no plano horizontal XZ (`island_polygons`):
+    - **Teto Superior Planalto ($Y = 0.0\text{m}$):** Triangulação plana contínua com `Geometry2D.triangulate_polygon`, normais voltadas para cima $(0, 1, 0)$ e mapeamento UV da textura atlas esmeralda (`tile_island_center_Image_0.png`).
+    - **Chanfro / Borda Arredondada Low Poly:** Lábio sutil rebaixado em $Y = -0.06\text{m}$ com avanço perimetral de $0.015\text{m}$, reproduzindo a estética de borda suave sem emendas visuais.
+    - **Falésias Costeiras Verticais ($Y = -0.06\text{m}$ a $-0.72\text{m}$):** Faixa de quadriláteros verticais ao longo de cada aresta perimetral com normais externas horizontais e mapeamento UV da rocha/terra do atlas `GRADIENT`.
+    - **Fechamento Submerso ($Y = -0.72\text{m}$):** Geometria estanque que penetra a superfície do oceano sem frestas ou faces internas degeneradas.
+- **Espuma Costeira 2D Minimalista em Fita Contínua (`CoastalFoamRibbon` & `coastal_foam.gdshader`):**
+  - Gerada proceduralmente por `IslandMeshBuilder.build_coastal_foam_mesh()`, acompanhando as normais radiais suaves dos vértices do perímetro da ilha ($C^1$) em $Y = -0.692\text{m}$.
+  - Renderizada via `shaders/coastal_foam.gdshader` (`unshaded, depth_draw_never`) em duas faixas nítidas estilo 2D Toon com oscilação contínua da maré (`sin(TIME * wave_speed)`).
+- **Contenção Física Costeira Invisível (Camada 1 - Zero Cercas):**
+  - Todas as bordas da ilha voltadas para a água recebem barreiras físicas de colisão verticais na Camada Física 1 (`Layer 1: Ground & Limits`), geradas por `IslandMeshBuilder.build_coastal_colliders()`.
+  - As caixas têm espessura de $0.06\text{m}$ e altura de $1.2\text{m}$, contendo perfeitamente o cortador sem necessitar de cercas visuais.
+- **Retrocompatibilidade e JSON v4:**
+  - Níveis legados com matriz `"terrain"` de blocos são convertidos automaticamente via união booleana (`Geometry2D.merge_polygons`), gerando o contorno contínuo idêntico de forma transparente. Níveis atualizados persistem o bloco `"island_polygons"` no formato JSON v4.
 
 ---
 
