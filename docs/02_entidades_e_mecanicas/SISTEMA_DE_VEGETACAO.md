@@ -56,12 +56,16 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
 2. **Janela de Cooldown de 1 Segundo & Micro-Tremor Contínuo:**
    - Cada golpe subsequente exige um intervalo de **1.0 segundo** (`MULTI_HIT_COOLDOWN_SEC = 1.0`).
    - Durante essa janela de 1 segundo, enquanto a serra giratória mantiver contato ativo com o tufo resistente, a planta vibra com um **micro-tremor procedural de alta frequência** ($\approx 65\text{Hz}$ e $\pm 0.022\text{m}$ de amplitude), simulando visual e tatilmente o atrito mecânico dos dentes de aço mastigando o caule resistente antes do corte.
-3. **Golpe Parcial (Resistência Ativa):**
+3. **Golpe Parcial (Resistência Ativa) & Despetalação:**
    - Ao desferir cada hit parcial (`health > power`):
-   - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal) e, no caso de flores, um estágio de despetalação (`instance_hit_stage` no shader) é avançado com ejeção de pétalas voando.
-4. **Corte Concluído (`_perform_cut`):**
+   - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal).
+   - No caso de flores, o estágio de despetalação (`instance_hit_stage` no shader) avança na GPU, e uma explosão parcial de confetes (`spawn_flower_petal_burst`) ejeta círculos da cor da pétala e triângulos verdes de folha voando em arco e caindo.
+4. **Corte Concluído & Sistema de Partículas Geométricas em Arco (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
-   - Um emissor do **Pool Estático Compartilhado (`_particle_pool`, 16 instâncias)** em `plant.gd` é posicionado no tufo e ejeta 21 pedaços de folhas partidas estilizadas (`cut_leaf_piece.obj`) distribuídas por anel (`emission_shape = RING`, raio $0.18\text{m}$), com cor sincronizada ao `color_top` do material da planta e giro 3D sob gravidade natural (`gravity = -9.8 m/s²`, voo de `0.55s`).
+   - **Partículas Geométricas Voadoras com Física Parabólica:**
+     - As peças não são mais hastes verticais rígidas: operam com rotação 3D livre (`particle_flag_rotate_y = false`), espalhamento hemisférico aberto (`spread = 82°`, velocidade $3.2 \dots 5.2\text{ m/s}$) e gravidade acentuada (`-14.0 m/s²`), criando um efeito espetacular de pedaços espirrando para os lados e caindo ao chão.
+     - **Grama e Trigo:** Ejetam fragmentos geométricos estilizados de **triângulos** (8 unidades) e **quadrados** (6 unidades) tingidos na cor correspondente da vegetação com leve brilho próprio emissivo.
+     - **Flores:** Ejetam uma explosão festiva composta por **círculos** da cor da pétala (8 unidades), **círculos** da cor do miolo (4 unidades), **quadrados** verdes representando o caule (3 unidades) e **triângulos** verdes representando folhas (3 unidades).
    - O `GameManager.register_cut(plant_key, coin_reward, cut_pos)` é notificado:
      - Incrementa as moedas da fase multiplicadas pelo multiplicador ativo da oficina.
      - Dispara o sinal `coin_popup_requested(cut_pos, earned, plant_type)` gerando os números flutuantes cartoon 3D (`+1`, `+3`, `+5`) com contorno preto e rastro contínuo (*number trail*) via `FloatingCoinManager`.

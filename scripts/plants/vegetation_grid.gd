@@ -1223,23 +1223,23 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 			if col_variant is Color:
 				return col_variant as Color
 	if v_type == "wheat":
-		return Color(0.96, 0.75, 0.15, 1.0)
+		return Color(0.98, 0.78, 0.14, 1.0)
 	if v_type == "flower_rose":
-		return Color(0.92, 0.16, 0.32, 1.0)
+		return Color(1.0, 0.08, 0.35, 1.0)
 	if v_type == "flower_daisy":
-		return Color(0.97, 0.97, 0.98, 1.0)
+		return Color(1.0, 1.0, 1.0, 1.0)
 	if v_type == "flower_sunflower":
-		return Color(1.0, 0.82, 0.10, 1.0)
+		return Color(1.0, 0.88, 0.0, 1.0)
 	if v_type == "flower_bell":
-		return Color(0.22, 0.58, 0.95, 1.0)
+		return Color(0.12, 0.65, 1.0, 1.0)
 	if v_type == "flower_corolla":
-		return Color(0.98, 0.52, 0.18, 1.0)
+		return Color(1.0, 0.50, 0.05, 1.0)
 	if v_type == "flower_tulip":
-		return Color(0.92, 0.18, 0.24, 1.0)
+		return Color(1.0, 0.08, 0.24, 1.0)
 	if v_type == "flower_bed":
-		return Color(0.78, 0.38, 0.92, 1.0)
+		return Color(0.88, 0.30, 1.0, 1.0)
 	if v_type == "flower":
-		return Color(0.95, 0.35, 0.65, 1.0)
+		return Color(1.0, 0.18, 0.65, 1.0)
 	return Color(0.25, 0.75, 0.3, 1.0)
 
 
@@ -1335,7 +1335,13 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						if dist_xz > max_p_dist and dist_xz > 0.001:
 							var ratio: float = max_p_dist / dist_xz
 							safe_p_pos = Vector3(center.x + dx * ratio, p_pos.y, center.z + dz * ratio)
-						_spawn_cut_particles_at(safe_p_pos, _particle_colors[p_idx])
+						var p_key_part: String = _plant_keys[p_idx]
+						var tree_node: SceneTree = get_tree()
+						var s_root: Node = tree_node.current_scene if tree_node != null else self
+						if p_key_part.begins_with("flower"):
+							PlantScript.spawn_flower_cut_particles(s_root, safe_p_pos, p_key_part)
+						else:
+							PlantScript.spawn_grass_cut_particles(s_root, safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1
 
 					# Atualização de metas: Trigo e Flores são 1:1 diretos; Grama usa lotes de 10
@@ -1384,7 +1390,9 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						if p_key.begins_with("flower"):
 							var stage: float = 1.0 if new_hp == 2 else 2.0
 							mm.set_instance_custom_data(inst_idx, Color(stage, 0.0, 0.0, 0.0))
-							_spawn_cut_particles_at(p_pos, _particle_colors[p_idx])
+							var tree_node: SceneTree = get_tree()
+							var s_root: Node = tree_node.current_scene if tree_node != null else self
+							PlantScript.spawn_flower_petal_burst(s_root, p_pos, p_key)
 						var init_xform: Transform3D = _initial_transforms[p_idx]
 						var squash_xform: Transform3D = Transform3D(
 							init_xform.basis.scaled(Vector3(1.25, 1.25, 1.25)),
@@ -1472,19 +1480,7 @@ func _spawn_cut_particles_at(world_pos: Vector3, col: Color) -> void:
 	var scene_root: Node = tree.current_scene
 	if scene_root == null:
 		scene_root = self
-
-	if PlantScript._particle_pool.is_empty() or not is_instance_valid(PlantScript._particle_pool[0]) or not PlantScript._particle_pool[0].is_inside_tree():
-		PlantScript._init_particle_pool(scene_root)
-
-	var emitter: CPUParticles3D = PlantScript._particle_pool[PlantScript._pool_idx]
-	PlantScript._pool_idx = (PlantScript._pool_idx + 1) % PlantScript.POOL_SIZE
-
-	emitter.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-	emitter.emitting = false
-	emitter.material_override = PlantScript._get_or_create_particle_material(col)
-	emitter.global_position = world_pos + Vector3(0.0, 0.15, 0.0)
-	emitter.reset_physics_interpolation()
-	emitter.restart()
+	PlantScript.spawn_grass_cut_particles(scene_root, world_pos, col)
 
 
 func get_total_tufts() -> int:

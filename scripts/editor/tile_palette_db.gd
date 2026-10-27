@@ -134,7 +134,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower",
 		"name": "Flor Silvestre",
 		"icon": "🌸",
-		"color": Color(0.95, 0.38, 0.68),
+		"color": Color(1.0, 0.18, 0.65),
 		"goal_key": "flower",
 		"category": "plant"
 	},
@@ -142,7 +142,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_rose",
 		"name": "Rosa Nobre",
 		"icon": "🌹",
-		"color": Color(0.92, 0.16, 0.32),
+		"color": Color(1.0, 0.08, 0.35),
 		"goal_key": "flower_rose",
 		"category": "plant"
 	},
@@ -150,7 +150,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_daisy",
 		"name": "Margarida",
 		"icon": "🌼",
-		"color": Color(0.97, 0.97, 0.98),
+		"color": Color(1.0, 1.0, 1.0),
 		"goal_key": "flower_daisy",
 		"category": "plant"
 	},
@@ -158,7 +158,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_sunflower",
 		"name": "Girassol",
 		"icon": "🌻",
-		"color": Color(1.0, 0.82, 0.10),
+		"color": Color(1.0, 0.88, 0.0),
 		"goal_key": "flower_sunflower",
 		"category": "plant"
 	},
@@ -166,7 +166,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_bell",
 		"name": "Flor Sino",
 		"icon": "🔔",
-		"color": Color(0.22, 0.58, 0.95),
+		"color": Color(0.12, 0.65, 1.0),
 		"goal_key": "flower_bell",
 		"category": "plant"
 	},
@@ -174,7 +174,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_corolla",
 		"name": "Cravo Corola",
 		"icon": "🏵️",
-		"color": Color(0.98, 0.52, 0.18),
+		"color": Color(1.0, 0.50, 0.05),
 		"goal_key": "flower_corolla",
 		"category": "plant"
 	},
@@ -182,7 +182,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_tulip",
 		"name": "Tulipa Imperial",
 		"icon": "🌷",
-		"color": Color(0.92, 0.18, 0.24),
+		"color": Color(1.0, 0.08, 0.24),
 		"goal_key": "flower_tulip",
 		"category": "plant"
 	},
@@ -190,7 +190,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower_bed",
 		"name": "Canteiro Florido",
 		"icon": "🪻",
-		"color": Color(0.78, 0.38, 0.92),
+		"color": Color(0.88, 0.30, 1.0),
 		"goal_key": "flower_bed",
 		"category": "plant"
 	},

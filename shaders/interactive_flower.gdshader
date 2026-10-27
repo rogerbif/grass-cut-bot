@@ -11,10 +11,11 @@ uniform float wind_speed : hint_range(0.0, 10.0) = 1.8;
 uniform float wind_strength : hint_range(0.0, 1.0) = 0.08;
 
 // Cores das pétalas e do miolo (Low Poly Matte)
-uniform vec4 petal_color : source_color = vec4(0.92, 0.22, 0.58, 1.0);
-uniform vec4 center_color : source_color = vec4(1.0, 0.82, 0.18, 1.0);
-uniform float roughness : hint_range(0.0, 1.0) = 0.9;
+uniform vec4 petal_color : source_color = vec4(1.0, 0.18, 0.65, 1.0);
+uniform vec4 center_color : source_color = vec4(1.0, 0.85, 0.05, 1.0);
+uniform float roughness : hint_range(0.0, 1.0) = 0.85;
 uniform float specular : hint_range(0.0, 1.0) = 0.15;
+uniform float vibrancy : hint_range(0.0, 1.0) = 0.18;
 
 // Para nós individuais de flor que não utilizam MultiMeshInstance3D
 instance uniform float instance_hit_stage : hint_range(0.0, 2.0) = 0.0;
@@ -70,11 +71,9 @@ void vertex() {
 
 void fragment() {
 	// Se for miolo (COLOR.g > 0.5 assado no Blender), aplica center_color; senão petal_color
-	if (COLOR.g > 0.5) {
-		ALBEDO = center_color.rgb;
-	} else {
-		ALBEDO = petal_color.rgb;
-	}
+	vec3 base_col = (COLOR.g > 0.5) ? center_color.rgb : petal_color.rgb;
+	ALBEDO = base_col;
+	EMISSION = base_col * vibrancy;
 	ROUGHNESS = roughness;
 	SPECULAR = specular;
 }

@@ -2,9 +2,12 @@ extends Node3D
 
 enum PlantType { GRASS, WHEAT, FLOWER }
 
-const POOL_SIZE: int = 16
-const LEAF_MESH: ArrayMesh = preload("res://assets/models/cut_leaf_piece.obj")
-static var _petal_mesh: Mesh = null
+const POOL_SIZE: int = 36
+const FLOWER_STEM_COLOR: Color = Color(0.20, 0.72, 0.28, 1.0)
+
+static var _triangle_mesh: ArrayMesh = null
+static var _square_mesh: ArrayMesh = null
+static var _circle_mesh: ArrayMesh = null
 
 static var _particle_pool: Array[CPUParticles3D] = []
 static var _pool_idx: int = 0
@@ -52,18 +55,73 @@ func _ready() -> void:
 		var random_scale: float = randf_range(0.48, 0.58)
 		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 
-static func _get_petal_mesh() -> Mesh:
-	if _petal_mesh == null:
-		var scene: PackedScene = load("res://assets/models/cut_petal_piece.glb")
-		if scene != null:
-			var inst: Node = scene.instantiate()
-			var mi: MeshInstance3D = inst.find_child("*", true, false) as MeshInstance3D
-			if mi != null:
-				_petal_mesh = mi.mesh
-			inst.free()
-		if _petal_mesh == null:
-			_petal_mesh = LEAF_MESH
-	return _petal_mesh
+static func _ensure_particle_meshes() -> void:
+	if _triangle_mesh == null:
+		var st: SurfaceTool = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var n: Vector3 = Vector3(0.0, 0.0, 1.0)
+		st.set_normal(n); st.set_uv(Vector2(0.5, 0.0)); st.add_vertex(Vector3(0.0, 0.055, 0.0))
+		st.set_normal(n); st.set_uv(Vector2(0.0, 1.0)); st.add_vertex(Vector3(-0.045, -0.035, 0.0))
+		st.set_normal(n); st.set_uv(Vector2(1.0, 1.0)); st.add_vertex(Vector3(0.045, -0.035, 0.0))
+		_triangle_mesh = st.commit()
+
+	if _square_mesh == null:
+		var st: SurfaceTool = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var n: Vector3 = Vector3(0.0, 0.0, 1.0)
+		var s: float = 0.038
+		st.set_normal(n); st.set_uv(Vector2(0, 0)); st.add_vertex(Vector3(-s, -s, 0.0))
+		st.set_normal(n); st.set_uv(Vector2(1, 0)); st.add_vertex(Vector3(s, -s, 0.0))
+		st.set_normal(n); st.set_uv(Vector2(1, 1)); st.add_vertex(Vector3(s, s, 0.0))
+
+		st.set_normal(n); st.set_uv(Vector2(0, 0)); st.add_vertex(Vector3(-s, -s, 0.0))
+		st.set_normal(n); st.set_uv(Vector2(1, 1)); st.add_vertex(Vector3(s, s, 0.0))
+		st.set_normal(n); st.set_uv(Vector2(0, 1)); st.add_vertex(Vector3(-s, s, 0.0))
+		_square_mesh = st.commit()
+
+	if _circle_mesh == null:
+		var st: SurfaceTool = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var n: Vector3 = Vector3(0.0, 0.0, 1.0)
+		var r: float = 0.045
+		var segments: int = 10
+		for i: int in range(segments):
+			var a0: float = float(i) * TAU / float(segments)
+			var a1: float = float(i + 1) * TAU / float(segments)
+			st.set_normal(n); st.set_uv(Vector2(0.5, 0.5)); st.add_vertex(Vector3.ZERO)
+			st.set_normal(n); st.set_uv(Vector2(0.5 + 0.5 * cos(a0), 0.5 + 0.5 * sin(a0))); st.add_vertex(Vector3(cos(a0) * r, sin(a0) * r, 0.0))
+			st.set_normal(n); st.set_uv(Vector2(0.5 + 0.5 * cos(a1), 0.5 + 0.5 * sin(a1))); st.add_vertex(Vector3(cos(a1) * r, sin(a1) * r, 0.0))
+		_circle_mesh = st.commit()
+
+static func get_flower_colors(flower_type: String) -> Dictionary:
+	var petal_col: Color = Color(1.0, 0.18, 0.65, 1.0)
+	var center_col: Color = Color(1.0, 0.85, 0.05, 1.0)
+	match flower_type:
+		"flower_rose":
+			petal_col = Color(1.0, 0.08, 0.35, 1.0)
+			center_col = Color(0.80, 0.02, 0.18, 1.0)
+		"flower_daisy":
+			petal_col = Color(1.0, 1.0, 1.0, 1.0)
+			center_col = Color(1.0, 0.85, 0.0, 1.0)
+		"flower_sunflower":
+			petal_col = Color(1.0, 0.88, 0.0, 1.0)
+			center_col = Color(0.48, 0.22, 0.05, 1.0)
+		"flower_bell":
+			petal_col = Color(0.12, 0.65, 1.0, 1.0)
+			center_col = Color(0.05, 0.38, 0.92, 1.0)
+		"flower_corolla":
+			petal_col = Color(1.0, 0.50, 0.05, 1.0)
+			center_col = Color(0.95, 0.15, 0.05, 1.0)
+		"flower_tulip":
+			petal_col = Color(1.0, 0.08, 0.24, 1.0)
+			center_col = Color(0.68, 0.05, 0.15, 1.0)
+		"flower_bed":
+			petal_col = Color(0.88, 0.30, 1.0, 1.0)
+			center_col = Color(0.55, 0.08, 0.80, 1.0)
+		_:
+			petal_col = Color(1.0, 0.18, 0.65, 1.0)
+			center_col = Color(1.0, 0.85, 0.05, 1.0)
+	return { "petal": petal_col, "center": center_col }
 
 func _apply_visual_material(target: Node) -> void:
 	if target == null:
@@ -112,7 +170,9 @@ func cut(power: int) -> void:
 func _apply_flower_damage_stage(remaining_hp: int) -> void:
 	var stage: float = 1.0 if remaining_hp == 2 else 2.0
 	_set_flower_stage_recursive(visual_mesh, stage)
-	_spawn_petal_burst(6)
+	var scene_root: Node = get_tree().current_scene if get_tree() != null else null
+	if scene_root != null:
+		spawn_flower_petal_burst(scene_root, global_position + Vector3(0.0, 0.25, 0.0), plant_key)
 
 func _set_flower_stage_recursive(target: Node, stage: float) -> void:
 	if target is GeometryInstance3D:
@@ -126,7 +186,12 @@ func _perform_cut() -> void:
 		area_shape.set_deferred("disabled", true)
 
 	# Lança partículas em arco parabólico via Pool Estático Compartilhado
-	_spawn_cut_particles()
+	var scene_root: Node = get_tree().current_scene if get_tree() != null else null
+	if scene_root != null:
+		if type == PlantType.FLOWER:
+			spawn_flower_cut_particles(scene_root, global_position + Vector3(0.0, 0.15, 0.0), plant_key)
+		else:
+			spawn_grass_cut_particles(scene_root, global_position + Vector3(0.0, 0.15, 0.0), _resolve_particle_color())
 
 	# Notifica o GameManager
 	var gm: Node = get_node_or_null("/root/GameManager")
@@ -148,48 +213,66 @@ func _resolve_particle_color() -> Color:
 		if col_variant is Color:
 			return col_variant as Color
 	if type == PlantType.WHEAT:
-		return Color(0.96, 0.75, 0.15, 1.0)
+		return Color(0.98, 0.78, 0.14, 1.0)
 	if type == PlantType.FLOWER:
-		return Color(0.92, 0.22, 0.58, 1.0)
+		return Color(1.0, 0.18, 0.65, 1.0)
 	return particle_color
 
-func _spawn_petal_burst(amount: int = 6) -> void:
-	var scene_root: Node = get_tree().current_scene
-	if scene_root == null:
+static func _emit_sub_burst(scene_root: Node, pos: Vector3, mesh: Mesh, col: Color, count: int) -> void:
+	if scene_root == null or mesh == null:
 		return
-
+	if not scene_root.is_inside_tree():
+		return
 	if _particle_pool.is_empty() or not is_instance_valid(_particle_pool[0]) or not _particle_pool[0].is_inside_tree():
 		_init_particle_pool(scene_root)
+	if _particle_pool.is_empty():
+		return
 
 	var emitter: CPUParticles3D = _particle_pool[_pool_idx]
 	_pool_idx = (_pool_idx + 1) % POOL_SIZE
 
-	var col: Color = _resolve_particle_color()
-	emitter.mesh = _get_petal_mesh()
-	emitter.amount = amount
+	if not emitter.is_inside_tree():
+		scene_root.add_child(emitter)
+
+	emitter.mesh = mesh
+	emitter.amount = count
 	emitter.emitting = false
 	emitter.material_override = _get_or_create_particle_material(col)
-	emitter.global_position = global_position + Vector3(0.0, 0.25, 0.0)
-	emitter.reset_physics_interpolation()
+	if emitter.is_inside_tree():
+		emitter.global_position = pos
+		emitter.reset_physics_interpolation()
+	else:
+		emitter.position = pos
 	emitter.restart()
 
-func _spawn_cut_particles() -> void:
-	var scene_root: Node = get_tree().current_scene
-	if scene_root == null:
-		return
+## Emissão para Grama e Trigo: fragmentos geométricos de Triângulos e Quadrados da cor da vegetação
+static func spawn_grass_cut_particles(scene_root: Node, world_pos: Vector3, col: Color) -> void:
+	_ensure_particle_meshes()
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _triangle_mesh, col, 8)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _square_mesh, col, 6)
 
-	if _particle_pool.is_empty() or not is_instance_valid(_particle_pool[0]) or not _particle_pool[0].is_inside_tree():
-		_init_particle_pool(scene_root)
+## Emissão para Flores: Círculos das cores de pétala e miolo, mais pedaços verdes de caule (quadrados) e folhas (triângulos)
+static func spawn_flower_cut_particles(scene_root: Node, world_pos: Vector3, flower_type: String) -> void:
+	_ensure_particle_meshes()
+	var cols: Dictionary = get_flower_colors(flower_type)
+	var p_col: Color = cols["petal"] as Color
+	var c_col: Color = cols["center"] as Color
+	var s_col: Color = FLOWER_STEM_COLOR
 
-	var emitter: CPUParticles3D = _particle_pool[_pool_idx]
-	_pool_idx = (_pool_idx + 1) % POOL_SIZE
+	# Círculos das cores da flor (pétala e miolo)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.22, 0.0), _circle_mesh, p_col, 8)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.22, 0.0), _circle_mesh, c_col, 4)
 
-	var col: Color = _resolve_particle_color()
-	emitter.emitting = false
-	emitter.material_override = _get_or_create_particle_material(col)
-	emitter.global_position = global_position + Vector3(0.0, 0.15, 0.0)
-	emitter.reset_physics_interpolation()
-	emitter.restart()
+	# Fragmentos verdes: caule (quadrado) e folha (triângulo)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.15, 0.0), _square_mesh, s_col, 3)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.15, 0.0), _triangle_mesh, s_col, 3)
+
+## Explosão parcial de pétalas e folha para hits intermediários de flor
+static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flower_type: String) -> void:
+	_ensure_particle_meshes()
+	var cols: Dictionary = get_flower_colors(flower_type)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.25, 0.0), _circle_mesh, cols["petal"] as Color, 6)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.18, 0.0), _triangle_mesh, FLOWER_STEM_COLOR, 2)
 
 static func _get_or_create_particle_material(col: Color) -> StandardMaterial3D:
 	var key: String = col.to_html(false)
@@ -197,20 +280,24 @@ static func _get_or_create_particle_material(col: Color) -> StandardMaterial3D:
 		return _particle_materials[key] as StandardMaterial3D
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	mat.roughness = 0.9
+	mat.roughness = 0.85
 	mat.albedo_color = col
+	mat.emission_enabled = true
+	mat.emission = col
+	mat.emission_energy_multiplier = 0.22
 	_particle_materials[key] = mat
 	return mat
 
 static func _init_particle_pool(scene_root: Node) -> void:
 	_particle_pool.clear()
 	_pool_idx = 0
+	_ensure_particle_meshes()
 
 	if _scale_curve == null:
 		_scale_curve = Curve.new()
-		_scale_curve.add_point(Vector2(0.0, 0.8))
-		_scale_curve.add_point(Vector2(0.15, 1.0))
-		_scale_curve.add_point(Vector2(0.65, 1.0))
+		_scale_curve.add_point(Vector2(0.0, 0.75))
+		_scale_curve.add_point(Vector2(0.12, 1.15))
+		_scale_curve.add_point(Vector2(0.65, 0.95))
 		_scale_curve.add_point(Vector2(1.0, 0.0), -3.0, 0.0)
 
 	for i: int in range(POOL_SIZE):
@@ -219,32 +306,31 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
-		p.amount = 14
-		p.lifetime = 0.42
+		p.amount = 8
+		p.lifetime = 0.52
 		p.one_shot = true
 		p.explosiveness = 0.95
-		p.mesh = LEAF_MESH
-		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_RING
-		p.emission_ring_axis = Vector3(0.0, 1.0, 0.0)
-		p.emission_ring_height = 0.08
-		p.emission_ring_radius = 0.18
-		p.emission_ring_inner_radius = 0.0
-		p.particle_flag_rotate_y = true
+		p.mesh = _triangle_mesh
+		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+		p.emission_sphere_radius = 0.12
+		p.particle_flag_rotate_y = false # Rotação 3D livre / tumbling
 		p.direction = Vector3(0.0, 1.0, 0.0)
-		p.spread = 85.0
-		p.gravity = Vector3(0.0, -9.8, 0.0)
-		p.initial_velocity_min = 2.0
-		p.initial_velocity_max = 3.6
-		p.angular_velocity_min = -540.0
-		p.angular_velocity_max = 540.0
+		p.spread = 82.0
+		p.gravity = Vector3(0.0, -14.0, 0.0) # Arco parabólico com queda firme
+		p.initial_velocity_min = 3.2
+		p.initial_velocity_max = 5.2
+		p.angular_velocity_min = -720.0
+		p.angular_velocity_max = 720.0
 		p.angle_min = -180.0
 		p.angle_max = 180.0
-		p.tangential_accel_min = -3.0
-		p.tangential_accel_max = 3.0
-		p.damping_min = 1.0
-		p.damping_max = 2.5
-		p.scale_amount_min = 0.8
-		p.scale_amount_max = 1.5
+		p.radial_accel_min = 1.2
+		p.radial_accel_max = 3.2
+		p.tangential_accel_min = -2.5
+		p.tangential_accel_max = 2.5
+		p.damping_min = 1.2
+		p.damping_max = 2.8
+		p.scale_amount_min = 0.75
+		p.scale_amount_max = 1.35
 		p.scale_amount_curve = _scale_curve
 		scene_root.add_child(p)
 		_particle_pool.append(p)
