@@ -41,6 +41,8 @@ func get_default_save() -> Dictionary:
 			"last_played_level": 1
 		},
 		"upgrades": {
+			"blade_level": 1,
+			"blade_xp": 0.0,
 			"radius_level": 1,
 			"power_level": 1,
 			"speed_level": 1,
@@ -303,6 +305,8 @@ func reset_to_defaults() -> void:
 			UpgradeManager.load_from_dict(save_data["upgrades"], 0)
 		else:
 			UpgradeManager.total_coins = 0
+			UpgradeManager.blade_level = 1
+			UpgradeManager.blade_xp = 0.0
 			UpgradeManager.radius_level = 1
 			UpgradeManager.power_level = 1
 			UpgradeManager.speed_level = 1

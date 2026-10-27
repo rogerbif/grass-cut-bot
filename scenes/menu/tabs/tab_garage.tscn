@@ -33,9 +33,9 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 content_margin_left = 16.0
-content_margin_top = 12.0
+content_margin_top = 14.0
 content_margin_right = 16.0
-content_margin_bottom = 12.0
+content_margin_bottom = 14.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_buy"]
 bg_color = Color(0.18, 0.72, 0.38, 0.95)
@@ -73,12 +73,12 @@ horizontal_scroll_mode = 0
 [node name="VBox" type="VBoxContainer" parent="Panel/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="Panel/Scroll/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "🔧 Oficina & Upgrades"
+text = "🔧 Oficina do Bot"
 horizontal_alignment = 1
 
 [node name="BladeBanner" type="PanelContainer" parent="Panel/Scroll/VBox"]
@@ -87,12 +87,12 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_banner")
 
 [node name="VBox" type="VBoxContainer" parent="Panel/Scroll/VBox/BladeBanner"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Title" type="Label" parent="Panel/Scroll/VBox/BladeBanner/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.92, 1, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "ROTOR DE CORTE EQUIPADO"
 
 [node name="TierNameLabel" type="Label" parent="Panel/Scroll/VBox/BladeBanner/VBox"]
@@ -108,121 +108,42 @@ alignment = 1
 [node name="CoinsValLabel" type="Label" parent="Panel/Scroll/VBox/CoinsBanner"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.86, 0.25, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "0 Moedas"
 
-[node name="RadiusCard" type="PanelContainer" parent="Panel/Scroll/VBox"]
+[node name="BladeCard" type="PanelContainer" parent="Panel/Scroll/VBox"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/RadiusCard"]
+[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/BladeCard"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/RadiusCard/Info"]
+[node name="Name" type="Label" parent="Panel/Scroll/VBox/BladeCard/Info"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "📏 Raio da Lâmina"
+text = "🪚 Upgrade da Lâmina"
 
-[node name="LevelLabel" type="Label" parent="Panel/Scroll/VBox/RadiusCard/Info"]
+[node name="LevelLabel" type="Label" parent="Panel/Scroll/VBox/BladeCard/Info"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "Nível 1 • +0.10m Raio"
+text = "Nível 1 • Raio: 0.90m • Vel: 3.25m/s"
 
-[node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/RadiusCard"]
-custom_minimum_size = Vector2(105, 46)
+[node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/BladeCard"]
+custom_minimum_size = Vector2(110, 48)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 focus_mode = 0
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_buy")
-text = "50 🪙"
+text = "75 🪙"
 
-[node name="PowerCard" type="PanelContainer" parent="Panel/Scroll/VBox"]
+[node name="TipLabel" type="Label" parent="Panel/Scroll/VBox"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/PowerCard"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/PowerCard/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "⚔️ Potência e Fio"
-
-[node name="LevelLabel" type="Label" parent="Panel/Scroll/VBox/PowerCard/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 14
-text = "Nível 1 • +1 Dano/Golpe"
-
-[node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/PowerCard"]
-custom_minimum_size = Vector2(105, 46)
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 4
-focus_mode = 0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_buy")
-text = "100 🪙"
-
-[node name="SpeedCard" type="PanelContainer" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/SpeedCard"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/SpeedCard/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "⚡ Velocidade da Serra"
-
-[node name="LevelLabel" type="Label" parent="Panel/Scroll/VBox/SpeedCard/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 14
-text = "Nível 1 • +0.45m/s Vel."
-
-[node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/SpeedCard"]
-custom_minimum_size = Vector2(105, 46)
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 4
-focus_mode = 0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_buy")
-text = "60 🪙"
-
-[node name="MultCard" type="PanelContainer" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/MultCard"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/MultCard/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "🪙 Multiplicador de Moedas"
-
-[node name="LevelLabel" type="Label" parent="Panel/Scroll/VBox/MultCard/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 14
-text = "Nível 1 • +1x Moedas"
-
-[node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/MultCard"]
-custom_minimum_size = Vector2(105, 46)
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 4
-focus_mode = 0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_buy")
-text = "150 🪙"
+theme_override_colors/font_color = Color(0.55, 0.65, 0.75, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "💡 Dica: A lâmina também sobe de nível durante a partida cortando vegetação (até o Nível 6 MAX). Bater em pedras reduz o nível!"
+autowrap_mode = 2

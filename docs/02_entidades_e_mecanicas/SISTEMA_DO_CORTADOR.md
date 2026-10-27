@@ -22,11 +22,13 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 │               └── BladeSpinner (Node3D - Reparentado no _ready() sob Body: herda pitch/roll/suspensão; rotação local em Y)
 │                   ├── blade_tier_1 (MeshInstance3D - Nv. 1-2: Lâmina Tripla de Aço 3 pontas)
 │                   ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Lâmina Quádrupla Ninja 4 pontas)
-│                   ├── blade_tier_3 (MeshInstance3D - Nv. 5-6: Lâmina Estelar de Titânio 5 pontas)
-│                   └── blade_tier_4 (MeshInstance3D - Nv. 7+: Lâmina Vortex Ninja 6 pontas)
+│                   ├── blade_tier_3 (MeshInstance3D - Nv. 5: Lâmina Estelar de Titânio 5 pontas)
+│                   └── blade_tier_4 (MeshInstance3D - Nv. 6: Lâmina Hexagonal Dourada MAX)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
-│   └── CollisionShape3D (Cylinder r=0.90m dinâmico, h=0.4m em Y=0.45m)
-└── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
+│   └── CollisionShape3D (Cylinder r=0.90m a 1.40m dinâmico, h=0.4m em Y=0.45m)
+├── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
+├── RobotEyes (Node - Expressões faciais)
+└── BladeProgressBar (Node3D - Barra flutuante Billboard sobre a cabeça com nível Lv. 1-5 ou MAX)
 ```
 
 ---

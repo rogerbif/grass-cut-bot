@@ -1,58 +1,42 @@
 # Economia e Oficina de Upgrades 🪙⚙️
 
-Este documento detalha o sistema econômico, a aquisição de moedas, a escalabilidade de custos e as 4 melhorias centrais do cortador em **Grass Cut Bot**.
+Este documento detalha o sistema econômico, a aquisição de moedas, a escalabilidade de custos e a evolução da lâmina em **Grass Cut Bot**.
 
 ---
 
-## 1. Economia de Moedas Verdes
+## 1. Economia de Moedas
 
-As moedas verdes são a moeda corrente do jogo e são obtidas diretamente pelo ato mecânico de corte e colheita. Em conformidade com a **Regra Canônica de Agrupamento em Lotes (Melhoria 082)**, a premiação econômica é consolidada por lote de colheita para manter legibilidade visual e evitar sobrecarga de números na tela:
-- **Grama Comum (Qualquer das 7 Cores):** 10 tufos físicos ceifados = 1 lote de meta = 1 moeda base (número flutuante `+1` em branco puro com contorno preto).
-- **Trigo Dourado (Meta 2x):** 1 tufo físico de tile ceifado = 1 unidade de meta = 3 moedas base (número flutuante `+3` em amarelo ouro).
-- **Flores do Campo (Nobre):** 1 tufo físico ceifado = 1 lote de meta = 5 moedas base (número flutuante `+5` em rosa magenta).
+As moedas são obtidas diretamente pelo ato mecânico de corte e colheita:
+- **Grama Comum (Qualquer das 7 Cores):** 10 tufos ceifados = 1 lote de meta = 1 moeda base.
+- **Trigo Dourado:** 1 tufo ceifado = 1 unidade de meta = 3 moedas base.
+- **Flores do Campo:** 1 tufo ceifado = 1 lote de meta = 5 moedas base.
 
-O rendimento por lote ceifado é calculado como:
-$$\text{Moedas Ganhas} = \text{Moedas Base da Espécie} \times \text{Multiplicador Ativo da Oficina}$$
-
-A cada lote ceifado, o valor final obtido surge como um número flutuante cartoon 3D (`FloatingCoinManager`) com contorno preto sólido de 14px e animação elástica, posicionado nas laterais do corpo do robô ($\pm 0.45\text{m}$) e subindo no ar com duração rápida de $0.34\text{s}$ em rastro suave (*number trail*).
+A cada lote ceifado, o valor final obtido surge como um número flutuante cartoon 3D (`FloatingCoinManager`) com contorno preto sólido e animação elástica, posicionado nas laterais do corpo do robô e subindo suavemente.
 
 ---
 
-## 2. As 4 Categorias de Upgrades da Oficina
+## 2. Sistema Unificado de Lâmina e Velocidade
 
-| Atributo | Custo Base | Efeito por Nível | Impacto no Gameplay |
-| :--- | :--- | :--- | :--- |
-| **Raio da Lâmina** | 50 🪙 | $+0.10\text{m}$ no raio (base de $0.90\text{m}$) | Expande a área de corte radial, permitindo ceifar mais tufos simultaneamente em cada passada. |
-| **Potência e Fio** | 100 🪙 | $+1$ ponto de dano por golpe | Corta plantas resistentes (trigo e flores) em uma só passada em vez de duas. |
-| **Velocidade da Serra** | 60 🪙 | $+0.45\text{m/s}$ na velocidade linear (base de $3.25\text{m/s}$) | Acelera a translação do cortador pelo gramado, facilitando vencer os estágios contra o relógio. |
-| **Multiplicador de Moedas** | 150 🪙 | $+1\times$ no ganho de cada tufo | Aumenta exponencialmente a receita de moedas para financiar upgrades mais caros. |
+A evolução do cortador é unificada e opera em duas frentes complementares:
+1. **No Gameplay:** Cada corte concede experiência (XP) que preenche a barra flutuante acima da cabeça do bot. A serra cresce dinamicamente do **Nível 1** até o **Nível 6 ("MAX")**. Bater em rochas reduz 1 nível completo (com cooldown de proteção de 1.2s).
+2. **Na Garagem / Oficina:** O jogador pode investir suas moedas para comprar níveis de lâmina diretamente até o **Nível 5**. O Nível 6 ("MAX") é exclusivo de gameplay através da colheita contínua.
 
-### Curva de Custo Exponencial
-Para balancear a progressão e manter o interesse a longo prazo, o custo de cada nível subsequente segue a progressão geométrica:
-$$\text{Custo}(n) = \lfloor \text{Custo Base} \times 1.6^{(n - 1)} \rfloor$$
-
----
-
-## 3. Interface da Oficina (`WorkshopModal`)
-
-Acessível a qualquer momento a partir dos menus de Pausa, Vitória ou Derrota:
-- Mostra o saldo total de moedas no topo em destaque dourado.
-- Lista os 4 cards com o nome, nível atual e botão de compra com o custo exato.
-- Botões de compra desabilitados visualmente quando o saldo de moedas for insuficiente.
-- Aplicação instantânea dos novos atributos à serra circular em tempo real via sinal `UpgradeManager.upgrade_purchased`.
+### Tabela de Níveis, Raio, Velocidade e Custos
+| Nível | Raio da Lâmina | Velocidade do Bot | Tier Visual | Custo na Garagem | XP para Próximo Nível |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **1** | **0.90 m** | **3.25 m/s** | Tier 1 (Tripla) | Inicial (Grátis) | 50 XP (~4-6s) |
+| **2** | **1.00 m** | **3.55 m/s** | Tier 1 (Tripla) | 75 🪙 | 100 XP (~10s) |
+| **3** | **1.10 m** | **3.85 m/s** | Tier 2 (Quádrupla) | 150 🪙 | 180 XP (~1 fase) |
+| **4** | **1.20 m** | **4.15 m/s** | Tier 2 (Quádrupla) | 300 🪙 | 280 XP (~1.5 fases) |
+| **5** | **1.30 m** | **4.45 m/s** | Tier 3 (Titânio) | 550 🪙 | 400 XP (~2 fases) |
+| **6 (MAX)** | **1.40 m** | **4.75 m/s** | Tier 4 (Hexagonal Dourada) | *Exclusivo Gameplay* | **0 XP (Barra Cheia / MAX)** |
 
 ---
 
-## 4. Evolução Visual dos Modelos de Lâminas (Tiers)
+## 3. Interface da Garagem (`tab_garage.tscn`)
 
-Conforme o jogador adquire upgrades de **Raio da Lâmina** e **Potência e Fio**, o modelo 3D do rotor de corte alojado no `blade_container` transita dinamicamente entre 4 patamares tecnológicos da família de lâminas estreladas com arestas retas e acabamento em aço cinza:
-
-| Tier | Modelo Visual | Requisito de Nível | Descrição Estética |
-| :--- | :--- | :--- | :--- |
-| **Tier 1** | **Lâmina Estelar Tripla** | Nível 1 a 2 | Estrela geométrica de 3 pontas com arestas retas, furo central e acabamento em aço cinza. |
-| **Tier 2** | **Lâmina Estelar Quádrupla** | Nível 3 a 4 | Estrela geométrica de 4 pontas (cruz ninja) com arestas retas, furo central e aço cinza. |
-| **Tier 3** | **Lâmina Estelar de Titânio** | Nível 5 a 6 | Estrela geométrica regular de 5 pontas com arestas retas, furo central e aço cinza. |
-| **Tier 4** | **Lâmina Estelar Hexagonal** | Nível 7 ou superior | Estrela geométrica de 6 pontas (hexagrama) com arestas retas, furo central e aço cinza. |
-
-O modelo atualmente equipado é exibido em tempo real no cabeçalho da Oficina: `"Lâmina: [Nome do Tier]"`.
-
+Acessível na aba "Oficina" do Menu Principal:
+- Saldo de moedas em destaque dourado no topo.
+- Banner visual exibindo o nome e tier da lâmina equipada.
+- Card de **Upgrade da Lâmina** exibindo nível atual, raio, velocidade e botão de compra até o Nível 5 (com botão desativado e texto "MÁX LOJA" no nível 5 e "MAX ✔" no nível 6).
+- Dica de gameplay lembrando que colidir com rochas reduz o nível da lâmina.

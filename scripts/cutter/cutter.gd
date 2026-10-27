@@ -36,11 +36,13 @@ extends CharacterBody3D
 @onready var fireworks_particles: CPUParticles3D = $FireworksParticles if has_node("FireworksParticles") else null
 @onready var defeat_puff_particles: CPUParticles3D = $DefeatPuffParticles if has_node("DefeatPuffParticles") else null
 @onready var robot_eyes: RobotEyes = $RobotEyes if has_node("RobotEyes") else null
+@onready var blade_progress_bar: BladeProgressBar = $BladeProgressBar if has_node("BladeProgressBar") else null
 
 var input_direction: Vector2 = Vector2.ZERO
 var is_stunned: bool = false
 var stun_timer: float = 0.0
 var _shock_cooldown: float = 0.0
+var _blade_penalty_cooldown: float = 0.0
 var idle_eyes_timer: float = 0.0
 var current_blade_speed: float = 108.0
 var _blade_spin_angle: float = 0.0
@@ -115,6 +117,7 @@ func _ready() -> void:
 	call_deferred("rebuild_obstacles_cache")
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
+		UpgradeManager.blade_level_changed.connect(_on_blade_level_changed)
 	if GameManager != null:
 		GameManager.state_changed.connect(_on_game_state_changed)
 	if AudioManager != null:
@@ -343,9 +346,11 @@ func _update_shader_globals() -> void:
 	RenderingServer.global_shader_parameter_set("global_cutter_pos", global_position)
 	RenderingServer.global_shader_parameter_set("global_cutter_interact_radius", interact_radius)
 
-func _on_upgrade_purchased(upgrade_name: String, _level: int) -> void:
-	if upgrade_name == "radius" or upgrade_name == "speed" or upgrade_name == "power":
-		update_upgrades()
+func _on_upgrade_purchased(_upgrade_name: String, _level: int) -> void:
+	update_upgrades()
+
+func _on_blade_level_changed(_new_level: int, _is_max: bool) -> void:
+	update_upgrades()
 
 func update_upgrades() -> void:
 	if UpgradeManager == null:
@@ -407,6 +412,8 @@ func set_input_direction(dir: Vector2) -> void:
 func _physics_process(delta: float) -> void:
 	if _shock_cooldown > 0.0:
 		_shock_cooldown = maxf(0.0, _shock_cooldown - delta)
+	if _blade_penalty_cooldown > 0.0:
+		_blade_penalty_cooldown = maxf(0.0, _blade_penalty_cooldown - delta)
 
 	# Desativa completamente rotação, movimento e corte se não estiver em gameplay ativo (ex: modal de fim de fase)
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
@@ -722,6 +729,14 @@ func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO)
 	# Efeito sonoro do choque da lâmina com a rocha
 	if AudioManager != null:
 		AudioManager.play_sfx("slap_rock")
+
+	# Penalidade na lâmina: Opção A (reduz 1 nível completo) com cooldown de proteção anti-cascata de 1.2s
+	if _blade_penalty_cooldown <= 0.0:
+		_blade_penalty_cooldown = 1.2
+		if UpgradeManager != null:
+			UpgradeManager.penalize_blade_hit()
+		if blade_progress_bar != null:
+			blade_progress_bar.play_penalty_reaction()
 
 func _sync_initial_overlaps() -> void:
 	if blade_area == null or not blade_area.monitoring:

@@ -1351,8 +1351,16 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							PlantScript.spawn_grass_cut_particles(s_root, safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1
 
-					# Atualização de metas: Trigo e Flores são 1:1 diretos; Grama usa lotes de 10
+					# Atualização de metas e concessão de XP da lâmina: Trigo (3 XP), Flores (5 XP), Grama (1 XP)
 					var p_key: String = _plant_keys[p_idx]
+					if UpgradeManager != null:
+						if p_key == "wheat":
+							UpgradeManager.add_blade_xp(3.0)
+						elif p_key.begins_with("flower"):
+							UpgradeManager.add_blade_xp(5.0)
+						else:
+							UpgradeManager.add_blade_xp(1.0)
+
 					if p_key == "wheat":
 						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
 						if gm != null:

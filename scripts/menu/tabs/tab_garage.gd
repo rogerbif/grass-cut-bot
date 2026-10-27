@@ -3,31 +3,17 @@ extends Control
 @onready var blade_tier_label: Label = $Panel/Scroll/VBox/BladeBanner/VBox/TierNameLabel
 @onready var coins_label: Label = $Panel/Scroll/VBox/CoinsBanner/CoinsValLabel
 
-@onready var radius_lvl_label: Label = $Panel/Scroll/VBox/RadiusCard/Info/LevelLabel
-@onready var radius_buy_btn: Button = $Panel/Scroll/VBox/RadiusCard/BuyBtn
-
-@onready var power_lvl_label: Label = $Panel/Scroll/VBox/PowerCard/Info/LevelLabel
-@onready var power_buy_btn: Button = $Panel/Scroll/VBox/PowerCard/BuyBtn
-
-@onready var speed_lvl_label: Label = $Panel/Scroll/VBox/SpeedCard/Info/LevelLabel
-@onready var speed_buy_btn: Button = $Panel/Scroll/VBox/SpeedCard/BuyBtn
-
-@onready var mult_lvl_label: Label = $Panel/Scroll/VBox/MultCard/Info/LevelLabel
-@onready var mult_buy_btn: Button = $Panel/Scroll/VBox/MultCard/BuyBtn
+@onready var blade_lvl_label: Label = $Panel/Scroll/VBox/BladeCard/Info/LevelLabel
+@onready var blade_buy_btn: Button = $Panel/Scroll/VBox/BladeCard/BuyBtn
 
 func _ready() -> void:
-	if radius_buy_btn != null:
-		radius_buy_btn.pressed.connect(func() -> void: _try_buy("radius"))
-	if power_buy_btn != null:
-		power_buy_btn.pressed.connect(func() -> void: _try_buy("power"))
-	if speed_buy_btn != null:
-		speed_buy_btn.pressed.connect(func() -> void: _try_buy("speed"))
-	if mult_buy_btn != null:
-		mult_buy_btn.pressed.connect(func() -> void: _try_buy("multiplier"))
+	if blade_buy_btn != null:
+		blade_buy_btn.pressed.connect(_on_buy_blade_pressed)
 
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
 		UpgradeManager.coins_changed.connect(_on_coins_changed)
+		UpgradeManager.blade_level_changed.connect(_on_blade_level_changed)
 
 	refresh_ui()
 
@@ -38,32 +24,44 @@ func refresh_ui() -> void:
 	if coins_label != null:
 		coins_label.text = "%d Moedas" % UpgradeManager.total_coins
 
+	var lvl: int = UpgradeManager.blade_level
 	if blade_tier_label != null:
-		blade_tier_label.text = "Lâmina Atual: %s (Tier %d)" % [UpgradeManager.get_blade_tier_name(), UpgradeManager.get_blade_tier()]
+		var tier_name: String = UpgradeManager.get_blade_tier_name()
+		var tier_num: int = UpgradeManager.get_blade_tier()
+		if lvl >= 6:
+			blade_tier_label.text = "Lâmina Atual: %s (Tier %d - MAX)" % [tier_name, tier_num]
+		else:
+			blade_tier_label.text = "Lâmina Atual: %s (Tier %d)" % [tier_name, tier_num]
 
-	_update_card("radius", radius_lvl_label, radius_buy_btn, "+0.10m Raio")
-	_update_card("power", power_lvl_label, power_buy_btn, "+1 Dano/Golpe")
-	_update_card("speed", speed_lvl_label, speed_buy_btn, "+0.45m/s Vel.")
-	_update_card("multiplier", mult_lvl_label, mult_buy_btn, "+1x Moedas")
+	if blade_lvl_label != null and blade_buy_btn != null:
+		var radius: float = UpgradeManager.get_blade_radius()
+		var speed: float = UpgradeManager.get_cutter_speed()
 
-func _update_card(upgrade_name: String, lvl_lbl: Label, btn: Button, stat_bonus: String) -> void:
-	if lvl_lbl == null or btn == null or UpgradeManager == null:
-		return
+		if lvl >= 6:
+			blade_lvl_label.text = "Nível MAX (6) • Raio: %.2fm • Vel: %.2fm/s" % [radius, speed]
+			blade_buy_btn.text = "MAX ✔"
+			blade_buy_btn.disabled = true
+		elif lvl >= 5:
+			blade_lvl_label.text = "Nível %d • Raio: %.2fm • Vel: %.2fm/s\n(Próximo nível somente por corte na partida)" % [lvl, radius, speed]
+			blade_buy_btn.text = "MÁX LOJA"
+			blade_buy_btn.disabled = true
+		else:
+			var cost: int = UpgradeManager.get_blade_upgrade_cost()
+			blade_lvl_label.text = "Nível %d ➔ %d • Raio: %.2fm • Vel: %.2fm/s" % [lvl, lvl + 1, radius + 0.10, speed + 0.30]
+			blade_buy_btn.text = "%d 🪙" % cost
+			blade_buy_btn.disabled = (UpgradeManager.total_coins < cost)
 
-	var lvl: int = UpgradeManager.get_level(upgrade_name)
-	var cost: int = UpgradeManager.get_upgrade_cost(upgrade_name)
-	lvl_lbl.text = "Nível %d  •  %s" % [lvl, stat_bonus]
-	btn.text = "%d 🪙" % cost
-	btn.disabled = (UpgradeManager.total_coins < cost)
-
-func _try_buy(upgrade_name: String) -> void:
+func _on_buy_blade_pressed() -> void:
 	if UpgradeManager != null:
-		if UpgradeManager.buy_upgrade(upgrade_name):
+		if UpgradeManager.buy_blade_upgrade():
 			refresh_ui()
 			if GameManager != null:
 				GameManager.trigger_haptic_cut()
 
 func _on_upgrade_purchased(_u_name: String, _new_lvl: int) -> void:
+	refresh_ui()
+
+func _on_blade_level_changed(_new_lvl: int, _is_max: bool) -> void:
 	refresh_ui()
 
 func _on_coins_changed(_new_val: int) -> void:
