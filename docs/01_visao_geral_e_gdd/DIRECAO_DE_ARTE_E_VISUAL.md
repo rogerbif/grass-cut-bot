@@ -26,13 +26,13 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 | Elemento | Código HEX / Cor | Amostra | Função no Jogo |
 | :--- | :--- | :--- | :--- |
-| **Grama Verde Esmeralda** | `#43A047` / `#2E7D32` | 🟢 Verde Clássico | Vegetação comum fundamental presente em todos os estágios. |
-| **Grama Amarela Solar** | `#FDD835` / `#FBC02D` | 🟡 Amarelo Claro | Variação estética cosmética (1 golpe). |
-| **Grama Azul Celeste** | `#29B6F6` / `#0288D1` | 🔵 Azul Ciano | Grama de bioma costeiro/aquático. |
-| **Grama Roxa Mística** | `#AB47BC` / `#7B1FA2` | 🟣 Roxo Neon | Grama de bioma noturno e labirintos avançados. |
-| **Grama Branca Algodão** | `#ECEFF1` / `#CFD8DC` | ⚪ Branco Fosco | Grama especial de contraste e destaque. |
-| **Grama Vermelha Rubi** | `#E53935` / `#C62828` | 🔴 Vermelho Vivo | Variação intensa para zonas quentes. |
-| **Grama Preta Vulcânica** | `#263238` / `#1A237E` | ⚫ Grafite Escuro | Grama estilizada para cenários dramáticos. |
+| **Grama Verde Esmeralda** | `#1AE630` / `#0FA61C` | 🟢 Verde Saturado (+20% saturação, vibrancy 0.10) | Vegetação comum fundamental presente em todos os estágios. |
+| **Grama Amarela Solar** | `#FFA000` / `#A66300` | 🟡 Dourado Solar Saturado | Variação estética cosmética (1 golpe). |
+| **Grama Azul Celeste** | `#007DF2` / `#00459E` | 🔵 Azul Ciano Saturado | Grama de bioma costeiro/aquático. |
+| **Grama Roxa Mística** | `#7D00EB` / `#47008C` | 🟣 Roxo Neon Saturado | Grama de bioma noturno e labirintos avançados. |
+| **Grama Branca Algodão** | `#F2F5FF` / `#A8B5C7` | ⚪ Branco Fosco Puro | Grama especial de contraste e destaque. |
+| **Grama Vermelha Rubi** | `#F2080D` / `#850005` | 🔴 Vermelho Vivo Saturado | Variação intensa para zonas quentes. |
+| **Grama Preta Vulcânica** | `#1C1C21` / `#0D0D10` | ⚫ Grafite Escuro | Grama estilizada para cenários dramáticos. |
 | **Piso Aparado (Cortado)** | `#2E6930` / `#1B5E20` | 🟩 Verde Profundo | Revelado após a passagem da serra (sensação de gramado limpo). |
 | **Trigo Maduro (Meta 2x)** | `#FFA000` / `#FFB300` | 🌾 Dourado Ouro | Vegetação resistente de 2 golpes com maior valor e cota. |
 | **Flores do Campo (Nobre)** | `#E91E63` / `#C2185B` | 🌸 Magenta Vibrante | Vegetação nobre de alto valor econômico (5 moedas). |

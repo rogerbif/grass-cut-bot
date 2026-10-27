@@ -467,17 +467,17 @@ func build_from_level_json(
 static func _resolve_clipping_color(v_type: String) -> Color:
 	match v_type:
 		"grass_green":
-			return Color(0.12, 0.36, 0.12, 1.0)
+			return Color(0.07, 0.36, 0.07, 1.0)
 		"grass_yellow":
-			return Color(0.56, 0.44, 0.08, 1.0)
+			return Color(0.56, 0.42, 0.00, 1.0)
 		"grass_blue":
-			return Color(0.10, 0.28, 0.42, 1.0)
+			return Color(0.04, 0.25, 0.42, 1.0)
 		"grass_purple":
-			return Color(0.32, 0.14, 0.38, 1.0)
+			return Color(0.31, 0.09, 0.38, 1.0)
 		"grass_white":
 			return Color(0.62, 0.68, 0.60, 1.0)
 		"grass_red":
-			return Color(0.48, 0.14, 0.12, 1.0)
+			return Color(0.48, 0.07, 0.05, 1.0)
 		"grass_black":
 			return Color(0.12, 0.14, 0.12, 1.0)
 		"wheat":
@@ -1247,7 +1247,7 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 		return Color(0.88, 0.30, 1.0, 1.0)
 	if v_type == "flower":
 		return Color(1.0, 0.18, 0.65, 1.0)
-	return Color(0.25, 0.75, 0.3, 1.0)
+	return Color(0.12, 0.75, 0.18, 1.0)
 
 
 func _get_game_manager() -> Node:
