@@ -21,8 +21,9 @@ Para proporcionar uma experiência limpa, solar, fluida e de altíssima performa
 - **Contenção Física Costeira Invisível (Camada 1 - Zero Cercas):**
   - Todas as bordas da ilha voltadas para a água recebem barreiras físicas de colisão verticais na Camada Física 1 (`Layer 1: Ground & Limits`), geradas por `IslandMeshBuilder.build_coastal_colliders()`.
   - As caixas têm espessura de $0.06\text{m}$ e altura de $1.2\text{m}$, contendo perfeitamente o cortador sem necessitar de cercas visuais.
-- **Retrocompatibilidade e JSON v4:**
-  - Níveis legados com matriz `"terrain"` de blocos são convertidos automaticamente via união booleana (`Geometry2D.merge_polygons`), gerando o contorno contínuo idêntico de forma transparente. Níveis atualizados persistem o bloco `"island_polygons"` no formato JSON v4.
+- **Retrocompatibilidade, JSON v4 e Cantos Arredondados Canônicos ($R = 0.28\text{m}$):**
+  - Níveis legados com matriz `"terrain"` de blocos são convertidos automaticamente via união booleana (`Geometry2D.merge_polygons`) seguida de arredondamento analítico de cantos convexos (`IslandMeshBuilder.round_polygon_corners()` com raio canônico de $0.28\text{m}$ e 5 arcos de segmento).
+  - Todos os 20 níveis canônicos do jogo possuem polígonos perimetrais no formato JSON v4 com cantos suaves idênticos à curvatura dos tiles originais (`tile_island_corner_out.glb`), eliminando quinas retas ásperas de 90° e garantindo continuidade suave $C^1$ tanto na malha do platô quanto na fita de espuma e nos colisores de limite.
 
 ---
 
