@@ -145,7 +145,27 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	var icon_label = Label.new()
 	icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	match plant_type:
-		"grass": icon_label.text = "🌿"
+		"grass", "grass_green":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(0.35, 0.95, 0.40)
+		"grass_yellow":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(0.98, 0.88, 0.25)
+		"grass_blue":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(0.35, 0.75, 1.0)
+		"grass_purple":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(0.85, 0.45, 1.0)
+		"grass_white":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(0.95, 0.95, 0.95)
+		"grass_red":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(1.0, 0.35, 0.35)
+		"grass_black":
+			icon_label.text = "🌿"
+			icon_label.modulate = Color(0.40, 0.40, 0.45)
 		"wheat": icon_label.text = "🌾"
 		"flower": icon_label.text = "🌸"
 		"flower_rose": icon_label.text = "🌹"

@@ -145,10 +145,12 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 	if AudioManager != null:
 		AudioManager.play_cut_sfx(false)
 
-	# Atualiza metas (suporta tanto espécie específica de flor quanto chave unificada "flower")
+	# Atualiza metas (suporta tanto espécie específica de flor quanto chave unificada "flower", e cores de grama vs "grass")
 	var goal_key: String = plant_type
 	if not goals.has(goal_key) and plant_type.begins_with("flower") and goals.has("flower"):
 		goal_key = "flower"
+	elif not goals.has(goal_key) and plant_type.begins_with("grass") and goals.has("grass"):
+		goal_key = "grass"
 
 	if goals.has(goal_key):
 		var goal_info: Dictionary = goals[goal_key]

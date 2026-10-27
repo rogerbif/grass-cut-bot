@@ -113,6 +113,9 @@ var _remaining_physical_grass: int = 0
 var _remaining_physical_wheat: int = 0
 var _remaining_physical_flower: int = 0
 
+var _remaining_grass_by_type: Dictionary = {}
+var _grass_cut_accumulator_by_type: Dictionary = {}
+
 var _grass_cut_accumulator: int = 0
 var _wheat_cut_accumulator: int = 0
 
@@ -298,6 +301,8 @@ func _clear_state() -> void:
 	_clipping_mmi_nodes.clear()
 	_clipping_counts.clear()
 	_grid.clear()
+	_remaining_grass_by_type.clear()
+	_grass_cut_accumulator_by_type.clear()
 	_last_vegetation_on = true
 	_last_density_step = 1
 
@@ -769,11 +774,7 @@ func _build_from_vector_field(
 			_is_cut.append(0)
 			_is_hidden_by_density.append(0)
 			_last_hit_time.append(-10.0)
-			var own_plant_key: String = "grass"
-			if v_type == "wheat":
-				own_plant_key = "wheat"
-			elif is_flower:
-				own_plant_key = v_type
+			var own_plant_key: String = v_type
 			_plant_keys.append(own_plant_key)
 			_particle_colors.append(p_col)
 			_tuft_logical_cell.append(cell_idx)
@@ -794,6 +795,7 @@ func _build_from_vector_field(
 	_total_physical_wheat = 0
 	_total_physical_flower = 0
 	var flower_counts_by_type: Dictionary = {}
+	var grass_counts_by_type: Dictionary = {}
 	for p_idx: int in range(_positions.size()):
 		var pk: String = _plant_keys[p_idx]
 		if pk == "wheat":
@@ -803,6 +805,7 @@ func _build_from_vector_field(
 			flower_counts_by_type[pk] = int(flower_counts_by_type.get(pk, 0)) + 1
 		else:
 			_total_physical_grass += 1
+			grass_counts_by_type[pk] = int(grass_counts_by_type.get(pk, 0)) + 1
 
 	_remaining_physical_grass = _total_physical_grass
 	_remaining_physical_wheat = _total_physical_wheat
@@ -810,8 +813,22 @@ func _build_from_vector_field(
 	_grass_cut_accumulator = 0
 	_wheat_cut_accumulator = 0
 
+	_remaining_grass_by_type.clear()
+	_grass_cut_accumulator_by_type.clear()
+	for g_type: Variant in grass_counts_by_type.keys():
+		var gt_str: String = String(g_type)
+		_remaining_grass_by_type[gt_str] = int(grass_counts_by_type[g_type])
+		_grass_cut_accumulator_by_type[gt_str] = 0
+
 	goals.clear()
-	goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
+	# Se há múltiplas cores de grama OU se a única cor presente não for verde comum,
+	# contabiliza as cores separadamente!
+	if grass_counts_by_type.size() > 1 or (grass_counts_by_type.size() == 1 and not grass_counts_by_type.has("grass_green")):
+		for g_key: Variant in grass_counts_by_type.keys():
+			var g_count: int = int(grass_counts_by_type[g_key])
+			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / 10.0)))
+	else:
+		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
@@ -1090,11 +1107,7 @@ func _build_from_vegetation_field(
 			_is_cut.append(0)
 			_is_hidden_by_density.append(0)
 			_last_hit_time.append(-10.0)
-			var own_plant_key: String = "grass"
-			if v_type == "wheat":
-				own_plant_key = "wheat"
-			elif is_flower:
-				own_plant_key = v_type
+			var own_plant_key: String = v_type
 			_plant_keys.append(own_plant_key)
 			_particle_colors.append(p_col)
 			_tuft_logical_cell.append(cell_idx)
@@ -1115,6 +1128,7 @@ func _build_from_vegetation_field(
 	_total_physical_wheat = 0
 	_total_physical_flower = 0
 	var flower_counts_by_type: Dictionary = {}
+	var grass_counts_by_type: Dictionary = {}
 	for p_idx: int in range(_positions.size()):
 		var pk: String = _plant_keys[p_idx]
 		if pk == "wheat":
@@ -1124,6 +1138,7 @@ func _build_from_vegetation_field(
 			flower_counts_by_type[pk] = int(flower_counts_by_type.get(pk, 0)) + 1
 		else:
 			_total_physical_grass += 1
+			grass_counts_by_type[pk] = int(grass_counts_by_type.get(pk, 0)) + 1
 
 	_remaining_physical_grass = _total_physical_grass
 	_remaining_physical_wheat = _total_physical_wheat
@@ -1131,8 +1146,22 @@ func _build_from_vegetation_field(
 	_grass_cut_accumulator = 0
 	_wheat_cut_accumulator = 0
 
+	_remaining_grass_by_type.clear()
+	_grass_cut_accumulator_by_type.clear()
+	for g_type: Variant in grass_counts_by_type.keys():
+		var gt_str: String = String(g_type)
+		_remaining_grass_by_type[gt_str] = int(grass_counts_by_type[g_type])
+		_grass_cut_accumulator_by_type[gt_str] = 0
+
 	goals.clear()
-	goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
+	# Se há múltiplas cores de grama OU se a única cor presente não for verde comum,
+	# contabiliza as cores separadamente!
+	if grass_counts_by_type.size() > 1 or (grass_counts_by_type.size() == 1 and not grass_counts_by_type.has("grass_green")):
+		for g_key: Variant in grass_counts_by_type.keys():
+			var g_count: int = int(grass_counts_by_type[g_key])
+			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / 10.0)))
+	else:
+		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
@@ -1331,17 +1360,26 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						if gm != null:
 							gm.call("register_cut", p_key, 5, p_pos)
 					else:
-						# Qualquer tipo/cor de grama
+						# Qualquer tipo/cor de grama (contabilizada por cor específica ou genérica)
 						_remaining_physical_grass = maxi(0, _remaining_physical_grass - 1)
-						_grass_cut_accumulator += 1
-						if _grass_cut_accumulator >= 10:
-							_grass_cut_accumulator -= 10
+						var g_rem: int = maxi(0, int(_remaining_grass_by_type.get(p_key, 0)) - 1)
+						_remaining_grass_by_type[p_key] = g_rem
+
+						var acc: int = int(_grass_cut_accumulator_by_type.get(p_key, 0)) + 1
+						var target_goal: String = p_key
+						if gm != null and not _has_goal_safe(p_key) and _has_goal_safe("grass"):
+							target_goal = "grass"
+
+						if acc >= 10:
+							acc -= 10
 							if gm != null:
-								gm.call("register_cut", "grass", 1, p_pos)
-						elif _remaining_physical_grass <= 0 and _grass_cut_accumulator > 0:
-							_grass_cut_accumulator = 0
-							if gm != null and _get_remaining_goal_safe("grass") > 0:
-								gm.call("register_cut", "grass", 1, p_pos)
+								gm.call("register_cut", target_goal, 1, p_pos)
+						elif g_rem <= 0 and acc > 0:
+							acc = 0
+							if gm != null and _get_remaining_goal_safe(target_goal) > 0:
+								gm.call("register_cut", target_goal, 1, p_pos)
+
+						_grass_cut_accumulator_by_type[p_key] = acc
 
 					# Proteção anti-trava por categoria independente:
 					if _remaining_physical_wheat <= 0 and _get_remaining_goal_safe("wheat") > 0:
@@ -1356,10 +1394,15 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 								if g_key_str.begins_with("flower"):
 									while _get_remaining_goal_safe(g_key_str) > 0:
 										gm.call("register_cut", g_key_str, 5, Vector3.ZERO)
-					if _remaining_physical_grass <= 0 and _get_remaining_goal_safe("grass") > 0:
-						if gm != null:
-							while _get_remaining_goal_safe("grass") > 0:
-								gm.call("register_cut", "grass", 1, Vector3.ZERO)
+					if gm != null:
+						for g_type_key: Variant in _remaining_grass_by_type.keys():
+							var gt_str: String = String(g_type_key)
+							if int(_remaining_grass_by_type[gt_str]) <= 0:
+								var g_target: String = gt_str
+								if not _has_goal_safe(gt_str) and _has_goal_safe("grass"):
+									g_target = "grass"
+								while _get_remaining_goal_safe(g_target) > 0:
+									gm.call("register_cut", g_target, 1, Vector3.ZERO)
 				else:
 					if mm != null:
 						var p_key: String = _plant_keys[p_idx]
@@ -1554,3 +1597,16 @@ static func _get_remaining_goal_safe(p_type: String) -> int:
 		elif g_val is int:
 			return maxi(0, int(g_val))
 	return 0
+
+
+static func _has_goal_safe(p_type: String) -> bool:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree == null or tree.root == null:
+		return false
+	var gm: Node = tree.root.get_node_or_null("GameManager")
+	if gm == null:
+		return false
+	var goals_dict: Variant = gm.get("goals")
+	if goals_dict is Dictionary:
+		return (goals_dict as Dictionary).has(p_type)
+	return false

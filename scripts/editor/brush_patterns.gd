@@ -246,7 +246,13 @@ static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 	return offsets
 
 ## Gera polígono vetorial analítico fechado para carimbos no plano XZ
-static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector2, rotation_deg: float = 0.0) -> PackedVector2Array:
+static func get_vector_stamp_polygon(
+	shape: int,
+	brush_size: int,
+	center: Vector2,
+	rotation_deg: float = 0.0,
+	corner_radius: float = 0.28
+) -> PackedVector2Array:
 	var poly: PackedVector2Array = PackedVector2Array()
 	var clamped_size: int = clampi(brush_size, 1, 20)
 	var r: float = float(clamped_size) * 0.35 + 0.15
@@ -260,10 +266,34 @@ static func get_vector_stamp_polygon(shape: int, brush_size: int, center: Vector
 
 		ShapeType.SQUARE:
 			var h: float = r * 0.95
-			poly.append(center + Vector2(-h, -h))
-			poly.append(center + Vector2(h, -h))
-			poly.append(center + Vector2(h, h))
-			poly.append(center + Vector2(-h, h))
+			if corner_radius <= 0.001:
+				poly.append(center + Vector2(-h, -h))
+				poly.append(center + Vector2(h, -h))
+				poly.append(center + Vector2(h, h))
+				poly.append(center + Vector2(-h, h))
+			else:
+				var cr: float = minf(corner_radius, h * 0.95)
+				var arc_steps: int = 5
+				# Canto Superior Direito (Top-Right: de -PI/2 a 0)
+				var c_tr: Vector2 = Vector2(h - cr, -h + cr)
+				for i: int in range(arc_steps + 1):
+					var a: float = lerpf(-PI * 0.5, 0.0, float(i) / float(arc_steps))
+					poly.append(center + c_tr + Vector2(cos(a), sin(a)) * cr)
+				# Canto Inferior Direito (Bottom-Right: de 0 a PI/2)
+				var c_br: Vector2 = Vector2(h - cr, h - cr)
+				for i: int in range(arc_steps + 1):
+					var a: float = lerpf(0.0, PI * 0.5, float(i) / float(arc_steps))
+					poly.append(center + c_br + Vector2(cos(a), sin(a)) * cr)
+				# Canto Inferior Esquerdo (Bottom-Left: de PI/2 a PI)
+				var c_bl: Vector2 = Vector2(-h + cr, h - cr)
+				for i: int in range(arc_steps + 1):
+					var a: float = lerpf(PI * 0.5, PI, float(i) / float(arc_steps))
+					poly.append(center + c_bl + Vector2(cos(a), sin(a)) * cr)
+				# Canto Superior Esquerdo (Top-Left: de PI a 3*PI/2)
+				var c_tl: Vector2 = Vector2(-h + cr, -h + cr)
+				for i: int in range(arc_steps + 1):
+					var a: float = lerpf(PI, PI * 1.5, float(i) / float(arc_steps))
+					poly.append(center + c_tl + Vector2(cos(a), sin(a)) * cr)
 
 		ShapeType.DIAMOND:
 			var d: float = r * 1.25

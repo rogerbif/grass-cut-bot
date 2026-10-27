@@ -93,6 +93,7 @@ var active_layer: int = EditLayer.TERRAIN
 var active_tool: int = ToolMode.BRUSH
 var active_shape: int = BrushPatterns.ShapeType.SINGLE
 var brush_size: int = 1
+var current_corner_radius: float = 0.28
 var current_rot_deg: int = 0
 
 var active_terrain_id: String = "auto_island"
@@ -260,6 +261,10 @@ func _connect_ui_signals() -> void:
 	ui.brush_size_changed.connect(func(delta_sz: int) -> void:
 		brush_size = clampi(brush_size + delta_sz, 1, 20)
 		_sync_all_ui()
+		_refresh_hover_preview()
+	)
+	ui.corner_radius_changed.connect(func(r: float) -> void:
+		current_corner_radius = r
 		_refresh_hover_preview()
 	)
 	ui.rotate_requested.connect(_rotate_active_step)
@@ -579,12 +584,12 @@ func _refresh_hover_preview() -> void:
 		var preview_poly: PackedVector2Array = PackedVector2Array()
 
 		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg))
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			preview_poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
 		else:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg))
+			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
 		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
@@ -635,12 +640,12 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		var poly: PackedVector2Array = PackedVector2Array()
 
 		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg))
+			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 		elif _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
 		else:
-			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg))
+			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 
 		if poly.size() < 3:
 			return

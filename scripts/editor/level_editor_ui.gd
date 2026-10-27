@@ -19,6 +19,7 @@ signal exit_to_game_requested()
 signal layer_changed(layer_idx: int)
 signal tool_changed(tool_idx: int)
 signal brush_shape_changed(shape_idx: int)
+signal corner_radius_changed(radius: float)
 signal brush_size_changed(new_size: int)
 signal rotate_requested()
 signal toggle_camera_view_requested()
@@ -38,6 +39,8 @@ var btn_layer_grass: Button
 var btn_layer_objects: Button
 var tool_buttons: Dictionary = {}
 var shape_buttons: Dictionary = {}
+var corner_radius_container: VBoxContainer
+var spin_corner_radius: SpinBox
 var terrain_buttons: Dictionary = {}
 var grass_buttons: Dictionary = {}
 var object_buttons: Dictionary = {}
@@ -367,6 +370,63 @@ func _build_left_panel() -> void:
 		s_btn.pressed.connect(func() -> void: brush_shape_changed.emit(s_id))
 		grid_shapes.add_child(s_btn)
 		shape_buttons[s_id] = s_btn
+
+	# 3.1 Opção de Corner Radius para a ferramenta de Quadrado
+	corner_radius_container = VBoxContainer.new()
+	corner_radius_container.add_theme_constant_override("separation", 4)
+	vbox.add_child(corner_radius_container)
+
+	var hbox_cr: HBoxContainer = HBoxContainer.new()
+	hbox_cr.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_cr.add_theme_constant_override("separation", 6)
+	corner_radius_container.add_child(hbox_cr)
+
+	var lbl_cr: Label = Label.new()
+	lbl_cr.text = "📐 Quina (R):"
+	lbl_cr.add_theme_font_size_override("font_size", 12)
+	lbl_cr.add_theme_color_override("font_color", Color(0.9, 0.85, 0.55))
+	hbox_cr.add_child(lbl_cr)
+
+	spin_corner_radius = SpinBox.new()
+	spin_corner_radius.min_value = 0.0
+	spin_corner_radius.max_value = 0.80
+	spin_corner_radius.step = 0.02
+	spin_corner_radius.value = 0.28
+	spin_corner_radius.suffix = "m"
+	spin_corner_radius.custom_minimum_size = Vector2(85, 30)
+	spin_corner_radius.value_changed.connect(func(v: float) -> void:
+		corner_radius_changed.emit(v)
+	)
+	hbox_cr.add_child(spin_corner_radius)
+
+	var hbox_cr_presets: HBoxContainer = HBoxContainer.new()
+	hbox_cr_presets.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_cr_presets.add_theme_constant_override("separation", 4)
+	corner_radius_container.add_child(hbox_cr_presets)
+
+	var btn_cr_0: Button = _create_styled_button("0m (Reto)", Color(0.65, 0.65, 0.70), Vector2(75, 24))
+	btn_cr_0.add_theme_font_size_override("font_size", 11)
+	btn_cr_0.pressed.connect(func() -> void:
+		spin_corner_radius.value = 0.0
+		corner_radius_changed.emit(0.0)
+	)
+	hbox_cr_presets.add_child(btn_cr_0)
+
+	var btn_cr_def: Button = _create_styled_button("0.28m (Padrão)", Color(0.35, 0.85, 0.60), Vector2(95, 24))
+	btn_cr_def.add_theme_font_size_override("font_size", 11)
+	btn_cr_def.pressed.connect(func() -> void:
+		spin_corner_radius.value = 0.28
+		corner_radius_changed.emit(0.28)
+	)
+	hbox_cr_presets.add_child(btn_cr_def)
+
+	var btn_cr_max: Button = _create_styled_button("0.40m", Color(0.55, 0.75, 0.95), Vector2(65, 24))
+	btn_cr_max.add_theme_font_size_override("font_size", 11)
+	btn_cr_max.pressed.connect(func() -> void:
+		spin_corner_radius.value = 0.40
+		corner_radius_changed.emit(0.40)
+	)
+	hbox_cr_presets.add_child(btn_cr_max)
 
 	# 4. Tamanho do Pincel e Rotação
 	var hbox_size: HBoxContainer = HBoxContainer.new()
@@ -745,6 +805,9 @@ func sync_state(
 		var sid: int = int(s_id)
 		_set_button_selected(shape_buttons[sid] as Button, active_shape == sid, Color(0.45, 0.75, 0.98))
 
+	if corner_radius_container != null:
+		corner_radius_container.visible = (active_shape == BrushPatterns.ShapeType.SQUARE)
+
 	for item in TilePaletteDB.TERRAIN_ITEMS:
 		var tid_str: String = String(item["id"])
 		if terrain_buttons.has(tid_str):
@@ -787,6 +850,7 @@ func update_goals_summary(
 	vector_field: RefCounted = null
 ) -> void:
 	var grass_tufts: int = 0
+	var grass_by_type: Dictionary = {}
 	var wheat_tufts: int = 0
 	var flower_c: int = 0
 	var rock_c: int = 0
@@ -803,6 +867,7 @@ func update_goals_summary(
 					flower_c += 1
 				else:
 					grass_tufts += 1
+					grass_by_type[t_type] = int(grass_by_type.get(t_type, 0)) + 1
 	elif veg_field != null:
 		var cols: int = int(veg_field.get("cols"))
 		var rows: int = int(veg_field.get("rows"))
@@ -811,6 +876,7 @@ func update_goals_summary(
 				var tid: int = int(veg_field.call("get_cell", c, r))
 				if tid >= 1 and tid <= 7:
 					grass_tufts += 1
+					grass_by_type["grass_green"] = int(grass_by_type.get("grass_green", 0)) + 1
 				elif tid == 8:
 					wheat_tufts += 1
 
@@ -840,7 +906,14 @@ func update_goals_summary(
 		var cnt: int = int(counts_map[k])
 		if _goal_total_labels.has(k) and _goal_total_labels[k] != null:
 			if k == "grass" and grass_tufts > 0:
-				(_goal_total_labels[k] as Label).text = "/ %d (%d tufos)" % [grass_goal_units, grass_tufts]
+				if grass_by_type.size() > 1:
+					var parts: Array[String] = []
+					for g_key: Variant in grass_by_type.keys():
+						var g_name: String = String(g_key).replace("grass_", "")
+						parts.append("%s: %d" % [g_name, int(grass_by_type[g_key])])
+					(_goal_total_labels[k] as Label).text = "/ %d (%s)" % [grass_goal_units, ", ".join(parts)]
+				else:
+					(_goal_total_labels[k] as Label).text = "/ %d (%d tufos)" % [grass_goal_units, grass_tufts]
 			else:
 				(_goal_total_labels[k] as Label).text = "/ %d" % cnt
 		if _goal_spinboxes.has(k) and _goal_spinboxes[k] != null:
