@@ -26,12 +26,12 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 | Elemento | Código HEX / Cor | Amostra | Função no Jogo |
 | :--- | :--- | :--- | :--- |
-| **Grama Verde Esmeralda** | `#1AE630` / `#0FA61C` | 🟢 Verde Saturado (+20% saturação, vibrancy 0.10) | Vegetação comum fundamental presente em todos os estágios. |
-| **Grama Amarela Solar** | `#FFA000` / `#A66300` | 🟡 Dourado Solar Saturado | Variação estética cosmética (1 golpe). |
-| **Grama Azul Celeste** | `#007DF2` / `#00459E` | 🔵 Azul Ciano Saturado | Grama de bioma costeiro/aquático. |
-| **Grama Roxa Mística** | `#7D00EB` / `#47008C` | 🟣 Roxo Neon Saturado | Grama de bioma noturno e labirintos avançados. |
-| **Grama Branca Algodão** | `#F2F5FF` / `#A8B5C7` | ⚪ Branco Fosco Puro | Grama especial de contraste e destaque. |
-| **Grama Vermelha Rubi** | `#F2080D` / `#850005` | 🔴 Vermelho Vivo Saturado | Variação intensa para zonas quentes. |
+| **Grama Verde Esmeralda** | `#4DB352` / `#2E6B35` | 🟢 Verde Suave Pastel (20% mais pálida / desaturada) | Vegetação comum fundamental presente em todos os estágios; tom calmo para contraste com as flores. |
+| **Grama Amarela Solar** | `#FFB83D` / `#A67326` | 🟡 Dourado Solar Pastel | Variação estética cosmética (1 golpe). |
+| **Grama Azul Celeste** | `#3D9CF2` / `#24599E` | 🔵 Azul Ciano Pastel | Grama de bioma costeiro/aquático. |
+| **Grama Roxa Mística** | `#9E47EB` / `#59268C` | 🟣 Roxo Místico Pastel | Grama de bioma noturno e labirintos avançados. |
+| **Grama Branca Algodão** | `#F7FAFF` / `#B3BAC7` | ⚪ Branco Fosco Suave | Grama especial de contraste e destaque. |
+| **Grama Vermelha Rubi** | `#F25459` / `#85262B` | 🔴 Vermelho Pastel Suave | Variação calma para zonas quentes. |
 | **Grama Preta Vulcânica** | `#1C1C21` / `#0D0D10` | ⚫ Grafite Escuro | Grama estilizada para cenários dramáticos. |
 | **Piso Aparado (Cortado)** | `#2E6930` / `#1B5E20` | 🟩 Verde Profundo | Revelado após a passagem da serra (sensação de gramado limpo). |
 | **Trigo Maduro (Meta 2x)** | `#FFA000` / `#FFB300` | 🌾 Dourado Ouro | Vegetação resistente de 2 golpes com maior valor e cota. |

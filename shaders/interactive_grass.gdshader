@@ -13,11 +13,11 @@ uniform float wind_speed : hint_range(0.0, 10.0) = 2.0;
 uniform float wind_strength : hint_range(0.0, 1.0) = 0.12;
 
 // Gradiente de cor fosco Low Poly (base -> topo)
-uniform vec4 color_base : source_color = vec4(0.06, 0.42, 0.11, 1.0);
-uniform vec4 color_top : source_color = vec4(0.10, 0.70, 0.12, 1.0);
+uniform vec4 color_base : source_color = vec4(0.18, 0.42, 0.21, 1.0);
+uniform vec4 color_top : source_color = vec4(0.30, 0.70, 0.32, 1.0);
 uniform float roughness : hint_range(0.0, 1.0) = 0.9;
 uniform float specular : hint_range(0.0, 1.0) = 0.15;
-uniform float vibrancy : hint_range(0.0, 1.0) = 0.10;
+uniform float vibrancy : hint_range(0.0, 1.0) = 0.0;
 
 void vertex() {
 	// Converte para coordenadas globais de mundo

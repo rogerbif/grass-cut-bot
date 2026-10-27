@@ -66,7 +66,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"id": "grass_green",
 		"name": "Grama Verde",
 		"icon": "🌿",
-		"color": Color(0.14, 0.78, 0.23),
+		"color": Color(0.36, 0.78, 0.41),
 		"goal_key": "grass",
 		"category": "grass"
 	},
@@ -74,7 +74,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"id": "grass_yellow",
 		"name": "Grama Amarela (1x)",
 		"icon": "🌼",
-		"color": Color(0.95, 0.77, 0.05),
+		"color": Color(0.95, 0.83, 0.35),
 		"goal_key": "grass",
 		"category": "grass"
 	},
@@ -82,7 +82,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"id": "grass_blue",
 		"name": "Grama Azul",
 		"icon": "💠",
-		"color": Color(0.11, 0.63, 0.96),
+		"color": Color(0.39, 0.74, 0.96),
 		"goal_key": "grass",
 		"category": "grass"
 	},
@@ -90,7 +90,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"id": "grass_purple",
 		"name": "Grama Violeta",
 		"icon": "🔮",
-		"color": Color(0.68, 0.24, 0.92),
+		"color": Color(0.76, 0.46, 0.92),
 		"goal_key": "grass",
 		"category": "grass"
 	},
@@ -106,7 +106,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"id": "grass_red",
 		"name": "Grama Vermelha",
 		"icon": "❤️",
-		"color": Color(0.95, 0.08, 0.11),
+		"color": Color(0.95, 0.37, 0.38),
 		"goal_key": "grass",
 		"category": "grass"
 	},
