@@ -1,7 +1,7 @@
 shader_type spatial;
 // cull_disabled é essencial para preservar o volume foliar das 39 lâminas de face única (grass_01.glb)
 // sem falhas de transparência e sem flickering ao balançar no vento.
-render_mode cull_disabled, diffuse_toon;
+render_mode cull_disabled;
 
 // Posição e raio do cortador via Global Shader Parameters (Zero Overhead GDScript)
 global uniform vec3 global_cutter_pos;
@@ -12,10 +12,28 @@ uniform float interact_power : hint_range(0.0, 2.0) = 0.29;
 uniform float wind_speed : hint_range(0.0, 10.0) = 2.0;
 uniform float wind_strength : hint_range(0.0, 1.0) = 0.12;
 
-// Gradiente de cor fosco Low Poly (base -> topo)
-uniform vec4 color_base : source_color = vec4(0.18, 0.42, 0.21, 1.0);
-uniform vec4 color_top : source_color = vec4(0.30, 0.70, 0.32, 1.0);
-uniform float roughness : hint_range(0.0, 1.0) = 0.9;
+// Parâmetros Toon Shader Gradiente (Calibrados)
+group_uniforms ToonGradiente;
+uniform vec4 color_light : source_color = vec4(0.42, 0.88, 0.46, 1.0);
+uniform vec4 color_base : source_color = vec4(0.12, 0.35, 0.18, 1.0);
+uniform vec4 color_shadow : source_color = vec4(0.18, 0.48, 0.25, 1.0);
+uniform float vertical_gradient_mix : hint_range(0.0, 1.0) = 0.72;
+
+group_uniforms ToonRamp;
+uniform float toon_ramp_offset : hint_range(0.0, 1.0) = 0.62;
+uniform float toon_ramp_smoothness : hint_range(0.001, 1.0) = 0.72;
+uniform vec3 toon_ramp_tinting : source_color = vec3(1.0, 1.0, 1.0);
+
+group_uniforms RimLighting;
+uniform bool use_rim = true;
+uniform vec4 rim_color : source_color = vec4(0.85, 1.0, 0.65, 1.0);
+uniform float rim_power : hint_range(0.1, 8.0) = 1.0;
+uniform float rim_cutoff : hint_range(0.0, 1.0) = 0.45;
+uniform float rim_smoothness : hint_range(0.001, 1.0) = 0.15;
+uniform float rim_brightness : hint_range(0.0, 4.0) = 1.0;
+
+group_uniforms Surface;
+uniform float roughness : hint_range(0.0, 1.0) = 0.90;
 uniform float specular : hint_range(0.0, 1.0) = 0.15;
 uniform float vibrancy : hint_range(0.0, 1.0) = 0.0;
 
@@ -97,10 +115,32 @@ void vertex() {
 }
 
 void fragment() {
+	// Gradiente vertical de altura foliar (Base escura -> Topo iluminado)
 	float h = clamp(UV.y, 0.0, 1.0);
-	vec3 base_col = mix(color_base.rgb, color_top.rgb, h);
-	ALBEDO = base_col;
-	EMISSION = base_col * vibrancy;
+	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, h, vertical_gradient_mix));
+
+	ALBEDO = base_surface;
+	EMISSION = base_surface * vibrancy;
 	ROUGHNESS = roughness;
 	SPECULAR = specular;
+}
+
+void light() {
+	// Cálculo do Toon Ramp Gradiente
+	float NdotL = clamp(dot(NORMAL, LIGHT), 0.0, 1.0);
+	float half_smooth = max(toon_ramp_smoothness * 0.5, 0.001);
+	float toon_ramp = smoothstep(toon_ramp_offset - half_smooth, toon_ramp_offset + half_smooth, NdotL * ATTENUATION);
+
+	// Modulação direta entre a cor de sombra e a cor iluminada
+	vec3 diffuse_light = mix(color_shadow.rgb, LIGHT_COLOR * toon_ramp_tinting, toon_ramp);
+	DIFFUSE_LIGHT += diffuse_light * ATTENUATION;
+
+	// Rim Lighting estilizado (silhueta brilhante das folhas contra a luz solar)
+	if (use_rim) {
+		float NdotV = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
+		float rim = (1.0 - NdotV) * pow(max(NdotL, 0.001), rim_power * 0.5);
+		float rim_half_smooth = max(rim_smoothness * 0.5, 0.001);
+		float rim_ramp = smoothstep(rim_cutoff - rim_half_smooth, rim_cutoff + rim_half_smooth, rim);
+		DIFFUSE_LIGHT += rim_color.rgb * rim_ramp * rim_brightness * ATTENUATION;
+	}
 }

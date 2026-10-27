@@ -1,7 +1,7 @@
 extends Camera3D
 
 @export var target_path: NodePath
-@export var offset: Vector3 = Vector3(0.0, 7.2, 8.5)
+@export var offset: Vector3 = Vector3(0.0, 4.78, 5.65)
 @export var follow_speed: float = 8.0
 
 const VICTORY_OFFSET: Vector3 = Vector3(0.0, 1.25, 4.0)
@@ -12,7 +12,7 @@ var shake_intensity: float = 0.0
 var shake_duration: float = 0.0
 
 var _in_victory_cam: bool = false
-var _current_offset: Vector3 = Vector3(0.0, 7.2, 8.5)
+var _current_offset: Vector3 = Vector3(0.0, 4.78, 5.65)
 var _current_rotation: Vector3 = Vector3.ZERO
 var _victory_tween: Tween = null
 

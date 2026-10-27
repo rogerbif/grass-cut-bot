@@ -1,0 +1,704 @@
+[gd_scene load_steps=12 format=3 uid="uid://toon_shader_tester_01"]
+
+[ext_resource type="Script" path="res://scripts/tools/toon_shader_tester.gd" id="1_tester"]
+
+[sub_resource type="Environment" id="Environment_lab"]
+background_mode = 1
+background_color = Color(0.65, 0.82, 0.92, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.92, 0.96, 1)
+ambient_light_energy = 0.32
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pedestal"]
+albedo_color = Color(0.24, 0.3, 0.35, 1)
+roughness = 0.92
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
+material = SubResource("StandardMaterial3D_pedestal")
+top_radius = 2.4
+bottom_radius = 2.6
+height = 0.2
+radial_segments = 48
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.18, 0.4, 0.22, 1)
+roughness = 0.95
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+material = SubResource("StandardMaterial3D_ground")
+size = Vector2(40, 40)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.11, 0.16, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.65, 0.85, 0.8)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toast"]
+bg_color = Color(0.12, 0.28, 0.18, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.95, 0.55, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_copy"]
+bg_color = Color(0.18, 0.62, 0.42, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_action"]
+bg_color = Color(0.18, 0.35, 0.55, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.12, 0.16, 0.24, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.45, 0.65, 0.5)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+
+[node name="ToonShaderTester" type="Node3D"]
+script = ExtResource("1_tester")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lab")
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, 0.40558, -0.40558, 0, 0.707107, 0.707107, 0.573576, -0.579228, 0.579228, 0, 8, 0)
+light_color = Color(1, 0.98, 0.92, 1)
+light_energy = 1.25
+shadow_enabled = true
+directional_shadow_max_distance = 25.0
+
+[node name="GroundMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("PlaneMesh_ground")
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="Turntable" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="ModelMount" type="Node3D" parent="Turntable"]
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(0.866025, 0.17101, -0.469846, 0, 0.939693, 0.34202, 0.5, -0.2962, 0.813798, 0, 0.8, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.2)
+fov = 42.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 12.0
+offset_right = -20.0
+offset_bottom = 52.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "🎨 Cel / Toon Gradient Studio"
+
+[node name="Spacer" type="Control" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LblFPS" type="Label" parent="CanvasLayer/Control/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.95, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "FPS: 60 (16.6 ms)"
+
+[node name="LeftPanel" type="PanelContainer" parent="CanvasLayer/Control"]
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 60.0
+offset_right = 346.0
+offset_bottom = -16.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="ScrollLeft" type="ScrollContainer" parent="CanvasLayer/Control/LeftPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBoxLeft" type="VBoxContainer" parent="CanvasLayer/Control/LeftPanel/ScrollLeft"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="SecModel" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "📦 1. MODELO EM EXIBIÇÃO"
+
+[node name="GridModels" type="GridContainer" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+columns = 2
+
+[node name="BtnModGrass" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌿 Grama"
+
+[node name="BtnModWheat" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌾 Trigo"
+
+[node name="BtnModRose" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌹 Rosa"
+
+[node name="BtnModDaisy" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌼 Margarida"
+
+[node name="BtnModSunflower" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌻 Girassol"
+
+[node name="BtnModRock" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🪨 Rocha"
+
+[node name="BtnModRobot" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🤖 Robô"
+
+[node name="BtnModDiorama" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/GridModels"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🏝️ Diorama"
+
+[node name="HSep1" type="HSeparator" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+
+[node name="SecLight" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "☀️ 2. ILUMINAÇÃO & SOL"
+
+[node name="LblSunEnergy" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Intensidade do Sol: 1.25"
+
+[node name="SliderSunEnergy" type="HSlider" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 3.0
+step = 0.05
+value = 1.25
+
+[node name="LblAmbientEnergy" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Intensidade Luz Ambiente: 0.32"
+
+[node name="SliderAmbientEnergy" type="HSlider" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 1.5
+step = 0.02
+value = 0.32
+
+[node name="LblSunPitch" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Elevação do Sol (Pitch): -45.0°"
+
+[node name="SliderSunPitch" type="HSlider" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -90.0
+max_value = 0.0
+step = 1.0
+value = -45.0
+
+[node name="LblSunYaw" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Azimute do Sol (Yaw): -35.0°"
+
+[node name="SliderSunYaw" type="HSlider" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -180.0
+max_value = 180.0
+step = 1.0
+value = -35.0
+
+[node name="CheckRotateSun" type="CheckBox" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Girar Sol Automaticamente"
+
+[node name="HSep2" type="HSeparator" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+
+[node name="SecCam" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "📷 3. CÂMERA & ALINHAMENTO"
+
+[node name="CardCam" type="PanelContainer" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="LblCamInfo" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft/CardCam"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.92, 0.98, 1)
+theme_override_font_sizes/font_size = 11
+text = "📷 Câmera: Pitch -20.0° | Yaw 30.0°
+☀️ Sol: Pitch -45.0° | Yaw -35.0°"
+
+[node name="BtnAlignGame" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_action")
+text = "🎮 Ângulo do Jogo (Canônico)"
+
+[node name="BtnAlignSunCam" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_action")
+text = "☀️ Alinhar Luz com Câmera"
+
+[node name="BtnCopyCamSun" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_copy")
+text = "📋 Copiar Ângulos (Câmera & Sol)"
+
+[node name="BtnResetCam" type="Button" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "↺ Reset Câmera Padrão"
+
+[node name="LblZoom" type="Label" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Zoom da Câmera:"
+
+[node name="SliderCamZoom" type="HSlider" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.8
+max_value = 7.5
+step = 0.1
+value = 3.2
+
+[node name="CheckTurntable" type="CheckBox" parent="CanvasLayer/Control/LeftPanel/ScrollLeft/VBoxLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Girar Modelo (Turntable 360°)"
+
+[node name="RightPanel" type="PanelContainer" parent="CanvasLayer/Control"]
+custom_minimum_size = Vector2(370, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -386.0
+offset_top = 60.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="ScrollRight" type="ScrollContainer" parent="CanvasLayer/Control/RightPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBoxRight" type="VBoxContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="SecPresets" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "⚡ PRESETS RÁPIDOS"
+
+[node name="GridPresets" type="GridContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+columns = 3
+
+[node name="BtnPresetGrass" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/GridPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌱 Grama"
+
+[node name="BtnPresetWheat" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/GridPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌾 Trigo"
+
+[node name="BtnPresetRose" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/GridPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🌸 Flor"
+
+[node name="BtnPresetRock" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/GridPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🪨 Rocha"
+
+[node name="BtnPresetMinions" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/GridPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "✨ Minions"
+
+[node name="HSep3" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+
+[node name="SecColors" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎨 4. CORES DO GRADIENTE"
+
+[node name="CardColors" type="PanelContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="GridColors" type="GridContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
+
+[node name="LblColorLight" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Luz / Topo:"
+
+[node name="PickerColorLight" type="ColorPickerButton" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.42, 0.88, 0.46, 1)
+
+[node name="LblColorBase" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Base / Solo:"
+
+[node name="PickerColorBase" type="ColorPickerButton" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.12, 0.35, 0.18, 1)
+
+[node name="LblColorShadow" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Sombra Cel:"
+
+[node name="PickerColorShadow" type="ColorPickerButton" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.18, 0.48, 0.25, 1)
+
+[node name="LblColorRim" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Rim Light:"
+
+[node name="PickerColorRim" type="ColorPickerButton" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/CardColors/GridColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.85, 1, 0.65, 1)
+
+[node name="HSep4" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+
+[node name="SecSliders" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎚️ 5. SLIDERS DO SHADER"
+
+[node name="LblRampOffset" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Offset do Corte: 0.46"
+
+[node name="SliderRampOffset" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.46
+
+[node name="LblRampSmooth" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Suavidade do Gradiente: 0.08"
+
+[node name="SliderRampSmooth" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.001
+max_value = 1.0
+step = 0.01
+value = 0.08
+
+[node name="LblVertGrad" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Gradiente Vertical (Base-Topo): 0.55"
+
+[node name="SliderVertGrad" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.55
+
+[node name="LblRimPower" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Foco Rim Light (Potência): 2.2"
+
+[node name="SliderRimPower" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.1
+max_value = 8.0
+step = 0.1
+value = 2.2
+
+[node name="LblRimBrightness" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Brilho Rim Light: 1.40"
+
+[node name="SliderRimBrightness" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 4.0
+step = 0.1
+value = 1.4
+
+[node name="LblRoughness" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Rugosidade Fosca: 0.90"
+
+[node name="SliderRoughness" type="HSlider" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.02
+value = 0.9
+
+[node name="HSep5" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+
+[node name="SecOutline" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "✏️ 6. CONTORNO (INVERTED HULL)"
+
+[node name="HBoxOutline" type="HBoxContainer" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+
+[node name="BtnOutNone" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/HBoxOutline"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Off"
+
+[node name="BtnOutThin" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/HBoxOutline"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fino"
+
+[node name="BtnOutMed" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight/HBoxOutline"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Médio"
+
+[node name="HSep6" type="HSeparator" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+
+[node name="SecExtras" type="Label" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "⚙️ 7. EXTRAS & EXPORTAÇÃO"
+
+[node name="CheckRim" type="CheckBox" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Ativar Rim Light (Bordas)"
+
+[node name="CheckSpec" type="CheckBox" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ativar Especular Toon"
+
+[node name="BtnCopyParams" type="Button" parent="CanvasLayer/Control/RightPanel/ScrollRight/VBoxRight"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_copy")
+text = "📋 Copiar Parâmetros do Shader"
+
+[node name="ToastLabel" type="Label" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -60.0
+offset_right = 220.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.9, 1, 0.9, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_toast")
+text = "✅ Parâmetros copiados com sucesso!"
+horizontal_alignment = 1
+vertical_alignment = 1

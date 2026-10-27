@@ -51,15 +51,28 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 ## 3. Iluminação e Renderização
 
-- **DirectionalLight3D:**
-  - Posicionada em ângulo zenital angular (~$45^\circ$ pitch, $-35^\circ$ yaw).
-  - Energia da luz calibrada em `1.1` com tom solar suave (`#FFFDE7`).
+- **DirectionalLight3D (Sol Canônico):**
+  - Posicionada em ângulo zenital calibrado (`pitch = -37.0°`, `yaw = 40.0°`, `roll = 0.0°`), vetor de direção frontal `(-0.513, -0.602, -0.612)`.
+  - Energia da luz calibrada em `1.30` com tom solar suave (`#FFFDE7`).
   - Sombras projetadas ativadas (`shadow_enabled = true`) em modo ortogonal (`SHADOW_ORTHOGONAL`) com distância máxima de $28.0\text{m}$, mapa $1024 \times 1024$ e filtro rápido, garantindo 60 FPS cravados no mobile.
   - As malhas de vegetação operam com `cast_shadow = SHADOW_CASTING_SETTING_OFF` (mantendo sombras nítidas exclusivamente no robô, rochas e falésias da ilha), reduzindo drasticamente as primitivas de renderização.
 - **WorldEnvironment:**
   - `background_mode = 1` (Clear Color) com cor de céu tropical suave.
-  - Luz ambiente com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.85`, garantindo que as faces sombreadas nunca fiquem pretas ou pesadas.
+  - Luz ambiente com coloração pastel esverdeada (`#E8F5E9`) e intensidade `0.20`, garantindo alto contraste estilizado de cel shading sem estourar as cores.
   - Tonemap em modo ACES/Filmic para realce das cores vivas sem estourar os brancos.
+- **IsometricCamera (Câmera Canônica):**
+  - Orientação isométrica travada em `pitch = -40.3°` (`Vector3(-40.3, 0.0, 0.0)`), distância focal `7.40m` (`offset = Vector3(0.0, 4.78, 5.65)`).
+- **Vegetação (Toon Shader Gradiente Canônico):**
+  - `color_light = Color(0.42, 0.88, 0.46)`
+  - `color_base = Color(0.12, 0.35, 0.18)`
+  - `color_shadow = Color(0.18, 0.48, 0.25)`
+  - `rim_color = Color(0.85, 1.00, 0.65)`
+  - `toon_ramp_offset = 0.62`
+  - `toon_ramp_smoothness = 0.72`
+  - `vertical_gradient_mix = 0.72`
+  - `rim_power = 1.00`
+  - `rim_brightness = 1.00`
+  - `roughness = 0.90`
 
 ---
 
