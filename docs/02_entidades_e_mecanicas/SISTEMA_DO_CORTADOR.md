@@ -38,8 +38,8 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 | `base_speed` | `6.5 m/s` | Velocidade máxima de deslocamento linear. Escalável via upgrade de Velocidade. |
 | `acceleration` | `24.0 m/s²` | Rapidez com que o cortador atinge a velocidade desejada após o toque. |
 | `friction` | `18.0 m/s²` | Desaceleração suave quando o jogador solta o joystick. |
-| `rotation_speed`| `600.0 °/s` | Rotação angular equilibrada da serra em torno do eixo Y durante a condução (reduzida em 50% para visualização nítida dos dentes). |
-| `idle_rotation_speed`| `90.0 °/s` | Rotação suave e lenta da lâmina em torno do eixo Y quando o robô estiver parado (idle). |
+| `rotation_speed`| `720.0 °/s` | Rotação angular da serra em torno do eixo Y durante a condução (+20% ativo, desacoplada do giro yaw do corpo). |
+| `idle_rotation_speed`| `108.0 °/s` | Rotação suave da lâmina em torno do eixo Y quando o robô estiver parado (+20% stand/idle). |
 | `knockback_force`| `4.75 m/s` | Impulso reverso equilibrado aplicado na direção normal da colisão ao tocar obstáculos sólidos com a serra (reduzido em 50% para recuo ágil). |
 
 ### Lógica de Vetor de Movimento e Orientação Frontal
@@ -70,9 +70,9 @@ O chassi e suas peças reagem organicamente às forças de inércia e relevo do 
 4. **Articulação de Braços e Cabeça:**
    - Braços da suspensão (`low_arm` e `up_arm`) rotacionam sutilmente em $X$ acompanhando o curso dos pistões.
    - O pescoço (`neck`) absorve o pitch para estabilizar a visão, e a cabeça (`head`) apresenta leve inércia/antecipação no Yaw ao virar.
-5. **Sincronização da Serra com o Chassi (`BladeSpinner`):**
-   - Reparentada sob `Body` no `_ready()`, a serra acompanha diretamente o *pitch* frontal/traseiro, o *roll* lateral e o *bobbing* vertical.
-   - A lâmina de corte permanece rigorosamente coplanar com a carenagem protetora amarela (`blade_container`), eliminando clipping visual em acelerações e curvas enquanto a serra gira continuamente ao redor de seu eixo normal local.
+5. **Sincronização da Serra com o Chassi Desacoplada do Yaw (`BladeSpinner`):**
+   - Mantida como irmã de `Body` sob `Robot` e sincronizada via `_sync_blade_spinner_transform()`, a serra acompanha diretamente o *pitch* frontal/traseiro, o *roll* lateral e o *bobbing* vertical (`Quaternion(Vector3.UP, robot_body.basis.y)`), **sem herdar o giro horizontal (`rotation.y` / yaw) do corpo**.
+   - Dessa forma, a velocidade angular da lâmina no espaço de mundo permanece 100% constante, sem acelerar ou desacelerar quando o jogador move o robô em círculos horários ou anti-horários.
 
 ---
 

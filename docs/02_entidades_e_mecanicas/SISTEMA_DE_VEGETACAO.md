@@ -48,10 +48,11 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
 
 ## 3. Ciclo de Dano e Corte
 
-1. **Rigidez Física Ativa & Bloqueio Corporal:**
+1. **Rigidez Física Ativa, Escala de Flores (+30%) & Knockback Curto no 1º Hit:**
+   - Todas as 8 espécies de flores nobres operam com escala visual ampliada em **+30%** (`0.52 -> 0.676` no `VegetationGrid` e `IslandNode`, e `0.624..0.754` em `plant.gd`), destacando suas silhuetas e cores sobre o gramado.
    - Plantas resistentes com mais de 1 ponto de vida (trigo e flores) atuam como corpos rígidos na grade espacial (`resolve_rigid_plant_collision`) enquanto estiverem vivas (`health > 0` e `is_cut == 0`).
-   - O corpo do cortador ($R_{\text{body}} = 0.30\text{m}$) é impedido de avançar por cima da planta ($R_{\text{plant}} = 0.18\text{m}$, separação mínima de $0.48\text{m}$). O robô desliza suavemente ao contornar, mas não consegue atravessar até destruí-la.
-   - Como a lâmina possui raio $\ge 0.90\text{m}$, a serra corta continuamente sobre o caule enquanto o avanço do chassi permanece bloqueado.
+   - O corpo do cortador ($R_{\text{body}} = 0.30\text{m}$) é impedido de avançar por cima da planta ($R_{\text{wheat}} = 0.18\text{m}$, $R_{\text{flower}} = 0.23\text{m}$). O robô desliza suavemente ao contornar, mas não consegue atravessar até destruí-la.
+   - **Knockback Curto no Primeiro Hit:** Ao atingir pela primeira vez uma planta resistente intacta (`old_hp == max_health` e `max_health > 1` com `new_hp > 0`), o cortador recebe um micro-recuo tátil bem curto (`_trigger_plant_first_hit_knockback`: `stun_timer = 0.08s`, `velocity = dir * 2.15 m/s`, `shock_compression = -0.022`), sinalizando fisicamente a dureza inicial do caule antes da mastigação contínua.
 2. **Janela de Cooldown de 1 Segundo & Micro-Tremor Contínuo:**
    - Cada golpe subsequente exige um intervalo de **1.0 segundo** (`MULTI_HIT_COOLDOWN_SEC = 1.0`).
    - Durante essa janela de 1 segundo, enquanto a serra giratória mantiver contato ativo com o tufo resistente, a planta vibra com um **micro-tremor procedural de alta frequência** ($\approx 65\text{Hz}$ e $\pm 0.022\text{m}$ de amplitude), simulando visual e tatilmente o atrito mecânico dos dentes de aço mastigando o caule resistente antes do corte.

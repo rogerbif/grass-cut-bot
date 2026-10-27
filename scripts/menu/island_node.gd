@@ -519,7 +519,7 @@ func _ensure_3d_veg_built() -> void:
 					var fx: int = int(od.get("gx", 0))
 					var fz: int = int(od.get("gz", 0))
 					var f_pos: Vector3 = LevelJsonLoader.grid_to_world(fx, fz, width, height, cell_size)
-					var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+					var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.676, 0.676, 0.676))
 					var f_key: String = o_type if veg_transforms_by_type.has(o_type) else "flower"
 					(veg_transforms_by_type[f_key] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
 				elif o_type == "wheat":
@@ -547,12 +547,12 @@ func _ensure_3d_veg_built() -> void:
 				var scale_y: float = lerpf(0.55, 0.70, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
 				var scale_xz: float = lerpf(0.34, 0.46, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-			elif v_type != "flower":
+			elif not v_type.begins_with("flower"):
 				var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
 				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
-				var sf: float = 0.52 * scale_factor
+				var sf: float = 0.676 * scale_factor
 				scale_vec = Vector3(sf, sf, sf)
 
 			var g_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
@@ -587,7 +587,7 @@ func _ensure_3d_veg_built() -> void:
 				var fx: int = int((obj_item as Dictionary).get("gx", 0))
 				var fz: int = int((obj_item as Dictionary).get("gz", 0))
 				var f_pos: Vector3 = Vector3(offset_x + float(fx) * cell_size, 0.0, offset_z + float(fz) * cell_size)
-				var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+				var f_basis: Basis = Basis(Vector3.UP, fmod(float(fx * 79 + fz * 31), TAU)).scaled(Vector3(0.676, 0.676, 0.676))
 				(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, f_pos))
 
 		for r: int in range(rows):
@@ -610,7 +610,7 @@ func _ensure_3d_veg_built() -> void:
 					var flower_pos: Vector3 = veg_field.call("cell_to_world", lx * 2, lz * 2, cell_size) as Vector3
 					flower_pos.x += 0.10
 					flower_pos.z += 0.10
-					var f_basis: Basis = Basis(Vector3.UP, fmod(float(lx * 79 + lz * 31), TAU)).scaled(Vector3(0.52, 0.52, 0.52))
+					var f_basis: Basis = Basis(Vector3.UP, fmod(float(lx * 79 + lz * 31), TAU)).scaled(Vector3(0.676, 0.676, 0.676))
 					(veg_transforms_by_type["flower"] as Array[Transform3D]).append(Transform3D(f_basis, flower_pos))
 					continue
 
@@ -629,12 +629,12 @@ func _ensure_3d_veg_built() -> void:
 					var scale_y: float = lerpf(0.55, 0.70, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
 					var scale_xz: float = lerpf(0.34, 0.46, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
 					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-				elif v_type != "flower":
+				elif not v_type.begins_with("flower"):
 					var scale_y: float = lerpf(0.48, 0.62, edge_t) * (0.95 + fmod(sub_seed * 0.13, 0.10))
 					var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(sub_seed * 0.27, 0.10))
 					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 				else:
-					var sf: float = 0.52
+					var sf: float = 0.676
 					scale_vec = Vector3(sf, sf, sf)
 
 				var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(scale_vec)

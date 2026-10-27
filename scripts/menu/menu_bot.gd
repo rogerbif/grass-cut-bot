@@ -14,7 +14,7 @@ enum BotState {
 
 const TELEPORT_SHADER: Shader = preload("res://shaders/teleport_effect.gdshader")
 
-@export var blade_rotation_speed: float = 75.0 # Graus por segundo de rotação suave da lâmina
+@export var blade_rotation_speed: float = 90.0 # Graus por segundo de rotação suave da lâmina (+20% stand)
 @export var move_distance: float = 0.50          # Distância máxima de avanço frontal (meio metro)
 @export var drive_speed: float = 0.42           # Velocidade de deslocamento suave na ilha (m/s)
 
@@ -45,6 +45,9 @@ var _target_head_pitch: float = 0.0
 
 # Expressões randômicas
 var _expression_timer: float = 0.0
+var _blade_spin_angle: float = 0.0
+var _initial_blade_pos: Vector3 = Vector3(0.0, 0.258, 0.0)
+var _initial_body_pos: Vector3 = Vector3(0.0, 0.72, 0.0)
 
 @onready var visual_pivot: Node3D = $VisualPivot if has_node("VisualPivot") else self
 @onready var robot_body: Node3D = get_node_or_null("VisualPivot/GrassBot/Robot/Body") as Node3D
@@ -60,12 +63,13 @@ var _expression_timer: float = 0.0
 
 func _ready() -> void:
 	base_position = position
-	if blade_spinner != null and robot_body != null:
-		blade_spinner.reparent(robot_body, true)
+	if blade_spinner != null:
+		_initial_blade_pos = blade_spinner.position
 		for child: Node in blade_spinner.get_children():
 			if child is GeometryInstance3D:
 				(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if robot_body != null:
+		_initial_body_pos = robot_body.position
 		robot_body.rotation.y = 0.0 # Rosto e serra voltados para a câmera do menu
 
 	_setup_eyes()
@@ -95,21 +99,34 @@ func _setup_eyes() -> void:
 		robot_eyes.set_expression(RobotEyes.EyeExpression.NORMAL)
 
 func _process(delta: float) -> void:
-	# 1. Rotação suave contínua da lâmina em marcha lenta
-	if blade_spinner != null:
-		blade_spinner.rotate_y(deg_to_rad(blade_rotation_speed * delta))
+	# 1. Rotação suave contínua da lâmina em marcha lenta (independente do giro yaw do corpo)
+	_blade_spin_angle = fposmod(_blade_spin_angle + deg_to_rad(blade_rotation_speed * delta), TAU)
 
 	if is_teleporting:
+		_sync_blade_spinner_transform()
 		return
 
 	# 2. Condução física e máquina de estados de locomoção
 	_process_locomotion(delta)
+	_sync_blade_spinner_transform()
 
 	# 3. Articulação expressiva autônoma da cabeça
 	_process_head_motion(delta)
 
 	# 4. Alternância randômica de humores e expressões nos olhos de LED
 	_process_random_expressions(delta)
+
+func _sync_blade_spinner_transform() -> void:
+	if blade_spinner == null:
+		return
+	var tilt_quat: Quaternion = Quaternion.IDENTITY
+	if robot_body != null:
+		var chassis_up: Vector3 = robot_body.basis.y.normalized()
+		if chassis_up.distance_squared_to(Vector3.UP) > 0.000001:
+			tilt_quat = Quaternion(Vector3.UP, chassis_up)
+		blade_spinner.position = robot_body.position + robot_body.basis * (_initial_blade_pos - _initial_body_pos)
+	var spin_quat: Quaternion = Quaternion(Vector3.UP, _blade_spin_angle)
+	blade_spinner.basis = Basis(tilt_quat * spin_quat)
 
 func _process_locomotion(delta: float) -> void:
 	_state_timer -= delta

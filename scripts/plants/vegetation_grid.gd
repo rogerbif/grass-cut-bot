@@ -771,7 +771,7 @@ func _build_from_vector_field(
 				var scale_xz: float = lerpf(0.34, 0.46, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
-				var sf: float = 0.52 * scale_factor
+				var sf: float = 0.676 * scale_factor
 				scale_vec = Vector3(sf, sf, sf)
 
 			var inst_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
@@ -1091,8 +1091,8 @@ func _build_from_vegetation_field(
 				var scale_xz: float = lerpf(0.34, 0.46, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
 				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
 			else:
-				# Flor
-				var sf: float = 0.52
+				# Flor (+30% de escala visual: 0.52 * 1.30 = 0.676)
+				var sf: float = 0.676
 				scale_vec = Vector3(sf, sf, sf)
 
 			var inst_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
@@ -1252,10 +1252,10 @@ func _get_game_manager() -> Node:
 	return tree.root.get_node_or_null("GameManager")
 
 
-func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
+func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	var gm: Node = _get_game_manager()
 	if gm != null and int(gm.get("current_state")) != 1:
-		return
+		return Vector3.ZERO
 
 	# Pinta a trilha contínua da serra no solo
 	if _lawn_cut_trail != null and is_instance_valid(_lawn_cut_trail):
@@ -1271,6 +1271,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 	var now_sec: float = float(Time.get_ticks_msec()) * 0.001
 	var particles_spawned_this_frame: int = 0
 	var new_shaking_tufts: PackedInt32Array = PackedInt32Array()
+	var first_hit_recoil: Vector3 = Vector3.ZERO
 
 	for cx: int in range(min_cx, max_cx + 1):
 		for cz: int in range(min_cz, max_cz + 1):
@@ -1305,9 +1306,16 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 							new_shaking_tufts.append(p_idx)
 					continue
 
+				var old_hp: int = _health[p_idx]
 				_last_hit_time[p_idx] = now_sec
-				var new_hp: int = _health[p_idx] - power
+				var new_hp: int = old_hp - power
 				_health[p_idx] = new_hp
+				if _max_health[p_idx] > 1 and old_hp == _max_health[p_idx] and new_hp > 0:
+					var recoil_vec: Vector3 = Vector3(center.x - p_pos.x, 0.0, center.z - p_pos.z)
+					if recoil_vec.length_squared() > 0.0001:
+						first_hit_recoil += recoil_vec.normalized()
+					else:
+						first_hit_recoil += Vector3(0.0, 0.0, 1.0)
 
 				var mmi_idx: int = _mmi_indices[p_idx]
 				var inst_idx: int = _instance_indices[p_idx]
@@ -1392,6 +1400,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> void:
 		if not new_shaking_tufts.has(old_p_idx):
 			_restore_plant_transform(old_p_idx)
 	_actively_shaking_tufts = new_shaking_tufts
+	return first_hit_recoil.normalized() if first_hit_recoil.length_squared() > 0.0001 else Vector3.ZERO
 
 
 func _restore_plant_transform(p_idx: int) -> void:
@@ -1407,12 +1416,12 @@ func _restore_plant_transform(p_idx: int) -> void:
 
 ## Resolve a colisão física contra plantas rígidas (> 1 vida vivas) para impedir que o cortador as atravesse.
 func resolve_rigid_plant_collision(cutter_pos: Vector3, cutter_vel: Vector3, body_radius: float, plant_radius: float = 0.18) -> Dictionary:
-	var total_radius: float = body_radius + plant_radius
-	var total_radius_sq: float = total_radius * total_radius
-	var min_cx: int = floori((cutter_pos.x - total_radius) / GRID_STEP)
-	var max_cx: int = ceili((cutter_pos.x + total_radius) / GRID_STEP)
-	var min_cz: int = floori((cutter_pos.z - total_radius) / GRID_STEP)
-	var max_cz: int = ceili((cutter_pos.z + total_radius) / GRID_STEP)
+	var max_plant_radius: float = maxf(plant_radius, 0.23)
+	var search_radius: float = body_radius + max_plant_radius
+	var min_cx: int = floori((cutter_pos.x - search_radius) / GRID_STEP)
+	var max_cx: int = ceili((cutter_pos.x + search_radius) / GRID_STEP)
+	var min_cz: int = floori((cutter_pos.z - search_radius) / GRID_STEP)
+	var max_cz: int = ceili((cutter_pos.z + search_radius) / GRID_STEP)
 
 	var resolved_pos: Vector3 = cutter_pos
 	var resolved_vel: Vector3 = cutter_vel
@@ -1427,6 +1436,10 @@ func resolve_rigid_plant_collision(cutter_pos: Vector3, cutter_vel: Vector3, bod
 				var p_idx: int = bucket[i]
 				if _max_health[p_idx] <= 1 or _is_cut[p_idx] == 1 or _health[p_idx] <= 0:
 					continue
+
+				var eff_plant_radius: float = 0.23 if _plant_keys[p_idx].begins_with("flower") else plant_radius
+				var total_radius: float = body_radius + eff_plant_radius
+				var total_radius_sq: float = total_radius * total_radius
 
 				var p_pos: Vector3 = _positions[p_idx]
 				var dx: float = resolved_pos.x - p_pos.x

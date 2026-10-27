@@ -43,8 +43,12 @@ func _ready() -> void:
 		var scale_y: float = randf_range(0.53, 0.64)
 		var scale_xz: float = randf_range(0.40, 0.45)
 		visual_mesh.scale = Vector3(scale_xz, scale_y, scale_xz)
+	elif type == PlantType.FLOWER:
+		# Flores com +30% de escala visual (0.48~0.58 * 1.30 = 0.624~0.754)
+		var flower_scale: float = randf_range(0.624, 0.754)
+		visual_mesh.scale = Vector3(flower_scale, flower_scale, flower_scale)
 	else:
-		# Flores e trigo proporcionais ao slot de célula de 0.40m
+		# Trigo proporcional ao slot de célula de 0.40m
 		var random_scale: float = randf_range(0.48, 0.58)
 		visual_mesh.scale = Vector3(random_scale, random_scale, random_scale)
 

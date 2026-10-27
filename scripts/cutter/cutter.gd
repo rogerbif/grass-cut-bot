@@ -3,8 +3,8 @@ extends CharacterBody3D
 @export var base_speed: float = 3.25
 @export var acceleration: float = 24.0
 @export var friction: float = 18.0
-@export var rotation_speed: float = 600.0 # Graus por segundo de rotação da serra em velocidade máxima (em movimento)
-@export var idle_rotation_speed: float = 90.0 # Graus por segundo de rotação suave da serra quando parado (marcha lenta)
+@export var rotation_speed: float = 720.0 # Graus por segundo de rotação da serra em velocidade máxima (+20% ativo)
+@export var idle_rotation_speed: float = 108.0 # Graus por segundo de rotação suave da serra quando parado (+20% stand)
 @export var knockback_force: float = 4.75 # Afastamento/ricochete calibrado ao colidir a lâmina com rochas
 
 @export_group("Procedural Motion")
@@ -42,7 +42,10 @@ var is_stunned: bool = false
 var stun_timer: float = 0.0
 var _shock_cooldown: float = 0.0
 var idle_eyes_timer: float = 0.0
-var current_blade_speed: float = 90.0
+var current_blade_speed: float = 108.0
+var _blade_spin_angle: float = 0.0
+var _initial_blade_pos: Vector3 = Vector3(0.0, 0.258, 0.0)
+var _initial_body_pos: Vector3 = Vector3(0.0, 0.72, 0.0)
 var vegetation_grid: Node3D = null
 
 var _is_celebrating: bool = false
@@ -84,12 +87,13 @@ func _ready() -> void:
 	add_to_group("cutter")
 	current_blade_speed = idle_rotation_speed
 	_cached_cutter_speed = base_speed
-	if blade_spinner != null and robot_body != null:
-		blade_spinner.reparent(robot_body, true)
+	if blade_spinner != null:
+		_initial_blade_pos = blade_spinner.position
 		for child: Node in blade_spinner.get_children():
 			if child is GeometryInstance3D:
 				(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if robot_body:
+		_initial_body_pos = robot_body.position
 		robot_body.rotation.y = 0.0 # Virado de frente para a câmera (+Z)
 		initial_body_y = robot_body.position.y
 		last_body_yaw = 0.0
@@ -362,12 +366,23 @@ func update_upgrades() -> void:
 		blade_shape.shape.radius = radius
 	
 	# Escala da malha visual da serra 1:1 com o raio físico (compensando VisualPivot 0.62 * 1.66m = 1.03m)
-	var visual_scale: float = radius / 1.03
-	if blade_spinner:
-		blade_spinner.scale = Vector3(visual_scale, 1.0, visual_scale)
+	_sync_blade_spinner_transform()
 	
 	_update_blade_tier_visual()
 	_update_shader_globals()
+
+func _sync_blade_spinner_transform() -> void:
+	if blade_spinner == null:
+		return
+	var visual_scale: float = _cached_blade_radius / 1.03
+	var tilt_quat: Quaternion = Quaternion.IDENTITY
+	if robot_body != null:
+		var chassis_up: Vector3 = robot_body.basis.y.normalized()
+		if chassis_up.distance_squared_to(Vector3.UP) > 0.000001:
+			tilt_quat = Quaternion(Vector3.UP, chassis_up)
+		blade_spinner.position = robot_body.position + robot_body.basis * (_initial_blade_pos - _initial_body_pos)
+	var spin_quat: Quaternion = Quaternion(Vector3.UP, _blade_spin_angle)
+	blade_spinner.basis = Basis(tilt_quat * spin_quat).scaled(Vector3(visual_scale, 1.0, visual_scale))
 
 func _update_blade_tier_visual() -> void:
 	var tier: int = 1
@@ -399,8 +414,7 @@ func _physics_process(delta: float) -> void:
 		input_direction = Vector2.ZERO
 		if _is_celebrating:
 			current_blade_speed = idle_rotation_speed
-			if blade_spinner != null:
-				blade_spinner.rotate_y(deg_to_rad(current_blade_speed * delta))
+			_blade_spin_angle = fposmod(_blade_spin_angle + deg_to_rad(current_blade_speed * delta), TAU)
 			_process_victory_idle_behavior(delta)
 		else:
 			current_blade_speed = 0.0
@@ -408,13 +422,12 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# Rotação da serra circular: rotação acelerada durante deslocamento e marcha lenta suave quando parado
+	# Independente do giro horizontal (yaw) do corpo do robô
 	var is_moving: bool = velocity.length_squared() > 0.01 or input_direction.length_squared() > 0.01
 	var target_blade_speed: float = rotation_speed if is_moving else idle_rotation_speed
 	var blade_accel: float = 12.0 if is_moving else 3.5
 	current_blade_speed = lerp(current_blade_speed, target_blade_speed, blade_accel * delta)
-
-	if blade_spinner:
-		blade_spinner.rotate_y(deg_to_rad(current_blade_speed * delta))
+	_blade_spin_angle = fposmod(_blade_spin_angle + deg_to_rad(current_blade_speed * delta), TAU)
 
 	# Atualiza o olhar do robô e o ciclo de sono em idle
 	if robot_eyes:
@@ -444,6 +457,7 @@ func _physics_process(delta: float) -> void:
 			velocity = col_result["velocity"]
 		_process_procedural_motion(delta, target_speed)
 		_check_obstacle_collisions()
+		_process_cutting()
 		_update_shader_globals()
 		return
 
@@ -490,6 +504,7 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 	# Se não estiver jogando, interpola tudo suavemente de volta ao repouso (a não ser que esteja comemorando ou derrotado)
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
 		if _is_celebrating or _is_defeated:
+			_sync_blade_spinner_transform()
 			return
 		current_pitch = lerp(current_pitch, 0.0, 8.0 * delta)
 		current_roll = lerp(current_roll, 0.0, 8.0 * delta)
@@ -503,6 +518,7 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 			head_node.rotation = head_node.rotation.lerp(Vector3.ZERO, 8.0 * delta)
 		if neck_node:
 			neck_node.rotation = neck_node.rotation.lerp(Vector3.ZERO, 8.0 * delta)
+		_sync_blade_spinner_transform()
 		return
 
 	# --- 1. Dinâmica de Inclinação (Pitch & Roll / Lean) ---
@@ -566,6 +582,8 @@ func _process_procedural_motion(delta: float, target_speed: float) -> void:
 	if head_node:
 		head_node.rotation.y = head_yaw_lag
 		head_node.rotation.x = lerp_angle(head_node.rotation.x, -current_pitch * 0.25, 12.0 * delta)
+
+	_sync_blade_spinner_transform()
 
 ## Reconstrói o cache contíguo de obstáculos da fase para eliminar buscas dinâmicas na SceneTree a cada physics tick.
 func rebuild_obstacles_cache() -> void:
@@ -724,6 +742,20 @@ func _on_blade_area_exited(area: Area3D) -> void:
 	if idx != -1:
 		_overlapping_vegetation.remove_at(idx)
 
+func _trigger_plant_first_hit_knockback(normal: Vector3) -> void:
+	var dir: Vector3 = Vector3(normal.x, 0.0, normal.z)
+	if dir.length_squared() < 0.0001:
+		if velocity.length_squared() > 0.001:
+			dir = -Vector3(velocity.x, 0.0, velocity.z).normalized()
+		else:
+			dir = Vector3(0.0, 0.0, 1.0)
+	else:
+		dir = dir.normalized()
+	is_stunned = true
+	stun_timer = 0.08
+	velocity = dir * 2.15
+	shock_compression = -0.022
+
 func _cut_vegetation_area(area: Area3D) -> bool:
 	if area == null or not is_instance_valid(area):
 		return true
@@ -734,17 +766,26 @@ func _cut_vegetation_area(area: Area3D) -> bool:
 		return true
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
 		return false
+	var old_hp: int = int(plant.get("health"))
+	var max_hp: int = int(plant.get("max_health"))
 	if plant.has_method("cut"):
 		plant.call("cut", _cached_cutter_power)
+	var new_hp: int = int(plant.get("health"))
+	if max_hp > 1 and old_hp == max_hp and new_hp < old_hp and new_hp > 0:
+		var plant_3d: Node3D = plant as Node3D
+		if plant_3d != null:
+			_trigger_plant_first_hit_knockback(global_position - plant_3d.global_position)
 	return bool(plant.get("is_cut"))
 
 func _process_cutting() -> void:
 	if vegetation_grid != null and is_instance_valid(vegetation_grid):
-		if global_position.distance_squared_to(_last_cut_pos) < 0.0004 and absf(_cached_blade_radius - _last_cut_radius) < 0.001:
-			return
 		_last_cut_pos = global_position
 		_last_cut_radius = _cached_blade_radius
-		vegetation_grid.call("cut_in_circle", global_position, _cached_blade_radius, _cached_cutter_power)
+		var first_hit_recoil: Variant = vegetation_grid.call("cut_in_circle", global_position, _cached_blade_radius, _cached_cutter_power)
+		if first_hit_recoil is Vector3:
+			var recoil_vec: Vector3 = first_hit_recoil as Vector3
+			if recoil_vec.length_squared() > 0.0001:
+				_trigger_plant_first_hit_knockback(recoil_vec)
 		return
 	if _overlapping_vegetation.is_empty():
 		return
