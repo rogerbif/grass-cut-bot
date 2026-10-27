@@ -16,7 +16,7 @@ background_mode = 1
 background_color = Color(0.55, 0.82, 0.94, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.88, 0.94, 0.92, 1)
-ambient_light_energy = 0.2
+ambient_light_energy = 0.45
 tonemap_mode = 2
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ocean"]

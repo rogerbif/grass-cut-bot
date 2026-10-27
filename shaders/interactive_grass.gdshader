@@ -135,12 +135,14 @@ void light() {
 	vec3 diffuse_light = mix(color_shadow.rgb, LIGHT_COLOR * toon_ramp_tinting, toon_ramp);
 	DIFFUSE_LIGHT += diffuse_light * ATTENUATION;
 
-	// Rim Lighting estilizado (silhueta brilhante das folhas contra a luz solar)
+	// Rim Lighting estilizado (silhueta brilhante suave restrita às pontas das folhas)
 	if (use_rim) {
+		float h_mask = clamp(UV.y, 0.0, 1.0);
+		h_mask = h_mask * h_mask; // Apenas nas pontas superiores
 		float NdotV = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
 		float rim = (1.0 - NdotV) * pow(max(NdotL, 0.001), rim_power * 0.5);
 		float rim_half_smooth = max(rim_smoothness * 0.5, 0.001);
 		float rim_ramp = smoothstep(rim_cutoff - rim_half_smooth, rim_cutoff + rim_half_smooth, rim);
-		DIFFUSE_LIGHT += rim_color.rgb * rim_ramp * rim_brightness * ATTENUATION;
+		DIFFUSE_LIGHT += rim_color.rgb * rim_ramp * rim_brightness * h_mask * ATTENUATION;
 	}
 }
