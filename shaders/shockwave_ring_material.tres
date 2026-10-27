@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://shockwave_ring_mat_01"]
+
+[ext_resource type="Shader" path="res://shaders/shockwave_ring.gdshader" id="1_shader"]
+
+[resource]
+render_priority = 2
+shader = ExtResource("1_shader")
+shader_parameter/shock_color = Color(1, 0.92, 0.45, 1)
+shader_parameter/inner_radius = 0.72
+shader_parameter/outer_radius = 0.96
+shader_parameter/edge_softness = 0.06
+shader_parameter/alpha = 1.0

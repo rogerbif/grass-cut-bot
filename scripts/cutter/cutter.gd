@@ -38,6 +38,14 @@ extends CharacterBody3D
 @onready var robot_eyes: RobotEyes = $RobotEyes if has_node("RobotEyes") else null
 @onready var blade_progress_bar: BladeProgressBar = $BladeProgressBar if has_node("BladeProgressBar") else null
 
+var blade_slash_mesh: MeshInstance3D = null
+var shockwave_mesh: MeshInstance3D = null
+var _blade_pop_scale: float = 1.0
+var _slash_flash_boost: float = 1.0
+var _pop_tween: Tween = null
+var _flash_tween: Tween = null
+var _shockwave_tween: Tween = null
+
 var input_direction: Vector2 = Vector2.ZERO
 var is_stunned: bool = false
 var stun_timer: float = 0.0
@@ -111,6 +119,7 @@ func _ready() -> void:
 			blade_area.area_exited.connect(_on_blade_area_exited)
 		call_deferred("_sync_initial_overlaps")
 	_setup_eyes()
+	_setup_blade_slash_and_shockwave()
 	update_upgrades()
 	_update_shader_globals()
 	reset_orientation_to_camera()
@@ -118,6 +127,7 @@ func _ready() -> void:
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
 		UpgradeManager.blade_level_changed.connect(_on_blade_level_changed)
+		UpgradeManager.blade_leveled_up.connect(_on_blade_leveled_up)
 	if GameManager != null:
 		GameManager.state_changed.connect(_on_game_state_changed)
 	if AudioManager != null:
@@ -352,6 +362,85 @@ func _on_upgrade_purchased(_upgrade_name: String, _level: int) -> void:
 func _on_blade_level_changed(_new_level: int, _is_max: bool) -> void:
 	update_upgrades()
 
+func _on_blade_leveled_up(_new_level: int, _is_max: bool) -> void:
+	_trigger_level_up_effects()
+
+func _setup_blade_slash_and_shockwave() -> void:
+	# 1. Setup Slash Mesh acoplado ao BladeSpinner
+	if blade_spinner != null:
+		blade_slash_mesh = MeshInstance3D.new()
+		blade_slash_mesh.name = "BladeSlash"
+		var slash_plane: PlaneMesh = PlaneMesh.new()
+		slash_plane.size = Vector2(2.35, 2.35)
+		blade_slash_mesh.mesh = slash_plane
+		blade_slash_mesh.position = Vector3(0.0, 0.015, 0.0)
+		blade_slash_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var slash_mat_res: ShaderMaterial = load("res://shaders/blade_slash_material.tres")
+		if slash_mat_res != null:
+			blade_slash_mesh.material_override = slash_mat_res.duplicate()
+		blade_spinner.add_child(blade_slash_mesh)
+	
+	# 2. Setup Shockwave Ring Mesh na base do cortador
+	shockwave_mesh = MeshInstance3D.new()
+	shockwave_mesh.name = "ShockwaveRing"
+	var ring_plane: PlaneMesh = PlaneMesh.new()
+	ring_plane.size = Vector2(2.0, 2.0)
+	shockwave_mesh.mesh = ring_plane
+	shockwave_mesh.position = Vector3(0.0, 0.035, 0.0)
+	shockwave_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var shock_mat_res: ShaderMaterial = load("res://shaders/shockwave_ring_material.tres")
+	if shock_mat_res != null:
+		shockwave_mesh.material_override = shock_mat_res.duplicate()
+	shockwave_mesh.visible = false
+	add_child(shockwave_mesh)
+
+func _trigger_level_up_effects() -> void:
+	# 1. Pop elástico da lâmina (Punch Scale com Squash & Stretch)
+	if _pop_tween != null and _pop_tween.is_valid():
+		_pop_tween.kill()
+	_pop_tween = create_tween()
+	_pop_tween.tween_property(self, "_blade_pop_scale", 1.38, 0.07).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_pop_tween.tween_property(self, "_blade_pop_scale", 1.0, 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	# 2. Flash momentâneo de brilho e slash
+	if _flash_tween != null and _flash_tween.is_valid():
+		_flash_tween.kill()
+	_slash_flash_boost = 2.5
+	_flash_tween = create_tween()
+	_flash_tween.tween_property(self, "_slash_flash_boost", 1.0, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	# 3. Onda de Choque no solo (Shockwave Ring)
+	if shockwave_mesh != null:
+		if _shockwave_tween != null and _shockwave_tween.is_valid():
+			_shockwave_tween.kill()
+		shockwave_mesh.visible = true
+		shockwave_mesh.scale = Vector3(0.15, 1.0, 0.15)
+		var shock_mat: ShaderMaterial = shockwave_mesh.material_override as ShaderMaterial
+		if shock_mat != null:
+			shock_mat.set_shader_parameter("alpha", 1.0)
+		var target_scale: float = (_cached_blade_radius / 0.90) * 1.65
+		_shockwave_tween = create_tween().set_parallel(true)
+		_shockwave_tween.tween_property(shockwave_mesh, "scale", Vector3(target_scale, 1.0, target_scale), 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		if shock_mat != null:
+			_shockwave_tween.tween_method(func(a: float): shock_mat.set_shader_parameter("alpha", a), 1.0, 0.0, 0.32).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+		_shockwave_tween.chain().tween_callback(func(): shockwave_mesh.visible = false)
+
+	# 4. Feedback tátil mobile e faíscas estelares
+	if Input.has_method("vibrate_handheld"):
+		Input.vibrate_handheld(25)
+	if spark_particles != null:
+		spark_particles.restart()
+
+func _update_blade_slash_intensity() -> void:
+	if blade_slash_mesh == null:
+		return
+	var mat: ShaderMaterial = blade_slash_mesh.material_override as ShaderMaterial
+	if mat == null:
+		return
+	var speed_ratio: float = clampf((current_blade_speed - idle_rotation_speed) / maxf(rotation_speed - idle_rotation_speed, 1.0), 0.0, 1.0)
+	var base_intensity: float = lerpf(0.12, 1.0, speed_ratio)
+	mat.set_shader_parameter("slash_intensity", base_intensity * _slash_flash_boost)
+
 func update_upgrades() -> void:
 	if UpgradeManager == null:
 		_cached_blade_radius = 0.90
@@ -379,7 +468,8 @@ func update_upgrades() -> void:
 func _sync_blade_spinner_transform() -> void:
 	if blade_spinner == null:
 		return
-	var visual_scale: float = _cached_blade_radius / 1.03
+	var visual_scale: float = (_cached_blade_radius / 1.03) * _blade_pop_scale
+	var squash_y: float = 1.0 / sqrt(maxf(_blade_pop_scale, 0.01))
 	var tilt_quat: Quaternion = Quaternion.IDENTITY
 	if robot_body != null:
 		var chassis_up: Vector3 = robot_body.basis.y.normalized()
@@ -387,7 +477,7 @@ func _sync_blade_spinner_transform() -> void:
 			tilt_quat = Quaternion(Vector3.UP, chassis_up)
 		blade_spinner.position = robot_body.position + robot_body.basis * (_initial_blade_pos - _initial_body_pos)
 	var spin_quat: Quaternion = Quaternion(Vector3.UP, _blade_spin_angle)
-	blade_spinner.basis = Basis(tilt_quat * spin_quat).scaled(Vector3(visual_scale, 1.0, visual_scale))
+	blade_spinner.basis = Basis(tilt_quat * spin_quat).scaled(Vector3(visual_scale, squash_y, visual_scale))
 
 func _update_blade_tier_visual() -> void:
 	var tier: int = 1
@@ -422,9 +512,11 @@ func _physics_process(delta: float) -> void:
 		if _is_celebrating:
 			current_blade_speed = idle_rotation_speed
 			_blade_spin_angle = fposmod(_blade_spin_angle + deg_to_rad(current_blade_speed * delta), TAU)
+			_update_blade_slash_intensity()
 			_process_victory_idle_behavior(delta)
 		else:
 			current_blade_speed = 0.0
+			_update_blade_slash_intensity()
 		_process_procedural_motion(delta, 1.0)
 		return
 
@@ -435,6 +527,7 @@ func _physics_process(delta: float) -> void:
 	var blade_accel: float = 12.0 if is_moving else 3.5
 	current_blade_speed = lerp(current_blade_speed, target_blade_speed, blade_accel * delta)
 	_blade_spin_angle = fposmod(_blade_spin_angle + deg_to_rad(current_blade_speed * delta), TAU)
+	_update_blade_slash_intensity()
 
 	# Atualiza o olhar do robô e o ciclo de sono em idle
 	if robot_eyes:

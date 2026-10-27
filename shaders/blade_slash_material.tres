@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://blade_slash_mat_01"]
+
+[ext_resource type="Shader" path="res://shaders/blade_slash.gdshader" id="1_shader"]
+
+[resource]
+render_priority = 1
+shader = ExtResource("1_shader")
+shader_parameter/slash_color = Color(1, 0.96, 0.7, 0.85)
+shader_parameter/slash_intensity = 1.0
+shader_parameter/inner_radius = 0.55
+shader_parameter/outer_radius = 0.98
+shader_parameter/edge_softness = 0.08
+shader_parameter/arc_length = 3.6

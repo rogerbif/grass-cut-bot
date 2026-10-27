@@ -95,8 +95,21 @@ Todas as lâminas compartilham a mesma identidade visual: alcance radial idênti
 | :--- | :--- | :--- | :--- | :--- |
 | **Tier 1** | Lâmina Estelar Tripla | Estrela geométrica de 3 pontas com arestas retas | $R = 1.18\text{m}$ | Níveis 1 e 2 |
 | **Tier 2** | Lâmina Estelar Quádrupla | Estrela geométrica de 4 pontas (cruz ninja) com arestas retas | $R = 1.18\text{m}$ | Níveis 3 e 4 |
-| **Tier 3** | Lâmina Estelar de Titânio | Estrela geométrica de 5 pontas (pentagrama regular) com arestas retas | $R = 1.18\text{m}$ | Níveis 5 e 6 |
-| **Tier 4** | Lâmina Estelar Hexagonal | Estrela geométrica de 6 pontas (hexagrama) com arestas retas | $R = 1.18\text{m}$ | Níveis 7+ |
+| **Tier 3** | Lâmina Estelar de Titânio | Estrela geométrica de 5 pontas (pentagrama regular) com arestas retas | $R = 1.18\text{m}$ | Níveis 5 |
+| **Tier 4** | Lâmina Estelar Hexagonal | Estrela geométrica de 6 pontas (hexagrama) com arestas retas | $R = 1.18\text{m}$ | Nível 6 (MAX) |
+
+### Feedback Sensorial de Level UP (Pop Elástico, Flash e Onda de Choque)
+A cada subida de nível conquistada no corte de vegetação ou na Garagem (`UpgradeManager.blade_leveled_up`):
+1. **Pop Elástico com Squash & Stretch (`_blade_pop_scale`):** A lâmina sofre um *punch scale* instantâneo para $1.38\times$ em $0.07\text{s}$ (`TRANS_QUAD`) e retorna ao tamanho novo com recuo elástico em $0.30\text{s}$ (`TRANS_BACK`), preservando o volume com compressão compensatória em Y ($1 / \sqrt{\text{pop}}$).
+2. **Flash Momentâneo de Energia:** O rastro luminoso e dentes da serra recebem um pico emissivo instantâneo ($2.5\times$) que decai suavemente para $1.0\times$ em $0.28\text{s}$.
+3. **Onda de Choque no Solo (Shockwave Ring):** Um anel luminoso aditivo plano (`shaders/shockwave_ring.gdshader`) expande radialmente no piso de $0.15\text{m}$ até ultrapassar a ponta da lâmina ($1.65\times$ o raio) com fade exponencial em $0.32\text{s}$.
+4. **Vibração Tátil e Partículas:** Pulso háptico de $25\text{ms}$ no celular (`Input.vibrate_handheld(25)`) acompanhado de rajada estelar de faíscas (`SparkParticles`).
+
+### Shader de Slash Giratório Ultra-Leve (Opção A)
+O rastro cortante contínuo da serra é gerado pelo shader espacial [`shaders/blade_slash.gdshader`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/shaders/blade_slash.gdshader):
+- **100% Procedural e Analítico na GPU:** Zero texturas rasterizadas externas. Converte coordenadas UV em polares ($r, \theta$) e computa um arco afiado com cauda em atenuação quadrática e espessura radial via `smoothstep`.
+- **Render Mode Ultra-Leve:** `render_mode unshaded, blend_add, depth_draw_never, cull_disabled` (zero passes de sombra e custo irrisório de GPU, garantindo 60 FPS fixos no mobile).
+- **Modulação por Velocidade:** A intensidade do rastro se adapta em tempo real: discreto e translúcido em marcha lenta ($0.12$), tornando-se vívido, brilhante e energizado ($1.00$) na rotação de corte máximo.
 
 ### Capa Protetora da Serra (`blade_container`)
 - O disco de corte é abraçado por um container protetor amarelo com interior em borracha grafite (`blade_container`), espelhado em Z via modificador `Mirror`.

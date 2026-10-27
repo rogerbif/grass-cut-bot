@@ -3,6 +3,7 @@ extends Node
 signal coins_changed(new_amount: int)
 signal upgrade_purchased(upgrade_name: String, new_level: int)
 signal blade_level_changed(new_level: int, is_max: bool)
+signal blade_leveled_up(new_level: int, is_max: bool)
 signal blade_xp_changed(current_xp: float, max_xp: float, progress_ratio: float)
 signal blade_penalized(new_level: int)
 
@@ -103,6 +104,7 @@ func add_blade_xp(amount: float) -> void:
 		blade_level += 1
 		leveled_up = true
 		blade_level_changed.emit(blade_level, blade_level >= 6)
+		blade_leveled_up.emit(blade_level, blade_level >= 6)
 		if AudioManager != null:
 			AudioManager.play_sfx("power_up")
 		if blade_level >= 6:
@@ -187,6 +189,7 @@ func buy_blade_upgrade() -> bool:
 		blade_xp = 0.0
 		upgrade_purchased.emit("blade", blade_level)
 		blade_level_changed.emit(blade_level, blade_level >= 6)
+		blade_leveled_up.emit(blade_level, blade_level >= 6)
 		blade_xp_changed.emit(0.0, get_xp_required_for_next_level(), 0.0)
 		if AudioManager != null:
 			AudioManager.play_sfx("buy")

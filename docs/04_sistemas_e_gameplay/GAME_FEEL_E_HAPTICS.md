@@ -57,7 +57,18 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ---
 
-## 4. Animação Procedural do Robô (Suspensão e Inclinação)
+## 4. Feedback Sensorial de Level UP da Lâmina (Pop, Flash, Choque e Slash)
+
+A evolução da lâmina durante a partida é celebrada com uma cascata harmônica de micro-eventos táteis e visuais (Melhoria 135):
+1. **Pop Elástico com Squash & Stretch:** Punch de escala $1.38\times$ na serra em $0.07\text{s}$ com retorno em mola amortecida ($0.30\text{s}$, `TRANS_BACK`), transmitindo fisicamente o ganho instantâneo de diâmetro e dentes de aço.
+2. **Flash Momentâneo e Brilho:** Pico emissivo instantâneo ($2.5\times$) decaindo suavemente para o repouso.
+3. **Onda de Choque Radial no Solo:** Anel fino de luz dourada aditiva que surge no centro da lâmina e expande pelo chão em alta velocidade até ultrapassar as pontas cortantes, dissipando-se em $0.32\text{s}$ com fade exponencial.
+4. **Shader de Slash Giratório Ultra-Leve (Opção A):** Rastro em arco contínuo 100% analítico na GPU (zero texturas), que ganha intensidade luminosa automaticamente quando o robô atinge a rotação total de corte ($720^\circ/\text{s}$).
+5. **Haptics no Mobile:** Vibração curta e precisa de $25\text{ms}$ (`Input.vibrate_handheld(25)`), marcando fisicamente a conquista do jogador.
+
+---
+
+## 5. Animação Procedural do Robô (Suspensão e Inclinação)
 
 Para evitar que o robô pareça uma estátua rígida sobre o terreno, um conjunto de forças e molas procedurais dá vida e peso à máquina:
 1. **Lean em Curvas:** O chassi inclina suavemente para o lado da curva em rotações com o joystick ($\pm 4.5^\circ$), conferindo sensação de aderência mecânica.
