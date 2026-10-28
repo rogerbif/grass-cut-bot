@@ -76,6 +76,7 @@ enum ToolMode {
 }
 
 @onready var editor_camera: Camera3D = $EditorCamera
+@onready var playtest_game_camera: Camera3D = get_node_or_null("PlaytestGameCamera")
 @onready var grid_overlay: Node3D = $GridOverlay
 @onready var water_ocean: Node3D = $WaterOcean
 @onready var island_tiles_container: Node3D = $IslandTilesContainer
@@ -85,6 +86,11 @@ enum ToolMode {
 @onready var spawn_marker_visual: Node3D = $SpawnMarkerVisual
 @onready var canvas_layer: CanvasLayer = $CanvasLayer
 @onready var ui: Control = $CanvasLayer/LevelEditorUI
+
+enum QuickAdjustMode {
+	ROTATION = 0,
+	SCALE = 1
+}
 
 var current_level_id: int = 1
 var grid_width: int = 12
@@ -97,6 +103,7 @@ var active_shape: int = BrushPatterns.ShapeType.SINGLE
 var brush_size: int = 1
 var current_corner_radius: float = 0.28
 var current_rot_deg: int = 0
+var active_adjust_mode: int = QuickAdjustMode.ROTATION
 
 var active_terrain_id: String = "auto_island"
 var active_grass_id: String = "grass_green"
@@ -261,15 +268,25 @@ func _connect_ui_signals() -> void:
 		_refresh_hover_preview()
 	)
 	ui.brush_size_changed.connect(func(delta_sz: int) -> void:
-		brush_size = clampi(brush_size + delta_sz, 1, 20)
-		_sync_all_ui()
-		_refresh_hover_preview()
+		active_adjust_mode = QuickAdjustMode.SCALE
+		_adjust_scale(delta_sz)
 	)
 	ui.corner_radius_changed.connect(func(r: float) -> void:
 		current_corner_radius = r
 		_refresh_hover_preview()
 	)
-	ui.rotate_requested.connect(_rotate_active_step)
+	ui.rotate_requested.connect(func() -> void:
+		active_adjust_mode = QuickAdjustMode.ROTATION
+		_rotate_active_step_dir(1, Input.is_key_pressed(KEY_SHIFT))
+	)
+	ui.rotate_step_requested.connect(func(direction: int, is_shift: bool) -> void:
+		active_adjust_mode = QuickAdjustMode.ROTATION
+		_rotate_active_step_dir(direction, is_shift)
+	)
+	ui.adjust_mode_changed.connect(func(mode: int) -> void:
+		active_adjust_mode = mode
+		_sync_all_ui()
+	)
 	ui.toggle_camera_view_requested.connect(func() -> void:
 		editor_camera.toggle_top_down()
 		_sync_all_ui()
@@ -306,13 +323,22 @@ func _connect_ui_signals() -> void:
 		_refresh_hover_preview()
 	)
 
-func _rotate_active_step() -> void:
-	if active_layer == EditLayer.TERRAIN:
-		current_rot_deg = (current_rot_deg + 90) % 360
-	else:
-		current_rot_deg = (current_rot_deg + 5) % 360
+func _adjust_scale(delta_sz: int) -> void:
+	brush_size = clampi(brush_size + delta_sz, 1, 20)
 	_sync_all_ui()
 	_refresh_hover_preview()
+
+func _rotate_active_step_dir(direction: int, is_shift: bool) -> void:
+	if active_layer == EditLayer.TERRAIN:
+		current_rot_deg = posmod(current_rot_deg + direction * 90, 360)
+	else:
+		var step_deg: int = 25 if is_shift else 5
+		current_rot_deg = posmod(current_rot_deg + direction * step_deg, 360)
+	_sync_all_ui()
+	_refresh_hover_preview()
+
+func _rotate_active_step() -> void:
+	_rotate_active_step_dir(1, false)
 
 func _sync_all_ui() -> void:
 	if ui == null:
@@ -326,7 +352,8 @@ func _sync_all_ui() -> void:
 		active_terrain_id,
 		active_grass_id,
 		active_object_id,
-		editor_camera.is_top_down if editor_camera != null else false
+		editor_camera.is_top_down if editor_camera != null else false,
+		active_adjust_mode
 	)
 	ui.update_level_header(current_level_id, grid_width, grid_height, time_limit)
 	ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
@@ -379,19 +406,32 @@ func _input(event: InputEvent) -> void:
 						active_tool = ToolMode.SPAWN
 						_sync_all_ui()
 						_refresh_hover_preview()
+					KEY_S:
+						active_adjust_mode = QuickAdjustMode.SCALE
+						_sync_all_ui()
+						_refresh_hover_preview()
 					KEY_R:
-						_rotate_active_step()
+						active_adjust_mode = QuickAdjustMode.ROTATION
+						_rotate_active_step_dir(1, ke.shift_pressed)
+					KEY_PLUS, KEY_EQUAL, KEY_KP_ADD:
+						if active_adjust_mode == QuickAdjustMode.SCALE:
+							var step_sz: int = 5 if ke.shift_pressed else 1
+							_adjust_scale(step_sz)
+						else:
+							_rotate_active_step_dir(1, ke.shift_pressed)
+					KEY_MINUS, KEY_KP_SUBTRACT:
+						if active_adjust_mode == QuickAdjustMode.SCALE:
+							var step_sz: int = 5 if ke.shift_pressed else 1
+							_adjust_scale(-step_sz)
+						else:
+							_rotate_active_step_dir(-1, ke.shift_pressed)
 					KEY_V:
 						editor_camera.toggle_top_down()
 						_sync_all_ui()
 					KEY_BRACKETLEFT:
-						brush_size = clampi(brush_size - 1, 1, 20)
-						_sync_all_ui()
-						_refresh_hover_preview()
+						_adjust_scale(-1)
 					KEY_BRACKETRIGHT:
-						brush_size = clampi(brush_size + 1, 1, 20)
-						_sync_all_ui()
-						_refresh_hover_preview()
+						_adjust_scale(1)
 
 	if is_playtesting:
 		return
@@ -1466,8 +1506,14 @@ func _start_playtest() -> void:
 		GameManager.start_level(current_level_id, goals, time_limit)
 		ui.update_playtest_hud(GameManager.time_left, GameManager.goals)
 
-	editor_camera.follow_target = _playtest_cutter
-	ui.show_toast("🎮 Playtest Iniciado! Use WASD / Setas ou Mouse", Color(0.35, 0.95, 0.5))
+	if playtest_game_camera != null:
+		editor_camera.current = false
+		playtest_game_camera.current = true
+		playtest_game_camera.set("target_path", playtest_game_camera.get_path_to(_playtest_cutter))
+		playtest_game_camera.call("reset_cam")
+	else:
+		editor_camera.follow_target = _playtest_cutter
+	ui.show_toast("🎮 Playtest Iniciado! Câmera Oficial Ativa", Color(0.35, 0.95, 0.5))
 
 func _stop_playtest() -> void:
 	is_playtesting = false
@@ -1490,6 +1536,10 @@ func _stop_playtest() -> void:
 
 	grid_overlay.visible = true
 	spawn_marker_visual.visible = true
+	if playtest_game_camera != null:
+		playtest_game_camera.current = false
+		playtest_game_camera.set("target", null)
+	editor_camera.current = true
 	editor_camera.restore_editor_view()
 	ui.set_playtest_mode(false)
 	_sync_all_ui()

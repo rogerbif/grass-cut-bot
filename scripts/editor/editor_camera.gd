@@ -96,13 +96,13 @@ func _process(delta: float) -> void:
 		var typing_in_ui: bool = (focus_owner is LineEdit) or (focus_owner is SpinBox)
 		if not typing_in_ui and not Input.is_key_pressed(KEY_CTRL):
 			var move_vec: Vector2 = Vector2.ZERO
-			if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+			if Input.is_key_pressed(KEY_UP):
 				move_vec.y -= 1.0
-			if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+			if Input.is_key_pressed(KEY_DOWN):
 				move_vec.y += 1.0
-			if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+			if Input.is_key_pressed(KEY_LEFT):
 				move_vec.x -= 1.0
-			if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+			if Input.is_key_pressed(KEY_RIGHT):
 				move_vec.x += 1.0
 
 			if move_vec.length_squared() > 0.001:

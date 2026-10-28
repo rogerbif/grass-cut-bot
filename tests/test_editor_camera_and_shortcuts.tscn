@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://test_editor_camera_and_shortcuts_scene"]
+
+[ext_resource type="Script" path="res://tests/test_editor_camera_and_shortcuts.gd" id="1_test"]
+
+[node name="TestEditorCameraAndShortcuts" type="Node"]
+script = ExtResource("1_test")

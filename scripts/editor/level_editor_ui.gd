@@ -34,6 +34,8 @@ signal brush_shape_changed(shape_idx: int)
 signal corner_radius_changed(radius: float)
 signal brush_size_changed(new_size: int)
 signal rotate_requested()
+signal rotate_step_requested(direction: int, is_shift: bool)
+signal adjust_mode_changed(mode: int)
 signal toggle_camera_view_requested()
 
 signal terrain_tile_selected(tile_id: String)
@@ -57,8 +59,12 @@ var terrain_buttons: Dictionary = {}
 var grass_buttons: Dictionary = {}
 var object_buttons: Dictionary = {}
 
+var panel_scale_box: PanelContainer
+var panel_rotate_box: PanelContainer
 var lbl_brush_size: Label
 var btn_rotate: Button
+var btn_rot_left: Button
+var btn_rot_right: Button
 var btn_cam_view: Button
 var lbl_status: Label
 
@@ -441,28 +447,71 @@ func _build_left_panel() -> void:
 	hbox_cr_presets.add_child(btn_cr_max)
 
 	# 4. Tamanho do Pincel e Rotação
+	panel_scale_box = PanelContainer.new()
+	panel_scale_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.16, 0.8), Color(0.2, 0.35, 0.5, 0.4), 8))
+	vbox.add_child(panel_scale_box)
+
 	var hbox_size: HBoxContainer = HBoxContainer.new()
 	hbox_size.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox_size.add_theme_constant_override("separation", 8)
-	vbox.add_child(hbox_size)
+	hbox_size.add_theme_constant_override("separation", 6)
+	panel_scale_box.add_child(hbox_size)
 
-	var btn_sz_minus: Button = _create_styled_button("➖ [", Color(0.5, 0.7, 0.9), Vector2(56, 32))
-	btn_sz_minus.pressed.connect(func() -> void: brush_size_changed.emit(-1))
+	var btn_sz_minus: Button = _create_styled_button("➖ [-]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
+	btn_sz_minus.pressed.connect(func() -> void:
+		adjust_mode_changed.emit(1)
+		brush_size_changed.emit(-5 if Input.is_key_pressed(KEY_SHIFT) else -1)
+	)
 	hbox_size.add_child(btn_sz_minus)
 
 	lbl_brush_size = Label.new()
-	lbl_brush_size.text = "Escala: 1"
+	lbl_brush_size.text = "Escala [S]: 1"
 	lbl_brush_size.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_brush_size.custom_minimum_size = Vector2(95, 28)
+	lbl_brush_size.mouse_filter = Control.MOUSE_FILTER_STOP
+	lbl_brush_size.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and ev.pressed:
+			adjust_mode_changed.emit(1)
+	)
 	hbox_size.add_child(lbl_brush_size)
 
-	var btn_sz_plus: Button = _create_styled_button("➕ ]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
-	btn_sz_plus.pressed.connect(func() -> void: brush_size_changed.emit(1))
+	var btn_sz_plus: Button = _create_styled_button("➕ [+]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
+	btn_sz_plus.pressed.connect(func() -> void:
+		adjust_mode_changed.emit(1)
+		brush_size_changed.emit(5 if Input.is_key_pressed(KEY_SHIFT) else 1)
+	)
 	hbox_size.add_child(btn_sz_plus)
 
-	btn_rotate = _create_styled_button("🔄 Girar Tile [R]: 0°", Color(0.35, 0.85, 0.75), Vector2(0, 34))
-	btn_rotate.pressed.connect(func() -> void: rotate_requested.emit())
-	vbox.add_child(btn_rotate)
+	panel_rotate_box = PanelContainer.new()
+	panel_rotate_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.16, 0.8), Color(0.2, 0.35, 0.5, 0.4), 8))
+	vbox.add_child(panel_rotate_box)
+
+	var hbox_rot: HBoxContainer = HBoxContainer.new()
+	hbox_rot.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_rot.add_theme_constant_override("separation", 6)
+	panel_rotate_box.add_child(hbox_rot)
+
+	btn_rot_left = _create_styled_button("◀ [-]", Color(0.35, 0.85, 0.75), Vector2(46, 34))
+	btn_rot_left.pressed.connect(func() -> void:
+		adjust_mode_changed.emit(0)
+		rotate_step_requested.emit(-1, Input.is_key_pressed(KEY_SHIFT))
+	)
+	hbox_rot.add_child(btn_rot_left)
+
+	btn_rotate = _create_styled_button("🔄 Girar [R]: 0°", Color(0.35, 0.85, 0.75), Vector2(0, 34))
+	btn_rotate.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_rotate.clip_text = true
+	btn_rotate.pressed.connect(func() -> void:
+		adjust_mode_changed.emit(0)
+		rotate_step_requested.emit(1, Input.is_key_pressed(KEY_SHIFT))
+	)
+	hbox_rot.add_child(btn_rotate)
+
+	btn_rot_right = _create_styled_button("[+] ▶", Color(0.35, 0.85, 0.75), Vector2(46, 34))
+	btn_rot_right.pressed.connect(func() -> void:
+		adjust_mode_changed.emit(0)
+		rotate_step_requested.emit(1, Input.is_key_pressed(KEY_SHIFT))
+	)
+	hbox_rot.add_child(btn_rot_right)
 
 	btn_cam_view = _create_styled_button("🎥 Câmera [V]: Isométrica 3D", Color(0.55, 0.68, 0.95), Vector2(0, 34))
 	btn_cam_view.pressed.connect(func() -> void: toggle_camera_view_requested.emit())
@@ -734,7 +783,7 @@ func _build_bottom_bar() -> void:
 	_interactive_panels.append(bot_panel)
 
 	lbl_status = Label.new()
-	lbl_status.text = "Célula: [0, 0]  |  Clique Esq: Pintar  |  Clique Dir: Borracha  |  WASD / Botão Meio: Mover Câmera  |  Scroll: Zoom  |  [R]: Girar  |  [F1]: Testar Fase"
+	lbl_status.text = "Célula: [0, 0]  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [F1]: Playtest"
 	lbl_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_status.add_theme_font_size_override("font_size", 13)
 	lbl_status.add_theme_color_override("font_color", Color(0.85, 0.92, 0.98))
@@ -828,7 +877,8 @@ func sync_state(
 	active_terrain_id: String,
 	active_grass_id: String,
 	active_object_id: String,
-	is_top_down: bool
+	is_top_down: bool,
+	adjust_mode: int = 0
 ) -> void:
 	set_active_layer(active_layer)
 
@@ -869,12 +919,23 @@ func sync_state(
 			_set_button_selected(object_buttons[oid_str] as Button, active_layer == 2 and active_object_id == oid_str, item["color"] as Color)
 
 	if lbl_brush_size != null:
-		lbl_brush_size.text = "Escala: %d" % brush_size
+		lbl_brush_size.text = "Escala [S]: %d" % brush_size
 	if btn_rotate != null:
 		if active_layer == 0:
-			btn_rotate.text = "🔄 Girar Tile [R]: %d° (+90°)" % rot_deg
+			btn_rotate.text = "🔄 Girar [R]: %d° (±90°)" % rot_deg
 		else:
-			btn_rotate.text = "🔄 Girar Pincel [R]: %d° (+5°)" % rot_deg
+			btn_rotate.text = "🔄 Girar [R]: %d° (±5° / Shift: ±25°)" % rot_deg
+
+	if panel_scale_box != null:
+		var is_scale: bool = (adjust_mode == 1)
+		var border_col: Color = Color(0.25, 0.95, 0.5, 0.9) if is_scale else Color(0.2, 0.35, 0.5, 0.4)
+		panel_scale_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.16, 0.8), border_col, 8))
+
+	if panel_rotate_box != null:
+		var is_rot: bool = (adjust_mode == 0)
+		var border_col: Color = Color(0.25, 0.95, 0.5, 0.9) if is_rot else Color(0.2, 0.35, 0.5, 0.4)
+		panel_rotate_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.16, 0.8), border_col, 8))
+
 	if btn_cam_view != null:
 		btn_cam_view.text = "🎥 Câmera [V]: Top-Down Ortogonal" if is_top_down else "🎥 Câmera [V]: Isométrica 3D"
 
@@ -1047,7 +1108,7 @@ func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> v
 	if lbl_status == null:
 		return
 	var cell_str: String = "[%d, %d]" % [cell.x, cell.y] if in_bounds else "[Fora da Grade]"
-	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  WASD/Meio: Câmera  |  Scroll: Zoom  |  [R]: Girar  |  [F1]: Playtest" % [
+	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [F1]: Playtest" % [
 		cell_str, world_pos.x, world_pos.z
 	]
 

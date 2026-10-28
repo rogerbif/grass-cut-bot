@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://level_editor_scene_01"]
+[gd_scene load_steps=9 format=3 uid="uid://level_editor_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/editor/level_editor.gd" id="1_editor"]
 [ext_resource type="PackedScene" uid="uid://water_ocean_01" path="res://scenes/level/water_ocean.tscn" id="2_water"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/editor/editor_camera.gd" id="4_cam"]
 [ext_resource type="PackedScene" uid="uid://level_editor_ui_01" path="res://scenes/editor/level_editor_ui.tscn" id="5_ui"]
 [ext_resource type="Script" path="res://scripts/effects/floating_coin_manager.gd" id="6_coins"]
+[ext_resource type="Script" path="res://scripts/camera/isometric_camera.gd" id="7_game_cam"]
 
 [sub_resource type="Environment" id="Environment_editor"]
 background_mode = 1
@@ -48,6 +49,11 @@ transform = Transform3D(1, 0, 0, 0, 0.559193, 0.829038, 0, -0.829038, 0.559193, 
 current = true
 fov = 46.0
 script = ExtResource("4_cam")
+
+[node name="PlaytestGameCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.762668, 0.64679, 0, -0.64679, 0.762668, 0, 3.8756, 4.5809)
+fov = 48.0
+script = ExtResource("7_game_cam")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

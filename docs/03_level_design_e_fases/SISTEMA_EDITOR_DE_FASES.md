@@ -91,9 +91,15 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
     - **Execução 1:1 de Metas Personalizadas:** No `VegetationGrid`, fases com metas customizadas (`"goals"`) abatem 1 unidade de meta para cada tufo físico ceifado (em vez do agrupamento legado de 10), garantindo correspondência exata entre o número definido no editor e a contagem de vitória do jogo.
     - **Métricas Informativas de Construção:** Exibe no rodapé as quantidades de obstáculos (`🪨 Rochas`) e solo construído (`🏝️ Blocos Ilha`).
 
-### 2.3 Prancheta Vetorial no Modo Edição vs. Grama 3D no Playtest (F1)
+### 2.3 Prancheta Vetorial no Modo Edição vs. Grama 3D no Playtest (F1) com Câmera Oficial
 - **Modo Edição (Prancheta Vetorial):** A vegetação é exibida exclusivamente através de superfícies vetoriais planas coloridas (`VectorGrassField.generate_ground_meshes()`) a $Y = 0.005\text{m}$, com materiais foscos (`roughness = 0.90`) e recorte exato sob as rochas. O tempo de resposta ao pintar com pincel ou carimbo cai de $\sim 35\text{ms}$ para **$< 0.5\text{ms}$** (zero lag), mantendo a grade, o spawn e os encaixes de blocos 100% visíveis.
-- **Modo Playtest ([F1] ou [F5]):** Ao acionar o teste, o `VegetationGrid` oficial 3D volumétrico (com física de corte, partículas em arco, moedas e colheitadeira) é instanciado na hora. Ao sair pressionando `ESC` ou `F1`, a vegetação de teste é liberada da memória e o editor retorna instantaneamente à prancheta vetorial limpa com a fase intacta.
+- **Modo Playtest ([F1] ou [F5]) com Paridade Total de Câmera:** Ao acionar o teste, o `VegetationGrid` oficial 3D volumétrico (com física de corte, partículas em arco, moedas e colheitadeira) é instanciado na hora.
+  - **Câmera Oficial do Jogo (`PlaytestGameCamera`):** O editor alterna da câmera livre de prancheta (`EditorCamera`) para a câmera canônica de gameplay ([`IsometricCamera`](../04_sistemas_e_gameplay/GAME_FEEL_E_HAPTICS.md)), garantindo **100% de paridade visual com o jogo real**:
+    - Campo de visão idêntico: $\text{FOV} = 48.0$.
+    - Distância calibrada pelo nível de lâmina atual ($6.0\text{m}$ no Lv 1 até $12.0\text{m}$ no Lv 6 MAX).
+    - Inclinação rígida isométrica de $-40.23^\circ$ em `_physics_process` sem distorção ou wobble ao mover.
+    - Suporte a `camera_shake` em impactos com rochas e transições cinematográficas de vitória.
+  - Ao sair pressionando `ESC` ou `F1`, a vegetação e o robô de teste são liberados da memória e a câmera retorna suavemente ao ponto e zoom exatos de edição anterior.
 
 ---
 
@@ -118,14 +124,17 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular. |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
-| **Girar Pincel / Tile** | `R` | Rotaciona em sentido horário de $5^\circ$ em $5^\circ$ (Pincel/Vegetação) ou $90^\circ$ (Tiles de Terreno). |
-| **Escala do Pincel** | `[` e `]` (ou `Alt + Scroll`) | Diminui ou aumenta o tamanho do carimbo. |
+| **Modo Escala do Pincel** | `S` | Seleciona o modo de ajuste de Escala e destaca a caixa na UI. |
+| **Modo Rotação** | `R` | Seleciona o modo de Rotação e gira no sentido horário ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
+| **Aumentar / Girar Direita** | `+` (ou `=`, `Numpad +`) | No Modo Escala: aumenta escala ($+1$, ou $+5$ com `Shift`).<br>No Modo Rotação: gira para a direita ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
+| **Diminuir / Girar Esquerda** | `-` (ou `_`, `Numpad -`) | No Modo Escala: diminui escala ($-1$, ou $-5$ com `Shift`).<br>No Modo Rotação: gira para a esquerda ($-5^\circ$, ou $-25^\circ$ com `Shift`; $-90^\circ$ no terreno). |
+| **Escala Rápida Auxiliar** | `[` e `]` (ou `Alt + Scroll`) | Atalho direto clássico para diminuir/aumentar tamanho do carimbo. |
 | **Alternar Câmera** | `V` | Alterna entre Visão Isométrica 3D (Perspectiva $42^\circ$) e Visão Top-Down 2D (Ortogonal pura de topo). |
-| **Mover Câmera (Pan)** | `WASD` / Botão Meio / Botão Direito | Desloca o foco sobre o mapa. |
+| **Mover Câmera (Pan)** | `Setas` / Botão Meio / Botão Direito | Desloca o foco sobre o mapa de forma desobstruída. |
 | **Zoom da Câmera** | `Scroll do Mouse` | Aproxima ou afasta a câmera ($5.5\text{m}$ a $28.0\text{m}$). |
 | **Desfazer / Refazer** | `Ctrl + Z` / `Ctrl + Y` | Histórico de até 30 operações. |
 | **Salvar Fase (JSON)** | `Ctrl + S` | Grava `res://data/levels/level_%02d.json`. |
-| **Playtest In-Editor** | `F1` ou `F5` (e `ESC` p/ sair) | Spawna o robô cortador para teste real e restaura a ilha intacta ao sair. |
+| **Playtest In-Editor** | `F1` ou `F5` (e `ESC` p/ sair) | Spawna o robô cortador sob a câmera oficial de gameplay para teste real e restaura a ilha intacta ao sair. |
 
 ---
 
