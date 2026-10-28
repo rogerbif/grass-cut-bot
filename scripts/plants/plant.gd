@@ -125,7 +125,7 @@ func _ready() -> void:
 		visual_mesh.scale = Vector3(scale_xz, scale_y, scale_xz)
 	elif type == PlantType.FLOWER:
 		# Flores com +30% de escala visual (0.48~0.58 * 1.30 = 0.624~0.754)
-		var flower_scale: float = randf_range(0.624, 0.754)
+		var flower_scale: float = 0.68 if not randomize_rotation else randf_range(0.624, 0.754)
 		visual_mesh.scale = Vector3(flower_scale, flower_scale, flower_scale)
 	else:
 		# Trigo aumentado em 100% (+100% de escala visual: 0.48~0.58 -> 0.96~1.16)

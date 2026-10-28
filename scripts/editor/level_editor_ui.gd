@@ -62,6 +62,8 @@ var object_buttons: Dictionary = {}
 var panel_scale_box: PanelContainer
 var panel_rotate_box: PanelContainer
 var lbl_brush_size: Label
+var btn_sz_minus: Button
+var btn_sz_plus: Button
 var btn_rotate: Button
 var btn_rot_left: Button
 var btn_rot_right: Button
@@ -221,10 +223,10 @@ func _build_top_bar() -> void:
 
 	spin_width = SpinBox.new()
 	spin_width.min_value = 4
-	spin_width.max_value = 36
+	spin_width.max_value = 100
 	spin_width.step = 1
 	spin_width.value = 12
-	spin_width.tooltip_text = "Largura da Grade (colunas de 0.8m)"
+	spin_width.tooltip_text = "Largura da Grade (colunas de 0.4m)"
 	spin_width.custom_minimum_size = Vector2(68, 32)
 	hbox.add_child(spin_width)
 
@@ -234,10 +236,10 @@ func _build_top_bar() -> void:
 
 	spin_height = SpinBox.new()
 	spin_height.min_value = 4
-	spin_height.max_value = 36
+	spin_height.max_value = 100
 	spin_height.step = 1
 	spin_height.value = 8
-	spin_height.tooltip_text = "Altura da Grade (linhas de 0.8m)"
+	spin_height.tooltip_text = "Altura da Grade (linhas de 0.4m)"
 	spin_height.custom_minimum_size = Vector2(68, 32)
 	hbox.add_child(spin_height)
 
@@ -456,7 +458,7 @@ func _build_left_panel() -> void:
 	hbox_size.add_theme_constant_override("separation", 6)
 	panel_scale_box.add_child(hbox_size)
 
-	var btn_sz_minus: Button = _create_styled_button("➖ [-]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
+	btn_sz_minus = _create_styled_button("➖ [", Color(0.5, 0.7, 0.9), Vector2(56, 32))
 	btn_sz_minus.pressed.connect(func() -> void:
 		adjust_mode_changed.emit(1)
 		brush_size_changed.emit(-5 if Input.is_key_pressed(KEY_SHIFT) else -1)
@@ -474,7 +476,7 @@ func _build_left_panel() -> void:
 	)
 	hbox_size.add_child(lbl_brush_size)
 
-	var btn_sz_plus: Button = _create_styled_button("➕ [+]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
+	btn_sz_plus = _create_styled_button("➕ ]", Color(0.5, 0.7, 0.9), Vector2(56, 32))
 	btn_sz_plus.pressed.connect(func() -> void:
 		adjust_mode_changed.emit(1)
 		brush_size_changed.emit(5 if Input.is_key_pressed(KEY_SHIFT) else 1)
@@ -925,6 +927,25 @@ func sync_state(
 			btn_rotate.text = "🔄 Girar [R]: %d° (±90°)" % rot_deg
 		else:
 			btn_rotate.text = "🔄 Girar [R]: %d° (±5° / Shift: ±25°)" % rot_deg
+
+	if adjust_mode == 1: # SCALE ativo (padrão)
+		if btn_sz_minus != null:
+			btn_sz_minus.text = "➖ ["
+		if btn_sz_plus != null:
+			btn_sz_plus.text = "➕ ]"
+		if btn_rot_left != null:
+			btn_rot_left.text = "◀"
+		if btn_rot_right != null:
+			btn_rot_right.text = "▶"
+	else: # ROTATION ativo ([R] pressionado)
+		if btn_sz_minus != null:
+			btn_sz_minus.text = "➖"
+		if btn_sz_plus != null:
+			btn_sz_plus.text = "➕"
+		if btn_rot_left != null:
+			btn_rot_left.text = "◀ ["
+		if btn_rot_right != null:
+			btn_rot_right.text = "] ▶"
 
 	if panel_scale_box != null:
 		var is_scale: bool = (adjust_mode == 1)

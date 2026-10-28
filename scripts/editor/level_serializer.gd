@@ -127,8 +127,13 @@ static func save_level_json(
 	var json_str: String = JSON.stringify(payload, "\t")
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
+		var global_path: String = ProjectSettings.globalize_path(path)
+		file = FileAccess.open(global_path, FileAccess.WRITE)
+	if file == null:
+		push_error("Erro crítico ao gravar JSON de nível: %s (err: %d)" % [path, FileAccess.get_open_error()])
 		return false
 	file.store_string(json_str)
+	file.flush()
 	file.close()
 	return true
 

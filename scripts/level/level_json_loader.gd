@@ -50,9 +50,17 @@ static func world_to_grid(world_pos: Vector3, width: int, height: int, cell_size
 	return Vector2i(gx, gz)
 
 static func load_json_file(path: String) -> Dictionary:
-	if not FileAccess.file_exists(path):
-		return {}
-	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	var target_path: String = path
+	if not FileAccess.file_exists(target_path):
+		var glob_p: String = ProjectSettings.globalize_path(path)
+		if FileAccess.file_exists(glob_p):
+			target_path = glob_p
+		else:
+			return {}
+	var file: FileAccess = FileAccess.open(target_path, FileAccess.READ)
+	if file == null:
+		var glob_p: String = ProjectSettings.globalize_path(target_path)
+		file = FileAccess.open(glob_p, FileAccess.READ)
 	if file == null:
 		return {}
 	var text: String = file.get_as_text()

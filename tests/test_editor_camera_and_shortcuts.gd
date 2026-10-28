@@ -13,6 +13,7 @@ func _ready() -> void:
 	failed += test_scale_shortcuts_and_clamping()
 	failed += test_rotation_step_and_shift()
 	failed += test_rotation_negative_wrap()
+	failed += test_bracket_keys_universal_and_flower_rotation()
 
 	print("==================================================")
 	if failed == 0:
@@ -156,5 +157,87 @@ func test_rotation_negative_wrap() -> int:
 		return 1
 
 	print("PASS: Rotação anti-horária (esquerda) e normalização circular modular 360° validadas com sucesso.")
+	editor.queue_free()
+	return 0
+
+func test_bracket_keys_universal_and_flower_rotation() -> int:
+	print("\n--- Teste 5: Teclas [ e ] Universais (Escala vs Rotação) & Flores Rotação Padrão ---")
+	var editor: Node3D = LevelEditorScene.instantiate() as Node3D
+	add_child(editor)
+
+	# 1. Por padrão, a ferramenta selecionada é Escala
+	if editor.active_adjust_mode != 1: # QuickAdjustMode.SCALE
+		printerr("FAIL: active_adjust_mode padrão esperado SCALE (1), obtido %d" % editor.active_adjust_mode)
+		editor.queue_free()
+		return 1
+
+	editor.brush_size = 3
+	# Simula evento [ em modo Escala
+	var ev_bracket_left: InputEventKey = InputEventKey.new()
+	ev_bracket_left.keycode = KEY_BRACKETLEFT
+	ev_bracket_left.pressed = true
+	editor.call("_input", ev_bracket_left)
+	if editor.brush_size != 2:
+		printerr("FAIL: [ em modo Escala deveria reduzir brush_size para 2, obtido %d" % editor.brush_size)
+		editor.queue_free()
+		return 1
+
+	# Simula evento ] em modo Escala
+	var ev_bracket_right: InputEventKey = InputEventKey.new()
+	ev_bracket_right.keycode = KEY_BRACKETRIGHT
+	ev_bracket_right.pressed = true
+	editor.call("_input", ev_bracket_right)
+	if editor.brush_size != 3:
+		printerr("FAIL: ] em modo Escala deveria aumentar brush_size para 3, obtido %d" % editor.brush_size)
+		editor.queue_free()
+		return 1
+
+	# 2. Pressiona tecla R para mudar para modo Rotação
+	var ev_r: InputEventKey = InputEventKey.new()
+	ev_r.keycode = KEY_R
+	ev_r.pressed = true
+	editor.call("_input", ev_r)
+	if editor.active_adjust_mode != 0: # QuickAdjustMode.ROTATION
+		printerr("FAIL: Tecla R deveria ativar ROTATION (0), obtido %d" % editor.active_adjust_mode)
+		editor.queue_free()
+		return 1
+
+	# Em modo Rotação, [ e ] devem girar
+	editor.active_layer = 1 # GRASS
+	var rot_start: int = editor.current_rot_deg
+	editor.call("_input", ev_bracket_right)
+	if editor.current_rot_deg != posmod(rot_start + 5, 360):
+		printerr("FAIL: ] em modo Rotação deveria girar +5°, obtido %d°" % editor.current_rot_deg)
+		editor.queue_free()
+		return 1
+
+	editor.call("_input", ev_bracket_left)
+	if editor.current_rot_deg != rot_start:
+		printerr("FAIL: [ em modo Rotação deveria girar -5° de volta para %d°, obtido %d°" % [rot_start, editor.current_rot_deg])
+		editor.queue_free()
+		return 1
+
+	# 3. Pressiona tecla S para voltar para modo Escala
+	var ev_s: InputEventKey = InputEventKey.new()
+	ev_s.keycode = KEY_S
+	ev_s.pressed = true
+	editor.call("_input", ev_s)
+	if editor.active_adjust_mode != 1: # QuickAdjustMode.SCALE
+		printerr("FAIL: Tecla S deveria reativar SCALE (1), obtido %d" % editor.active_adjust_mode)
+		editor.queue_free()
+		return 1
+
+	# 4. Verifica rotação padrão de flor (voltada para a câmera = 0°)
+	editor.active_layer = 2 # OBJECTS
+	editor.active_object_id = "flower_daisy"
+	var test_cell: Vector2i = Vector2i(2, 2)
+	editor.call("_modify_single_cell", test_cell, false)
+	var placed_obj: Dictionary = editor.object_grid.get(test_cell, {}) as Dictionary
+	if int(placed_obj.get("rot", -1)) != 0:
+		printerr("FAIL: Flor inserida em modo padrão deveria ter rot = 0 (frente para câmera), obtido %d" % int(placed_obj.get("rot", -1)))
+		editor.queue_free()
+		return 1
+
+	print("PASS: Teclas [ e ] universais (Escala vs Rotação) e flor com rotação 0° padrão validadas com sucesso.")
 	editor.queue_free()
 	return 0

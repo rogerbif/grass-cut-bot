@@ -103,7 +103,7 @@ var active_shape: int = BrushPatterns.ShapeType.SINGLE
 var brush_size: int = 1
 var current_corner_radius: float = 0.28
 var current_rot_deg: int = 0
-var active_adjust_mode: int = QuickAdjustMode.ROTATION
+var active_adjust_mode: int = QuickAdjustMode.SCALE
 
 var active_terrain_id: String = "auto_island"
 var active_grass_id: String = "grass_green"
@@ -413,25 +413,21 @@ func _input(event: InputEvent) -> void:
 					KEY_R:
 						active_adjust_mode = QuickAdjustMode.ROTATION
 						_rotate_active_step_dir(1, ke.shift_pressed)
-					KEY_PLUS, KEY_EQUAL, KEY_KP_ADD:
-						if active_adjust_mode == QuickAdjustMode.SCALE:
-							var step_sz: int = 5 if ke.shift_pressed else 1
-							_adjust_scale(step_sz)
-						else:
-							_rotate_active_step_dir(1, ke.shift_pressed)
-					KEY_MINUS, KEY_KP_SUBTRACT:
+					KEY_BRACKETLEFT, KEY_MINUS, KEY_KP_SUBTRACT:
 						if active_adjust_mode == QuickAdjustMode.SCALE:
 							var step_sz: int = 5 if ke.shift_pressed else 1
 							_adjust_scale(-step_sz)
 						else:
 							_rotate_active_step_dir(-1, ke.shift_pressed)
+					KEY_BRACKETRIGHT, KEY_PLUS, KEY_EQUAL, KEY_KP_ADD:
+						if active_adjust_mode == QuickAdjustMode.SCALE:
+							var step_sz: int = 5 if ke.shift_pressed else 1
+							_adjust_scale(step_sz)
+						else:
+							_rotate_active_step_dir(1, ke.shift_pressed)
 					KEY_V:
 						editor_camera.toggle_top_down()
 						_sync_all_ui()
-					KEY_BRACKETLEFT:
-						_adjust_scale(-1)
-					KEY_BRACKETRIGHT:
-						_adjust_scale(1)
 
 	if is_playtesting:
 		return
@@ -865,13 +861,17 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 								ui.show_toast("⚠️ Área protegida da rocha (raio %.1fm)" % ROCK_CLEARANCE_RADIUS, Color(1.0, 0.65, 0.2))
 							return false
 
+			var obj_rot: int = current_rot_deg
+			if active_object_id.begins_with("flower") and active_adjust_mode == QuickAdjustMode.SCALE:
+				obj_rot = 0
+
 			if object_grid.has(cell):
 				var cur_o: Dictionary = object_grid[cell] as Dictionary
-				if String(cur_o.get("type", "")) == active_object_id and int(cur_o.get("rot", 0)) == current_rot_deg:
+				if String(cur_o.get("type", "")) == active_object_id and int(cur_o.get("rot", 0)) == obj_rot:
 					return false
 			object_grid[cell] = {
 				"type": active_object_id,
-				"rot": current_rot_deg
+				"rot": obj_rot
 			}
 
 			# Se for rocha, limpa grama e plantas no raio da maior serra (1.40m)
@@ -1004,6 +1004,7 @@ func _rebuild_3d_world() -> void:
 				var vm: Node3D = f_inst.get_node_or_null("VisualMesh") as Node3D
 				if vm != null:
 					vm.rotation.y = 0.0
+					vm.scale = Vector3(0.68, 0.68, 0.68)
 				obstacles_container.add_child(f_inst)
 		elif o_type == "wheat":
 			var w_inst: Node3D = WHEAT_SCENE.instantiate() as Node3D
@@ -1047,15 +1048,7 @@ func _build_editor_vector_ground() -> void:
 				ROCK_CLEARANCE_RADIUS
 			)
 			vector_field_clone.call("clip_shapes", rock_clip_poly)
-		elif o_type.begins_with("flower"):
-			var f_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
-			var flower_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
-				BrushPatterns.ShapeType.CIRCLE,
-				1,
-				Vector2(f_pos.x, f_pos.z)
-			)
-			vector_field_clone.call("add_shape", o_type, flower_poly)
-
+		# As flores são modelos 3D no obstacles_container, sem necessidade de carimbar polígono falso no piso
 	var ground_meshes: Dictionary = vector_field_clone.call("generate_ground_meshes") as Dictionary
 	var vt_idx: int = 0
 	for vt_var: Variant in ground_meshes.keys():
@@ -1067,6 +1060,8 @@ func _build_editor_vector_ground() -> void:
 		mi.name = "EditorGroundMesh_%s" % vt
 		mi.mesh = mesh_res
 		mi.material_override = _get_editor_vector_material(vt)
+		# Afastamento físico de 1 milésimo (0.001m) em Y para erradicar Z-fighting entre camadas
+		mi.position.y = float(vt_idx) * 0.001
 		mi.sorting_offset = float(vt_idx) * 0.001
 		plants_container.add_child(mi)
 		vt_idx += 1

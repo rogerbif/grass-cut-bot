@@ -124,11 +124,10 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular. |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
-| **Modo Escala do Pincel** | `S` | Seleciona o modo de ajuste de Escala e destaca a caixa na UI. |
-| **Modo Rotação** | `R` | Seleciona o modo de Rotação e gira no sentido horário ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
-| **Aumentar / Girar Direita** | `+` (ou `=`, `Numpad +`) | No Modo Escala: aumenta escala ($+1$, ou $+5$ com `Shift`).<br>No Modo Rotação: gira para a direita ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
-| **Diminuir / Girar Esquerda** | `-` (ou `_`, `Numpad -`) | No Modo Escala: diminui escala ($-1$, ou $-5$ com `Shift`).<br>No Modo Rotação: gira para a esquerda ($-5^\circ$, ou $-25^\circ$ com `Shift`; $-90^\circ$ no terreno). |
-| **Escala Rápida Auxiliar** | `[` e `]` (ou `Alt + Scroll`) | Atalho direto clássico para diminuir/aumentar tamanho do carimbo. |
+| **Modo Escala do Pincel (Padrão)** | `S` | Seleciona o modo de ajuste de **Escala** (ferramenta padrão inicial) e direciona os atalhos `[` e `]` para tamanho. |
+| **Modo Rotação** | `R` | Seleciona o modo de **Rotação** e direciona os atalhos `[` e `]` para giro ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
+| **Diminuir Escala / Girar Esquerda** | `[` (ou `-`, `Numpad -`) | **Se Modo Escala:** diminui tamanho do pincel ($-1$, ou $-5$ com `Shift`).<br>**Se Modo Rotação:** gira para a esquerda ($-5^\circ$, ou $-25^\circ$ com `Shift`; $-90^\circ$ no terreno). |
+| **Aumentar Escala / Girar Direita** | `]` (ou `+`, `=`, `Numpad +`) | **Se Modo Escala:** aumenta tamanho do pincel ($+1$, ou $+5$ com `Shift`).<br>**Se Modo Rotação:** gira para a direita ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
 | **Alternar Câmera** | `V` | Alterna entre Visão Isométrica 3D (Perspectiva $42^\circ$) e Visão Top-Down 2D (Ortogonal pura de topo). |
 | **Mover Câmera (Pan)** | `Setas` / Botão Meio / Botão Direito | Desloca o foco sobre o mapa de forma desobstruída. |
 | **Zoom da Câmera** | `Scroll do Mouse` | Aproxima ou afasta a câmera ($5.5\text{m}$ a $28.0\text{m}$). |
