@@ -5,8 +5,9 @@
 - **Objetivo:** Refatorar o efeito de Slash do cortador para gerar rastros cortantes individuais em cada dente/ponta da lâmina ativa (3, 4, 5 ou 6 pontas), iniciando espesso/largo junto à lâmina e afinando progressivamente com curvatura aerodinâmica até sumir suavemente em transparência total na ponta da cauda.
 - **Resultado:**
   - **Shader Multi-Ponta Analítico na GPU:** Refatorado `shaders/blade_slash.gdshader` com dobramento de setor polar ($S = \frac{2\pi}{N}$) para calcular todas as pontas em paralelo sem laços de repetição (zero texturas PNG, 60 FPS mobile estritos).
-  - **Afinamento Suave e Gradiente de Alpha:** Implementado modelo geométrico de largura $W(t) = W_{\text{base}} \cdot (1 - t)^{1.3}$ e atenuação de transparência $\alpha(t) = (1 - t)^{1.4}$, reproduzindo com fidelidade o esboço técnico do usuário.
-  - **Fio de Corte Incandescente:** Adicionado núcleo branco puro (`core_color`) fundido com a energia da lâmina (`slash_color`) para conferir estética arcade e impacto visual.
+  - **Base Ampla Cobrindo Toda a Lateral da Lâmina:** A base do rastro se estende do vale interno ($R_{\text{inner}} = 0.38$) até a ponta máxima ($R_{\text{tip}} = 0.82$), cobrindo inteiramente a face de corte de cada dente da estrela com compensação de inclinação angular (`edge_slant_deg = 8.0`).
+  - **Afinamento em Foice e Gradiente de Alpha:** Implementado modelo geométrico onde o raio interno migra suavemente em direção à ponta ($r_{\text{inner}}(t) = \operatorname{mix}(R_{\text{inner}}, R_{\text{outer}}, t^{0.75})$) com atenuação de transparência $\alpha(t) = (1 - t)^{1.3}$, reproduzindo com exatidão o formato em foice e o esboço técnico enviado.
+  - **Fio de Corte Incandescente:** Adicionado núcleo branco puro (`core_color`) fundido na borda externa com a energia da lâmina (`slash_color`) para conferir estética arcade e impacto visual.
   - **Dimensionamento Preciso da Malha:** O quad de renderização `PlaneMesh` foi reescalonado de $2.35\text{m}$ para $4.20\text{m}$, contendo com folga o raio real de corte de $1.66\text{m}$ das pontas da serra no `BladeSpinner`.
   - **Sincronização Dinâmica por Tier:** O script `cutter.gd` detecta o tier da lâmina e configura dinamicamente o número de pontas no shader (Tier 1 = 3, Tier 2 = 4, Tier 3 = 5, Tier 4 = 6).
 
@@ -16,23 +17,16 @@
 
 ### A. Shader Espacial Analítico (`shaders/blade_slash.gdshader`)
 - **Render Mode:** `render_mode unshaded, blend_add, depth_draw_never, cull_disabled;`
-- **Cálculo Setorial Branchless:**
+- **Envelope Radial com Base Larga e Curvatura em Foice:**
   ```glsl
-  float num_points = float(max(blade_points, 1));
-  float sector = 6.28318530718 / num_points;
-  float max_arc = sector * arc_ratio;
-  float rel_angle = mod(angle - offset_rad, 6.28318530718);
-  if (rel_angle < 0.0) rel_angle += 6.28318530718;
-  float t_angle = mod(rel_angle, sector);
-  float t = clamp(t_angle / max(max_arc, 0.0001), 0.0, 1.0);
-  ```
-- **Afinamento Progressivo e Cauda Antialiased:**
-  ```glsl
-  float current_width = max(base_width * pow(1.0 - t, taper_power), 0.002);
-  float r_center = tip_radius - (curve_inward * t);
-  float dist = abs(r - r_center);
-  float radial_alpha = smoothstep(current_width, current_width * 0.15, dist);
-  float core_mask = smoothstep(current_width * 0.45, 0.0, dist) * pow(1.0 - t, 0.6);
+  float target_r = tip_radius - (curve_inward * t);
+  float current_r_outer = target_r + 0.015;
+  float current_r_inner = mix(inner_radius, target_r - 0.015, pow(t, inner_curve_power));
+  float width = current_r_outer - current_r_inner;
+  float r_center = 0.5 * (current_r_outer + current_r_inner);
+  float norm_dist = abs(r - r_center) / max(0.5 * width, 0.001);
+  float radial_alpha = smoothstep(1.0, 0.65, norm_dist);
+  float core_mask = smoothstep(0.035, 0.0, abs(r - current_r_outer)) * pow(1.0 - t, 0.5);
   float trail_fade = pow(1.0 - t, fade_power);
   float final_alpha = radial_alpha * arc_mask * trail_fade * slash_intensity;
   ```

@@ -42,11 +42,11 @@ func _ready() -> void:
 	print("✔ PASSOU: blade_slash_mesh dimensionado para 4.2m cobrindo perfeitamente as pontas")
 
 	var mat_check: ShaderMaterial = slash_mesh.material_override as ShaderMaterial
-	if mat_check.get_shader_parameter("blade_points") == null or mat_check.get_shader_parameter("base_width") == null:
-		push_error("Shader parameters blade_points or base_width not found!")
+	if mat_check.get_shader_parameter("blade_points") == null or mat_check.get_shader_parameter("inner_radius") == null:
+		push_error("Shader parameters blade_points or inner_radius not found!")
 		get_tree().quit(1)
 		return
-	print("✔ PASSOU: Parametros analiticos de afinamento e pontas encontrados no ShaderMaterial")
+	print("✔ PASSOU: Parametros analiticos de afinamento com base larga e pontas encontrados no ShaderMaterial")
 
 	# Testa sincronizacao de pontas por Tier (Tier 1 = 3 pontas, Tier 4 = 6 pontas)
 	UpgradeManager.blade_level = 1
