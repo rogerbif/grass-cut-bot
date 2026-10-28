@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://flw_bed_scene_01"]
+[gd_scene load_steps=7 format=3 uid="uid://flw_bed_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/plants/plant.gd" id="1_flower"]
 [ext_resource type="PackedScene" uid="uid://btxbeltwrrkur" path="res://assets/models/flower_08_bed.glb" id="2_flower_model"]
 [ext_resource type="Material" uid="uid://interactive_grass_mat_01" path="res://shaders/interactive_grass_material.tres" id="3_stem_mat"]
 [ext_resource type="Material" uid="uid://flw_bed_mat_01" path="res://shaders/flower_bed_material.tres" id="4_bed_mat"]
+
+[ext_resource type="Material" path="res://shaders/interactive_flower_leaves_material.tres" id="5_leaves_mat"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_area"]
 height = 0.45
@@ -29,7 +31,14 @@ shape = SubResource("CylinderShape3D_area")
 
 [node name="FlowerModel" parent="VisualMesh" instance=ExtResource("2_flower_model")]
 
-[node name="Bed_Export" parent="VisualMesh/FlowerModel" index="0"]
+[node name="Flower_Leaves" parent="VisualMesh/FlowerModel" index="0"]
+cast_shadow = 0
+surface_material_override/0 = ExtResource("5_leaves_mat")
+
+[node name="Flower_Petals" parent="VisualMesh/FlowerModel" index="1"]
+cast_shadow = 0
+surface_material_override/0 = ExtResource("4_bed_mat")
+
+[node name="Flower_Stem" parent="VisualMesh/FlowerModel" index="2"]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("3_stem_mat")
-surface_material_override/1 = ExtResource("4_bed_mat")

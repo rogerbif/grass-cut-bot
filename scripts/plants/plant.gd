@@ -14,15 +14,74 @@ static var _pool_idx: int = 0
 static var _particle_materials: Dictionary = {}
 static var _scale_curve: Curve = null
 static var _fallback_material: StandardMaterial3D = null
-static var _detach_meshes: Dictionary = {}
+static var _detach_meshes_by_type: Dictionary = {}
 
-# Peças desprendíveis da Flor Silvestre no Hit 1 (2 pétalas + 1 folha)
-const DETACH_PIECES_MODEL_PATH: String = "res://assets/models/flower_detach_pieces.glb"
-## Posição local (espaço Godot, pivô no solo) do centro de cada peça no modelo flower_01.glb
-const DETACH_PIECE_OFFSETS: Dictionary = {
-	"Piece_Petal_A": Vector3(-0.3427, 0.9842, 0.1109),
-	"Piece_Petal_B": Vector3(-0.0622, 1.0329, 0.3303),
-	"Piece_Leaf": Vector3(-0.1326, 0.343, -0.2266),
+# Peças desprendíveis das Flores no Hit 1 (2 pétalas + 1 folha por espécie)
+const DETACH_CONFIG_BY_TYPE: Dictionary = {
+	"flower": {
+		"model": "res://assets/models/flower_detach_pieces.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(-0.3427, 0.9842, 0.1109),
+			"Piece_Petal_B": Vector3(-0.0622, 1.0329, 0.3303),
+			"Piece_Leaf": Vector3(-0.1326, 0.343, -0.2266),
+		}
+	},
+	"flower_rose": {
+		"model": "res://assets/models/flower_02_rose_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(0.0219, 1.0552, 0.1433),
+			"Piece_Petal_B": Vector3(-0.0398, 1.0148, 0.1566),
+			"Piece_Leaf": Vector3(0.0601, 0.493, -0.2162),
+		}
+	},
+	"flower_daisy": {
+		"model": "res://assets/models/flower_03_daisy_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(0.1841, 0.976, 0.213),
+			"Piece_Petal_B": Vector3(0.0393, 1.0359, 0.136),
+			"Piece_Leaf": Vector3(-0.0216, 0.4737, -0.428),
+		}
+	},
+	"flower_sunflower": {
+		"model": "res://assets/models/flower_04_sunflower_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(-0.1384, 0.9636, 0.1599),
+			"Piece_Petal_B": Vector3(-0.16, 1.1464, 0.0085),
+			"Piece_Leaf": Vector3(-0.0165, 0.4632, -0.5075),
+		}
+	},
+	"flower_bell": {
+		"model": "res://assets/models/flower_05_bell_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(0.1305, 0.743, 0.3262),
+			"Piece_Petal_B": Vector3(0.0571, 0.7856, 0.3106),
+			"Piece_Leaf": Vector3(0.2271, 0.3069, -0.1652),
+		}
+	},
+	"flower_corolla": {
+		"model": "res://assets/models/flower_06_corolla_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(-0.3926, 0.5603, -0.2205),
+			"Piece_Petal_B": Vector3(0.459, 0.6517, -0.1923),
+			"Piece_Leaf": Vector3(0.3915, 0.4572, -0.3362),
+		}
+	},
+	"flower_tulip": {
+		"model": "res://assets/models/flower_07_tulip_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(0.0728, 0.5961, 0.3996),
+			"Piece_Petal_B": Vector3(0.346, 0.8191, -0.3985),
+			"Piece_Leaf": Vector3(0.4674, 0.4865, -0.3224),
+		}
+	},
+	"flower_bed": {
+		"model": "res://assets/models/flower_08_bed_detach.glb",
+		"offsets": {
+			"Piece_Petal_A": Vector3(-0.2531, 0.2374, -0.8424),
+			"Piece_Petal_B": Vector3(0.1881, 0.2374, 0.7965),
+			"Piece_Leaf": Vector3(-0.1092, 0.2805, 0.0025),
+		}
+	},
 }
 const DETACH_UP_SPEED_MIN: float = 4.0
 const DETACH_UP_SPEED_MAX: float = 5.0
@@ -301,39 +360,48 @@ static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flowe
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.25, 0.0), _circle_mesh, cols["petal"] as Color, 6)
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.18, 0.0), _triangle_mesh, FLOWER_STEM_COLOR, 2)
 
-## Carrega (uma única vez) as malhas das peças desprendíveis da Flor Silvestre
-static func _ensure_detach_meshes() -> void:
-	if not _detach_meshes.is_empty():
-		return
-	var packed: PackedScene = load(DETACH_PIECES_MODEL_PATH) as PackedScene
-	if packed == null:
-		return
-	var inst: Node = packed.instantiate()
-	for piece_name: String in DETACH_PIECE_OFFSETS.keys():
-		var mi: MeshInstance3D = inst.find_child(piece_name, true, false) as MeshInstance3D
-		if mi != null and mi.mesh != null:
-			_detach_meshes[piece_name] = mi.mesh
-	inst.free()
+## Carrega (sob demanda e com cache) as malhas das peças desprendíveis por espécie de flor
+static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
+	if _detach_meshes_by_type.has(flower_type):
+		return _detach_meshes_by_type[flower_type] as Dictionary
+	if not DETACH_CONFIG_BY_TYPE.has(flower_type):
+		return {}
+	var cfg: Dictionary = DETACH_CONFIG_BY_TYPE[flower_type] as Dictionary
+	var model_path: String = cfg.get("model", "") as String
+	var offsets: Dictionary = cfg.get("offsets", {}) as Dictionary
+	var packed: PackedScene = load(model_path) as PackedScene
+	var dict: Dictionary = {}
+	if packed != null:
+		var inst: Node = packed.instantiate()
+		for piece_name: String in offsets.keys():
+			var mi: MeshInstance3D = inst.find_child(piece_name, true, false) as MeshInstance3D
+			if mi != null and mi.mesh != null:
+				dict[piece_name] = mi.mesh
+		inst.free()
+	_detach_meshes_by_type[flower_type] = dict
+	return dict
 
-## Hit 1 da Flor Silvestre: 2 pétalas + 1 folha saem para cima, caem, encolhem e somem
+## Hit 1 de Flores: 2 pétalas + 1 folha da respectiva espécie saem para cima, caem, encolhem e somem
 static func spawn_flower_detach_pieces(scene_root: Node, flower_xform: Transform3D, flower_type: String) -> void:
-	if flower_type != "flower" or scene_root == null or not scene_root.is_inside_tree():
+	if not DETACH_CONFIG_BY_TYPE.has(flower_type) or scene_root == null or not scene_root.is_inside_tree():
 		return
 	_ensure_particle_meshes()
-	_ensure_detach_meshes()
+	var meshes: Dictionary = _ensure_detach_meshes(flower_type)
+	var cfg: Dictionary = DETACH_CONFIG_BY_TYPE[flower_type] as Dictionary
+	var offsets: Dictionary = cfg.get("offsets", {}) as Dictionary
 	var cols: Dictionary = get_flower_colors(flower_type)
-	for piece_name: String in DETACH_PIECE_OFFSETS.keys():
-		if not _detach_meshes.has(piece_name):
+	for piece_name: String in offsets.keys():
+		if not meshes.has(piece_name):
 			continue
 		var is_leaf: bool = piece_name == "Piece_Leaf"
 		var col: Color = FLOWER_STEM_COLOR if is_leaf else (cols["petal"] as Color)
-		var local_off: Vector3 = DETACH_PIECE_OFFSETS[piece_name] as Vector3
+		var local_off: Vector3 = offsets[piece_name] as Vector3
 		var start_pos: Vector3 = flower_xform * local_off
 
 		var piece: FlowerDetachPiece = FlowerDetachPiece.new()
-		piece.name = piece_name
+		piece.name = "%s_%s" % [flower_type, piece_name]
 		var mi: MeshInstance3D = MeshInstance3D.new()
-		mi.mesh = _detach_meshes[piece_name] as Mesh
+		mi.mesh = meshes[piece_name] as Mesh
 		mi.material_override = _get_or_create_particle_material(col)
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		piece.add_child(mi)

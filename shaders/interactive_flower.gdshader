@@ -76,8 +76,11 @@ void vertex() {
 }
 
 void fragment() {
+	// Gradiente de tom escuro na base para claro na ponta via COLOR.a
+	float shade = mix(0.55, 1.0, clamp(COLOR.a, 0.0, 1.0));
 	// Se for miolo (COLOR.g > 0.5 assado no Blender), aplica center_color; senão petal_color
 	vec3 base_col = (COLOR.g > 0.5) ? center_color.rgb : petal_color.rgb;
+	base_col *= shade;
 	ALBEDO = base_col;
 	EMISSION = base_col * vibrancy;
 	ROUGHNESS = roughness;
