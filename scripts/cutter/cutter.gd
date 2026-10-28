@@ -704,6 +704,10 @@ func rebuild_obstacles_cache() -> void:
 	_obstacle_radii.clear()
 	_has_obstacles = false
 
+	if not is_inside_tree():
+		_obstacle_bounds = Rect2()
+		return
+
 	var tree: SceneTree = get_tree()
 	if tree == null:
 		_obstacle_bounds = Rect2()

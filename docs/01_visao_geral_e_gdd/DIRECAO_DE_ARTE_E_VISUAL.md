@@ -101,3 +101,14 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 5. **Teleporte Estilizado no Mapa (`teleport_effect.gdshader`):**
    - Efeito de feixe turquesa com ruído de dissolução vertical ao transitar entre as ilhas na visualização do mapa overworld.
+
+---
+
+## 4. Laboratório de Iluminação e Shaders (`scenes/tools/lighting_lab.tscn`)
+
+Para calibração contínua e interativa da direção de arte diretamente na Godot Engine, o projeto disponibiliza um estúdio autônomo acessível via **F6** (`res://scenes/tools/lighting_lab.tscn`):
+- **Câmeras Duplas:** Alternância instantânea com a barra de `Espaço` entre **Câmera Livre (Órbita 360° com Mouse)** e **Câmera de Jogo (Isométrica Canônica)** seguindo o Cutter Bit (controlável via `WASD`/Setas para testar cortes e sombras em movimento).
+- **Inspeção de Níveis e Estúdio:** Carrega dinamicamente qualquer fase real (Fases 01 a 20 com ilha e vegetação) ou 9 modelos avulsos com rotação suave sobre pedestal.
+- **Gaveta de Controles Retrátil:** Sliders e color pickers para Sol (energia, pitch, yaw, cor, sombras, ciclo contínuo), Ambiente (energia, cor, céu, tonemap, exposição), Toon Shader (materiais de plantas, ramp, smoothness, gradiente, rim light), Solo da Ilha e Oceano.
+- **Presets Instantâneos:** 5 perfis de iluminação prontos (Canônico Equilibrado, Produção Atual, Golden Hour, Casual Pop e Crepúsculo).
+- **Exportação Direta:** Botões para salvar alterações diretamente nos arquivos `.tres` do jogo e copiar configurações para a área de transferência.

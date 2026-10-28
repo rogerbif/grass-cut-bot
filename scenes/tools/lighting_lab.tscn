@@ -1,0 +1,708 @@
+[gd_scene load_steps=12 format=3 uid="uid://lighting_lab_scene_01"]
+
+[ext_resource type="Script" path="res://scripts/tools/lighting_lab.gd" id="1_lab"]
+[ext_resource type="Script" path="res://scripts/camera/isometric_camera.gd" id="2_cam"]
+[ext_resource type="Material" uid="uid://toon_water_mat_01" path="res://shaders/toon_water_material.tres" id="3_water_mat"]
+
+[sub_resource type="Environment" id="Environment_lab"]
+background_mode = 1
+background_color = Color(0.68, 0.85, 0.94, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.92, 0.95, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ocean"]
+material = ExtResource("3_water_mat")
+size = Vector2(320, 320)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pedestal"]
+albedo_color = Color(0.2, 0.25, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
+material = SubResource("StandardMaterial3D_pedestal")
+top_radius = 2.4
+bottom_radius = 2.6
+height = 0.25
+radial_segments = 48
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
+bg_color = Color(0.06, 0.09, 0.14, 0.92)
+border_width_bottom = 2
+border_color = Color(0.2, 0.55, 0.8, 0.7)
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_drawer"]
+bg_color = Color(0.06, 0.09, 0.13, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.2, 0.55, 0.8, 0.7)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_save"]
+bg_color = Color(0.15, 0.55, 0.35, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toast"]
+bg_color = Color(0.1, 0.25, 0.16, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.95, 0.55, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+
+[node name="LightingLab" type="Node3D"]
+script = ExtResource("1_lab")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lab")
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.766044, -0.386839, 0.513353, 0, 0.798636, 0.601815, -0.642787, -0.461017, 0.61179, 0, 16, 0)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_mode = 0
+directional_shadow_max_distance = 32.0
+
+[node name="OceanMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.71, 0)
+mesh = SubResource("PlaneMesh_ocean")
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
+visible = false
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="StudioMount" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="LevelContainer" type="Node3D" parent="."]
+
+[node name="FreeCameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.788011, 0.615661, 0, -0.615661, 0.788011, 0, 0, 0)
+
+[node name="FreeCamera" type="Camera3D" parent="FreeCameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11)
+current = true
+fov = 45.0
+
+[node name="GameCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.762668, 0.64679, 0, -0.64679, 0.762668, 0, 3.8756, 4.5809)
+fov = 48.0
+script = ExtResource("2_cam")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_constants/separation = 6
+
+[node name="PanelTop" type="PanelContainer" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_topbar")
+
+[node name="HBoxTopInner" type="HBoxContainer" parent="CanvasLayer/Control/TopBar/PanelTop"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnToggleUI" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 32)
+layout_mode = 2
+text = "👁️"
+
+[node name="BtnDispMode" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Modo: 🎮 Nível"
+
+[node name="BtnPrevItem" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 32)
+layout_mode = 2
+text = "◀"
+
+[node name="LblModeStatus" type="Label" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_font_sizes/font_size = 12
+text = "Fase 01 / 20"
+horizontal_alignment = 1
+
+[node name="BtnNextItem" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 32)
+layout_mode = 2
+text = "▶"
+
+[node name="VSep1" type="VSeparator" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+layout_mode = 2
+
+[node name="BtnCamMode" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Câmera: 🎥 Livre"
+
+[node name="VSep2" type="VSeparator" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+layout_mode = 2
+
+[node name="BtnCopyCode" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "📋 Copiar"
+
+[node name="BtnSaveGame" type="Button" parent="CanvasLayer/Control/TopBar/PanelTop/HBoxTopInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_save")
+text = "💾 Salvar"
+
+[node name="DrawerPanel" type="PanelContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -320.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_drawer")
+
+[node name="VBoxDrawer" type="VBoxContainer" parent="CanvasLayer/Control/DrawerPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HBoxDrawerHeader" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer"]
+layout_mode = 2
+
+[node name="BtnToggleDrawer" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/HBoxDrawerHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 26)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "▼ Recolher Controles"
+
+[node name="LblHelpHint" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/HBoxDrawerHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 0.75)
+theme_override_font_sizes/font_size = 11
+text = "[Tab] Ocultar UI | [Espaço] Jogo/Órbita | [WASD] Mover | [1-5] Presets | [R] Reset Câmera"
+horizontal_alignment = 2
+
+[node name="TabContainer" type="TabContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+current_tab = 0
+
+[node name="☀️ Sol & Luz" type="ScrollContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer"]
+layout_mode = 2
+
+[node name="VBoxSun" type="VBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LblSunEnergy" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Energia do Sol: 1.30"
+
+[node name="SliderSunEnergy" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 3.0
+step = 0.05
+value = 1.3
+
+[node name="LblSunPitch" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Altura Zenital (Pitch): -38.0°"
+
+[node name="SliderSunPitch" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -89.0
+max_value = -5.0
+step = 1.0
+value = -38.0
+
+[node name="LblSunYaw" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Azimute Solar (Yaw): 40.0°"
+
+[node name="SliderSunYaw" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 360.0
+step = 1.0
+value = 40.0
+
+[node name="HBoxSunExtras" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LblSunCol" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun/HBoxSunExtras"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor da Luz:"
+
+[node name="PickerSunColor" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun/HBoxSunExtras"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+color = Color(1, 0.98, 0.92, 1)
+
+[node name="CheckSunShadows" type="CheckBox" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun/HBoxSunExtras"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Sombras Ativadas"
+
+[node name="CheckSunRotate" type="CheckBox" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/☀️ Sol & Luz/VBoxSun/HBoxSunExtras"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ciclo do Sol Contínuo"
+
+[node name="🌌 Ambiente & Céu" type="ScrollContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="VBoxAmb" type="VBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LblAmbientEnergy" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Luz Ambiente: 0.35"
+
+[node name="SliderAmbientEnergy" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.5
+step = 0.05
+value = 0.35
+
+[node name="HBoxAmbCols" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LblAmbCol" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb/HBoxAmbCols"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Ambiente:"
+
+[node name="PickerAmbientColor" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb/HBoxAmbCols"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+color = Color(0.85, 0.92, 0.95, 1)
+
+[node name="LblSkyCol" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb/HBoxAmbCols"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor do Céu:"
+
+[node name="PickerSkyColor" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb/HBoxAmbCols"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+color = Color(0.68, 0.85, 0.94, 1)
+
+[node name="HBoxTonemap" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LblTonemap" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb/HBoxTonemap"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Modo Tonemap:"
+
+[node name="OptTonemap" type="OptionButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb/HBoxTonemap"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LblExposure" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Exposição: 1.00"
+
+[node name="SliderExposure" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🌌 Ambiente & Céu/VBoxAmb"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.5
+max_value = 2.5
+step = 0.05
+value = 1.0
+
+[node name="🎨 Toon Shader" type="ScrollContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="VBoxToon" type="VBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="HBoxMatSelect" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LblMat" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxMatSelect"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Material da Planta:"
+
+[node name="OptGrassMaterial" type="OptionButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxMatSelect"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxToonColors" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LblLight" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxToonColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Luz:"
+
+[node name="PickerColorLight" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxToonColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 24)
+layout_mode = 2
+color = Color(0.42, 0.88, 0.46, 1)
+
+[node name="LblShadow" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxToonColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Sombra:"
+
+[node name="PickerColorShadow" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxToonColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 24)
+layout_mode = 2
+color = Color(0.18, 0.5, 0.25, 1)
+
+[node name="LblBase" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxToonColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Base:"
+
+[node name="PickerColorBase" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxToonColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 24)
+layout_mode = 2
+color = Color(0.1, 0.3, 0.15, 1)
+
+[node name="LblRampOffset" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Degrau Toon (Offset): 0.50"
+
+[node name="SliderRampOffset" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.05
+max_value = 0.95
+step = 0.02
+value = 0.5
+
+[node name="LblRampSmooth" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Suavidade Cel (Smoothness): 0.28"
+
+[node name="SliderRampSmooth" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.01
+max_value = 0.8
+step = 0.02
+value = 0.28
+
+[node name="LblVertGrad" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Gradiente Vertical: 0.85"
+
+[node name="SliderVertGrad" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.85
+
+[node name="HBoxRim" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CheckRimLight" type="CheckBox" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxRim"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ativar Rim Light"
+
+[node name="PickerRimColor" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon/HBoxRim"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 24)
+layout_mode = 2
+color = Color(0.85, 1, 0.65, 1)
+
+[node name="LblRimPower" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Potência Rim Light: 1.5"
+
+[node name="SliderRimPower" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.2
+max_value = 6.0
+step = 0.1
+value = 1.5
+
+[node name="LblRimBright" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Brilho Rim Light: 0.50"
+
+[node name="SliderRimBright" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 3.0
+step = 0.05
+value = 0.5
+
+[node name="LblRoughness" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Rugosidade Fosca: 0.90"
+
+[node name="SliderRoughness" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🎨 Toon Shader/VBoxToon"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.02
+value = 0.9
+
+[node name="🏝️ Solo & Mar" type="ScrollContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="VBoxIsland" type="VBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="HBoxGroundColors" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LblGroundCol" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxGroundColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Solo Ilha:"
+
+[node name="PickerGroundColor" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxGroundColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+color = Color(0.14, 0.45, 0.19, 1)
+
+[node name="LblCliffCol" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxGroundColors"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cor Falésia:"
+
+[node name="PickerCliffColor" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxGroundColors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+color = Color(0.47, 0.24, 0.15, 1)
+
+[node name="LblGroundBright" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Brilho do Solo: 0.80"
+
+[node name="SliderGroundBright" type="HSlider" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.3
+max_value = 2.0
+step = 0.05
+value = 0.8
+
+[node name="CheckGroundToon" type="CheckBox" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Difusão Toon no Solo"
+
+[node name="HSepIsland" type="HSeparator" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland"]
+layout_mode = 2
+
+[node name="HBoxOcean" type="HBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CheckOceanVisible" type="CheckBox" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxOcean"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Mar Visível"
+
+[node name="LblWaterShallow" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxOcean"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Rasa:"
+
+[node name="PickerWaterShallow" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxOcean"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 24)
+layout_mode = 2
+color = Color(0.18, 0.65, 0.82, 1)
+
+[node name="LblWaterDeep" type="Label" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxOcean"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Profunda:"
+
+[node name="PickerWaterDeep" type="ColorPickerButton" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/🏝️ Solo & Mar/VBoxIsland/HBoxOcean"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 24)
+layout_mode = 2
+color = Color(0.08, 0.52, 0.74, 1)
+
+[node name="⚡ Presets" type="ScrollContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="VBoxPresets" type="VBoxContainer" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="BtnPresetCanonical" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets/VBoxPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+text = "☀️ 1. Canônico Equilibrado (Luz Viva & Sombras Cel)"
+
+[node name="BtnPresetCurrent" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets/VBoxPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+text = "🎮 2. Produção Atual (Como está no main.tscn)"
+
+[node name="BtnPresetGolden" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets/VBoxPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+text = "🌅 3. Golden Hour / Pôr do Sol Dourado Tropical"
+
+[node name="BtnPresetPop" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets/VBoxPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+text = "🏖️ 4. Casual Pop Saturado (Estilo Brawl Stars / Archero)"
+
+[node name="BtnPresetDusk" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets/VBoxPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+text = "🌙 5. Crepúsculo Estilizado"
+
+[node name="BtnPresetReset" type="Button" parent="CanvasLayer/Control/DrawerPanel/VBoxDrawer/TabContainer/⚡ Presets/VBoxPresets"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "🔄 Restaurar Padrões Iniciais"
+
+[node name="ToastLabel" type="Label" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -370.0
+offset_right = 200.0
+offset_bottom = -330.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.9, 1, 0.9, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_toast")
+text = "✅ Salvo com sucesso!"
+horizontal_alignment = 1
+vertical_alignment = 1
