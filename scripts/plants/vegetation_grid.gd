@@ -29,6 +29,19 @@ const GRASS_MATERIALS: Dictionary = {
 	"wheat": preload("res://shaders/interactive_wheat_material.tres")
 }
 
+const FLOWER_MATERIALS: Dictionary = {
+	"flower": preload("res://shaders/interactive_flower_material.tres"),
+	"flower_rose": preload("res://shaders/flower_rose_material.tres"),
+	"flower_daisy": preload("res://shaders/flower_daisy_material.tres"),
+	"flower_sunflower": preload("res://shaders/flower_sunflower_material.tres"),
+	"flower_bell": preload("res://shaders/flower_bell_material.tres"),
+	"flower_corolla": preload("res://shaders/flower_corolla_material.tres"),
+	"flower_tulip": preload("res://shaders/flower_tulip_material.tres"),
+	"flower_bed": preload("res://shaders/flower_bed_material.tres")
+}
+const FLOWER_LEAVES_MATERIAL: Material = preload("res://shaders/interactive_flower_leaves_material.tres")
+const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_grass_material.tres")
+
 const TILE_MODELS: Dictionary = {
 	"island_center": preload("res://assets/models/tiles/tile_island_center.glb"),
 	"island_edge": preload("res://assets/models/tiles/tile_island_edge.glb"),
@@ -157,60 +170,28 @@ static func _ensure_static_meshes() -> void:
 		wheat_inst.free()
 
 	if _flower_mesh == null:
-		var flower_inst: Node = FLOWER_SCENE.instantiate()
-		var visual_root: Node3D = flower_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		flower_inst.free()
+		_flower_mesh = _build_flower_combined_mesh("flower", FLOWER_SCENE)
 
 	if _flower_rose_mesh == null:
-		var rose_inst: Node = FLOWER_ROSE_SCENE.instantiate()
-		var visual_root: Node3D = rose_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_rose_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		rose_inst.free()
+		_flower_rose_mesh = _build_flower_combined_mesh("flower_rose", FLOWER_ROSE_SCENE)
 
 	if _flower_daisy_mesh == null:
-		var daisy_inst: Node = FLOWER_DAISY_SCENE.instantiate()
-		var visual_root: Node3D = daisy_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_daisy_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		daisy_inst.free()
+		_flower_daisy_mesh = _build_flower_combined_mesh("flower_daisy", FLOWER_DAISY_SCENE)
 
 	if _flower_sunflower_mesh == null:
-		var sun_inst: Node = FLOWER_SUNFLOWER_SCENE.instantiate()
-		var visual_root: Node3D = sun_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_sunflower_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		sun_inst.free()
+		_flower_sunflower_mesh = _build_flower_combined_mesh("flower_sunflower", FLOWER_SUNFLOWER_SCENE)
 
 	if _flower_bell_mesh == null:
-		var bell_inst: Node = FLOWER_BELL_SCENE.instantiate()
-		var visual_root: Node3D = bell_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_bell_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		bell_inst.free()
+		_flower_bell_mesh = _build_flower_combined_mesh("flower_bell", FLOWER_BELL_SCENE)
 
 	if _flower_corolla_mesh == null:
-		var corolla_inst: Node = FLOWER_COROLLA_SCENE.instantiate()
-		var visual_root: Node3D = corolla_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_corolla_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		corolla_inst.free()
+		_flower_corolla_mesh = _build_flower_combined_mesh("flower_corolla", FLOWER_COROLLA_SCENE)
 
 	if _flower_tulip_mesh == null:
-		var tulip_inst: Node = FLOWER_TULIP_SCENE.instantiate()
-		var visual_root: Node3D = tulip_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_tulip_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		tulip_inst.free()
+		_flower_tulip_mesh = _build_flower_combined_mesh("flower_tulip", FLOWER_TULIP_SCENE)
 
 	if _flower_bed_mesh == null:
-		var bed_inst: Node = FLOWER_BED_SCENE.instantiate()
-		var visual_root: Node3D = bed_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_flower_bed_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		bed_inst.free()
+		_flower_bed_mesh = _build_flower_combined_mesh("flower_bed", FLOWER_BED_SCENE)
 
 	if _tile_meshes.is_empty():
 		var model_scale_xform: Transform3D = Transform3D().scaled(Vector3(1.0, 2.0, 1.0))
@@ -223,6 +204,62 @@ static func _ensure_static_meshes() -> void:
 			var combined: ArrayMesh = _build_combined_mesh_from_hierarchy(tile_inst, model_scale_xform)
 			_tile_meshes[t_id] = combined
 			tile_inst.free()
+
+
+static func _build_flower_combined_mesh(flower_type: String, packed_scene: PackedScene) -> ArrayMesh:
+	var inst: Node = packed_scene.instantiate()
+	var visual_root: Node3D = inst.get_node_or_null("VisualMesh") as Node3D
+	if visual_root == null:
+		inst.free()
+		return null
+
+	var flower_mat: Material = FLOWER_MATERIALS.get(flower_type, FLOWER_MATERIALS["flower"]) as Material
+	var overrides_by_name: Dictionary = {
+		"Flower_Petals": flower_mat,
+		"Flower_Leaves": FLOWER_LEAVES_MATERIAL,
+		"Flower_Stem": FLOWER_STEM_MATERIAL,
+	}
+
+	var combined_mesh: ArrayMesh = ArrayMesh.new()
+	combined_mesh = _append_flower_meshes_recursive(visual_root, Transform3D.IDENTITY, combined_mesh, true, overrides_by_name)
+	inst.free()
+	return combined_mesh
+
+
+static func _append_flower_meshes_recursive(
+	node: Node,
+	accum_xform: Transform3D,
+	combined_mesh: ArrayMesh,
+	is_root: bool,
+	overrides_by_name: Dictionary
+) -> ArrayMesh:
+	var current_xform: Transform3D = accum_xform
+	if not is_root and node is Node3D:
+		current_xform = accum_xform * (node as Node3D).transform
+
+	if node is MeshInstance3D:
+		var mi: MeshInstance3D = node as MeshInstance3D
+		if mi.mesh != null:
+			var forced_mat: Material = overrides_by_name.get(String(mi.name), null) as Material
+			var surf_count: int = mi.mesh.get_surface_count()
+			for s_idx: int in range(surf_count):
+				var st: SurfaceTool = SurfaceTool.new()
+				st.append_from(mi.mesh, s_idx, current_xform)
+				var mat: Material = forced_mat
+				if mat == null:
+					mat = mi.get_surface_override_material(s_idx)
+				if mat == null:
+					mat = mi.get_active_material(s_idx)
+				if mat == null:
+					mat = mi.mesh.surface_get_material(s_idx)
+				if mat != null:
+					st.set_material(mat)
+				combined_mesh = st.commit(combined_mesh)
+
+	for child: Node in node.get_children():
+		combined_mesh = _append_flower_meshes_recursive(child, current_xform, combined_mesh, false, overrides_by_name)
+
+	return combined_mesh
 
 
 static func _find_first_mesh_instance(node: Node) -> MeshInstance3D:

@@ -4,6 +4,8 @@ enum PlantType { GRASS, WHEAT, FLOWER }
 
 const POOL_SIZE: int = 36
 const FLOWER_STEM_COLOR: Color = Color(0.20, 0.72, 0.28, 1.0)
+const FLOWER_LEAVES_MATERIAL: Material = preload("res://shaders/interactive_flower_leaves_material.tres")
+const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_grass_material.tres")
 
 static var _triangle_mesh: ArrayMesh = null
 static var _square_mesh: ArrayMesh = null
@@ -201,14 +203,18 @@ func _apply_visual_material(target: Node) -> void:
 		var mi: MeshInstance3D = target as MeshInstance3D
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if type == PlantType.FLOWER:
-			# Para flores com 2 slots (0: Caule Verde, 1: Pétalas Customizáveis)
-			# Flor Silvestre dividida em 3 malhas (Flower_Stem, Flower_Leaves, Flower_Petals): somente as
-			# pétalas (slot único 0) recebem o material customizável; caule e folhas permanecem verdes.
-			if custom_material != null:
-				if mi.name == &"Flower_Petals":
+			# Flores divididas em 3 malhas (Flower_Stem, Flower_Leaves, Flower_Petals):
+			# Aplica explicitamente os materiais canônicos garantindo persistência mesmo se o .scn
+			# exportado perder os overrides de sub-nós.
+			if mi.name == &"Flower_Petals":
+				if custom_material != null:
 					mi.set_surface_override_material(0, custom_material)
-				elif mi.mesh != null and mi.mesh.get_surface_count() > 1:
-					mi.set_surface_override_material(1, custom_material)
+			elif mi.name == &"Flower_Leaves":
+				mi.set_surface_override_material(0, FLOWER_LEAVES_MATERIAL)
+			elif mi.name == &"Flower_Stem":
+				mi.set_surface_override_material(0, FLOWER_STEM_MATERIAL)
+			elif mi.mesh != null and mi.mesh.get_surface_count() > 1 and custom_material != null:
+				mi.set_surface_override_material(1, custom_material)
 		else:
 			if custom_material != null:
 				if mi.material_override != custom_material:

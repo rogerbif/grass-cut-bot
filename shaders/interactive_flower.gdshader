@@ -11,7 +11,7 @@ uniform float wind_speed : hint_range(0.0, 10.0) = 1.8;
 uniform float wind_strength : hint_range(0.0, 1.0) = 0.08;
 
 // Cores das pétalas e do miolo (Low Poly Matte)
-uniform vec4 petal_color : source_color = vec4(1.0, 0.18, 0.65, 1.0);
+uniform vec4 petal_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform vec4 center_color : source_color = vec4(1.0, 0.85, 0.05, 1.0);
 uniform float roughness : hint_range(0.0, 1.0) = 0.85;
 uniform float specular : hint_range(0.0, 1.0) = 0.15;
