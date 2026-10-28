@@ -105,7 +105,7 @@ func _on_time_updated(time_left: float) -> void:
 		return
 	_last_displayed_total_seconds = total_sec
 
-	var minutes: int = total_sec / 60
+	var minutes: int = floori(float(total_sec) / 60.0)
 	var seconds: int = total_sec % 60
 	if timer_label != null:
 		timer_label.text = "%d:%02d" % [minutes, seconds]

@@ -7,7 +7,6 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
-const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
 
 # Shaders oficiais da grama com gradiente vertical (raiz -> topo) e balanço de vento

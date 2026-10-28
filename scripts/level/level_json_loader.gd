@@ -1,6 +1,5 @@
 extends RefCounted
 
-const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const DEFAULT_CELL_SIZE: float = 0.80
 
 const WATER_OCEAN_SCENE: PackedScene = preload("res://scenes/level/water_ocean.tscn")
@@ -410,5 +409,3 @@ static func _add_tile_foam_curve(
 		st.set_normal(n0_world)
 		st.set_uv(Vector2(u0, 1.0))
 		st.add_vertex(v_out0)
-
-

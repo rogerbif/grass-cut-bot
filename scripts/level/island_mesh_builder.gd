@@ -327,7 +327,7 @@ static func build_coastal_colliders(
 			outer = _reverse_polygon(outer)
 
 		var n_pts: int = outer.size()
-		var vert_normals: Array[Vector2] = _compute_vertex_normals(outer)
+		var _vert_normals: Array[Vector2] = _compute_vertex_normals(outer)
 
 		for i: int in range(n_pts):
 			var next_i: int = (i + 1) % n_pts

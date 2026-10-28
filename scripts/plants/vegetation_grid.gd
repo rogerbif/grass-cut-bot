@@ -4,7 +4,6 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const LawnCutTrailScript = preload("res://scripts/level/lawn_cut_trail.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
-const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const PlantScript = preload("res://scripts/plants/plant.gd")
 
@@ -1310,13 +1309,13 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						var jitter_amp: float = 0.022
 						var jitter_x: float = sin(now_sec * 65.0 + float(p_idx) * 13.0) * jitter_amp
 						var jitter_z: float = cos(now_sec * 65.0 + float(p_idx) * 17.0) * jitter_amp
-						var mmi_idx: int = _mmi_indices[p_idx]
-						var inst_idx: int = _instance_indices[p_idx]
-						var mm: MultiMesh = _veg_multimeshes[mmi_idx]
-						if mm != null:
+						var shake_mmi_idx: int = _mmi_indices[p_idx]
+						var shake_inst_idx: int = _instance_indices[p_idx]
+						var shake_mm: MultiMesh = _veg_multimeshes[shake_mmi_idx]
+						if shake_mm != null:
 							var init_xform: Transform3D = _initial_transforms[p_idx]
 							var shake_xform: Transform3D = Transform3D(init_xform.basis, init_xform.origin + Vector3(jitter_x, 0.0, jitter_z))
-							mm.set_instance_transform(inst_idx, shake_xform)
+							shake_mm.set_instance_transform(shake_inst_idx, shake_xform)
 							new_shaking_tufts.append(p_idx)
 					continue
 
