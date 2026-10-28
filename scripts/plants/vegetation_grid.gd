@@ -1441,6 +1441,8 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							var tree_node: SceneTree = get_tree()
 							var s_root: Node = tree_node.current_scene if tree_node != null else self
 							PlantScript.spawn_flower_petal_burst(s_root, p_pos, p_key)
+							if new_hp == 2:
+								PlantScript.spawn_flower_detach_pieces(s_root, _initial_transforms[p_idx], p_key)
 						var init_xform: Transform3D = _initial_transforms[p_idx]
 						var squash_xform: Transform3D = Transform3D(
 							init_xform.basis.scaled(Vector3(1.25, 1.25, 1.25)),

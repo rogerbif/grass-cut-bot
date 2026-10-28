@@ -16,7 +16,7 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 | **Grama Vermelha Rubi** | `grass_red` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Vermelho rubi | Variação cosmética para áreas intensas. |
 | **Grama Preta Vulcânica** | `grass_black` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Grafite carvão | Variação cosmética dramática. |
 | **Trigo Dourado (Meta 2x)** | `wheat` | 2 golpes | 1 físico = 1 meta = 3 🪙 | Dourado ouro | Cultura de tile (Camada 2). Exige 2 golpes ou upgrade de potência $\ge 2$. Meta direta 1:1 e 3 moedas. |
-| **Flor Silvestre Nobre** | `flower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Duas hastes inclinadas com 16 pétalas intercaladas. Despetalação em 2 levas (Hit 1 e 2). |
+| **Flor Silvestre Nobre** | `flower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Modelo em 3 partes (`Flower_Stem`, `Flower_Leaves`, `Flower_Petals`). No Hit 1, 2 pétalas + 1 folha se desprendem (`FlowerDetachPiece`): sobem a 4~5 m/s, caem, encolhem em 0,4 s e somem (Melhoria 138). Despetalação em 2 levas (Hit 1 e 2). |
 | **Rosa Encantada** | `flower_rose` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas carmim rubi | Arbusto nobre com caule folhoso e rosa em camadas. Despetalação externa (Hit 1) e interna (Hit 2). |
 | **Margarida do Campo** | `flower_daisy` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas brancas | Haste alta com miolo ouro e 36 pétalas radiais alternadas em 2 levas. |
 | **Girassol Solar** | `flower_sunflower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar | Disco central avelã e pétalas em leque dourado, ceifa fatal no 3º golpe. |

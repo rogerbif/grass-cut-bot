@@ -34,6 +34,12 @@ void vertex() {
 		VERTEX = vec3(0.0);
 	}
 
+	// Estágio 1 (Hit 1): peças marcadas (COLOR.b > 0.5: 2 pétalas + 1 folha) se desprendem da haste
+	// e passam a voar como peças-detrito independentes (ver plant.gd: spawn_flower_detach_pieces)
+	if (stage >= 0.95 && COLOR.b > 0.5) {
+		VERTEX = vec3(0.0);
+	}
+
 	// Converte para coordenadas globais de mundo
 	vec3 world_vert = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 

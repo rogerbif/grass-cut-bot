@@ -14,6 +14,18 @@ static var _pool_idx: int = 0
 static var _particle_materials: Dictionary = {}
 static var _scale_curve: Curve = null
 static var _fallback_material: StandardMaterial3D = null
+static var _detach_meshes: Dictionary = {}
+
+# Peças desprendíveis da Flor Silvestre no Hit 1 (2 pétalas + 1 folha)
+const DETACH_PIECES_MODEL_PATH: String = "res://assets/models/flower_detach_pieces.glb"
+## Posição local (espaço Godot, pivô no solo) do centro de cada peça no modelo flower_01.glb
+const DETACH_PIECE_OFFSETS: Dictionary = {
+	"Piece_Petal_A": Vector3(-0.3427, 0.9842, 0.1109),
+	"Piece_Petal_B": Vector3(-0.0622, 1.0329, 0.3303),
+	"Piece_Leaf": Vector3(-0.1326, 0.343, -0.2266),
+}
+const DETACH_UP_SPEED_MIN: float = 4.0
+const DETACH_UP_SPEED_MAX: float = 5.0
 
 @export var type: PlantType = PlantType.GRASS
 @export var max_health: int = 1
@@ -131,8 +143,13 @@ func _apply_visual_material(target: Node) -> void:
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if type == PlantType.FLOWER:
 			# Para flores com 2 slots (0: Caule Verde, 1: Pétalas Customizáveis)
+			# Flor Silvestre dividida em 3 malhas (Flower_Stem, Flower_Leaves, Flower_Petals): somente as
+			# pétalas (slot único 0) recebem o material customizável; caule e folhas permanecem verdes.
 			if custom_material != null:
-				mi.set_surface_override_material(1, custom_material)
+				if mi.name == &"Flower_Petals":
+					mi.set_surface_override_material(0, custom_material)
+				elif mi.mesh != null and mi.mesh.get_surface_count() > 1:
+					mi.set_surface_override_material(1, custom_material)
 		else:
 			if custom_material != null:
 				if mi.material_override != custom_material:
@@ -173,6 +190,8 @@ func _apply_flower_damage_stage(remaining_hp: int) -> void:
 	var scene_root: Node = get_tree().current_scene if get_tree() != null else null
 	if scene_root != null:
 		spawn_flower_petal_burst(scene_root, global_position + Vector3(0.0, 0.25, 0.0), plant_key)
+		if remaining_hp == 2:
+			spawn_flower_detach_pieces(scene_root, visual_mesh.global_transform, plant_key)
 
 func _set_flower_stage_recursive(target: Node, stage: float) -> void:
 	if target is GeometryInstance3D:
@@ -281,6 +300,51 @@ static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flowe
 	var cols: Dictionary = get_flower_colors(flower_type)
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.25, 0.0), _circle_mesh, cols["petal"] as Color, 6)
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.18, 0.0), _triangle_mesh, FLOWER_STEM_COLOR, 2)
+
+## Carrega (uma única vez) as malhas das peças desprendíveis da Flor Silvestre
+static func _ensure_detach_meshes() -> void:
+	if not _detach_meshes.is_empty():
+		return
+	var packed: PackedScene = load(DETACH_PIECES_MODEL_PATH) as PackedScene
+	if packed == null:
+		return
+	var inst: Node = packed.instantiate()
+	for piece_name: String in DETACH_PIECE_OFFSETS.keys():
+		var mi: MeshInstance3D = inst.find_child(piece_name, true, false) as MeshInstance3D
+		if mi != null and mi.mesh != null:
+			_detach_meshes[piece_name] = mi.mesh
+	inst.free()
+
+## Hit 1 da Flor Silvestre: 2 pétalas + 1 folha saem para cima, caem, encolhem e somem
+static func spawn_flower_detach_pieces(scene_root: Node, flower_xform: Transform3D, flower_type: String) -> void:
+	if flower_type != "flower" or scene_root == null or not scene_root.is_inside_tree():
+		return
+	_ensure_particle_meshes()
+	_ensure_detach_meshes()
+	var cols: Dictionary = get_flower_colors(flower_type)
+	for piece_name: String in DETACH_PIECE_OFFSETS.keys():
+		if not _detach_meshes.has(piece_name):
+			continue
+		var is_leaf: bool = piece_name == "Piece_Leaf"
+		var col: Color = FLOWER_STEM_COLOR if is_leaf else (cols["petal"] as Color)
+		var local_off: Vector3 = DETACH_PIECE_OFFSETS[piece_name] as Vector3
+		var start_pos: Vector3 = flower_xform * local_off
+
+		var piece: FlowerDetachPiece = FlowerDetachPiece.new()
+		piece.name = piece_name
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.mesh = _detach_meshes[piece_name] as Mesh
+		mi.material_override = _get_or_create_particle_material(col)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		piece.add_child(mi)
+		scene_root.add_child(piece)
+
+		var lateral: Vector3 = Vector3(local_off.x, 0.0, local_off.z).normalized() * randf_range(0.5, 1.1)
+		var vel: Vector3 = Vector3(lateral.x, randf_range(DETACH_UP_SPEED_MIN, DETACH_UP_SPEED_MAX), lateral.z)
+		var axis: Vector3 = Vector3(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), randf_range(-1.0, 1.0))
+		if axis.length_squared() < 0.01:
+			axis = Vector3.RIGHT
+		piece.launch(start_pos, flower_xform.basis, vel, axis, randf_range(-9.0, 9.0), flower_xform.origin.y)
 
 static func _get_or_create_particle_material(col: Color) -> StandardMaterial3D:
 	var key: String = col.to_html(false)
