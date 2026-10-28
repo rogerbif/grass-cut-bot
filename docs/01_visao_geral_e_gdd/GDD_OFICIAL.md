@@ -155,3 +155,20 @@ Ferramenta interna acessível via atalho `F2` em modo janela widescreen ($1600 \
 - Prancheta vetorial plana rápida com resposta $<0.5\text{ms}$.
 - Cards de metas customizadas com CheckBox e SpinBox numérico.
 - Playtest instantâneo com a física real da serra pressionando `F1`.
+
+---
+
+## 7. Estratégia de Publicação Mobile & Roadmap de Expansão
+
+### 7.1 Dimensionamento de Fases para Lançamento
+Para atender aos padrões de retenção da indústria mobile casual:
+- **MVP / Soft Launch (20 Fases):** As 20 fases canônicas atuais com o *Ciclo Mestre* (rejogabilidade infinita preservando upgrades) formam o escopo completo para o teste inicial na Google Play Store.
+- **Lançamento Global Oficial (30 a 40 Fases):** Expansão com mais 10 a 20 fases cobrindo novos biomas e dinâmicas de jogo, garantindo entre 1h e 1h30 de jogabilidade inédita antes do Ciclo Mestre.
+- **Live-Ops (50+ Fases):** Pacotes mensais temáticos de 5 a 10 fases em atualizações sazonais.
+
+### 7.2 Pilares de Evolução Canônica
+1. **Metagame & Retenção:** Ativação da aba *Coleção* com o **Herbário Botânico** (estatísticas acumuladas das 7 cores de grama, trigo e 6 flores com metas de maestria) e loja com pinturas de chassi para o Cutter Bit.
+2. **Variabilidade de Biomas:** Modulação de atmosfera sem perda de performance mobile por blocos de fases: Fases 1-10 (Jardim Tropical Diurno), 11-20 (Golden Hour / Entardecer), 21-30 (Noite Estrelada com Vaga-lumes) e 31-40 (Outono Dourado / Terracota).
+3. **Gameplay Dinâmico:** Power-ups temporários de campo (Turbo Nitro, Ímã de Moedas, Sobrecarga Relâmpago) e rochas rachadas destrutíveis por lâminas avançadas.
+4. **Loja & Publicação:** Validação contínua em hardware Android real (60 FPS e haptics em `Input.vibrate_handheld(15)`) e kit de arte promocional vertical 9:16 para a Google Play Store.
+

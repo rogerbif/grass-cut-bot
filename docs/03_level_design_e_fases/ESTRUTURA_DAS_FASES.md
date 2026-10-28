@@ -87,3 +87,19 @@ Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/
 - **Ciclo de Vitória & Progressão (`GameManager.gd` & `hud.gd`):**
   - Botão de "Próxima Fase ➔" integrado no modal de vitória.
   - Ao vencer a Fase 20, o HUD exibe o troféu "🏆 Campeão do Jardim! 🏆" e possibilita iniciar o "Ciclo Mestre (Fase 1) 👑" preservando todas as moedas e upgrades da Oficina.
+
+---
+
+## 5. Roteiro de Expansão para Lançamento Oficial (Fases 21 a 40)
+
+Para a publicação completa nas lojas móveis, o escopo do jogo expandirá de 20 para 40 fases divididas em 4 mundos/biomas visuais:
+
+1. **Mundo 1: Jardim Tropical Diurno (Fases 01 a 10):**
+   - Aprendizado, corte básico, introdução gradual de trigo, flores e rochas.
+2. **Mundo 2: Entardecer Dourado / Golden Hour (Fases 11 a 20):**
+   - Labirintos de trigo, istmos estreitos, clímax da primeira jornada e coroação no Trevo Real (Fase 20).
+3. **Mundo 3: Noite Estrelada & Farol do Cutter (Fases 21 a 30):**
+   - Céu estrelado profundo, mar noturno calmo, vaga-lumes e introdução de power-ups temporários (Turbo Nitro e Ímã de Moedas).
+4. **Mundo 4: Ilhas de Outono & Rochas Quebráveis (Fases 31 a 40):**
+   - Gramados dourados, solo terracota e introdução de rochas rachadas destrutíveis por lâminas de alto Tier, culminando no Grande Labirinto Imperial.
+
