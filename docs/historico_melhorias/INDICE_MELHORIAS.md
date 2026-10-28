@@ -159,6 +159,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 | [`135_pop_flash_choque_e_shader_slash_level_up.md`](./135_pop_flash_choque_e_shader_slash_level_up.md) | Efeito de Pop Elástico, Flash, Choque e Shader de Slash Ultra-Leve no Level UP | Feedback sensorial completo na subida de nível: punch scale de 1.38x na serra com recuo elástico e squash, flash de energia de 2.5x, anel de onda de choque radial no solo com fade exponencial, e rastro de slash polar contínuo 100% analítico na GPU (zero texturas PNG) modulado por velocidade de rotação. |
 
 | [`120_arredondamento_padrao_cantos_20_fases.md`](./120_arredondamento_padrao_cantos_20_fases.md) | Arredondamento Padrão dos Cantos das 20 Fases Canônicas ($R = 0.28\text{m}$) | Algoritmo analítico de curvatura tangencial de cantos convexos em `IslandMeshBuilder` com raio canônico de $0.28\text{m}$ (5 arcos circulares) e migração em lote dos 20 níveis para JSON v4 com geometria contínua suave $C^1$. |
+| [`137_herbario_botanico_e_sistema_de_colecao_com_10_marcos.md`](./137_herbario_botanico_e_sistema_de_colecao_com_10_marcos.md) | Ativação do Herbário Botânico da Ilha (`TabCollection`) e Sistema de Maestria com 10 Níveis | Catálogo oficial das 15 espécies em `PlantDatabase`, persistência cumulativa de colheitas em `SaveManager`, UI responsiva com barra de progresso, filtros por categoria e 10 níveis de marcos de recompensa com resgate em moedas. |
 
 ---
 

@@ -1360,6 +1360,9 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 
 					# Atualização de metas e concessão de XP da lâmina: Trigo (3 XP), Flores (5 XP), Grama (1 XP)
 					var p_key: String = _plant_keys[p_idx]
+					if SaveManager != null:
+						SaveManager.record_plant_harvest(p_key, 1)
+
 					if UpgradeManager != null:
 						if p_key == "wheat":
 							UpgradeManager.add_blade_xp(3.0)

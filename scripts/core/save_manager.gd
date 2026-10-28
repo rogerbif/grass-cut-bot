@@ -3,6 +3,8 @@ extends Node
 signal save_completed(success: bool)
 signal save_loaded
 signal save_reset
+signal plant_harvested(species_key: String, new_count: int)
+signal milestone_claimed(species_key: String, milestone_level: int, reward: int)
 
 const SAVE_PATH: String = "user://savegame.json"
 const TEMP_PATH: String = "user://savegame.tmp"
@@ -48,7 +50,12 @@ func get_default_save() -> Dictionary:
 			"speed_level": 1,
 			"multiplier_level": 1
 		},
-		"levels": {}
+		"levels": {},
+		"collection": {
+			"discovered": {},
+			"harvest_counts": {},
+			"claimed_milestone_levels": {}
+		}
 	}
 
 func load_game() -> bool:
@@ -138,6 +145,16 @@ func _merge_with_defaults(loaded: Dictionary) -> Dictionary:
 
 	if loaded.has("levels") and loaded["levels"] is Dictionary:
 		merged["levels"] = loaded["levels"]
+
+	if loaded.has("collection") and loaded["collection"] is Dictionary:
+		var col: Dictionary = loaded["collection"] as Dictionary
+		var def_col: Dictionary = merged["collection"] as Dictionary
+		if col.has("discovered") and col["discovered"] is Dictionary:
+			def_col["discovered"] = (col["discovered"] as Dictionary).duplicate(true)
+		if col.has("harvest_counts") and col["harvest_counts"] is Dictionary:
+			def_col["harvest_counts"] = (col["harvest_counts"] as Dictionary).duplicate(true)
+		if col.has("claimed_milestone_levels") and col["claimed_milestone_levels"] is Dictionary:
+			def_col["claimed_milestone_levels"] = (col["claimed_milestone_levels"] as Dictionary).duplicate(true)
 
 	return merged
 
@@ -296,6 +313,73 @@ func set_setting(key: String, val: Variant) -> void:
 	st[key] = val
 	save_data["settings"] = st
 	save_game()
+
+func record_plant_harvest(species_key: String, amount: int = 1) -> void:
+	if species_key.is_empty() or amount <= 0:
+		return
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	if not col.has("discovered"):
+		col["discovered"] = {}
+	if not col.has("harvest_counts"):
+		col["harvest_counts"] = {}
+	if not col.has("claimed_milestone_levels"):
+		col["claimed_milestone_levels"] = {}
+
+	col["discovered"][species_key] = true
+	var cur_count: int = int(col["harvest_counts"].get(species_key, 0)) + amount
+	col["harvest_counts"][species_key] = cur_count
+	save_data["collection"] = col
+	plant_harvested.emit(species_key, cur_count)
+
+func is_species_discovered(species_key: String) -> bool:
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	var disc: Dictionary = col.get("discovered", {}) as Dictionary
+	return bool(disc.get(species_key, false))
+
+func get_harvest_count(species_key: String) -> int:
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	var counts: Dictionary = col.get("harvest_counts", {}) as Dictionary
+	return int(counts.get(species_key, 0))
+
+func get_total_harvest_count() -> int:
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	var counts: Dictionary = col.get("harvest_counts", {}) as Dictionary
+	var total: int = 0
+	for k: Variant in counts.keys():
+		total += int(counts[k])
+	return total
+
+func get_discovered_species_count() -> int:
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	var disc: Dictionary = col.get("discovered", {}) as Dictionary
+	var count: int = 0
+	for k: Variant in disc.keys():
+		if bool(disc[k]):
+			count += 1
+	return count
+
+func get_claimed_milestone_level(species_key: String) -> int:
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	var claimed: Dictionary = col.get("claimed_milestone_levels", {}) as Dictionary
+	return int(claimed.get(species_key, 0))
+
+func claim_milestone_level(species_key: String, milestone_lvl: int, coin_reward: int) -> bool:
+	var col: Dictionary = save_data.get("collection", {}) as Dictionary
+	var claimed: Dictionary = col.get("claimed_milestone_levels", {}) as Dictionary
+	var cur_lvl: int = int(claimed.get(species_key, 0))
+	if milestone_lvl != cur_lvl + 1:
+		return false
+
+	claimed[species_key] = milestone_lvl
+	col["claimed_milestone_levels"] = claimed
+	save_data["collection"] = col
+
+	if UpgradeManager != null:
+		UpgradeManager.add_coins(coin_reward)
+
+	save_game()
+	milestone_claimed.emit(species_key, milestone_lvl, coin_reward)
+	return true
 
 func reset_to_defaults() -> void:
 	save_data = get_default_save()

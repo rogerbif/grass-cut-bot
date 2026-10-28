@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://tab_collection_scene_01"]
+[gd_scene load_steps=8 format=3 uid="uid://tab_collection_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_collection.gd" id="1_collection"]
 
@@ -8,26 +8,15 @@ corner_radius_top_left = 24
 corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
-content_margin_left = 20.0
-content_margin_top = 20.0
-content_margin_right = 20.0
-content_margin_bottom = 20.0
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
 shadow_color = Color(0, 0, 0, 0.35)
 shadow_size = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.13, 0.17, 0.24, 0.85)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-content_margin_left = 16.0
-content_margin_top = 12.0
-content_margin_right = 16.0
-content_margin_bottom = 12.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
-bg_color = Color(0.18, 0.35, 0.25, 0.9)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip"]
+bg_color = Color(0.14, 0.19, 0.27, 0.9)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -36,6 +25,42 @@ content_margin_left = 10.0
 content_margin_top = 4.0
 content_margin_right = 10.0
 content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_filter_normal"]
+bg_color = Color(0.14, 0.18, 0.25, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_filter_active"]
+bg_color = Color(0.20, 0.55, 0.35, 0.95)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prog_bg"]
+bg_color = Color(0.12, 0.15, 0.20, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prog_fg"]
+bg_color = Color(0.22, 0.75, 0.38, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="TabCollection" type="Control"]
 layout_mode = 3
@@ -59,164 +84,116 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
-[node name="Scroll" type="ScrollContainer" parent="Panel"]
+[node name="MainVBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderVBox" type="VBoxContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Panel/MainVBox/HeaderVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "🌿 Herbário Botânico da Ilha"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Panel/MainVBox/HeaderVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+text = "Catálogo oficial das espécies nativas e descobertas"
+horizontal_alignment = 1
+
+[node name="ProgBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ProgLabel" type="Label" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Descobertas: 0 / 15"
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_prog_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_prog_fg")
+max_value = 15.0
+show_percentage = false
+
+[node name="PercentLabel" type="Label" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+text = "0%"
+
+[node name="ChipsHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChipHarvest" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
+
+[node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipHarvest"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "🌾 Ceifados: 0"
+horizontal_alignment = 1
+
+[node name="ChipMilestones" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
+
+[node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipMilestones"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "⭐ Marcos: 0 / 150"
+horizontal_alignment = 1
+
+[node name="FilterHBox" type="HBoxContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnAll" type="Button" parent="Panel/MainVBox/FilterHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_filter_active")
+text = "Todas (15)"
+
+[node name="BtnGrass" type="Button" parent="Panel/MainVBox/FilterHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_filter_normal")
+text = "Gramas (7)"
+
+[node name="BtnCrops" type="Button" parent="Panel/MainVBox/FilterHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_filter_normal")
+text = "Culturas (1)"
+
+[node name="BtnFlowers" type="Button" parent="Panel/MainVBox/FilterHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_filter_normal")
+text = "Flores (7)"
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBox" type="VBoxContainer" parent="Panel/Scroll"]
+[node name="CardsVBox" type="VBoxContainer" parent="Panel/MainVBox/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 14
-
-[node name="Title" type="Label" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 26
-text = "🌿 Herbário da Ilha & Itens"
-horizontal_alignment = 1
-
-[node name="Subtitle" type="Label" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 15
-text = "Catálogo botânico das espécies nativas descobertas"
-horizontal_alignment = 1
-
-[node name="CardGrass" type="PanelContainer" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/CardGrass"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Icon" type="Label" parent="Panel/Scroll/VBox/CardGrass/HBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "🌱"
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/CardGrass/HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/CardGrass/HBox/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Grama Verde Esmeralda"
-
-[node name="Desc" type="Label" parent="Panel/Scroll/VBox/CardGrass/HBox/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 13
-text = "Resistência: 1 golpe • Recompensa: 1 moeda"
-
-[node name="Tag" type="Label" parent="Panel/Scroll/VBox/CardGrass/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_badge")
-text = "DESCOBERTA"
-
-[node name="CardWheat" type="PanelContainer" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/CardWheat"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Icon" type="Label" parent="Panel/Scroll/VBox/CardWheat/HBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "🌾"
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/CardWheat/HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/CardWheat/HBox/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Trigo Dourado Enraizado"
-
-[node name="Desc" type="Label" parent="Panel/Scroll/VBox/CardWheat/HBox/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 13
-text = "Resistência: 2 golpes • Recompensa: 3 moedas"
-
-[node name="Tag" type="Label" parent="Panel/Scroll/VBox/CardWheat/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_badge")
-text = "DESCOBERTA"
-
-[node name="CardFlower" type="PanelContainer" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/CardFlower"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Icon" type="Label" parent="Panel/Scroll/VBox/CardFlower/HBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "🌸"
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/CardFlower/HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/CardFlower/HBox/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Flores Silvestres da Costa"
-
-[node name="Desc" type="Label" parent="Panel/Scroll/VBox/CardFlower/HBox/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 13
-text = "Resistência: 2 golpes • Recompensa: 5 moedas"
-
-[node name="Tag" type="Label" parent="Panel/Scroll/VBox/CardFlower/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_badge")
-text = "DESCOBERTA"
-
-[node name="CardVariantes" type="PanelContainer" parent="Panel/Scroll/VBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
-[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/CardVariantes"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Icon" type="Label" parent="Panel/Scroll/VBox/CardVariantes/HBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "🎨"
-
-[node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/CardVariantes/HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Name" type="Label" parent="Panel/Scroll/VBox/CardVariantes/HBox/Info"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Gramas Exóticas (Azul, Roxa, Amarela)"
-
-[node name="Desc" type="Label" parent="Panel/Scroll/VBox/CardVariantes/HBox/Info"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 13
-text = "Espécies raras que habitam ilhas especiais"
-
-[node name="Tag" type="Label" parent="Panel/Scroll/VBox/CardVariantes/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_badge")
-text = "CATALOGADA"
+theme_override_constants/separation = 10

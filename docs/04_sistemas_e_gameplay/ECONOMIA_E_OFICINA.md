@@ -40,3 +40,21 @@ Acessível na aba "Oficina" do Menu Principal:
 - Banner visual exibindo o nome e tier da lâmina equipada.
 - Card de **Upgrade da Lâmina** exibindo nível atual, raio, velocidade e botão de compra até o Nível 5 (com botão desativado e texto "MÁX LOJA" no nível 5 e "MAX ✔" no nível 6).
 - Dica de gameplay lembrando que colidir com rochas reduz o nível da lâmina.
+
+---
+
+## 4. O Herbário Botânico & Recompensas de Maestria (`tab_collection.tscn`)
+
+Acessível na aba "Coleção" do Menu Principal:
+- **Catálogo Canônico de 15 Espécies (`PlantDatabase`):**
+  - **7 Gramas:** Verde Esmeralda, Dourada Solar, Azul Costeira, Violeta Crepúsculo, Branca Cristalina, Carmesim Vulcânica e Negra Obsidiana.
+  - **1 Cultura Agrícola:** Trigo Dourado Enraizado.
+  - **7 Flores Nobres & Canteiros:** Margarida Silvestre, Flor de Sino Cerúlea, Rosa Rubra Encantada, Girassol Radiante, Tulipa Imperial, Corola Vulcânica e Canteiro de Flores Mistas.
+- **Rastreamento Dinâmico no `SaveManager`:**
+  - Descoberta automática no primeiro corte de cada tufo físico (`record_plant_harvest`).
+  - Total vitalício de tufos ceifados por espécie e carreira global.
+- **10 Níveis de Marcos de Maestria por Espécie:**
+  - Cada uma das 15 espécies possui 10 níveis de meta com títulos temáticos e recompensas crescentes em moedas (ex: 50 a 10.000 para gramas, 15 a 2.200 para trigo e 10 a 1.300 para flores).
+  - Botão interativo `COLETAR +X 🪙` em destaque verde quando a meta é alcançada, com feedback de áudio (`"buy"`) e vibração tátil ao resgatar.
+- **Filtros Ágeis:** Botões de alternância `Todas (15)`, `Gramas (7)`, `Culturas (1)` e `Flores (7)`.
+

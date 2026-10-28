@@ -343,6 +343,8 @@ func _switch_tab(tab_idx: int) -> void:
 		var t: Control = tabs[i]
 		if t != null:
 			t.visible = (i == tab_idx)
+			if t.visible and t.has_method("refresh_ui"):
+				t.call("refresh_ui")
 
 	# Se for para outra aba que não a Home, garante visão do bot ou reseta mapa
 	if tab_idx != 1 and menu_camera != null:

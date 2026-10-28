@@ -198,6 +198,11 @@ func _perform_cut() -> void:
 	if gm != null and gm.has_method("register_cut"):
 		gm.call("register_cut", plant_key, coin_reward, global_position)
 
+	# Registra a colheita no SaveManager para o Herbário
+	var sm_node: Node = get_node_or_null("/root/SaveManager")
+	if sm_node != null and sm_node.has_method("record_plant_harvest"):
+		sm_node.call("record_plant_harvest", plant_key, 1)
+
 	# Fatiamento ágil e imediato: corte seco e destruição imediata do nó
 	var tween: Tween = create_tween()
 	tween.tween_property(visual_mesh, "scale", visual_mesh.scale * Vector3(1.05, 0.05, 1.05), 0.04)
