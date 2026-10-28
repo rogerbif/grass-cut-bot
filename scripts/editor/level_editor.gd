@@ -23,7 +23,9 @@ const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
 const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.tscn")
 const MAX_UNDO_STEPS: int = 30
-const CELL_SIZE: float = 0.80
+const CELL_SIZE: float = 0.40
+const COASTAL_GRASS_CORRIDOR: float = 0.48
+const ROCK_CLEARANCE_RADIUS: float = 1.40
 
 static var _editor_vector_materials: Dictionary = {}
 
@@ -296,6 +298,8 @@ func _connect_ui_signals() -> void:
 		else:
 			active_object_id = o_id
 			active_layer = EditLayer.OBJECTS
+			if active_object_id.begins_with("flower"):
+				current_rot_deg = 0
 			if active_tool == ToolMode.SPAWN or active_tool == ToolMode.ERASER:
 				active_tool = ToolMode.BRUSH
 		_sync_all_ui()
@@ -559,6 +563,29 @@ func _compute_aabb_2d(poly: PackedVector2Array) -> Rect2:
 	return Rect2(min_p, max_p - min_p)
 
 
+func _get_safe_coastal_island_polygons() -> Array[PackedVector2Array]:
+	var terrain_list: Array = []
+	for cell_key: Variant in terrain_grid.keys():
+		var cell: Vector2i = cell_key as Vector2i
+		terrain_list.append({ "gx": cell.x, "gz": cell.y })
+	if terrain_list.is_empty():
+		return []
+
+	var island_polys: Array[PackedVector2Array] = IslandMeshBuilder.convert_tile_grid_to_polygons(
+		terrain_list, grid_width, grid_height, CELL_SIZE
+	)
+	var safe_polys: Array[PackedVector2Array] = []
+	for p: PackedVector2Array in island_polys:
+		if p.size() < 3:
+			continue
+		var inset_arr: Array[PackedVector2Array] = Geometry2D.offset_polygon(
+			p, -COASTAL_GRASS_CORRIDOR, Geometry2D.JOIN_ROUND
+		)
+		for ip: PackedVector2Array in inset_arr:
+			if ip.size() >= 3:
+				safe_polys.append(ip)
+	return safe_polys
+
 func _refresh_hover_preview() -> void:
 	if grid_overlay == null or is_playtesting:
 		return
@@ -591,12 +618,28 @@ func _refresh_hover_preview() -> void:
 		else:
 			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 
+		# Recorta o preview ao corredor costeiro seguro
+		if preview_poly.size() >= 3 and not (active_tool == ToolMode.ERASER or is_erasing_rmb):
+			var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
+			if not safe_polys.is_empty():
+				var clipped_prev: Array[PackedVector2Array] = []
+				for sp: PackedVector2Array in safe_polys:
+					clipped_prev.append_array(Geometry2D.intersect_polygons(preview_poly, sp))
+				if not clipped_prev.is_empty():
+					preview_poly = clipped_prev[0]
+				else:
+					preview_poly.clear()
+
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
 		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
 		return
 
-	# Camada de Terreno ou Objetos (em blocos de 0.80m)
+	# Camada de Terreno ou Objetos (em blocos refinados de 0.40m)
 	grid_overlay.call("update_vector_preview", PackedVector2Array(), Color.TRANSPARENT, Color.TRANSPARENT)
+
+	var clearance_r: float = 0.0
+	if active_layer == EditLayer.OBJECTS and active_object_id == "rock" and active_tool != ToolMode.ERASER:
+		clearance_r = ROCK_CLEARANCE_RADIUS
 
 	if active_tool == ToolMode.BOX_FILL:
 		fill_col = Color(1.0, 0.82, 0.2, 0.40)
@@ -626,7 +669,7 @@ func _refresh_hover_preview() -> void:
 			if target_c.x >= 0 and target_c.x < grid_width and target_c.y >= 0 and target_c.y < grid_height:
 				preview_cells.append(target_c)
 
-	grid_overlay.update_brush_preview(preview_cells, hovered_cell, current_rot_deg, fill_col, line_col)
+	grid_overlay.update_brush_preview(preview_cells, hovered_cell, current_rot_deg, fill_col, line_col, clearance_r)
 
 func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 	if not is_hover_in_bounds:
@@ -655,21 +698,33 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 			if object_grid.has(center):
 				object_grid.erase(center)
 		else:
-			vector_grass.call("merge_or_add_shape", active_grass_id, poly)
-			var aabb: Rect2 = _compute_aabb_2d(poly)
-			var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
-			var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
-			var min_gz: int = clampi(int(floori((aabb.position.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
-			var max_gz: int = clampi(int(ceili((aabb.end.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
-			for gz: int in range(min_gz, max_gz + 1):
-				for gx: int in range(min_gx, max_gx + 1):
-					var bcell: Vector2i = Vector2i(gx, gz)
-					if not terrain_grid.has(bcell):
-						terrain_grid[bcell] = {
-							"tile_id": "island_center",
-							"rot": 0,
-							"auto": true
-						}
+			# Garante corredor costeiro afastado da borda da ilha ao colocar grama
+			var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
+			var polys_to_add: Array[PackedVector2Array] = []
+			if not safe_polys.is_empty():
+				for sp: PackedVector2Array in safe_polys:
+					polys_to_add.append_array(Geometry2D.intersect_polygons(poly, sp))
+			else:
+				polys_to_add.append(poly)
+
+			for part: PackedVector2Array in polys_to_add:
+				if part.size() < 3:
+					continue
+				vector_grass.call("merge_or_add_shape", active_grass_id, part)
+				var aabb: Rect2 = _compute_aabb_2d(part)
+				var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+				var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+				var min_gz: int = clampi(int(floori((aabb.position.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+				var max_gz: int = clampi(int(ceili((aabb.end.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+				for gz: int in range(min_gz, max_gz + 1):
+					for gx: int in range(min_gx, max_gx + 1):
+						var bcell: Vector2i = Vector2i(gx, gz)
+						if not terrain_grid.has(bcell):
+							terrain_grid[bcell] = {
+								"tile_id": "island_center",
+								"rot": 0,
+								"auto": true
+							}
 
 		_stroke_modified = true
 		_rebuild_3d_world()
@@ -755,6 +810,21 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 				if object_grid.has(cell):
 					object_grid.erase(cell)
 				return true
+
+			# Se for flor ou trigo, impede colocação dentro do raio de 1.40m de qualquer rocha
+			if active_object_id != "rock":
+				var target_world: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+				for o_c: Variant in object_grid.keys():
+					var oc_pos: Vector2i = o_c as Vector2i
+					var o_info: Dictionary = object_grid[oc_pos] as Dictionary
+					if String(o_info.get("type", "")) == "rock":
+						var r_world: Vector3 = LevelJsonLoader.grid_to_world(oc_pos.x, oc_pos.y, grid_width, grid_height, CELL_SIZE)
+						var dist_xz: float = Vector2(target_world.x - r_world.x, target_world.z - r_world.z).length()
+						if dist_xz <= ROCK_CLEARANCE_RADIUS:
+							if ui != null:
+								ui.show_toast("⚠️ Área protegida da rocha (raio %.1fm)" % ROCK_CLEARANCE_RADIUS, Color(1.0, 0.65, 0.2))
+							return false
+
 			if object_grid.has(cell):
 				var cur_o: Dictionary = object_grid[cell] as Dictionary
 				if String(cur_o.get("type", "")) == active_object_id and int(cur_o.get("rot", 0)) == current_rot_deg:
@@ -763,11 +833,34 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 				"type": active_object_id,
 				"rot": current_rot_deg
 			}
-			# Se for rocha, limpa a grama sob a rocha no veg_field
-			if active_object_id == "rock" and veg_field != null:
-				for dz in range(4):
-					for dx in range(4):
-						veg_field.call("set_cell", cell.x * 4 + dx, cell.y * 4 + dz, 0)
+
+			# Se for rocha, limpa grama e plantas no raio da maior serra (1.40m)
+			if active_object_id == "rock":
+				var r_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+				var rock_clear_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+					Vector2(r_pos.x, r_pos.z),
+					ROCK_CLEARANCE_RADIUS
+				)
+				if vector_grass != null:
+					vector_grass.call("clip_shapes", rock_clear_poly)
+
+				# Remove qualquer planta existente dentro do raio da rocha
+				var to_remove: Array[Vector2i] = []
+				for o_key: Variant in object_grid.keys():
+					var other_c: Vector2i = o_key as Vector2i
+					if other_c == cell:
+						continue
+					var o_pos: Vector3 = LevelJsonLoader.grid_to_world(other_c.x, other_c.y, grid_width, grid_height, CELL_SIZE)
+					var d_rock: float = Vector2(o_pos.x - r_pos.x, o_pos.z - r_pos.z).length()
+					if d_rock <= ROCK_CLEARANCE_RADIUS:
+						to_remove.append(other_c)
+				for rc in to_remove:
+					object_grid.erase(rc)
+
+				if veg_field != null:
+					for dz in range(4):
+						for dx in range(4):
+							veg_field.call("set_cell", cell.x * 4 + dx, cell.y * 4 + dz, 0)
 			return true
 	return false
 
@@ -864,8 +957,13 @@ func _rebuild_3d_world() -> void:
 				f_scene = FLOWER_BED_SCENE
 			var f_inst: Node3D = f_scene.instantiate() as Node3D
 			if f_inst != null:
+				if "randomize_rotation" in f_inst:
+					f_inst.set("randomize_rotation", false)
 				f_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				f_inst.rotation_degrees.y = float(entry.get("rot", 0))
+				var vm: Node3D = f_inst.get_node_or_null("VisualMesh") as Node3D
+				if vm != null:
+					vm.rotation.y = 0.0
 				obstacles_container.add_child(f_inst)
 		elif o_type == "wheat":
 			var w_inst: Node3D = WHEAT_SCENE.instantiate() as Node3D
@@ -904,10 +1002,9 @@ func _build_editor_vector_ground() -> void:
 		var o_type: String = String(entry.get("type", ""))
 		if o_type == "rock":
 			var r_world: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
-			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
-				BrushPatterns.ShapeType.CIRCLE,
-				1,
-				Vector2(r_world.x, r_world.z)
+			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+				Vector2(r_world.x, r_world.z),
+				ROCK_CLEARANCE_RADIUS
 			)
 			vector_field_clone.call("clip_shapes", rock_clip_poly)
 		elif o_type.begins_with("flower"):
@@ -920,6 +1017,7 @@ func _build_editor_vector_ground() -> void:
 			vector_field_clone.call("add_shape", o_type, flower_poly)
 
 	var ground_meshes: Dictionary = vector_field_clone.call("generate_ground_meshes") as Dictionary
+	var vt_idx: int = 0
 	for vt_var: Variant in ground_meshes.keys():
 		var vt: String = String(vt_var)
 		var mesh_res: Mesh = ground_meshes[vt] as Mesh
@@ -929,7 +1027,9 @@ func _build_editor_vector_ground() -> void:
 		mi.name = "EditorGroundMesh_%s" % vt
 		mi.mesh = mesh_res
 		mi.material_override = _get_editor_vector_material(vt)
+		mi.sorting_offset = float(vt_idx) * 0.001
 		plants_container.add_child(mi)
+		vt_idx += 1
 
 func _push_undo_snapshot() -> void:
 	var snap: Dictionary = {
@@ -1094,14 +1194,22 @@ func _load_or_init_level(lvl_id: int) -> void:
 	if not data.is_empty():
 		time_limit = float(data.get("time_limit", 90.0))
 		var g_dict: Dictionary = data.get("grid", {}) as Dictionary
-		grid_width = int(g_dict.get("width", 12))
-		grid_height = int(g_dict.get("height", 8))
+		var loaded_cell_size: float = float(g_dict.get("cell_size", 0.80))
+		var orig_width: int = int(g_dict.get("width", 12))
+		var orig_height: int = int(g_dict.get("height", 8))
+
+		var is_legacy_080: bool = (loaded_cell_size > 0.50)
+		if is_legacy_080:
+			grid_width = orig_width * 2
+			grid_height = orig_height * 2
+		else:
+			grid_width = orig_width
+			grid_height = orig_height
 
 		var sp_dict: Dictionary = data.get("spawn", {}) as Dictionary
-		spawn_cell = Vector2i(
-			int(sp_dict.get("gx", int(float(grid_width) / 2.0))),
-			int(sp_dict.get("gz", int(float(grid_height) / 2.0)))
-		)
+		var orig_sp_gx: int = int(sp_dict.get("gx", int(float(orig_width) / 2.0)))
+		var orig_sp_gz: int = int(sp_dict.get("gz", int(float(orig_height) / 2.0)))
+		spawn_cell = Vector2i(orig_sp_gx * 2, orig_sp_gz * 2) if is_legacy_080 else Vector2i(orig_sp_gx, orig_sp_gz)
 		spawn_rot = int(sp_dict.get("rot", 0))
 
 		terrain_grid.clear()
@@ -1109,12 +1217,26 @@ func _load_or_init_level(lvl_id: int) -> void:
 		for item in t_arr:
 			if item is Dictionary:
 				var d: Dictionary = item as Dictionary
-				var c: Vector2i = Vector2i(int(d.get("gx", 0)), int(d.get("gz", 0)))
-				terrain_grid[c] = {
-					"tile_id": String(d.get("tile_id", "island_center")),
-					"rot": int(d.get("rot", 0)),
-					"auto": bool(d.get("auto", true))
-				}
+				var ogx: int = int(d.get("gx", 0))
+				var ogz: int = int(d.get("gz", 0))
+				var t_id: String = String(d.get("tile_id", "island_center"))
+				var t_rot: int = int(d.get("rot", 0))
+				var t_auto: bool = bool(d.get("auto", true))
+				if is_legacy_080:
+					for sub_z in range(2):
+						for sub_x in range(2):
+							var sc: Vector2i = Vector2i(ogx * 2 + sub_x, ogz * 2 + sub_z)
+							terrain_grid[sc] = {
+								"tile_id": t_id,
+								"rot": t_rot,
+								"auto": t_auto
+							}
+				else:
+					terrain_grid[Vector2i(ogx, ogz)] = {
+						"tile_id": t_id,
+						"rot": t_rot,
+						"auto": t_auto
+					}
 
 		object_grid.clear()
 		var o_arr: Array = data.get("objects", []) as Array
@@ -1124,7 +1246,9 @@ func _load_or_init_level(lvl_id: int) -> void:
 				var o_type: String = String(d.get("type", ""))
 				# Só guarda em object_grid os objetos discretos de tile: rock, flower e wheat
 				if o_type == "rock" or o_type.begins_with("flower") or o_type == "wheat":
-					var c: Vector2i = Vector2i(int(d.get("gx", 0)), int(d.get("gz", 0)))
+					var ogx: int = int(d.get("gx", 0))
+					var ogz: int = int(d.get("gz", 0))
+					var c: Vector2i = Vector2i(ogx * 2, ogz * 2) if is_legacy_080 else Vector2i(ogx, ogz)
 					object_grid[c] = {
 						"type": o_type,
 						"rot": int(d.get("rot", 0))
@@ -1167,13 +1291,13 @@ func _load_or_init_level(lvl_id: int) -> void:
 			ui.show_toast("✨ Nova Fase %02d iniciada (Ilha 3D)" % lvl_id, Color(0.4, 0.95, 0.6))
 
 func _build_default_island_for_level(lvl_id: int) -> void:
-	grid_width = 12
-	grid_height = 8
+	grid_width = 24
+	grid_height = 16
 	time_limit = 90.0
 	terrain_grid.clear()
 	object_grid.clear()
 
-	# Cria ilha 12x8 com margem costeira livre e 56 tufos de grama no interior (10x6)
+	# Cria ilha 24x16 (0.40m) com margem costeira livre e grama no interior
 	for gz in range(grid_height):
 		for gx in range(grid_width):
 			terrain_grid[Vector2i(gx, gz)] = {
@@ -1182,7 +1306,7 @@ func _build_default_island_for_level(lvl_id: int) -> void:
 				"auto": true
 			}
 
-	spawn_cell = Vector2i(5, 3)
+	spawn_cell = Vector2i(12, 8)
 	spawn_rot = 0
 
 	vector_grass = VectorGrassFieldScript.new()
@@ -1198,7 +1322,7 @@ func _build_default_island_for_level(lvl_id: int) -> void:
 
 	if lvl_id == 1:
 		LevelSerializer.save_level_json(
-			1, "Fase 1 - Ilha Inicial", time_limit, grid_width, grid_height, spawn_cell, spawn_rot, terrain_grid, object_grid, veg_field, vector_grass
+			1, "Fase 1 - Ilha Inicial", time_limit, grid_width, grid_height, spawn_cell, spawn_rot, terrain_grid, object_grid, veg_field, vector_grass, {}, CELL_SIZE
 		)
 
 func save_current_level_json() -> void:
@@ -1216,7 +1340,8 @@ func save_current_level_json() -> void:
 		object_grid,
 		veg_field,
 		vector_grass,
-		configured_goals
+		configured_goals,
+		CELL_SIZE
 	)
 	if ok:
 		ui.show_toast("💾 Salvo em res://data/levels/level_%02d.json" % current_level_id, Color(0.25, 0.95, 0.5))
@@ -1237,7 +1362,8 @@ func bake_current_level_tscn() -> void:
 		object_grid,
 		veg_field,
 		vector_grass,
-		configured_goals
+		configured_goals,
+		CELL_SIZE
 	)
 	if ok:
 		ui.show_toast("📦 Cena exportada: res://scenes/levels/level_%02d.tscn" % current_level_id, Color(0.7, 0.5, 1.0))

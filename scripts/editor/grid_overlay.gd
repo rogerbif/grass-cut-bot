@@ -149,7 +149,7 @@ func update_vector_preview(
 	im_line.surface_end()
 	preview_line_inst.mesh = im_line
 
-func rebuild_grid(width: int, height: int, c_size: float = 0.80) -> void:
+func rebuild_grid(width: int, height: int, c_size: float = 0.40) -> void:
 	current_width = width
 	current_height = height
 	cell_size = c_size
@@ -171,7 +171,8 @@ func rebuild_grid(width: int, height: int, c_size: float = 0.80) -> void:
 	for x_idx in range(width + 1):
 		var x_pos: float = min_x + float(x_idx) * cell_size
 		var is_border: bool = (x_idx == 0 or x_idx == width)
-		var col: Color = Color(0.45, 0.95, 1.0, 0.75) if is_border else Color(1.0, 1.0, 1.0, 0.22)
+		var is_primary: bool = (x_idx % 2 == 0)
+		var col: Color = Color(0.45, 0.95, 1.0, 0.75) if is_border else (Color(1.0, 1.0, 1.0, 0.35) if is_primary else Color(1.0, 1.0, 1.0, 0.16))
 		im.surface_set_color(col)
 		im.surface_add_vertex(Vector3(x_pos, y_pos, min_z))
 		im.surface_set_color(col)
@@ -180,7 +181,8 @@ func rebuild_grid(width: int, height: int, c_size: float = 0.80) -> void:
 	for z_idx in range(height + 1):
 		var z_pos: float = min_z + float(z_idx) * cell_size
 		var is_border: bool = (z_idx == 0 or z_idx == height)
-		var col: Color = Color(0.45, 0.95, 1.0, 0.75) if is_border else Color(1.0, 1.0, 1.0, 0.22)
+		var is_primary: bool = (z_idx % 2 == 0)
+		var col: Color = Color(0.45, 0.95, 1.0, 0.75) if is_border else (Color(1.0, 1.0, 1.0, 0.35) if is_primary else Color(1.0, 1.0, 1.0, 0.16))
 		im.surface_set_color(col)
 		im.surface_add_vertex(Vector3(min_x, y_pos, z_pos))
 		im.surface_set_color(col)
@@ -189,7 +191,14 @@ func rebuild_grid(width: int, height: int, c_size: float = 0.80) -> void:
 	im.surface_end()
 	grid_mesh_inst.mesh = im
 
-func update_brush_preview(cells: Array[Vector2i], center_cell: Vector2i, rot_deg: int, fill_color: Color, line_color: Color) -> void:
+func update_brush_preview(
+	cells: Array[Vector2i],
+	center_cell: Vector2i,
+	rot_deg: int,
+	fill_color: Color,
+	line_color: Color,
+	clearance_radius: float = 0.0
+) -> void:
 	if preview_fill_inst == null or preview_line_inst == null:
 		return
 
@@ -236,6 +245,22 @@ func update_brush_preview(cells: Array[Vector2i], center_cell: Vector2i, rot_deg
 		im_line.surface_add_vertex(p3)
 		im_line.surface_add_vertex(p3)
 		im_line.surface_add_vertex(p0)
+
+	# Desenha anel de clareira protegida (ex: raio de 1.40m da maior serra ao redor de rochas)
+	if clearance_radius > 0.0 and center_cell.x >= 0 and center_cell.x < current_width and center_cell.y >= 0 and center_cell.y < current_height:
+		var c_wp: Vector3 = LevelJsonLoader.grid_to_world(center_cell.x, center_cell.y, current_width, current_height, cell_size)
+		var c_center: Vector3 = Vector3(c_wp.x, y_h + 0.015, c_wp.z)
+		var segs: int = 36
+		for i in range(segs):
+			var a0: float = float(i) * TAU / float(segs)
+			var a1: float = float(i + 1) * TAU / float(segs)
+			var pt0: Vector3 = c_center + Vector3(cos(a0) * clearance_radius, 0.0, sin(a0) * clearance_radius)
+			var pt1: Vector3 = c_center + Vector3(cos(a1) * clearance_radius, 0.0, sin(a1) * clearance_radius)
+			im_line.surface_add_vertex(pt0)
+			im_line.surface_add_vertex(pt1)
+			im_fill.surface_add_vertex(c_center)
+			im_fill.surface_add_vertex(pt0)
+			im_fill.surface_add_vertex(pt1)
 
 	# Desenha seta direcional na célula central para indicar a orientação de rotação (R)
 	if center_cell.x >= 0 and center_cell.x < current_width and center_cell.y >= 0 and center_cell.y < current_height:

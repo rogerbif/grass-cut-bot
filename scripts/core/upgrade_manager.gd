@@ -133,6 +133,11 @@ func penalize_blade_hit() -> bool:
 	return true
 
 # Valores de Gameplay Calibrados
+const MAX_BLADE_RADIUS: float = 1.40
+
+static func get_max_blade_radius() -> float:
+	return MAX_BLADE_RADIUS
+
 func get_blade_radius() -> float:
 	# Raio base de 0.90m + 0.10m por nível (Lv 1 = 0.90m ... Lv 6 = 1.40m)
 	return 0.90 + float(blade_level - 1) * 0.10

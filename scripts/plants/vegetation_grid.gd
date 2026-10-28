@@ -429,7 +429,7 @@ func build_from_level_json(
 					else:
 						add_child(rock_inst)
 			elif o_type.begins_with("flower"):
-				flower_cells[Vector2i(gx, gz)] = o_type
+				flower_cells[Vector2i(gx, gz)] = { "type": o_type, "rot": o_rot }
 			elif o_type == "wheat":
 				wheat_cells[Vector2i(gx, gz)] = o_rot
 
@@ -461,18 +461,17 @@ func build_from_level_json(
 		vector_field = VectorGrassFieldScript.new()
 		vector_field.convert_from_legacy_field(veg_field, width, height, cell_size)
 
-	# Remove polígonos sob rochas no campo vetorial (se houver rochas)
+	# Remove polígonos sob rochas no campo vetorial com raio canônico da maior serra (1.40m)
 	for r_cell: Vector2i in rock_cells.keys():
 		var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width, height, cell_size)
-		var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
-			BrushPatterns.ShapeType.CIRCLE,
-			1,
-			Vector2(r_pos.x, r_pos.z)
+		var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+			Vector2(r_pos.x, r_pos.z),
+			1.40
 		)
 		vector_field.clip_shapes(rock_clip_poly)
 
 	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
-	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells, wheat_cells)
+	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells, wheat_cells, rock_cells)
 
 	# Se o JSON possui metas personalizadas definidas pelo editor, substitui as metas padrão
 	_has_custom_goals = false
@@ -607,7 +606,8 @@ func _build_from_vector_field(
 	height_blocks: int,
 	block_cell_size: float,
 	tile_flowers: Dictionary = {},
-	tile_wheat: Dictionary = {}
+	tile_wheat: Dictionary = {},
+	tile_rocks: Dictionary = {}
 ) -> Dictionary:
 	var goals: Dictionary = {}
 	if vector_field == null:
@@ -616,22 +616,48 @@ func _build_from_vector_field(
 	var tufts: Array[Dictionary] = []
 	var stem_positions: Array[Vector2] = []
 
-	# Adiciona flores de tile caso existam no JSON (prioridade de célula lógica sobre grama)
+	# Adiciona flores de tile caso existam no JSON (respeitando clareira de rochas de 1.40m)
 	for f_cell: Vector2i in tile_flowers.keys():
 		var f_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
+		var inside_rock_radius: bool = false
+		for r_cell: Vector2i in tile_rocks.keys():
+			var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width_blocks, height_blocks, block_cell_size)
+			if Vector2(f_pos.x - r_pos.x, f_pos.z - r_pos.z).length() <= 1.40:
+				inside_rock_radius = true
+				break
+		if inside_rock_radius:
+			continue
+
 		stem_positions.append(Vector2(f_pos.x, f_pos.z))
 		var f_val: Variant = tile_flowers[f_cell]
-		var f_type: String = String(f_val) if (f_val is String and not String(f_val).is_empty()) else "flower"
+		var f_type: String = "flower"
+		var f_rot: float = 0.0
+		if f_val is Dictionary:
+			f_type = String((f_val as Dictionary).get("type", "flower"))
+			f_rot = float((f_val as Dictionary).get("rot", 0.0))
+		elif f_val is String and not String(f_val).is_empty():
+			f_type = String(f_val)
+
 		tufts.append({
 			"pos": f_pos,
 			"type": f_type,
 			"scale_factor": 1.0,
-			"seed": float(f_cell.x * 79 + f_cell.y * 31)
+			"seed": float(f_cell.x * 79 + f_cell.y * 31),
+			"rot": f_rot
 		})
 
-	# Adiciona trigos de tile (cultura agrícola discreta) caso existam no JSON
+	# Adiciona trigos de tile (cultura agrícola discreta) caso existam no JSON (respeitando clareira de rochas de 1.40m)
 	for w_cell: Vector2i in tile_wheat.keys():
 		var w_pos: Vector3 = LevelJsonLoader.grid_to_world(w_cell.x, w_cell.y, width_blocks, height_blocks, block_cell_size)
+		var inside_rock: bool = false
+		for r_cell: Vector2i in tile_rocks.keys():
+			var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width_blocks, height_blocks, block_cell_size)
+			if Vector2(w_pos.x - r_pos.x, w_pos.z - r_pos.z).length() <= 1.40:
+				inside_rock = true
+				break
+		if inside_rock:
+			continue
+
 		stem_positions.append(Vector2(w_pos.x, w_pos.z))
 		tufts.append({
 			"pos": w_pos,
@@ -780,7 +806,7 @@ func _build_from_vector_field(
 			var s_seed: float = float(entry["seed"])
 			var scale_factor: float = float(entry.get("scale_factor", 1.0))
 
-			var random_rot: float = fmod(s_seed * 1.618, TAU)
+			var plant_rot: float = deg_to_rad(float(entry.get("rot", 0.0))) if is_flower else fmod(s_seed * 1.618, TAU)
 
 			var scale_vec: Vector3
 			if is_grass:
@@ -796,12 +822,12 @@ func _build_from_vector_field(
 				var sf: float = 0.676 * scale_factor
 				scale_vec = Vector3(sf, sf, sf)
 
-			var inst_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
+			var inst_basis: Basis = Basis(Vector3.UP, plant_rot) * Basis.from_scale(scale_vec)
 			var xform: Transform3D = Transform3D(inst_basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
 			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
-			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, random_rot), pos)
+			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, plant_rot), pos)
 
 			var p_idx: int = _positions.size()
 			_positions.append(pos)

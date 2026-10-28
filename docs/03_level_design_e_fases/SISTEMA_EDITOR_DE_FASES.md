@@ -36,16 +36,23 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
   - Desenho vetorial contínuo no plano $XZ$ em metros, sem qualquer amarração a matrizes quadriculadas de grid.
   - **Pincel Livre (Freehand Ribbon):** Arrastar o mouse gera uma fita poligonal suave com cantos e pontas arredondadas (`create_ribbon_polygon`), unindo-se automaticamente a outras manchas da mesma cor via Clipper C++ (`Geometry2D.merge_polygons`).
   - **Largura Dinâmica do Traço:** As teclas `[` e `]` ajustam em tempo real o diâmetro do pincel (de 1 a 4, correspondendo a $0.30\text{m} \dots 1.00\text{m}$ de largura).
-  - **Auto-Geração de Terreno:** Ao pintar grama sobre áreas de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.80\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
+  - **Auto-Geração de Terreno:** Ao pintar grama sobre áreas de mar/vazio, o editor gera automaticamente o terreno de ilha de $0.40\text{m}$ correspondente por baixo, com atualização instantânea do auto-tile.
+  - **Corredor Costeiro Perimetral ($0.48\text{m}$):** Ao pintar grama, o traço é automaticamente recortado contra um polígono de segurança recuado da borda da ilha (`Geometry2D.offset_polygon(island_poly, -0.48)`), garantindo um calçadão perimetral desimpedido para o cortador manobrar sem risco de vegetação caindo no mar.
+  - **Elevação Vertical Anti-Flick ($0.001\text{m}$ por Forma):** Formas vetoriais sobrepostas recebem escalonamento de altura de um milésimo de metro ($Y = 0.005 + \text{idx} \times 0.001\text{m}$) e `sorting_offset`, eliminando 100% de Z-fighting (flicker) entre camadas de cores distintas.
   - **Amostragem Orgânica Poisson Disk:** A densidade foliar é gerada por algoritmo de Poisson Disk ($r = 0.22\text{m}$), conferindo visual vivo e uniforme sem artefatos de grade.
   - **Visual Limpo sem Decalque Artificial:** O solo permanece com o material e textura naturais dos blocos 3D de terreno (`tile_island_*`), sendo a vegetação composta exclusivamente pelos tufos 3D de grama/trigo/flor; nenhuma malha plana de cor sólida é colada sobre o solo.
   - **Variedades Suportadas:** As 7 cores de grama cosmética (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`), com regra de lotes de 10 cortes = 1 meta.
   - **Borracha / Clique Direito:** Recorta e subtrai qualquer polígono vetorial via `Geometry2D.clip_polygons()`.
 
-- **Camada 2 — Objetos & Obstáculos no Tile ($0.80\text{m} \times 0.80\text{m}$):**
-  - Itens discretos centralizados por bloco de terreno:
-    - **`rock` (Rocha Sólida 🪨):** Obstáculo rígido da `Layer 4` com física de choque/ricochete. Limpa automaticamente a grama sob a rocha no campo vetorial com corte circular para não atravessar a pedra.
-    - **Família de Flores Nobres (3 hits, 5 moedas):** Vegetação de alto valor econômico com despetalação progressiva em 2 levas na GPU (Hit 1 e Hit 2), preservação de caule/folhas verdes e ceifa fatal no Hit 3:
+- **Camada 2 — Objetos & Obstáculos na Grade Subdividida ($0.40\text{m} \times 0.40\text{m}$):**
+  - **Subdivisão em 4 Quadrantes ($0.40\text{m}$):** Cada bloco clássico de $0.80\text{m}$ é subdividido em 4 sub-células de $0.40\text{m}$, permitindo quadruplicar a resolução de posicionamento de pedras, flores e trigo sem alterar a física de corte do jogo.
+  - **`rock` (Rocha Sólida 🪨) & Clareira de Segurança ($1.40\text{m}$):** Obstáculo rígido da `Layer 4` com física de choque/ricochete.
+    - Ao posicionar ou passar o mouse com uma pedra, uma zona circular de $1.40\text{m}$ (equivalente ao raio máximo da lâmina Nível 6 do robô, `UpgradeManager.MAX_BLADE_RADIUS`) é demarcada.
+    - O editor limpa automaticamente qualquer grama sob e ao redor da rocha nesse raio de $1.40\text{m}$, além de expulsar e impedir o posicionamento de qualquer flor ou trigo dentro dessa área de colisão.
+  - **Família de Flores Nobres (3 hits, 5 moedas):**
+    - **Orientação Canônica Padrão ($0^\circ$):** Todas as flores nascem por padrão voltadas para a câmera isométrica ($0^\circ$), conferindo leitura frontal acolhedora imediata.
+    - **Imunidade de Rotação (`randomize_rotation = false`):** O editor desativa a aleatorização de giro ao reconstruir nós 3D, garantindo que adicionar novas flores ou objetos não altere a rotação das flores já existentes.
+    - Variedades de flores suportadas:
       - **`flower` (Flor Silvestre 🌸):** Duas hastes inclinadas com 16 pétalas intercaladas.
       - **`flower_rose` (Rosa Nobre 🌹):** Arbusto nobre com caule folhoso e rosa em camadas.
       - **`flower_daisy` (Margarida do Campo 🌼):** Haste alta com miolo ouro e 36 pétalas radiais.

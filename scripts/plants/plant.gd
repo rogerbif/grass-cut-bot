@@ -94,6 +94,7 @@ const DETACH_UP_SPEED_MAX: float = 5.0
 @export var plant_key: String = "grass" # Usado para sincronizar com as metas do HUD
 @export var custom_material: Material
 @export var particle_color: Color = Color(0.25, 0.75, 0.3, 1.0)
+@export var randomize_rotation: bool = true
 
 var health: int = 1
 var is_cut: bool = false
@@ -106,8 +107,11 @@ var _last_hit_time: float = -10.0
 func _ready() -> void:
 	health = max_health
 	# Variação proporcional de rotação e escala para gramado contínuo e denso sem folga livre
-	var random_rot: float = randf_range(0.0, TAU)
-	visual_mesh.rotation.y = random_rot
+	if randomize_rotation:
+		var random_rot: float = randf_range(0.0, TAU)
+		visual_mesh.rotation.y = random_rot
+	else:
+		visual_mesh.rotation.y = 0.0
 
 	# Garante que todo MeshInstance3D tenha sombra desligada e receba o material configurado
 	_apply_visual_material(visual_mesh)

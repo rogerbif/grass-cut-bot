@@ -442,10 +442,9 @@ func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: 
 			var rx: int = int((obj_item as Dictionary).get("gx", 0))
 			var rz: int = int((obj_item as Dictionary).get("gz", 0))
 			var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
-			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
-				BrushPatterns.ShapeType.CIRCLE,
-				1,
-				Vector2(r_world.x, r_world.z)
+			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+				Vector2(r_world.x, r_world.z),
+				1.40
 			)
 			vector_field.call("clip_shapes", rock_clip_poly)
 
@@ -507,10 +506,9 @@ func _ensure_3d_veg_built() -> void:
 				var rx: int = int((obj_item as Dictionary).get("gx", 0))
 				var rz: int = int((obj_item as Dictionary).get("gz", 0))
 				var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
-				var rock_clip_poly: PackedVector2Array = BrushPatterns.get_vector_stamp_polygon(
-					BrushPatterns.ShapeType.CIRCLE,
-					1,
-					Vector2(r_world.x, r_world.z)
+				var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+					Vector2(r_world.x, r_world.z),
+					1.40
 				)
 				vector_field.call("clip_shapes", rock_clip_poly)
 

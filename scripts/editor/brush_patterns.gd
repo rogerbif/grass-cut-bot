@@ -245,6 +245,16 @@ static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 
 	return offsets
 
+## Gera polígono circular métrico de raio exato no plano XZ
+static func get_circle_polygon(center: Vector2, radius_m: float, segments: int = 24) -> PackedVector2Array:
+	var poly: PackedVector2Array = PackedVector2Array()
+	var segs: int = maxi(segments, 8)
+	poly.resize(segs)
+	for i: int in range(segs):
+		var a: float = float(i) * TAU / float(segs)
+		poly[i] = center + Vector2(cos(a), sin(a)) * radius_m
+	return poly
+
 ## Gera polígono vetorial analítico fechado para carimbos no plano XZ
 static func get_vector_stamp_polygon(
 	shape: int,

@@ -343,6 +343,9 @@ func generate_ground_meshes() -> Dictionary:
 			var poly: PackedVector2Array = s.get("polygon", PackedVector2Array()) as PackedVector2Array
 			if poly.size() < 3:
 				continue
+			# Afastamento de 1 milésimo (0.001m) por forma para erradicar Z-fighting (flicker)
+			var s_idx: int = shapes.find(s)
+			var y_level: float = 0.005 + float(maxi(0, s_idx)) * 0.001
 			var holes: Array = s.get("holes", []) as Array
 			var polys_to_triangulate: Array[PackedVector2Array] = [poly]
 			if not holes.is_empty():
@@ -374,15 +377,15 @@ func generate_ground_meshes() -> Dictionary:
 
 					st.set_normal(Vector3.UP)
 					st.set_uv(Vector2(p0.x * 0.5, p0.y * 0.5))
-					st.add_vertex(Vector3(p0.x, 0.005, p0.y))
+					st.add_vertex(Vector3(p0.x, y_level, p0.y))
 
 					st.set_normal(Vector3.UP)
 					st.set_uv(Vector2(p1.x * 0.5, p1.y * 0.5))
-					st.add_vertex(Vector3(p1.x, 0.005, p1.y))
+					st.add_vertex(Vector3(p1.x, y_level, p1.y))
 
 					st.set_normal(Vector3.UP)
 					st.set_uv(Vector2(p2.x * 0.5, p2.y * 0.5))
-					st.add_vertex(Vector3(p2.x, 0.005, p2.y))
+					st.add_vertex(Vector3(p2.x, y_level, p2.y))
 					has_vertices = true
 
 		if has_vertices:

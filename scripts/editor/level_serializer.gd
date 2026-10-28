@@ -5,7 +5,7 @@ const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
 
 const LEVELS_JSON_DIR: String = "res://data/levels"
 const LEVELS_TSCN_DIR: String = "res://scenes/levels"
-const CELL_SIZE: float = 0.80
+const CELL_SIZE: float = 0.40
 
 
 static func get_json_path(level_id: int) -> String:
@@ -28,7 +28,8 @@ static func save_level_json(
 	object_grid: Dictionary,
 	veg_field: RefCounted = null,
 	vector_field: RefCounted = null,
-	custom_goals: Dictionary = {}
+	custom_goals: Dictionary = {},
+	cell_size: float = CELL_SIZE
 ) -> bool:
 	var global_dir: String = ProjectSettings.globalize_path(LEVELS_JSON_DIR)
 	if not DirAccess.dir_exists_absolute(global_dir):
@@ -79,7 +80,7 @@ static func save_level_json(
 
 	# Gera e salva os polígonos contínuos da ilha para o novo formato v4
 	var island_polys: Array[PackedVector2Array] = IslandMeshBuilder.convert_tile_grid_to_polygons(
-		terrain_list, grid_width, grid_height, CELL_SIZE
+		terrain_list, grid_width, grid_height, cell_size
 	)
 	var island_polys_data: Array = []
 	for p: PackedVector2Array in island_polys:
@@ -96,7 +97,7 @@ static func save_level_json(
 		"name": level_name,
 		"time_limit": time_limit,
 		"grid": {
-			"cell_size": CELL_SIZE,
+			"cell_size": cell_size,
 			"width": grid_width,
 			"height": grid_height
 		},
@@ -153,7 +154,8 @@ static func bake_to_tscn(
 	object_grid: Dictionary,
 	veg_field: RefCounted = null,
 	vector_field: RefCounted = null,
-	custom_goals: Dictionary = {}
+	custom_goals: Dictionary = {},
+	cell_size: float = CELL_SIZE
 ) -> bool:
 	return save_level_json(
 		level_id,
@@ -167,5 +169,6 @@ static func bake_to_tscn(
 		object_grid,
 		veg_field,
 		vector_field,
-		custom_goals
+		custom_goals,
+		cell_size
 	)
