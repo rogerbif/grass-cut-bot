@@ -40,3 +40,10 @@ O console da Godot Engine deve permanecer limpo em todas as execuções:
 - **Padrão Upwards via Signals:** Nós filhos emitem sinais quando seu estado muda (ex: `joystick_moved.emit(dir)`, `plant.cut()`).
 - **Padrão Downwards via Methods:** Nós controladores chamam métodos em nós filhos (ex: `cutter.set_input_direction(dir)`).
 - Os Autoloads (`GameManager`, `UpgradeManager`) operam como pontes globais de comunicação desacoplada.
+
+---
+
+## 4. Extração de Malhas e Ciclo de Vida MultiMesh
+
+- **Ausência de `_ready()` fora da SceneTree:** Ao instanciar cenas com `PackedScene.instantiate()` exclusivamente para ler malhas e combiná-las via `SurfaceTool` (sem inserção na árvore via `add_child()`), lembre-se de que o método `_ready()` **não é executado**.
+- **Atribuição Programática de Materiais:** Nunca confie que a lógica de estilização de nós filhos herdados no `.tscn` ou no `_ready()` estará presente na malha combinada. A atribuição de materiais para `MultiMeshInstance3D` deve ser feita de forma estática ou através de funções de montagem programática dedicadas (ex: `_build_flower_combined_mesh()`), forçando `st.set_material(mat)` com dicionários canônicos pré-carregados.

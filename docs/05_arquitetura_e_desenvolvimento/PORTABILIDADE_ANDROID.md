@@ -51,3 +51,11 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
   - `launcher_icons/adaptive_foreground_432x432="res://assets/brand/icon_432.png"`: Contém o emblema centrado na Safe Zone sobre o fundo de céu estendido.
   - `launcher_icons/adaptive_background_432x432="res://assets/brand/icon_adaptive_background_432.png"`: Contém o gradiente de céu tropical (#6EE6FD -> #1E98D0) preenchendo todos os 432x432 px.
   - `launcher_icons/main_192x192="res://assets/brand/icon_192.png"`: Formato legado para versões anteriores ao Android 8.0.
+
+---
+
+## 6. Serialização Binária de Cenas e Imunidade de Materiais (.scn vs .tscn)
+
+- **Descarte de Overrides em Modelos Importados:** No Godot 4, ao compilar cenas `.tscn` para `.scn` no APK Android, propriedades `surface_material_override` atribuídas a nós filhos de cenas 3D instanciadas (`.glb`) são descartadas silenciosamente pelo exportador binário.
+- **Injeção Programática Obrigatória:** Todo pipeline que combina malhas para `MultiMeshInstance3D` (como em `VegetationGrid` e `IslandNode`) deve injetar os materiais explicitamente em código via `SurfaceTool.set_material(mat)` utilizando constantes pré-carregadas (`FLOWER_MATERIALS`, `GRASS_MATERIALS`), garantindo independência total da serialização da cena.
+- **Defesa em Profundidade 3D:** Modelos 3D gerados no Blender devem manter albedo neutro em seus materiais base para evitar que qualquer fallback inesperado de renderização exiba cores indesejadas em dispositivos móveis.

@@ -4,7 +4,7 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
 
 ---
 
-## ⚡ Os 12 Mandamentos Invariantes (Guardrails Críticos)
+## ⚡ Os 13 Mandamentos Invariantes (Guardrails Críticos)
 
 1. **Zero Warnings Estrito:** O console da Godot deve permanecer com 0 warnings a cada execução. Não permita divisões inteiras diretas, variáveis com nomes de métodos/propriedades da engine ou identificadores sombreados.
 2. **Terminal PowerShell, UTF-8 sem BOM & Git no OneDrive:** Utilize exclusivamente ponto e vírgula `;` para encadear comandos no Windows PowerShell. Ao gravar/ler arquivos via script/terminal, force `-Encoding UTF8` (sem BOM). Em referências a nós Godot (`$Node`), utilize sempre aspas simples (`@' ... '@`) para impedir que o PowerShell interprete como variável. Ao executar comandos que gravam no índice do Git (`git add`, `git commit`) em diretórios do OneDrive, utilize `BypassSandbox: true` para evitar erros de permissão em `.git/index.lock`.
@@ -24,6 +24,7 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
 12. **Pipeline 3D Blender -> Godot (Export glTF & Orientação Canônica):** Ao exportar modelos 3D do Blender para Godot (`.glb`), force sempre `export_apply=True` e `export_yup=True`. Se o modelo contiver modificadores `Mirror` ou deformadores simétricos, o export sem apply descarta a metade espelhada. Ao ajustar pivôs anatômicos em peças espelhadas, mantenha o centro de simetria no eixo ($X=0$) ou compense os vértices no sentido oposto (`v.co -= offset`) para não deslocar a geometria de mundo.
    - **Orientação Canônica de Tiles 3D:** Em `rot = 0`, a face externa/falésia (mar) deve sempre apontar para o Norte ($-Z$ no Godot, correspondendo a $-Y$ no Blender com `export_yup=True`), enquanto a face interna plana de grama (conexão com vizinhos) conecta em $+Z$ (Sul no Godot, $+Y$ no Blender).
    - **Reimportação Atômica de Cache:** Após exportar novos arquivos `.glb`, execute obrigatoriamente `godot --headless --import` no terminal para que o compilador da Godot regenere os recursos binários `.scn` em `.godot/imported/` antes de testar ou rodar o jogo.
+13. **Imunidade de Materiais em glTF & MultiMesh (Zero Overrides em .scn):** O exportador binário da Godot 4 descarta silenciosamente `surface_material_override` em nós filhos herdados de modelos `.glb` ao compilar para `.scn` no APK. Para qualquer malha combinada (`MultiMeshInstance3D` ou `SurfaceTool`), NUNCA dependa de overrides declarados no arquivo `.tscn`. Sempre injete os materiais canônicos programaticamente em GDScript a partir de dicionários pré-carregados (ex: `FLOWER_MATERIALS`, `GRASS_MATERIALS`). Além disso, ao exportar modelos no Blender, garanta que os materiais base utilizem albedo neutro/branco como defesa em profundidade.
 
 ---
 
