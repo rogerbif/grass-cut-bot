@@ -111,6 +111,8 @@ func _ready() -> void:
 		support_btn.pressed.connect(_on_support_pressed)
 
 func open_modal() -> void:
+	if version_label != null:
+		version_label.text = "%s • Mobile Edition" % GameVersion.get_display_name()
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	visible = true

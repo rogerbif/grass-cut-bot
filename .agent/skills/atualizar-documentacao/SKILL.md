@@ -30,7 +30,7 @@ Ao finalizar melhorias, fases ou refatorações, execute os seguintes 5 passos o
   - **PATCH (+1)**: Correções de bugs, balanceamento de cortes, ajustes de layout HUD.
   - **MINOR (+1)**: Novos subsistemas (Menu Inicial, Hub, etc.), novas variedades vegetais ou novos blocos de fases.
   - **MAJOR / STAGE**: Transição de MVP -> Alpha -> Beta -> Release.
-- Sincronize a versão em `project.godot` (`config/version`) E em `export_presets.cfg` (`version/name` e `version/code`).
+- Sincronize a versão em `project.godot` (`config/version`), em `export_presets.cfg` (`version/name` e `version/code`) E em `scripts/core/game_version.gd` (`MAJOR`, `MINOR`, `PATCH`).
 - Registre o bloco correspondente no changelog histórico.
 
 ## 5. Validação e Sincronização Obrigatória no GitHub

@@ -73,7 +73,7 @@ static func bump(mode: BumpMode = BumpMode.PATCH) -> void:
 extends RefCounted
 
 ## Gerenciador Central de Versionamento - Grass Cut Bot (Game SemVer).
-## Fonte única de verdade para a versão do jogo, ciclo de maturidade (Alpha, Beta, Gold)
+## Fonte canônica para a versão do jogo, ciclo de maturidade (Alpha, Beta, Gold)
 ## e compatibilidade de saves e presets de exportação.
 
 const MAJOR: int = %d
@@ -82,58 +82,77 @@ const PATCH: int = %d
 const STAGE: String = "%s" # "PRE-ALPHA", "ALPHA", "BETA", "RC", "RELEASE"
 const BUILD_TYPE: String = "dev" # "dev", "nightly", "public"
 
-## Retorna a string semântica padrão com prefixo 'v' (ex: "v0.7.2-alpha")
-static func get_version_string() -> String:
-\tvar base: String = "v%%d.%%d.%%d" %% [MAJOR, MINOR, PATCH]
-\tif not STAGE.is_empty() and STAGE.to_upper() != "RELEASE":
-\t\tbase += "-%%s" %% STAGE.to_lower()
-\treturn base
-
-## Retorna a versão crua sem prefixo 'v' para o project.godot (ex: "0.7.2-alpha")
+## Retorna a versão crua sem prefixo 'v' (ex: "0.12.68-alpha").
+## Lê dinamicamente do ProjectSettings se disponível para garantir sincronização automática.
 static func get_raw_version() -> String:
+\tvar proj_ver: String = String(ProjectSettings.get_setting("application/config/version", ""))
+\tif not proj_ver.is_empty():
+\t\treturn proj_ver
 \tvar base: String = "%%d.%%d.%%d" %% [MAJOR, MINOR, PATCH]
 \tif not STAGE.is_empty() and STAGE.to_upper() != "RELEASE":
 \t\tbase += "-%%s" %% STAGE.to_lower()
 \treturn base
 
-## Retorna o nome completo com título do jogo (ex: "Grass Cut Bot v0.7.2-alpha")
+## Retorna a string semântica padrão com prefixo 'v' (ex: "v0.12.68-alpha")
+static func get_version_string() -> String:
+\tvar raw: String = get_raw_version()
+\tif not raw.begins_with("v"):
+\t\treturn "v%%s" %% raw
+\treturn raw
+
+## Retorna o nome completo com título do jogo (ex: "Grass Cut Bot v0.12.68-alpha")
 static func get_display_name() -> String:
 \treturn "Grass Cut Bot %%s" %% get_version_string()
 
-## Retorna um código numérico de versão para versionCode do Android (ex: 702 para 0.7.2)
+## Retorna um código numérico de versão para versionCode do Android (ex: 1268 para 0.12.68)
 static func get_version_code() -> int:
+\tvar raw: String = get_raw_version()
+\tvar clean: String = raw.trim_prefix("v").split("-")[0]
+\tvar parts: PackedStringArray = clean.split(".")
+\tif parts.size() >= 3:
+\t\treturn parts[0].to_int() * 10000 + parts[1].to_int() * 100 + parts[2].to_int()
 \treturn MAJOR * 10000 + MINOR * 100 + PATCH
 
 ## Retorna se a versão atual é Pre-Alpha
 static func is_pre_alpha() -> bool:
-\treturn STAGE.to_upper() == "PRE-ALPHA"
+\treturn get_raw_version().to_upper().contains("PRE-ALPHA")
 
 ## Retorna se a versão atual é Alpha
 static func is_alpha() -> bool:
-\treturn STAGE.to_upper() == "ALPHA"
+\treturn get_raw_version().to_upper().contains("ALPHA") and not is_pre_alpha()
 
 ## Retorna se a versão atual é Beta
 static func is_beta() -> bool:
-\treturn STAGE.to_upper() == "BETA"
+\treturn get_raw_version().to_upper().contains("BETA")
 
 ## Retorna se a versão atual é Release Candidate (Freeze)
 static func is_rc() -> bool:
-\treturn STAGE.to_upper() == "RC"
+\treturn get_raw_version().to_upper().contains("RC")
 
 ## Retorna se a versão atual é de Lançamento Comercial / Gold Master
 static func is_release() -> bool:
-\treturn STAGE.to_upper() == "RELEASE" or (MAJOR >= 1 and STAGE.is_empty())
+\treturn not is_pre_alpha() and not is_alpha() and not is_beta() and not is_rc()
 
 ## Retorna um dicionário estruturado com todos os metadados da versão
 static func get_full_info() -> Dictionary:
+\tvar raw: String = get_raw_version()
+\tvar clean: String = raw.trim_prefix("v").split("-")[0]
+\tvar parts: PackedStringArray = clean.split(".")
+\tvar cur_maj: int = MAJOR
+\tvar cur_min: int = MINOR
+\tvar cur_pat: int = PATCH
+\tif parts.size() >= 3:
+\t\tcur_maj = parts[0].to_int()
+\t\tcur_min = parts[1].to_int()
+\t\tcur_pat = parts[2].to_int()
 \treturn {
 \t\t"version_string": get_version_string(),
-\t\t"raw_version": get_raw_version(),
+\t\t"raw_version": raw,
 \t\t"display_name": get_display_name(),
 \t\t"version_code": get_version_code(),
-\t\t"major": MAJOR,
-\t\t"minor": MINOR,
-\t\t"patch": PATCH,
+\t\t"major": cur_maj,
+\t\t"minor": cur_min,
+\t\t"patch": cur_pat,
 \t\t"stage": STAGE,
 \t\t"build_type": BUILD_TYPE
 \t}

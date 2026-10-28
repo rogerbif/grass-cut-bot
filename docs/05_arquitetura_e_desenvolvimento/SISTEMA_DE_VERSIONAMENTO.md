@@ -20,7 +20,7 @@ Exemplos práticos:
 - `v0.9.0-alpha` (Sistema de áudio e sonoplastia completo com 20 SFX e trilhas Dyalla)
 - `v0.10.0-alpha` (Calibração háptica Android precisa e suíte de ícones oficiais)
 - `v0.11.0-alpha` (Celebração de vitória 3 ⭐, derrota expressiva, teleporte 3D e moedas cartoon)
-- `v0.12.38-alpha` (**Versão Atual:** Refinamento de Level Design das 20 fases canônicas com ícones de espécies florais no HUD, trilhas guia `island_dirt`, geometrias temáticas de grama e calibração 3 estrelas)
+- `v0.12.68-alpha` (**Versão Atual:** Leitura dinâmica direta de `ProjectSettings` no `GameVersion` e `SettingsModal`, calibração da mastigação contínua da lâmina em 0.28s, remoção de knockback em vegetação e suíte de 8 espécies florais)
 - `v0.13.0-beta` (*Feature Complete:* Abas Loja/Coleção integradas a moedas e balanceamento final)
 - `v1.0.0-rc.1` (*Feature Freeze:* Testes finais de empacotamento APK/AAB no Android)
 - `v1.0.0` (Lançamento Oficial Comercial na Google Play Store)
