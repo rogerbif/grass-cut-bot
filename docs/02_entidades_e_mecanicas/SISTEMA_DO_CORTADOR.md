@@ -105,11 +105,15 @@ A cada subida de nível conquistada no corte de vegetação ou na Garagem (`Upgr
 3. **Onda de Choque no Solo (Shockwave Ring):** Um anel luminoso aditivo plano (`shaders/shockwave_ring.gdshader`) expande radialmente no piso de $0.15\text{m}$ até ultrapassar a ponta da lâmina ($1.65\times$ o raio) com fade exponencial em $0.32\text{s}$.
 4. **Vibração Tátil e Partículas:** Pulso háptico de $25\text{ms}$ no celular (`Input.vibrate_handheld(25)`) acompanhado de rajada estelar de faíscas (`SparkParticles`).
 
-### Shader de Slash Giratório Ultra-Leve (Opção A)
+### Shader de Slash Giratório Multi-Ponta Afilado por Lâmina
 O rastro cortante contínuo da serra é gerado pelo shader espacial [`shaders/blade_slash.gdshader`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/shaders/blade_slash.gdshader):
-- **100% Procedural e Analítico na GPU:** Zero texturas rasterizadas externas. Converte coordenadas UV em polares ($r, \theta$) e computa um arco afiado com cauda em atenuação quadrática e espessura radial via `smoothstep`.
+- **100% Procedural e Analítico na GPU (Zero Texturas VRAM):** Converte coordenadas UV em polares ($r, \theta$) e dobra matematicamente os setores angulares ($S = \frac{2\pi}{N_{\text{pontas}}}$) sem laços de repetição ou custo excessivo, suportando 3, 4, 5 ou 6 pontas simultâneas em paralelo na GPU.
+- **Formato Afilado Fiel (Tapered Swoosh):** Em cada ponta da serra, o rastro inicia com largura máxima na lâmina e afina progressivamente em ponta de agulha com curvatura aerodinâmica ($W(t) = W_{\text{base}} \cdot (1 - t)^{1.3}$).
+- **Gradiente de Transparência:** Transição com atenuação exponencial de alpha ($\alpha(t) = (1 - t)^{1.4}$), tornando-se completamente invisível no término da cauda angular.
+- **Núcleo Cortante Incandescente:** Centro do rastro enriquecido com fio cortante branco puro (`core_color`) envolto na energia dourada da lâmina (`slash_color`).
+- **Sincronização Dinâmica por Tier:** Atualiza automaticamente no `cutter.gd` o número de pontas ativas ao trocar de lâmina (Tier 1 = 3 pontas, Tier 2 = 4 pontas, Tier 3 = 5 pontas, Tier 4 = 6 pontas).
 - **Render Mode Ultra-Leve:** `render_mode unshaded, blend_add, depth_draw_never, cull_disabled` (zero passes de sombra e custo irrisório de GPU, garantindo 60 FPS fixos no mobile).
-- **Modulação por Velocidade:** A intensidade do rastro se adapta em tempo real: discreto e translúcido em marcha lenta ($0.12$), tornando-se vívido, brilhante e energizado ($1.00$) na rotação de corte máximo.
+- **Modulação por Velocidade:** A intensidade do rastro se adapta em tempo real: discreto e translúcido em marcha lenta ($0.12$), tornando-se vívido, brilhante e energizado ($1.00$) na rotação de corte máximo, com pulso multiplicador de $2.5\times$ no Level Up.
 
 ### Capa Protetora da Serra (`blade_container`)
 - O disco de corte é abraçado por um container protetor amarelo com interior em borracha grafite (`blade_container`), espelhado em Z via modificador `Mirror`.

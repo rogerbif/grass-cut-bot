@@ -33,6 +33,38 @@ func _ready() -> void:
 		return
 	print("✔ PASSOU: blade_slash_mesh configurado com ShaderMaterial")
 
+	# Verifica dimensões e parâmetros do novo shader multi-ponta afilado
+	var plane_mesh: PlaneMesh = slash_mesh.mesh as PlaneMesh
+	if plane_mesh == null or plane_mesh.size != Vector2(4.2, 4.2):
+		push_error("blade_slash_mesh PlaneMesh size should be 4.2x4.2!")
+		get_tree().quit(1)
+		return
+	print("✔ PASSOU: blade_slash_mesh dimensionado para 4.2m cobrindo perfeitamente as pontas")
+
+	var mat_check: ShaderMaterial = slash_mesh.material_override as ShaderMaterial
+	if mat_check.get_shader_parameter("blade_points") == null or mat_check.get_shader_parameter("base_width") == null:
+		push_error("Shader parameters blade_points or base_width not found!")
+		get_tree().quit(1)
+		return
+	print("✔ PASSOU: Parametros analiticos de afinamento e pontas encontrados no ShaderMaterial")
+
+	# Testa sincronizacao de pontas por Tier (Tier 1 = 3 pontas, Tier 4 = 6 pontas)
+	UpgradeManager.blade_level = 1
+	cutter.call("update_upgrades")
+	if mat_check.get_shader_parameter("blade_points") != 3:
+		push_error("Tier 1 should set blade_points to 3, got: %s" % str(mat_check.get_shader_parameter("blade_points")))
+		get_tree().quit(1)
+		return
+	print("✔ PASSOU: Tier 1 configurou 3 pontas de slash")
+
+	UpgradeManager.blade_level = 6 # Tier 4
+	cutter.call("update_upgrades")
+	if mat_check.get_shader_parameter("blade_points") != 6:
+		push_error("Tier 4 should set blade_points to 6, got: %s" % str(mat_check.get_shader_parameter("blade_points")))
+		get_tree().quit(1)
+		return
+	print("✔ PASSOU: Tier 4 configurou 6 pontas de slash")
+
 	if shock_mesh.material_override == null or not (shock_mesh.material_override is ShaderMaterial):
 		push_error("shockwave_mesh material_override is not a ShaderMaterial!")
 		get_tree().quit(1)

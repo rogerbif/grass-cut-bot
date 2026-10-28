@@ -371,7 +371,7 @@ func _setup_blade_slash_and_shockwave() -> void:
 		blade_slash_mesh = MeshInstance3D.new()
 		blade_slash_mesh.name = "BladeSlash"
 		var slash_plane: PlaneMesh = PlaneMesh.new()
-		slash_plane.size = Vector2(2.35, 2.35)
+		slash_plane.size = Vector2(4.2, 4.2)
 		blade_slash_mesh.mesh = slash_plane
 		blade_slash_mesh.position = Vector3(0.0, 0.015, 0.0)
 		blade_slash_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -492,6 +492,18 @@ func _update_blade_tier_visual() -> void:
 		blade_tier_3.visible = (tier == 3)
 	if blade_tier_4:
 		blade_tier_4.visible = (tier == 4)
+
+	# Atualiza o número de pontas do shader de slash para casar exatamente com o tier ativo
+	if blade_slash_mesh != null and blade_slash_mesh.material_override is ShaderMaterial:
+		var mat: ShaderMaterial = blade_slash_mesh.material_override as ShaderMaterial
+		var points: int = 3
+		match tier:
+			1: points = 3
+			2: points = 4
+			3: points = 5
+			4: points = 6
+			_: points = 3
+		mat.set_shader_parameter("blade_points", points)
 
 func set_input_direction(dir: Vector2) -> void:
 	if GameManager != null and GameManager.current_state != GameManager.GameState.PLAYING:
