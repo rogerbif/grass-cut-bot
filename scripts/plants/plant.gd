@@ -422,9 +422,6 @@ static func _get_or_create_particle_material(col: Color) -> StandardMaterial3D:
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	mat.roughness = 0.85
 	mat.albedo_color = col
-	mat.emission_enabled = true
-	mat.emission = col
-	mat.emission_energy_multiplier = 0.22
 	_particle_materials[key] = mat
 	return mat
 

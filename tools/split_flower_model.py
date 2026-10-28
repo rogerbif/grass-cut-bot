@@ -28,7 +28,7 @@ CONFIG = {
     },
     "flower_03_daisy": {
         "stem": [10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        "leaves": [11, 12, 13, 14, 169],
+        "leaves": [11, 12, 13, 14, 164, 165, 166, 167, 168, 169, 170],
         "center_r": 0.1, "center_min_n": 40, "outer_mode": "radius",
         "detach_petals": "auto", "detach_leaf": 13,
     },
@@ -138,7 +138,7 @@ def process(name, src_dir, out_dir, preview_dir):
 
     stem_ids = list(cfg["stem"])
     leaf_ids = list(cfg["leaves"])
-    mat1 = [d for d in info if d["mat"] == 1 and d["i"] not in leaf_ids]
+    mat1 = [d for d in info if d["mat"] == 1 and d["i"] not in leaf_ids and d["i"] not in stem_ids]
     center_ids = [d["i"] for d in mat1 if cfg["center_r"] > 0 and d["r"] < cfg["center_r"] and d["n"] >= cfg.get("center_min_n", 0)]
     petal_infos = [d for d in mat1 if d["i"] not in center_ids]
     if cfg["outer_mode"] == "radius":
@@ -194,6 +194,11 @@ def process(name, src_dir, out_dir, preview_dir):
                     co = l.vert.co + offset
                     key = tuple(round(x, 5) for x in co)
                     l[lay] = colorfn(pos2isl[key], co)
+        if not recenter:
+            # Prevencao de Z-fighting contra o solo plano (Y=0.0 no Godot)
+            for v in bm.verts:
+                if v.co.z < 0.003:
+                    v.co.z = 0.003
         me = bpy.data.meshes.new(oname)
         bm.to_mesh(me)
         bm.free()

@@ -36,7 +36,6 @@ uniform float rim_brightness : hint_range(0.0, 4.0) = 0.5;
 group_uniforms Surface;
 uniform float roughness : hint_range(0.0, 1.0) = 0.90;
 uniform float specular : hint_range(0.0, 1.0) = 0.10;
-uniform float vibrancy : hint_range(0.0, 1.0) = 0.0;
 
 varying vec3 v_geo_normal_view;
 
@@ -136,7 +135,6 @@ void fragment() {
 	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
 
 	ALBEDO = base_surface;
-	EMISSION = base_surface * vibrancy;
 	ROUGHNESS = roughness;
 	SPECULAR = specular;
 }
