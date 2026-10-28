@@ -863,19 +863,10 @@ func _on_blade_area_exited(area: Area3D) -> void:
 	if idx != -1:
 		_overlapping_vegetation.remove_at(idx)
 
-func _trigger_plant_first_hit_knockback(normal: Vector3) -> void:
-	var dir: Vector3 = Vector3(normal.x, 0.0, normal.z)
-	if dir.length_squared() < 0.0001:
-		if velocity.length_squared() > 0.001:
-			dir = -Vector3(velocity.x, 0.0, velocity.z).normalized()
-		else:
-			dir = Vector3(0.0, 0.0, 1.0)
-	else:
-		dir = dir.normalized()
-	is_stunned = true
-	stun_timer = 0.08
-	velocity = dir * 2.15
-	shock_compression = -0.022
+func _trigger_plant_first_hit_knockback(_normal: Vector3) -> void:
+	# Feedback mecânico sutil na suspensão sem aplicar stun ou knockback reverso,
+	# mantendo o robô no controle e permitindo mastigação contínua contra a colisão rígida.
+	shock_compression = -0.016
 
 func _cut_vegetation_area(area: Area3D) -> bool:
 	if area == null or not is_instance_valid(area):

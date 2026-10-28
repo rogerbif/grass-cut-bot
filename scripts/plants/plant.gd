@@ -227,7 +227,7 @@ func cut(power: int) -> void:
 		return
 
 	var now_sec: float = float(Time.get_ticks_msec()) * 0.001
-	if max_health > 1 and (now_sec - _last_hit_time) < 1.0:
+	if max_health > 1 and (now_sec - _last_hit_time) < 0.28:
 		return
 	_last_hit_time = now_sec
 
@@ -235,8 +235,17 @@ func cut(power: int) -> void:
 	if health <= 0:
 		_perform_cut()
 	else:
+		if AudioManager != null:
+			AudioManager.play_cut_sfx(false)
+		if GameManager != null:
+			GameManager.trigger_haptic_cut()
+
 		if type == PlantType.FLOWER:
 			_apply_flower_damage_stage(health)
+		elif type == PlantType.WHEAT:
+			var scene_root: Node = get_tree().current_scene if get_tree() != null else null
+			if scene_root != null:
+				spawn_grass_cut_particles(scene_root, global_position, particle_color)
 
 		# Feedback de dano para plantas resistentes
 		var tween: Tween = create_tween()

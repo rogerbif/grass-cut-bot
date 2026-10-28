@@ -48,19 +48,21 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
 
 ## 3. Ciclo de Dano e Corte
 
-1. **Rigidez Física Ativa, Escala Visual (Trigo +100%, Flores +30%) & Knockback Curto no 1º Hit:**
+1. **Rigidez Física Ativa, Escala Visual (Trigo +100%, Flores +30%) & Mastigação Sem Knockback:**
    - **Trigo Ampliado em +100% (Escala Dobrada):** O modelo 3D de trigo (`wheat_01.glb`) opera com escala visual ampliada em **+100%** (`scale_y: 1.10..1.40`, `scale_xz: 0.68..0.92` em `VegetationGrid` e `IslandNode`, e `0.96..1.16` em `plant.gd`), conferindo espigas altas, fartas e volumosas com presença imponente de plantação sobre a ilha.
    - **Flores Ampliadas em +30%:** Todas as 8 espécies de flores nobres operam com escala visual ampliada em **+30%** (`0.52 -> 0.676` no `VegetationGrid` e `IslandNode`, e `0.624..0.754` em `plant.gd`), destacando suas silhuetas e cores sobre o gramado.
    - Plantas resistentes com mais de 1 ponto de vida (trigo e flores) atuam como corpos rígidos na grade espacial (`resolve_rigid_plant_collision`) enquanto estiverem vivas (`health > 0` e `is_cut == 0`).
    - O corpo do cortador ($R_{\text{body}} = 0.30\text{m}$) é impedido de avançar por cima da planta ($R_{\text{wheat}} = 0.18\text{m}$, $R_{\text{flower}} = 0.23\text{m}$). O robô desliza suavemente ao contornar, mas não consegue atravessar até destruí-la.
-   - **Knockback Curto no Primeiro Hit:** Ao atingir pela primeira vez uma planta resistente intacta (`old_hp == max_health` e `max_health > 1` com `new_hp > 0`), o cortador recebe um micro-recuo tátil bem curto (`_trigger_plant_first_hit_knockback`: `stun_timer = 0.08s`, `velocity = dir * 2.15 m/s`, `shock_compression = -0.022`), sinalizando fisicamente a dureza inicial do caule antes da mastigação contínua.
-2. **Janela de Cooldown de 1 Segundo & Micro-Tremor Contínuo:**
-   - Cada golpe subsequente exige um intervalo de **1.0 segundo** (`MULTI_HIT_COOLDOWN_SEC = 1.0`).
-   - Durante essa janela de 1 segundo, enquanto a serra giratória mantiver contato ativo com o tufo resistente, a planta vibra com um **micro-tremor procedural de alta frequência** ($\approx 65\text{Hz}$ e $\pm 0.022\text{m}$ de amplitude), simulando visual e tatilmente o atrito mecânico dos dentes de aço mastigando o caule resistente antes do corte.
-3. **Golpe Parcial (Resistência Ativa) & Despetalação:**
+   - **Sem Knockback Reverso em Vegetação:** Diferente das rochas sólidas (que punem colisões com recuo e atordoamento), a vegetação resistente não arremessa o robô para trás nem aplica stun. Em vez disso, aplica apenas uma leve absorção mecânica na suspensão (`shock_compression = -0.016`), preservando o controle direcional do jogador e mantendo a lâmina em contato contínuo para mastigar a planta.
+2. **Janela Ágil de Cooldown de 0.28s & Micro-Tremor Contínuo:**
+   - Cada golpe subsequente opera com um intervalo rápido e dinâmico de **0.28 segundo** (`MULTI_HIT_COOLDOWN_SEC = 0.28`), permitindo que a lâmina processe cortes contínuos em frações de segundo ao ser mantida encostada.
+   - Durante essa janela de 0.28s, enquanto a serra mantiver contato ativo com o tufo resistente, a planta vibra com um **micro-tremor procedural de alta frequência** ($\approx 65\text{Hz}$ e $\pm 0.022\text{m}$ de amplitude), simulando os dentes de aço mastigando o caule resistente antes do corte definitivo.
+3. **Golpe Parcial (Resistência Ativa), Partículas e Despetalação:**
    - Ao desferir cada hit parcial (`health > power`):
+   - Dispara imediatamente efeito sonoro de corte (`AudioManager.play_cut_sfx(false)`) e pulso háptico mobile suave (`GameManager.trigger_haptic_cut()`).
    - Um Tween de squash & stretch rápido é acionado (`scale * 1.25` em 0.05s voltando ao normal).
-   - No caso de flores, o estágio de despetalação (`instance_hit_stage` no shader) avança na GPU, e uma explosão parcial de confetes (`spawn_flower_petal_burst`) ejeta círculos da cor da pétala e triângulos verdes de folha voando em arco e caindo.
+   - No trigo (`wheat`), ejeta uma nuvem parcial de fragmentos de palha (`spawn_grass_cut_particles`).
+   - Nas flores, o estágio de despetalação (`instance_hit_stage` no shader) avança na GPU, acompanhado de fragmentos desprendíveis (`flower_detach_pieces`) e confetes voando em arco (`spawn_flower_petal_burst`).
 4. **Corte Concluído & Sistema de Partículas Geométricas em Arco (`_perform_cut`):**
    - O colisor `Area3D` é desativado imediatamente para evitar múltiplos registros acidentais.
    - **Partículas Geométricas Voadoras com Física Parabólica:**

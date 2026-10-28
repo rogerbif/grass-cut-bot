@@ -60,7 +60,7 @@ const VEG_TYPES: Array[String] = [
 
 const GRID_STEP: float = 0.40
 const TUFT_HIT_RADIUS_BONUS: float = 0.0
-const MULTI_HIT_COOLDOWN_SEC: float = 1.0
+const MULTI_HIT_COOLDOWN_SEC: float = 0.28
 const HIDDEN_TRANSFORM: Transform3D = Transform3D(
 	Basis(Vector3(0.0001, 0.0, 0.0), Vector3(0.0, 0.0001, 0.0), Vector3(0.0, 0.0, 0.0001)),
 	Vector3(0.0, -50.0, 0.0)
@@ -1433,16 +1433,26 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 								while _get_remaining_goal_safe(g_target) > 0:
 									gm.call("register_cut", g_target, 1, Vector3.ZERO)
 				else:
+					var p_key: String = _plant_keys[p_idx]
+					var tree_node: SceneTree = get_tree()
+					var s_root: Node = tree_node.current_scene if tree_node != null else self
+
+					# Feedback audiovisual e háptico imediato para o golpe parcial
+					if AudioManager != null:
+						AudioManager.play_cut_sfx(false)
+					if gm != null and gm.has_method("trigger_haptic_cut"):
+						gm.call("trigger_haptic_cut")
+
 					if mm != null:
-						var p_key: String = _plant_keys[p_idx]
 						if p_key.begins_with("flower"):
 							var stage: float = 1.0 if new_hp == 2 else 2.0
 							mm.set_instance_custom_data(inst_idx, Color(stage, 0.0, 0.0, 0.0))
-							var tree_node: SceneTree = get_tree()
-							var s_root: Node = tree_node.current_scene if tree_node != null else self
 							PlantScript.spawn_flower_petal_burst(s_root, p_pos, p_key)
 							if new_hp == 2:
 								PlantScript.spawn_flower_detach_pieces(s_root, _initial_transforms[p_idx], p_key)
+						elif p_key == "wheat":
+							PlantScript.spawn_grass_cut_particles(s_root, p_pos, _particle_colors[p_idx])
+
 						var init_xform: Transform3D = _initial_transforms[p_idx]
 						var squash_xform: Transform3D = Transform3D(
 							init_xform.basis.scaled(Vector3(1.25, 1.25, 1.25)),

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://testmultihitcont01"]
+
+[ext_resource type="Script" path="res://tests/test_multi_hit_continuous.gd" id="1_test"]
+
+[node name="TestMultiHitContinuous" type="Node3D"]
+script = ExtResource("1_test")

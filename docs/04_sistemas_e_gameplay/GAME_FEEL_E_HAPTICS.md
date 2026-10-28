@@ -26,6 +26,10 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 | **Feedback em Botões da UI** | `25 ms` | `35%` (`0.35`) | `50 ms` | Toque tátil sutil em cada clique de botão da interface (BaseButton hook global no GameManager). |
 | **Teste no Menu de Configurações** | `200 ms` | `100%` (`1.0`) | 1 disparo | Pulso firme e longo confirmando a ativação bem-sucedida da vibração. |
 
+> [!NOTE]
+> **Diferenciação Tátil: Obstáculo vs Vegetação Resistente (Melhoria 141):**
+> Colisões contra rochas e paredes sólidas aplicam recuo forte (*knockback* de $4.75\text{ m/s}$), atordoamento temporário ($0.18\text{s}$) e penalidade de nível da lâmina. Em contraste, plantas resistentes (trigo e flores) **não aplicam knockback reverso nem stun** — elas apenas barram o avanço físico do robô via colisão rígida enquanto a lâmina as mastiga em ticks ágeis contínuos de $0.28\text{s}$ com micro-pulsos hápticos e partículas a cada golpe parcial, mantendo o *flow state* ininterrupto.
+
 ---
 
 ## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
