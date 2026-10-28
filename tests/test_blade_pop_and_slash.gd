@@ -114,22 +114,26 @@ func _ready() -> void:
 	print("✔ PASSOU: Penalidade de rocha NAO emite blade_leveled_up (sem falso pop/choque)")
 	
 	# 6. Testa modulação de slash por velocidade
+	cutter.set("_slash_flash_boost", 1.0)
 	cutter.set("current_blade_speed", 108.0)
 	cutter.call("_update_blade_slash_intensity")
 	var mat_slash: ShaderMaterial = slash_mesh.material_override as ShaderMaterial
 	var idle_intensity: float = mat_slash.get_shader_parameter("slash_intensity")
 	
-	cutter.set("_slash_flash_boost", 1.0)
 	cutter.set("current_blade_speed", 720.0)
 	cutter.call("_update_blade_slash_intensity")
 	var full_intensity: float = mat_slash.get_shader_parameter("slash_intensity")
 	
 	print("Idle slash intensity: ", idle_intensity, " | Full cut slash intensity: ", full_intensity)
 	if full_intensity <= idle_intensity:
-		push_error("Slash intensity should be significantly higher at full speed than at idle!")
+		push_error("Slash intensity should be higher at full speed than at idle!")
 		get_tree().quit(1)
 		return
-	print("✔ PASSOU: Modulação dinâmica de intensidade do slash por velocidade validada")
+	if abs(idle_intensity - 0.08) > 0.01 or abs(full_intensity - 0.12) > 0.01:
+		push_error("Expected idle ~0.08 and cut ~0.12, got: idle=%f, cut=%f" % [idle_intensity, full_intensity])
+		get_tree().quit(1)
+		return
+	print("✔ PASSOU: Modulação dinâmica calibrada (0.08 em idle e 0.12 ao cortar/andar)")
 
 	print("--- TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! ---")
 	cutter.queue_free()

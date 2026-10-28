@@ -438,7 +438,8 @@ func _update_blade_slash_intensity() -> void:
 	if mat == null:
 		return
 	var speed_ratio: float = clampf((current_blade_speed - idle_rotation_speed) / maxf(rotation_speed - idle_rotation_speed, 1.0), 0.0, 1.0)
-	var base_intensity: float = lerpf(0.12, 1.0, speed_ratio)
+	# Opacidade calibrada: 0.12 ao andar/cortar (antigo idle) e 0.08 em idle (33% mais transparente)
+	var base_intensity: float = lerpf(0.08, 0.12, speed_ratio)
 	mat.set_shader_parameter("slash_intensity", base_intensity * _slash_flash_boost)
 
 func update_upgrades() -> void:

@@ -108,12 +108,12 @@ A cada subida de nível conquistada no corte de vegetação ou na Garagem (`Upgr
 ### Shader de Slash Giratório Multi-Ponta Afilado por Lâmina
 O rastro cortante contínuo da serra é gerado pelo shader espacial [`shaders/blade_slash.gdshader`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/shaders/blade_slash.gdshader):
 - **100% Procedural e Analítico na GPU (Zero Texturas VRAM):** Converte coordenadas UV em polares ($r, \theta$) e dobra matematicamente os setores angulares ($S = \frac{2\pi}{N_{\text{pontas}}}$) sem laços de repetição ou custo excessivo, suportando 3, 4, 5 ou 6 pontas simultâneas em paralelo na GPU.
-- **Formato Afilado Fiel (Tapered Swoosh):** Em cada ponta da serra, o rastro inicia com largura máxima na lâmina e afina progressivamente em ponta de agulha com curvatura aerodinâmica ($W(t) = W_{\text{base}} \cdot (1 - t)^{1.3}$).
-- **Gradiente de Transparência:** Transição com atenuação exponencial de alpha ($\alpha(t) = (1 - t)^{1.4}$), tornando-se completamente invisível no término da cauda angular.
+- **Formato Afilado com Base na Extensão Total da Lâmina:** Em cada dente da serra, o rastro cobre toda a extensão da lâmina desde o cubo central do chassi ($R_{\text{inner}} = 0.18$) até a ponta externa ($R_{\text{tip}} = 0.82$), afinando em foice ao longo do arco até zero na cauda.
+- **Gradiente de Transparência:** Transição com atenuação exponencial de alpha ($\alpha(t) = (1 - t)^{1.3}$), tornando-se completamente invisível no término da cauda angular.
 - **Núcleo Cortante Incandescente:** Centro do rastro enriquecido com fio cortante branco puro (`core_color`) envolto na energia dourada da lâmina (`slash_color`).
 - **Sincronização Dinâmica por Tier:** Atualiza automaticamente no `cutter.gd` o número de pontas ativas ao trocar de lâmina (Tier 1 = 3 pontas, Tier 2 = 4 pontas, Tier 3 = 5 pontas, Tier 4 = 6 pontas).
 - **Render Mode Ultra-Leve:** `render_mode unshaded, blend_add, depth_draw_never, cull_disabled` (zero passes de sombra e custo irrisório de GPU, garantindo 60 FPS fixos no mobile).
-- **Modulação por Velocidade:** A intensidade do rastro se adapta em tempo real: discreto e translúcido em marcha lenta ($0.12$), tornando-se vívido, brilhante e energizado ($1.00$) na rotação de corte máximo, com pulso multiplicador de $2.5\times$ no Level Up.
+- **Modulação por Velocidade Calibrada:** Intensidade perfeitamente balanceada: sutil e 33% mais transparente em idle ($0.08$) e moderada/elegante ao andar e cortar ($0.12$, intensidade original de idle), com pulso multiplicador de $2.5\times$ no Level Up.
 
 ### Capa Protetora da Serra (`blade_container`)
 - O disco de corte é abraçado por um container protetor amarelo com interior em borracha grafite (`blade_container`), espelhado em Z via modificador `Mirror`.

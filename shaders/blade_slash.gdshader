@@ -10,12 +10,12 @@ uniform vec4 core_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform float slash_intensity : hint_range(0.0, 3.0) = 1.0;
 
 uniform float tip_radius : hint_range(0.4, 1.0) = 0.82;
-uniform float inner_radius : hint_range(0.1, 0.7) = 0.38;
+uniform float inner_radius : hint_range(0.05, 0.7) = 0.18; // Base na extensão total da lâmina (do cubo central à ponta)
 uniform float arc_ratio : hint_range(0.1, 0.95) = 0.65;
 uniform float angle_offset_deg : hint_range(-180.0, 180.0) = -90.0;
-uniform float edge_slant_deg : hint_range(-30.0, 30.0) = 8.0;
+uniform float edge_slant_deg : hint_range(-30.0, 30.0) = 6.0;
 uniform float curve_inward : hint_range(0.0, 0.2) = 0.04;
-uniform float inner_curve_power : hint_range(0.2, 3.0) = 0.75;
+uniform float inner_curve_power : hint_range(0.2, 3.0) = 0.70;
 uniform float fade_power : hint_range(0.5, 3.0) = 1.3;
 
 void fragment() {
