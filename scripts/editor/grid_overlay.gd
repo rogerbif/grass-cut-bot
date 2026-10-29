@@ -7,12 +7,14 @@ var preview_fill_inst: MeshInstance3D
 var preview_line_inst: MeshInstance3D
 var selection_fill_inst: MeshInstance3D
 var selection_line_inst: MeshInstance3D
+var axis_line_inst: MeshInstance3D
 
 var _grid_mat: StandardMaterial3D
 var _preview_fill_mat: StandardMaterial3D
 var _preview_line_mat: StandardMaterial3D
 var _selection_fill_mat: StandardMaterial3D
 var _selection_line_mat: StandardMaterial3D
+var _axis_line_mat: StandardMaterial3D
 
 var current_width: int = 14
 var current_height: int = 10
@@ -69,6 +71,16 @@ func _ready() -> void:
 	selection_line_inst = MeshInstance3D.new()
 	selection_line_inst.material_override = _selection_line_mat
 	add_child(selection_line_inst)
+
+	_axis_line_mat = StandardMaterial3D.new()
+	_axis_line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_axis_line_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_axis_line_mat.no_depth_test = true
+	_axis_line_mat.albedo_color = Color(0.95, 0.78, 0.35, 0.85)
+
+	axis_line_inst = MeshInstance3D.new()
+	axis_line_inst.material_override = _axis_line_mat
+	add_child(axis_line_inst)
 
 	rebuild_grid(current_width, current_height, cell_size)
 
@@ -398,3 +410,31 @@ func update_selection_preview(
 
 	selection_fill_inst.mesh = im_fill
 	selection_line_inst.mesh = im_line
+
+## Atualiza a linha guia dos eixos de simetria do modo espelho
+func update_mirror_axis(mirror_mode: int) -> void:
+	if axis_line_inst == null:
+		return
+	if mirror_mode == 0:
+		axis_line_inst.mesh = null
+		return
+
+	var im: ImmediateMesh = ImmediateMesh.new()
+	var y_h: float = 0.038
+	var max_x: float = float(current_width) * cell_size * 0.5 + 0.35
+	var max_z: float = float(current_height) * cell_size * 0.5 + 0.35
+
+	im.surface_begin(Mesh.PRIMITIVE_LINES)
+
+	# Eixo X (divide Esquerda e Direita no centro do mapa em X = 0)
+	if mirror_mode == 1 or mirror_mode == 3:
+		im.surface_add_vertex(Vector3(0.0, y_h, -max_z))
+		im.surface_add_vertex(Vector3(0.0, y_h, max_z))
+
+	# Eixo Z (divide Norte e Sul no centro do mapa em Z = 0)
+	if mirror_mode == 2 or mirror_mode == 3:
+		im.surface_add_vertex(Vector3(-max_x, y_h, 0.0))
+		im.surface_add_vertex(Vector3(max_x, y_h, 0.0))
+
+	im.surface_end()
+	axis_line_inst.mesh = im

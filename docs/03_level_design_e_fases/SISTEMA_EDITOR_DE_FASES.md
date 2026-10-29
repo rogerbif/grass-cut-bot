@@ -130,6 +130,7 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Duplicar Seleção** | `Ctrl + D` | Duplica o grupo selecionado em 1 clique e ativa o modo carimbo para estampar cópias pelo mapa. |
 | **Copiar / Colar Seleção** | `Ctrl + C` / `Ctrl + V` | Copia para área de transferência e cola no mapa na posição clicada. |
 | **Deletar Seleção** | `Delete` ou `Backspace` | Deleta todo o terreno e objetos dentro da seleção ativa (com suporte a `Ctrl+Z`). |
+| **Modo Espelho / Simetria** | `X` | Alterna os modos de simetria: Desligado $\to$ Horizontal (X) $\to$ Vertical (Z) $\to$ Quádruplo (X+Z) $\to$ Desligado, desenhando em tempo real com linhas guias e preview holográfico simultâneo. |
 | **Modo Escala do Pincel (Padrão)** | `S` | Seleciona o modo de ajuste de **Escala** (ferramenta padrão inicial) e direciona os atalhos `[` e `]` para tamanho. |
 | **Modo Rotação** | `R` | Seleciona o modo de **Rotação** e direciona os atalhos `[` e `]` para giro ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
 | **Diminuir Escala / Girar Esquerda** | `[` (ou `-`, `Numpad -`) | **Se Modo Escala:** diminui tamanho do pincel ($-1$, ou $-5$ com `Shift`).<br>**Se Modo Rotação:** gira para a esquerda ($-5^\circ$, ou $-25^\circ$ com `Shift`; $-90^\circ$ no terreno). |

@@ -37,6 +37,7 @@ signal rotate_requested()
 signal rotate_step_requested(direction: int, is_shift: bool)
 signal adjust_mode_changed(mode: int)
 signal toggle_camera_view_requested()
+signal toggle_mirror_mode_requested()
 
 signal terrain_tile_selected(tile_id: String)
 signal grass_item_selected(grass_id: String)
@@ -68,6 +69,7 @@ var btn_rotate: Button
 var btn_rot_left: Button
 var btn_rot_right: Button
 var btn_cam_view: Button
+var btn_mirror: Button
 var lbl_status: Label
 
 var lbl_active_layer_banner: Label
@@ -521,6 +523,10 @@ func _build_left_panel() -> void:
 	btn_cam_view.pressed.connect(func() -> void: toggle_camera_view_requested.emit())
 	vbox.add_child(btn_cam_view)
 
+	btn_mirror = _create_styled_button("🪞 Espelho [X]: Desligado", Color(0.70, 0.55, 0.95), Vector2(0, 34))
+	btn_mirror.pressed.connect(func() -> void: toggle_mirror_mode_requested.emit())
+	vbox.add_child(btn_mirror)
+
 	vbox.add_child(HSeparator.new())
 
 	# 5. Ações Rápidas de Limpeza
@@ -787,7 +793,7 @@ func _build_bottom_bar() -> void:
 	_interactive_panels.append(bot_panel)
 
 	lbl_status = Label.new()
-	lbl_status.text = "Célula: [0, 0]  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [Alt+Esq/5]: Pipeta  |  [6/M]: Seleção  |  [F1]: Playtest"
+	lbl_status.text = "Célula: [0, 0]  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [X]: Espelho  |  [Alt+Esq/5]: Pipeta  |  [6/M]: Seleção  |  [F1]: Playtest"
 	lbl_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_status.add_theme_font_size_override("font_size", 13)
 	lbl_status.add_theme_color_override("font_color", Color(0.85, 0.92, 0.98))
@@ -882,7 +888,8 @@ func sync_state(
 	active_grass_id: String,
 	active_object_id: String,
 	is_top_down: bool,
-	adjust_mode: int = 0
+	adjust_mode: int = 0,
+	mirror_mode: int = 0
 ) -> void:
 	set_active_layer(active_layer)
 
@@ -963,6 +970,21 @@ func sync_state(
 
 	if btn_cam_view != null:
 		btn_cam_view.text = "🎥 Câmera [V]: Top-Down Ortogonal" if is_top_down else "🎥 Câmera [V]: Isométrica 3D"
+
+	if btn_mirror != null:
+		match mirror_mode:
+			0:
+				btn_mirror.text = "🪞 Espelho [X]: Desligado"
+				_set_button_selected(btn_mirror, false, Color(0.70, 0.55, 0.95))
+			1:
+				btn_mirror.text = "🪞 Espelho [X]: Horizontal (X)"
+				_set_button_selected(btn_mirror, true, Color(0.35, 0.95, 0.75))
+			2:
+				btn_mirror.text = "🪞 Espelho [X]: Vertical (Z)"
+				_set_button_selected(btn_mirror, true, Color(0.35, 0.95, 0.75))
+			3:
+				btn_mirror.text = "🪞 Espelho [X]: Quádruplo (X+Z)"
+				_set_button_selected(btn_mirror, true, Color(0.95, 0.85, 0.35))
 
 func update_level_header(level_id: int, width: int, height: int, time_limit: float) -> void:
 	if spin_level != null:
@@ -1133,7 +1155,7 @@ func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> v
 	if lbl_status == null:
 		return
 	var cell_str: String = "[%d, %d]" % [cell.x, cell.y] if in_bounds else "[Fora da Grade]"
-	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [Alt+Esq/5]: Pipeta  |  [6/M]: Seleção  |  [F1]: Playtest" % [
+	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [X]: Espelho  |  [Alt+Esq/5]: Pipeta  |  [6/M]: Seleção  |  [F1]: Playtest" % [
 		cell_str, world_pos.x, world_pos.z
 	]
 

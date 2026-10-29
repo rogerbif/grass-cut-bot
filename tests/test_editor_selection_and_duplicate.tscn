@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://cxselectionanddup01"]
+[gd_scene format=3 uid="uid://cmdv3g3ft538g"]
 
 [ext_resource type="Script" path="res://tests/test_editor_selection_and_duplicate.gd" id="1_test"]
 

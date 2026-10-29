@@ -94,6 +94,15 @@ enum QuickAdjustMode {
 	SCALE = 1
 }
 
+enum MirrorMode {
+	NONE = 0,
+	HORIZONTAL_X = 1,
+	VERTICAL_Z = 2,
+	QUAD_XZ = 3
+}
+
+var mirror_mode: int = MirrorMode.NONE
+
 var current_level_id: int = 1
 var grid_width: int = 12
 var grid_height: int = 8
@@ -304,6 +313,7 @@ func _connect_ui_signals() -> void:
 		editor_camera.toggle_top_down()
 		_sync_all_ui()
 	)
+	ui.toggle_mirror_mode_requested.connect(toggle_mirror_mode)
 	ui.terrain_tile_selected.connect(func(t_id: String) -> void:
 		active_terrain_id = t_id
 		active_layer = EditLayer.TERRAIN
@@ -366,7 +376,8 @@ func _sync_all_ui() -> void:
 		active_grass_id,
 		active_object_id,
 		editor_camera.is_top_down if editor_camera != null else false,
-		active_adjust_mode
+		active_adjust_mode,
+		mirror_mode
 	)
 	ui.update_level_header(current_level_id, grid_width, grid_height, time_limit)
 	ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
@@ -471,6 +482,8 @@ func _input(event: InputEvent) -> void:
 					KEY_V:
 						editor_camera.toggle_top_down()
 						_sync_all_ui()
+					KEY_X:
+						toggle_mirror_mode()
 
 	if is_playtesting:
 		return
@@ -823,11 +836,15 @@ func _refresh_hover_preview() -> void:
 			fill_col = Color(0.2, 1.0, 0.55, 0.38)
 			line_col = Color(0.4, 1.0, 0.75, 0.95)
 
+		var mirror_info: Array[Dictionary] = _get_mirrored_cells(hovered_cell, current_rot_deg)
 		var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
-		for off in offsets:
-			var target_c: Vector2i = hovered_cell + off
-			if target_c.x >= 0 and target_c.x < grid_width and target_c.y >= 0 and target_c.y < grid_height:
-				preview_cells.append(target_c)
+		for m_item in mirror_info:
+			var m_center: Vector2i = m_item["cell"] as Vector2i
+			for off in offsets:
+				var target_c: Vector2i = m_center + off
+				if target_c.x >= 0 and target_c.x < grid_width and target_c.y >= 0 and target_c.y < grid_height:
+					if not preview_cells.has(target_c):
+						preview_cells.append(target_c)
 
 	grid_overlay.update_brush_preview(preview_cells, hovered_cell, current_rot_deg, fill_col, line_col, clearance_r)
 	if active_tool != ToolMode.SELECT:
@@ -863,41 +880,48 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		if poly.size() < 3:
 			return
 
-		if erase_mode:
-			vector_grass.call("clip_shapes", poly)
-			if object_grid.has(center):
-				object_grid.erase(center)
-		else:
-			# Garante corredor costeiro afastado da borda da ilha ao colocar grama
-			var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
-			var polys_to_add: Array[PackedVector2Array] = []
-			if not safe_polys.is_empty():
-				for sp: PackedVector2Array in safe_polys:
-					polys_to_add.append_array(Geometry2D.intersect_polygons(poly, sp))
-			else:
-				polys_to_add.append(poly)
+		var all_polys: Array[PackedVector2Array] = _get_mirrored_polygons(poly)
+		var all_holes: Array[PackedVector2Array] = _get_mirrored_polygons(ring_hole) if not ring_hole.is_empty() else []
 
-			for part: PackedVector2Array in polys_to_add:
-				if part.size() < 3:
-					continue
-				if not ring_hole.is_empty():
-					vector_grass.call("add_shape", active_grass_id, part, [ring_hole])
+		for pi in range(all_polys.size()):
+			var p_target: PackedVector2Array = all_polys[pi]
+			var cur_hole: PackedVector2Array = all_holes[pi] if pi < all_holes.size() else PackedVector2Array()
+
+			if erase_mode:
+				vector_grass.call("clip_shapes", p_target)
+				if object_grid.has(center):
+					object_grid.erase(center)
+			else:
+				# Garante corredor costeiro afastado da borda da ilha ao colocar grama
+				var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
+				var polys_to_add: Array[PackedVector2Array] = []
+				if not safe_polys.is_empty():
+					for sp: PackedVector2Array in safe_polys:
+						polys_to_add.append_array(Geometry2D.intersect_polygons(p_target, sp))
 				else:
-					vector_grass.call("merge_or_add_shape", active_grass_id, part)
-				var aabb: Rect2 = _compute_aabb_2d(part)
-				var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
-				var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
-				var min_gz: int = clampi(int(floori((aabb.position.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
-				var max_gz: int = clampi(int(ceili((aabb.end.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
-				for gz: int in range(min_gz, max_gz + 1):
-					for gx: int in range(min_gx, max_gx + 1):
-						var bcell: Vector2i = Vector2i(gx, gz)
-						if not terrain_grid.has(bcell):
-							terrain_grid[bcell] = {
-								"tile_id": "island_center",
-								"rot": 0,
-								"auto": true
-							}
+					polys_to_add.append(p_target)
+
+				for part: PackedVector2Array in polys_to_add:
+					if part.size() < 3:
+						continue
+					if not cur_hole.is_empty():
+						vector_grass.call("add_shape", active_grass_id, part, [cur_hole])
+					else:
+						vector_grass.call("merge_or_add_shape", active_grass_id, part)
+					var aabb: Rect2 = _compute_aabb_2d(part)
+					var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+					var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+					var min_gz: int = clampi(int(floori((aabb.position.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+					var max_gz: int = clampi(int(ceili((aabb.end.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+					for gz: int in range(min_gz, max_gz + 1):
+						for gx: int in range(min_gx, max_gx + 1):
+							var bcell: Vector2i = Vector2i(gx, gz)
+							if not terrain_grid.has(bcell):
+								terrain_grid[bcell] = {
+									"tile_id": "island_center",
+									"rot": 0,
+									"auto": true
+								}
 
 		_stroke_modified = true
 		_rebuild_3d_world()
@@ -905,14 +929,18 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		return
 
 	# Camada de Terreno ou Objetos em blocos de 0.80m
+	var mirror_info: Array[Dictionary] = _get_mirrored_cells(center, current_rot_deg)
 	var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
 	var changed_any: bool = false
-	for off in offsets:
-		var c: Vector2i = center + off
-		if c.x < 0 or c.x >= grid_width or c.y < 0 or c.y >= grid_height:
-			continue
-		if _modify_single_cell(c, erase_mode):
-			changed_any = true
+	for m_item in mirror_info:
+		var m_center: Vector2i = m_item["cell"] as Vector2i
+		var m_rot: int = int(m_item["rot"])
+		for off in offsets:
+			var c: Vector2i = m_center + off
+			if c.x < 0 or c.x >= grid_width or c.y < 0 or c.y >= grid_height:
+				continue
+			if _modify_single_cell(c, erase_mode, m_rot):
+				changed_any = true
 
 	if changed_any:
 		_stroke_modified = true
@@ -931,7 +959,7 @@ func _apply_box_fill(start_c: Vector2i, end_c: Vector2i) -> void:
 		_rebuild_3d_world()
 		_sync_all_ui()
 
-func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
+func _modify_single_cell(cell: Vector2i, erase_mode: bool, custom_rot: int = -1) -> bool:
 	if active_layer == EditLayer.TERRAIN:
 		if erase_mode:
 			if not terrain_grid.has(cell):
@@ -949,13 +977,14 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 		else:
 			var is_auto: bool = (active_terrain_id == "auto_island")
 			var t_id: String = "island_center" if is_auto else active_terrain_id
+			var cell_rot: int = custom_rot if custom_rot >= 0 else current_rot_deg
 			if terrain_grid.has(cell):
 				var cur: Dictionary = terrain_grid[cell] as Dictionary
-				if bool(cur.get("auto", false)) == is_auto and String(cur.get("tile_id", "")) == t_id and int(cur.get("rot", 0)) == current_rot_deg:
+				if bool(cur.get("auto", false)) == is_auto and String(cur.get("tile_id", "")) == t_id and int(cur.get("rot", 0)) == cell_rot:
 					return false
 			terrain_grid[cell] = {
 				"tile_id": t_id,
-				"rot": current_rot_deg,
+				"rot": cell_rot,
 				"auto": is_auto
 			}
 			return true
@@ -998,8 +1027,8 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 								ui.show_toast("⚠️ Área protegida da rocha (raio %.1fm)" % ROCK_CLEARANCE_RADIUS, Color(1.0, 0.65, 0.2))
 							return false
 
-			var obj_rot: int = current_rot_deg
-			if active_object_id.begins_with("flower") and active_adjust_mode == QuickAdjustMode.SCALE:
+			var obj_rot: int = custom_rot if custom_rot >= 0 else current_rot_deg
+			if active_object_id.begins_with("flower"):
 				obj_rot = 0
 
 			if object_grid.has(cell):
@@ -1090,6 +1119,79 @@ func _pick_at_hovered(cell: Vector2i, hit_2d: Vector2) -> void:
 
 	if ui != null:
 		ui.show_toast("💉 Pipeta: Nenhum elemento na célula [%d, %d]" % [cell.x, cell.y], Color(0.7, 0.7, 0.7))
+
+## Alterna ciclicamente o modo de espelhamento (0: Desligado -> 1: Horizontal X -> 2: Vertical Z -> 3: Quádruplo XZ -> 0)
+func toggle_mirror_mode() -> void:
+	mirror_mode = (mirror_mode + 1) % 4
+	_sync_all_ui()
+	_refresh_hover_preview()
+	if grid_overlay != null:
+		grid_overlay.call("update_mirror_axis", mirror_mode)
+	var names: Array[String] = ["Desligada", "Horizontal (Eixo X)", "Vertical (Eixo Z)", "Quádrupla (Eixos X e Z)"]
+	if ui != null:
+		ui.show_toast("🪞 Simetria: %s" % names[mirror_mode], Color(0.70, 0.55, 0.95))
+
+## Retorna lista de dicionários com células e rotações espelhadas { "cell": Vector2i, "rot": int }
+func _get_mirrored_cells(center_cell: Vector2i, base_rot: int = 0) -> Array[Dictionary]:
+	var list: Array[Dictionary] = [{ "cell": center_cell, "rot": base_rot }]
+	if mirror_mode == MirrorMode.NONE:
+		return list
+
+	var mx: int = (grid_width - 1) - center_cell.x
+	var mz: int = (grid_height - 1) - center_cell.y
+	var rot_x: int = (360 - base_rot) % 360
+	var rot_z: int = (540 - base_rot) % 360
+	var rot_xz: int = (base_rot + 180) % 360
+
+	match mirror_mode:
+		MirrorMode.HORIZONTAL_X:
+			var cx: Vector2i = Vector2i(mx, center_cell.y)
+			if cx != center_cell:
+				list.append({ "cell": cx, "rot": rot_x })
+		MirrorMode.VERTICAL_Z:
+			var cz: Vector2i = Vector2i(center_cell.x, mz)
+			if cz != center_cell:
+				list.append({ "cell": cz, "rot": rot_z })
+		MirrorMode.QUAD_XZ:
+			var cx: Vector2i = Vector2i(mx, center_cell.y)
+			var cz: Vector2i = Vector2i(center_cell.x, mz)
+			var cxz: Vector2i = Vector2i(mx, mz)
+			if cx != center_cell:
+				list.append({ "cell": cx, "rot": rot_x })
+			if cz != center_cell and cz != cx:
+				list.append({ "cell": cz, "rot": rot_z })
+			if cxz != center_cell and cxz != cx and cxz != cz:
+				list.append({ "cell": cxz, "rot": rot_xz })
+	return list
+
+## Retorna lista de polígonos espelhados para grama vetorial analítica
+func _get_mirrored_polygons(poly: PackedVector2Array) -> Array[PackedVector2Array]:
+	var res: Array[PackedVector2Array] = [poly]
+	if mirror_mode == MirrorMode.NONE or poly.size() < 3:
+		return res
+
+	if mirror_mode == MirrorMode.HORIZONTAL_X or mirror_mode == MirrorMode.QUAD_XZ:
+		var poly_x: PackedVector2Array = PackedVector2Array()
+		poly_x.resize(poly.size())
+		for i in range(poly.size()):
+			poly_x[i] = Vector2(-poly[i].x, poly[i].y)
+		res.append(poly_x)
+
+	if mirror_mode == MirrorMode.VERTICAL_Z or mirror_mode == MirrorMode.QUAD_XZ:
+		var poly_z: PackedVector2Array = PackedVector2Array()
+		poly_z.resize(poly.size())
+		for i in range(poly.size()):
+			poly_z[i] = Vector2(poly[i].x, -poly[i].y)
+		res.append(poly_z)
+
+	if mirror_mode == MirrorMode.QUAD_XZ:
+		var poly_xz: PackedVector2Array = PackedVector2Array()
+		poly_xz.resize(poly.size())
+		for i in range(poly.size()):
+			poly_xz[i] = Vector2(-poly[i].x, -poly[i].y)
+		res.append(poly_xz)
+
+	return res
 
 ## Copia os blocos e objetos da área de seleção ativa para a área de transferência
 func copy_selection() -> void:
