@@ -203,18 +203,18 @@ func _update_toggle_visuals() -> void:
 	if graphics_btn != null:
 		match graphics_quality:
 			"high":
-				graphics_btn.text = "⚡ Gráficos 3D: Alta (100% Nativa)"
+				graphics_btn.text = "Gráficos 3D: Alta (100% Nativa)"
 			"eco":
-				graphics_btn.text = "⚡ Gráficos 3D: Econômica (70% FSR)"
+				graphics_btn.text = "Gráficos 3D: Econômica (70% FSR)"
 			_:
-				graphics_btn.text = "⚡ Gráficos 3D: Balanceada (85% FSR) ⭐"
+				graphics_btn.text = "Gráficos 3D: Balanceada (85% FSR)"
 
 	if music_btn != null:
-		music_btn.text = "🎵 Música: " + ("ON" if music_enabled else "OFF")
+		music_btn.text = "Música: " + ("ON" if music_enabled else "OFF")
 	if sfx_btn != null:
-		sfx_btn.text = "🔊 FX: " + ("ON" if sfx_enabled else "OFF")
+		sfx_btn.text = "Sons FX: " + ("ON" if sfx_enabled else "OFF")
 	if vib_btn != null:
-		vib_btn.text = "📳 Vibração: " + ("ON" if vib_enabled else "OFF")
+		vib_btn.text = "Vibração: " + ("ON" if vib_enabled else "OFF")
 
 	if android_vib_hint_btn != null:
 		var haptic_on: bool = _is_android_haptic_feedback_enabled()

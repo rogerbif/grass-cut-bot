@@ -73,7 +73,8 @@ enum ToolMode {
 	ERASER = 1,
 	BOX_FILL = 2,
 	SPAWN = 3,
-	PICKER = 4
+	PICKER = 4,
+	SELECT = 5
 }
 
 @onready var editor_camera: Camera3D = $EditorCamera
@@ -132,6 +133,17 @@ var rmb_dragged: bool = false
 var is_box_dragging: bool = false
 var box_start_cell: Vector2i = Vector2i.ZERO
 var _stroke_modified: bool = false
+
+# Estado de Seleção Múltipla, Mover e Duplicação (ToolMode.SELECT)
+var is_selecting_rect: bool = false
+var selection_start_cell: Vector2i = Vector2i.ZERO
+var has_selection: bool = false
+var selection_rect: Rect2i = Rect2i()
+var selection_clipboard: Dictionary = {}
+var is_moving_selection: bool = false
+var move_start_cell: Vector2i = Vector2i.ZERO
+var move_offset: Vector2i = Vector2i.ZERO
+var is_paste_mode: bool = false
 
 var _undo_stack: Array[Dictionary] = []
 var _redo_stack: Array[Dictionary] = []
@@ -389,6 +401,28 @@ func _input(event: InputEvent) -> void:
 					perform_redo()
 					get_viewport().set_input_as_handled()
 					return
+				if ke.ctrl_pressed and ke.keycode == KEY_D:
+					duplicate_selection()
+					get_viewport().set_input_as_handled()
+					return
+				if ke.ctrl_pressed and ke.keycode == KEY_C:
+					copy_selection()
+					get_viewport().set_input_as_handled()
+					return
+				if ke.ctrl_pressed and ke.keycode == KEY_V:
+					paste_selection()
+					get_viewport().set_input_as_handled()
+					return
+				if ke.keycode == KEY_DELETE or ke.keycode == KEY_BACKSPACE:
+					if has_selection:
+						delete_selection()
+						get_viewport().set_input_as_handled()
+						return
+				if ke.keycode == KEY_ESCAPE:
+					if has_selection or is_paste_mode:
+						clear_selection()
+						get_viewport().set_input_as_handled()
+						return
 
 				match ke.keycode:
 					KEY_1, KEY_B:
@@ -409,6 +443,10 @@ func _input(event: InputEvent) -> void:
 						_refresh_hover_preview()
 					KEY_5, KEY_I:
 						active_tool = ToolMode.PICKER
+						_sync_all_ui()
+						_refresh_hover_preview()
+					KEY_6, KEY_M:
+						active_tool = ToolMode.SELECT
 						_sync_all_ui()
 						_refresh_hover_preview()
 					KEY_S:
@@ -463,7 +501,20 @@ func _input(event: InputEvent) -> void:
 		if is_erasing_rmb and mm.position.distance_to(rmb_press_pos) > 6.0:
 			rmb_dragged = true
 		_update_hovered_cell(mm.position)
-		if is_painting_lmb and not over_ui:
+		if active_tool == ToolMode.SELECT and not over_ui:
+			if is_selecting_rect:
+				var min_x: int = mini(selection_start_cell.x, hovered_cell.x)
+				var min_z: int = mini(selection_start_cell.y, hovered_cell.y)
+				var max_x: int = maxi(selection_start_cell.x, hovered_cell.x)
+				var max_z: int = maxi(selection_start_cell.y, hovered_cell.y)
+				selection_rect = Rect2i(min_x, min_z, max_x - min_x + 1, max_z - min_z + 1)
+				_refresh_hover_preview()
+			elif is_moving_selection:
+				move_offset = hovered_cell - move_start_cell
+				_refresh_hover_preview()
+			elif is_paste_mode:
+				_refresh_hover_preview()
+		elif is_painting_lmb and not over_ui:
 			if active_layer == EditLayer.GRASS:
 				var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 				if active_shape == BrushPatterns.ShapeType.SINGLE:
@@ -494,6 +545,27 @@ func _input(event: InputEvent) -> void:
 					_pick_at_hovered(hovered_cell, Vector2(last_world_hit.x, last_world_hit.z))
 					get_viewport().set_input_as_handled()
 					return
+				if active_tool == ToolMode.SELECT:
+					if is_paste_mode:
+						apply_paste_at(hovered_cell)
+						get_viewport().set_input_as_handled()
+						return
+					elif has_selection and selection_rect.has_point(hovered_cell):
+						is_moving_selection = true
+						move_start_cell = hovered_cell
+						move_offset = Vector2i.ZERO
+						copy_selection()
+						_refresh_hover_preview()
+						get_viewport().set_input_as_handled()
+						return
+					else:
+						is_selecting_rect = true
+						selection_start_cell = hovered_cell
+						has_selection = false
+						selection_rect = Rect2i(hovered_cell, Vector2i(1, 1))
+						_refresh_hover_preview()
+						get_viewport().set_input_as_handled()
+						return
 				if active_tool == ToolMode.BOX_FILL:
 					if is_hover_in_bounds:
 						_push_undo_snapshot()
@@ -531,6 +603,23 @@ func _input(event: InputEvent) -> void:
 					else:
 						_apply_brush_at(hovered_cell, true)
 			elif not mb.pressed:
+				if active_tool == ToolMode.SELECT:
+					if is_selecting_rect:
+						is_selecting_rect = false
+						if selection_rect.size.x > 0 and selection_rect.size.y > 0:
+							has_selection = true
+							copy_selection()
+							var count: int = (selection_clipboard.get("terrain", {}) as Dictionary).size() + (selection_clipboard.get("objects", {}) as Dictionary).size()
+							if ui != null:
+								ui.show_toast("📦 Selecionado: %dx%d células (%d itens). [Ctrl+D] Duplicar / [Del] Deletar" % [
+									selection_rect.size.x, selection_rect.size.y, count
+								], Color(0.88, 0.65, 1.0))
+						_refresh_hover_preview()
+					elif is_moving_selection:
+						is_moving_selection = false
+						commit_move_selection()
+						move_offset = Vector2i.ZERO
+						_refresh_hover_preview()
 				if is_box_dragging:
 					is_box_dragging = false
 					_apply_box_fill(box_start_cell, hovered_cell)
@@ -704,6 +793,25 @@ func _refresh_hover_preview() -> void:
 		fill_col = Color(0.40, 0.85, 1.0, 0.45)
 		line_col = Color(0.50, 0.95, 1.0, 0.95)
 		preview_cells.append(hovered_cell)
+	elif active_tool == ToolMode.SELECT:
+		fill_col = Color.TRANSPARENT
+		line_col = Color.TRANSPARENT
+		if is_paste_mode:
+			var sz: Vector2i = selection_clipboard.get("size", Vector2i.ONE) as Vector2i
+			var paste_rect: Rect2i = Rect2i(hovered_cell, sz)
+			grid_overlay.call("update_selection_preview", paste_rect, true, Color(0.35, 0.95, 0.6, 0.28), Color(0.5, 1.0, 0.7, 0.95))
+		elif is_moving_selection:
+			var dest_rect: Rect2i = Rect2i(selection_rect.position + move_offset, selection_rect.size)
+			grid_overlay.call("update_selection_preview", dest_rect, true, Color(0.88, 0.55, 0.98, 0.35), Color(0.95, 0.75, 1.0, 0.98))
+		elif is_selecting_rect:
+			grid_overlay.call("update_selection_preview", selection_rect, true, Color(0.85, 0.45, 1.0, 0.25), Color(0.95, 0.65, 1.0, 0.95))
+		elif has_selection:
+			grid_overlay.call("update_selection_preview", selection_rect, true, Color(0.85, 0.45, 1.0, 0.22), Color(0.95, 0.65, 1.0, 0.95))
+		else:
+			preview_cells.append(hovered_cell)
+			fill_col = Color(0.85, 0.45, 1.0, 0.30)
+			line_col = Color(0.95, 0.65, 1.0, 0.90)
+			grid_overlay.call("update_selection_preview", Rect2i(), false)
 	else:
 		if active_tool == ToolMode.ERASER:
 			fill_col = Color(1.0, 0.28, 0.28, 0.42)
@@ -722,6 +830,11 @@ func _refresh_hover_preview() -> void:
 				preview_cells.append(target_c)
 
 	grid_overlay.update_brush_preview(preview_cells, hovered_cell, current_rot_deg, fill_col, line_col, clearance_r)
+	if active_tool != ToolMode.SELECT:
+		if has_selection:
+			grid_overlay.call("update_selection_preview", selection_rect, true, Color(0.85, 0.45, 1.0, 0.12), Color(0.95, 0.65, 1.0, 0.50))
+		else:
+			grid_overlay.call("update_selection_preview", Rect2i(), false)
 
 func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 	if not is_hover_in_bounds:
@@ -977,6 +1090,177 @@ func _pick_at_hovered(cell: Vector2i, hit_2d: Vector2) -> void:
 
 	if ui != null:
 		ui.show_toast("💉 Pipeta: Nenhum elemento na célula [%d, %d]" % [cell.x, cell.y], Color(0.7, 0.7, 0.7))
+
+## Copia os blocos e objetos da área de seleção ativa para a área de transferência
+func copy_selection() -> void:
+	if not has_selection or selection_rect.size.x <= 0 or selection_rect.size.y <= 0:
+		if ui != null:
+			ui.show_toast("⚠️ Nenhuma área selecionada para copiar!", Color(1.0, 0.65, 0.2))
+		return
+	selection_clipboard.clear()
+	var t_dict: Dictionary = {}
+	var o_dict: Dictionary = {}
+	var count: int = 0
+	for dz in range(selection_rect.size.y):
+		for dx in range(selection_rect.size.x):
+			var world_c: Vector2i = selection_rect.position + Vector2i(dx, dz)
+			var rel_c: Vector2i = Vector2i(dx, dz)
+			if terrain_grid.has(world_c):
+				t_dict[rel_c] = (terrain_grid[world_c] as Dictionary).duplicate(true)
+				count += 1
+			if object_grid.has(world_c):
+				o_dict[rel_c] = (object_grid[world_c] as Dictionary).duplicate(true)
+				count += 1
+	selection_clipboard = {
+		"size": selection_rect.size,
+		"terrain": t_dict,
+		"objects": o_dict
+	}
+	if ui != null:
+		ui.show_toast("📋 %d elementos copiados para a área de transferência!" % count, Color(0.85, 0.65, 1.0))
+
+## Duplica a seleção ativa imediatamente e entra no modo carimbo para colar com clique
+func duplicate_selection() -> void:
+	if not has_selection:
+		if ui != null:
+			ui.show_toast("⚠️ Selecione uma área primeiro com a ferramenta [6 / M]!", Color(1.0, 0.65, 0.2))
+		return
+	copy_selection()
+	is_paste_mode = true
+	active_tool = ToolMode.SELECT
+	_sync_all_ui()
+	_refresh_hover_preview()
+	if ui != null:
+		ui.show_toast("📋 Duplicação ativa! Clique no mapa para estampar a cópia.", Color(0.9, 0.7, 1.0))
+
+## Entra no modo de colagem da área de transferência
+func paste_selection() -> void:
+	if selection_clipboard.is_empty():
+		if ui != null:
+			ui.show_toast("⚠️ Área de transferência vazia! Selecione e aperte Ctrl+C.", Color(1.0, 0.65, 0.2))
+		return
+	is_paste_mode = true
+	active_tool = ToolMode.SELECT
+	_sync_all_ui()
+	_refresh_hover_preview()
+	if ui != null:
+		ui.show_toast("📋 Modo Colar ativo! Clique no mapa para posicionar.", Color(0.9, 0.7, 1.0))
+
+## Deleta todo o conteúdo de terreno e objetos dentro da seleção ativa
+func delete_selection() -> void:
+	if not has_selection or selection_rect.size.x <= 0 or selection_rect.size.y <= 0:
+		return
+	_push_undo_snapshot()
+	var count: int = 0
+	for dz in range(selection_rect.size.y):
+		for dx in range(selection_rect.size.x):
+			var world_c: Vector2i = selection_rect.position + Vector2i(dx, dz)
+			if terrain_grid.has(world_c):
+				terrain_grid.erase(world_c)
+				count += 1
+			if object_grid.has(world_c):
+				object_grid.erase(world_c)
+				count += 1
+			if veg_field != null:
+				for fdz in range(4):
+					for fdx in range(4):
+						veg_field.call("set_cell", world_c.x * 4 + fdx, world_c.y * 4 + fdz, 0)
+	has_selection = false
+	selection_rect = Rect2i()
+	_rebuild_3d_world()
+	_sync_all_ui()
+	_refresh_hover_preview()
+	if ui != null:
+		ui.show_toast("🗑️ %d elementos deletados da seleção." % count, Color(1.0, 0.45, 0.45))
+
+## Cancela e limpa a seleção e o modo de colagem
+func clear_selection() -> void:
+	has_selection = false
+	is_selecting_rect = false
+	is_moving_selection = false
+	is_paste_mode = false
+	selection_rect = Rect2i()
+	_refresh_hover_preview()
+	if ui != null:
+		ui.show_toast("Seleção cancelada.", Color(0.7, 0.7, 0.7))
+
+## Aplica os dados copiados na posição de destino da grade
+func apply_paste_at(target_origin: Vector2i) -> void:
+	if selection_clipboard.is_empty():
+		return
+	_push_undo_snapshot()
+	var t_dict: Dictionary = selection_clipboard.get("terrain", {}) as Dictionary
+	var o_dict: Dictionary = selection_clipboard.get("objects", {}) as Dictionary
+	var sz: Vector2i = selection_clipboard.get("size", Vector2i.ONE) as Vector2i
+
+	for rel_pos in t_dict:
+		var c: Vector2i = target_origin + (rel_pos as Vector2i)
+		if c.x >= 0 and c.x < grid_width and c.y >= 0 and c.y < grid_height:
+			terrain_grid[c] = (t_dict[rel_pos] as Dictionary).duplicate(true)
+
+	for rel_pos in o_dict:
+		var c: Vector2i = target_origin + (rel_pos as Vector2i)
+		if c.x >= 0 and c.x < grid_width and c.y >= 0 and c.y < grid_height:
+			if not terrain_grid.has(c):
+				terrain_grid[c] = {
+					"tile_id": "island_center",
+					"rot": 0,
+					"auto": true
+				}
+			object_grid[c] = (o_dict[rel_pos] as Dictionary).duplicate(true)
+
+	selection_rect = Rect2i(target_origin, sz)
+	has_selection = true
+	is_paste_mode = false
+	_rebuild_3d_world()
+	_sync_all_ui()
+	_refresh_hover_preview()
+	if ui != null:
+		ui.show_toast("📋 Conteúdo colado em [%d, %d]!" % [target_origin.x, target_origin.y], Color(0.7, 1.0, 0.7))
+
+## Conclui a movimentação física da seleção arrastada
+func commit_move_selection() -> void:
+	if not has_selection or move_offset == Vector2i.ZERO:
+		return
+	_push_undo_snapshot()
+	var t_dict: Dictionary = selection_clipboard.get("terrain", {}) as Dictionary
+	var o_dict: Dictionary = selection_clipboard.get("objects", {}) as Dictionary
+	var sz: Vector2i = selection_rect.size
+
+	# 1. Apaga elementos da posição antiga
+	for dz in range(sz.y):
+		for dx in range(sz.x):
+			var old_c: Vector2i = selection_rect.position + Vector2i(dx, dz)
+			if terrain_grid.has(old_c):
+				terrain_grid.erase(old_c)
+			if object_grid.has(old_c):
+				object_grid.erase(old_c)
+
+	# 2. Escreve na nova posição
+	var new_origin: Vector2i = selection_rect.position + move_offset
+	for rel_pos in t_dict:
+		var c: Vector2i = new_origin + (rel_pos as Vector2i)
+		if c.x >= 0 and c.x < grid_width and c.y >= 0 and c.y < grid_height:
+			terrain_grid[c] = (t_dict[rel_pos] as Dictionary).duplicate(true)
+
+	for rel_pos in o_dict:
+		var c: Vector2i = new_origin + (rel_pos as Vector2i)
+		if c.x >= 0 and c.x < grid_width and c.y >= 0 and c.y < grid_height:
+			if not terrain_grid.has(c):
+				terrain_grid[c] = {
+					"tile_id": "island_center",
+					"rot": 0,
+					"auto": true
+				}
+			object_grid[c] = (o_dict[rel_pos] as Dictionary).duplicate(true)
+
+	selection_rect = Rect2i(new_origin, sz)
+	copy_selection()
+	_rebuild_3d_world()
+	_sync_all_ui()
+	_refresh_hover_preview()
+	if ui != null:
+		ui.show_toast("📦 Seleção movida para [%d, %d]!" % [new_origin.x, new_origin.y], Color(0.88, 0.65, 1.0))
 
 func _place_spawn_at(cell: Vector2i) -> void:
 	spawn_cell = cell

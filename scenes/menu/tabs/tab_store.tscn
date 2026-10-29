@@ -83,7 +83,7 @@ theme_override_constants/separation = 16
 [node name="Title" type="Label" parent="Panel/Scroll/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "🏪 Loja do Arquipélago"
+text = "Loja do Arquipélago"
 horizontal_alignment = 1
 
 [node name="BannerPack" type="PanelContainer" parent="Panel/Scroll/VBox"]
@@ -98,7 +98,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_font_sizes/font_size = 18
-text = "⭐ Pacote de Boas-Vindas Grátis!"
+text = "Pacote de Boas-Vindas Grátis!"
 
 [node name="Desc" type="Label" parent="Panel/Scroll/VBox/BannerPack/VBox"]
 layout_mode = 2
@@ -113,7 +113,7 @@ focus_mode = 0
 theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_gold")
-text = "RESGATAR GRÁTIS 🎁"
+text = "RESGATAR GRÁTIS"
 
 [node name="CoinsSectionLabel" type="Label" parent="Panel/Scroll/VBox"]
 layout_mode = 2
@@ -132,7 +132,7 @@ theme_override_constants/separation = 12
 [node name="Icon" type="Label" parent="Panel/Scroll/VBox/Pack1/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "💰"
+text = "$"
 
 [node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/Pack1/HBox"]
 layout_mode = 2
@@ -140,7 +140,7 @@ size_flags_horizontal = 3
 
 [node name="Name" type="Label" parent="Panel/Scroll/VBox/Pack1/HBox/Info"]
 layout_mode = 2
-text = "Bolsa de Moedas (1.000 🪙)"
+text = "Bolsa de Moedas (1.000 Moedas)"
 
 [node name="Btn" type="Button" parent="Panel/Scroll/VBox/Pack1/HBox"]
 custom_minimum_size = Vector2(95, 40)
@@ -159,7 +159,7 @@ theme_override_constants/separation = 12
 [node name="Icon" type="Label" parent="Panel/Scroll/VBox/Pack2/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "📦"
+text = "+"
 
 [node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/Pack2/HBox"]
 layout_mode = 2
@@ -167,7 +167,7 @@ size_flags_horizontal = 3
 
 [node name="Name" type="Label" parent="Panel/Scroll/VBox/Pack2/HBox/Info"]
 layout_mode = 2
-text = "Baú de Moedas (5.000 🪙)"
+text = "Baú de Moedas (5.000 Moedas)"
 
 [node name="Btn" type="Button" parent="Panel/Scroll/VBox/Pack2/HBox"]
 custom_minimum_size = Vector2(95, 40)

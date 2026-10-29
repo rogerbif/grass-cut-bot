@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+	<title>$GODOT_PROJECT_NAME</title>
+	$GODOT_HEAD_INCLUDE
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background-color: #0b141d;
+			color: #ffffff;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			touch-action: none;
+			user-select: none;
+			-webkit-user-select: none;
+		}
+
+		#canvas {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		#canvas:focus {
+			outline: none;
+		}
+
+		#loading-screen {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: radial-gradient(circle at 50% 45%, #182e42 0%, #09121a 100%);
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			z-index: 10;
+			transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		#loading-screen.loaded {
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.brand-card {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-bottom: 28px;
+		}
+
+		.bot-icon {
+			width: 120px;
+			height: 120px;
+			border-radius: 28px;
+			box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), 0 0 25px rgba(46, 204, 113, 0.35);
+			animation: pulse-glow 2.5s infinite ease-in-out;
+		}
+
+		@keyframes pulse-glow {
+			0% {
+				transform: scale(1);
+				box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), 0 0 20px rgba(46, 204, 113, 0.3);
+			}
+			50% {
+				transform: scale(1.05);
+				box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), 0 0 38px rgba(46, 204, 113, 0.65);
+			}
+			100% {
+				transform: scale(1);
+				box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), 0 0 20px rgba(46, 204, 113, 0.3);
+			}
+		}
+
+		.game-title {
+			margin: 18px 0 4px 0;
+			font-size: 28px;
+			font-weight: 800;
+			letter-spacing: 2px;
+			color: #e8f5e9;
+			text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+		}
+
+		.game-subtitle {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 500;
+			color: #81c784;
+			letter-spacing: 0.5px;
+		}
+
+		.progress-box {
+			width: 85%;
+			max-width: 320px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.progress-track {
+			width: 100%;
+			height: 12px;
+			background: rgba(255, 255, 255, 0.1);
+			border-radius: 6px;
+			overflow: hidden;
+			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+		}
+
+		.progress-fill {
+			width: 0%;
+			height: 100%;
+			background: linear-gradient(90deg, #27ae60 0%, #2ecc71 50%, #69f0ae 100%);
+			border-radius: 6px;
+			transition: width 0.15s ease-out;
+			box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+		}
+
+		.progress-text {
+			font-size: 13px;
+			font-weight: 600;
+			color: #b0bec5;
+			letter-spacing: 0.5px;
+		}
+
+		.tips-footer {
+			position: absolute;
+			bottom: 24px;
+			width: 90%;
+			max-width: 420px;
+			text-align: center;
+			background: rgba(14, 26, 38, 0.7);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			padding: 10px 16px;
+			border-radius: 14px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+		}
+
+		.tips-footer p {
+			margin: 0;
+			font-size: 12px;
+			color: #90a4ae;
+			line-height: 1.4;
+		}
+
+		.tips-footer strong {
+			color: #a5d6a7;
+		}
+
+		#error-notice {
+			display: none;
+			position: absolute;
+			max-width: 450px;
+			margin: 20px;
+			padding: 20px;
+			background: #3e1b24;
+			border: 1px solid #c62828;
+			border-radius: 12px;
+			text-align: center;
+			box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+			color: #ffcdd2;
+			font-size: 14px;
+			line-height: 1.5;
+			z-index: 20;
+		}
+	</style>
+	<link rel="icon" type="image/png" href="index.icon.png">
+	<link rel="apple-touch-icon" href="index.apple-touch-icon.png">
+</head>
+<body>
+	<canvas id="canvas">Seu navegador não suporta WebGL2.</canvas>
+
+	<div id="loading-screen">
+		<div class="brand-card">
+			<img class="bot-icon" src="index.icon.png" alt="Grass Cut Bot">
+			<h1 class="game-title">GRASS CUT BOT</h1>
+			<p class="game-subtitle">Ceife a ilha, evolua suas lâminas!</p>
+		</div>
+
+		<div class="progress-box">
+			<div class="progress-track">
+				<div id="progress-fill" class="progress-fill"></div>
+			</div>
+			<div id="progress-text" class="progress-text">Carregando o jogo... 0%</div>
+		</div>
+
+		<div class="tips-footer">
+			<p>💡 <strong>Dica:</strong> No PC, use <strong>WASD</strong> ou conecte um <strong>controle</strong>. Pressione <strong>F11</strong> para Tela Cheia!</p>
+		</div>
+	</div>
+
+	<div id="error-notice"></div>
+
+	<script src="$GODOT_URL"></script>
+	<script>
+		const GODOT_CONFIG = $GODOT_CONFIG;
+		const engine = new Engine(GODOT_CONFIG);
+
+		(function () {
+			const loadingScreen = document.getElementById('loading-screen');
+			const progressFill = document.getElementById('progress-fill');
+			const progressText = document.getElementById('progress-text');
+			const errorNotice = document.getElementById('error-notice');
+
+			function showError(message) {
+				console.error(message);
+				errorNotice.innerText = message;
+				errorNotice.style.display = 'block';
+				loadingScreen.style.display = 'none';
+			}
+
+			const missing = Engine.getMissingFeatures();
+			if (missing.length !== 0) {
+				showError("Recursos ausentes no navegador para rodar Godot Web:\n" + missing.join(", "));
+				return;
+			}
+
+			engine.startGame({
+				'onProgress': function (current, total) {
+					if (total > 0) {
+						const percent = Math.min(100, Math.floor((current / total) * 100));
+						progressFill.style.width = percent + '%';
+						progressText.innerText = 'Carregando o jogo... ' + percent + '%';
+					} else {
+						progressFill.style.width = '100%';
+						progressText.innerText = 'Inicializando o jogo...';
+					}
+				}
+			}).then(() => {
+				progressFill.style.width = '100%';
+				progressText.innerText = 'Pronto!';
+				loadingScreen.classList.add('loaded');
+				setTimeout(() => {
+					loadingScreen.remove();
+				}, 600);
+			}).catch((err) => {
+				showError(err && err.message ? err.message : "Erro desconhecido ao carregar o jogo.");
+			});
+		})();
+	</script>
+</body>
+</html>

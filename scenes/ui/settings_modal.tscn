@@ -86,7 +86,7 @@ size_flags_vertical = 0
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 28
-text = "⚙️ Configurações"
+text = "Configurações"
 
 [node name="CloseBtn" type="Button" parent="Panel/Header"]
 custom_minimum_size = Vector2(44, 44)
@@ -124,7 +124,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "⚡ Gráficos 3D: Balanceada (FSR) ⭐"
+text = "Gráficos 3D: Balanceada (FSR)"
 
 [node name="MusicBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
 custom_minimum_size = Vector2(0, 48)
@@ -132,7 +132,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🎵 Música: ON"
+text = "Música: ON"
 
 [node name="SfxBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
 custom_minimum_size = Vector2(0, 48)
@@ -140,7 +140,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🔊 Som FX: ON"
+text = "Som FX: ON"
 
 [node name="VibBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
 custom_minimum_size = Vector2(0, 48)
@@ -148,7 +148,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "📳 Vibração: ON"
+text = "Vibração: ON"
 
 [node name="SaveSection" type="PanelContainer" parent="Panel/VBox"]
 layout_mode = 2
@@ -170,7 +170,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "💾 Salvar Localmente"
+text = "Salvar Localmente"
 
 [node name="GoogleBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
 custom_minimum_size = Vector2(0, 46)
@@ -178,7 +178,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🔴 Conectar Conta Google"
+text = "Conectar Conta Google"
 
 [node name="FacebookBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
 custom_minimum_size = Vector2(0, 46)
@@ -186,7 +186,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🔵 Conectar Facebook"
+text = "Conectar Facebook"
 
 [node name="ResetBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
 custom_minimum_size = Vector2(0, 42)
@@ -195,7 +195,7 @@ focus_mode = 0
 theme_override_colors/font_color = Color(1, 0.45, 0.45, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🗑️ Resetar Progresso"
+text = "Resetar Progresso"
 
 [node name="SupportSection" type="VBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
@@ -207,7 +207,7 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "📨 Contatar Suporte"
+text = "Contatar Suporte"
 
 [node name="VersionLabel" type="Label" parent="Panel/VBox/SupportSection"]
 layout_mode = 2
