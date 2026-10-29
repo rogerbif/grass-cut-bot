@@ -21,7 +21,8 @@ func _ready() -> void:
 	if toggle_btn != null:
 		toggle_btn.icon = ICON_MAP
 		toggle_btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		toggle_btn.expand_icon = true
+		toggle_btn.expand_icon = false
+		toggle_btn.add_theme_constant_override("icon_max_width", 26)
 		toggle_btn.pressed.connect(_on_toggle_pressed)
 	update_level_display(current_level_selected)
 

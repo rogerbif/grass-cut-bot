@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://settings_modal_scene_01" path="res://scenes/ui/settings_modal.tscn" id="9_settings_modal"]
 [ext_resource type="Material" uid="uid://toon_water_mat_01" path="res://shaders/toon_water_material.tres" id="10_water_mat"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="11_coin"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_blade.svg" id="12_blade"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_heart.svg" id="12_heart"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="13_gear"]
 
 [sub_resource type="Environment" id="Environment_menu"]
@@ -127,7 +127,7 @@ custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = ExtResource("12_blade")
+texture = ExtResource("12_heart")
 expand_mode = 1
 stretch_mode = 5
 

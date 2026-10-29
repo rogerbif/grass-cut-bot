@@ -38,7 +38,7 @@ func _notification(what: int) -> void:
 						SaveManager.set_setting("vib_enabled", true)
 					_update_toggle_visuals()
 					Input.vibrate_handheld(200, 1.0)
-					_show_toast("Retorno Tátil ativado! Vibração ON 📳")
+					_show_toast("Retorno Tátil ativado! Vibração ON")
 				else:
 					vib_enabled = false
 					if SaveManager != null:
@@ -193,7 +193,7 @@ func _on_vib_toggled() -> void:
 			SaveManager.set_setting("vib_enabled", true)
 		_update_toggle_visuals()
 		Input.vibrate_handheld(200, 1.0)
-		_show_toast("Vibração Ativada! 📳")
+		_show_toast("Vibração Ativada!")
 
 func _on_android_vib_hint_pressed() -> void:
 	_waiting_for_android_haptic_toggle = true
@@ -220,7 +220,7 @@ func _update_toggle_visuals() -> void:
 		var haptic_on: bool = _is_android_haptic_feedback_enabled()
 		if not haptic_on:
 			android_vib_hint_btn.visible = true
-			android_vib_hint_btn.text = "⚠️ Retorno Tátil desligado no Android (Abrir ⚙️)"
+			android_vib_hint_btn.text = "Retorno Tátil desligado no Android (Abrir Config)"
 			android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35, 1.0))
 		else:
 			android_vib_hint_btn.visible = false
@@ -259,32 +259,32 @@ func _on_save_local_pressed() -> void:
 	if SaveManager != null:
 		var ok: bool = SaveManager.save_game()
 		if ok:
-			_show_toast("Progresso salvo com sucesso no dispositivo! 💾")
+			_show_toast("Progresso salvo com sucesso no dispositivo!")
 		else:
 			_show_toast("Erro ao gravar dados no armazenamento.")
 	else:
-		_show_toast("Progresso salvo com sucesso no dispositivo! 💾")
+		_show_toast("Progresso salvo com sucesso no dispositivo!")
 
 func _on_reset_pressed() -> void:
 	if not _reset_confirmation_pending:
 		_reset_confirmation_pending = true
-		_show_toast("⚠️ Clique novamente para confirmar o reset!")
+		_show_toast("Clique novamente para confirmar o reset!")
 		if reset_btn != null:
-			reset_btn.text = "⚠️ Confirmar Reset Geral?"
+			reset_btn.text = "Confirmar Reset Geral?"
 		var tw: Tween = create_tween()
 		tw.tween_interval(4.0)
 		tw.tween_callback(func() -> void:
 			_reset_confirmation_pending = false
 			if reset_btn != null:
-				reset_btn.text = "🗑️ Resetar Progresso"
+				reset_btn.text = "Resetar Progresso"
 		)
 	else:
 		_reset_confirmation_pending = false
 		if reset_btn != null:
-			reset_btn.text = "🗑️ Resetar Progresso"
+			reset_btn.text = "Resetar Progresso"
 		if SaveManager != null:
 			SaveManager.reset_to_defaults()
-		_show_toast("Progresso reiniciado com sucesso! 🔄")
+		_show_toast("Progresso reiniciado com sucesso!")
 
 func _on_google_pressed() -> void:
 	_show_toast("Google Play Games: Em breve!")

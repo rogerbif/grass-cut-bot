@@ -366,9 +366,9 @@ func _update_workshop_display() -> void:
 		return
 	var blade_name: String = UpgradeManager.get_blade_tier_name() if UpgradeManager.has_method("get_blade_tier_name") else ""
 	if blade_name != "":
-		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d 🪙\nLâmina: %s" % [UpgradeManager.total_coins, blade_name]
+		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d\nLâmina: %s" % [UpgradeManager.total_coins, blade_name]
 	else:
-		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d 🪙" % UpgradeManager.total_coins
+		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d" % UpgradeManager.total_coins
 
 	_update_card("radius", $WorkshopModal/Panel/VBox/UpgradesList/RadiusCard, "Raio da Lâmina")
 	_update_card("power", $WorkshopModal/Panel/VBox/UpgradesList/PowerCard, "Potência e Fio")
@@ -381,5 +381,5 @@ func _update_card(key: String, card: Control, title: String) -> void:
 	var lbl = card.get_node("Info/Title") as Label
 	var cost_btn = card.get_node("BuyBtn") as Button
 	lbl.text = "%s (Nv. %d)" % [title, lvl]
-	cost_btn.text = "%d 🪙" % cost
+	cost_btn.text = "%d" % cost
 	cost_btn.disabled = (UpgradeManager.total_coins < cost)
