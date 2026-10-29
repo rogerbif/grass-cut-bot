@@ -10,6 +10,9 @@
 [ext_resource type="PackedScene" uid="uid://bottom_nav_bar_scene_01" path="res://scenes/menu/bottom_nav_bar.tscn" id="8_nav_bar"]
 [ext_resource type="PackedScene" uid="uid://settings_modal_scene_01" path="res://scenes/ui/settings_modal.tscn" id="9_settings_modal"]
 [ext_resource type="Material" uid="uid://toon_water_mat_01" path="res://shaders/toon_water_material.tres" id="10_water_mat"]
+[ext_resource type="Texture2D" uid="uid://icon_coin_01" path="res://assets/icons/icon_coin.svg" id="11_coin"]
+[ext_resource type="Texture2D" uid="uid://icon_blade_01" path="res://assets/icons/icon_blade.svg" id="12_blade"]
+[ext_resource type="Texture2D" uid="uid://icon_gear_01" path="res://assets/icons/icon_gear.svg" id="13_gear"]
 
 [sub_resource type="Environment" id="Environment_menu"]
 background_mode = 1
@@ -94,10 +97,14 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Icon" type="Label" parent="CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins"]
+[node name="Icon" type="TextureRect" parent="CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "🪙"
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("11_coin")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CoinsLabel" type="Label" parent="CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins"]
 layout_mode = 2
@@ -106,17 +113,30 @@ text = "0"
 vertical_alignment = 1
 
 [node name="EnergyContainer" type="PanelContainer" parent="CanvasLayer/TopBar/HBox"]
-custom_minimum_size = Vector2(95, 48)
+custom_minimum_size = Vector2(105, 48)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
 
-[node name="EnergyLabel" type="Label" parent="CanvasLayer/TopBar/HBox/EnergyContainer"]
+[node name="HBoxEnergy" type="HBoxContainer" parent="CanvasLayer/TopBar/HBox/EnergyContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="BladeIcon" type="TextureRect" parent="CanvasLayer/TopBar/HBox/EnergyContainer/HBoxEnergy"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("12_blade")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EnergyLabel" type="Label" parent="CanvasLayer/TopBar/HBox/EnergyContainer/HBoxEnergy"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
-text = "❤️ 5 Max"
+text = "5 Max"
 horizontal_alignment = 1
 vertical_alignment = 1
-
 [node name="TitleContainer" type="HBoxContainer" parent="CanvasLayer/TopBar/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -134,8 +154,9 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 focus_mode = 0
-theme_override_font_sizes/font_size = 22
-text = "⚙️"
+icon = ExtResource("13_gear")
+icon_alignment = 1
+expand_icon = true
 
 [node name="TabViews" type="Control" parent="CanvasLayer"]
 layout_mode = 3

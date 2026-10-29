@@ -72,7 +72,8 @@ enum ToolMode {
 	BRUSH = 0,
 	ERASER = 1,
 	BOX_FILL = 2,
-	SPAWN = 3
+	SPAWN = 3,
+	PICKER = 4
 }
 
 @onready var editor_camera: Camera3D = $EditorCamera
@@ -406,6 +407,10 @@ func _input(event: InputEvent) -> void:
 						active_tool = ToolMode.SPAWN
 						_sync_all_ui()
 						_refresh_hover_preview()
+					KEY_5, KEY_I:
+						active_tool = ToolMode.PICKER
+						_sync_all_ui()
+						_refresh_hover_preview()
 					KEY_S:
 						active_adjust_mode = QuickAdjustMode.SCALE
 						_sync_all_ui()
@@ -485,6 +490,10 @@ func _input(event: InputEvent) -> void:
 			if mb.pressed and not over_ui:
 				if text_focus:
 					get_viewport().gui_release_focus()
+				if Input.is_key_pressed(KEY_ALT) or active_tool == ToolMode.PICKER:
+					_pick_at_hovered(hovered_cell, Vector2(last_world_hit.x, last_world_hit.z))
+					get_viewport().set_input_as_handled()
+					return
 				if active_tool == ToolMode.BOX_FILL:
 					if is_hover_in_bounds:
 						_push_undo_snapshot()
@@ -646,7 +655,10 @@ func _refresh_hover_preview() -> void:
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 		var preview_poly: PackedVector2Array = PackedVector2Array()
 
-		if active_shape != BrushPatterns.ShapeType.SINGLE:
+		if active_shape == BrushPatterns.ShapeType.RING:
+			var ring_dict: Dictionary = BrushPatterns.get_ring_polygons(hit_2d, float(brush_size) * 0.45 + 0.30, 0.45)
+			preview_poly = ring_dict["outer"] as PackedVector2Array
+		elif active_shape != BrushPatterns.ShapeType.SINGLE:
 			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
@@ -688,6 +700,10 @@ func _refresh_hover_preview() -> void:
 		fill_col = Color(1.0, 0.88, 0.15, 0.50)
 		line_col = Color(1.0, 0.95, 0.5, 1.0)
 		preview_cells.append(hovered_cell)
+	elif active_tool == ToolMode.PICKER:
+		fill_col = Color(0.40, 0.85, 1.0, 0.45)
+		line_col = Color(0.50, 0.95, 1.0, 0.95)
+		preview_cells.append(hovered_cell)
 	else:
 		if active_tool == ToolMode.ERASER:
 			fill_col = Color(1.0, 0.28, 0.28, 0.42)
@@ -717,8 +733,13 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 		var poly: PackedVector2Array = PackedVector2Array()
+		var ring_hole: PackedVector2Array = PackedVector2Array()
 
-		if active_shape != BrushPatterns.ShapeType.SINGLE:
+		if active_shape == BrushPatterns.ShapeType.RING:
+			var ring_dict: Dictionary = BrushPatterns.get_ring_polygons(hit_2d, float(brush_size) * 0.45 + 0.30, 0.45)
+			poly = ring_dict["outer"] as PackedVector2Array
+			ring_hole = ring_dict["hole"] as PackedVector2Array
+		elif active_shape != BrushPatterns.ShapeType.SINGLE:
 			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 		elif _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
@@ -746,7 +767,10 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 			for part: PackedVector2Array in polys_to_add:
 				if part.size() < 3:
 					continue
-				vector_grass.call("merge_or_add_shape", active_grass_id, part)
+				if not ring_hole.is_empty():
+					vector_grass.call("add_shape", active_grass_id, part, [ring_hole])
+				else:
+					vector_grass.call("merge_or_add_shape", active_grass_id, part)
 				var aabb: Rect2 = _compute_aabb_2d(part)
 				var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
 				var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
@@ -903,6 +927,56 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool) -> bool:
 							veg_field.call("set_cell", cell.x * 4 + dx, cell.y * 4 + dz, 0)
 			return true
 	return false
+
+func _pick_at_hovered(cell: Vector2i, hit_2d: Vector2) -> void:
+	# 1. Tenta capturar Objeto no bloco
+	if object_grid.has(cell):
+		var obj_entry: Dictionary = object_grid[cell] as Dictionary
+		var obj_type: String = String(obj_entry.get("type", ""))
+		if not obj_type.is_empty():
+			active_layer = EditLayer.OBJECTS
+			active_object_id = obj_type
+			current_rot_deg = int(obj_entry.get("rot", 0))
+			if active_tool == ToolMode.PICKER:
+				active_tool = ToolMode.BRUSH
+			_sync_all_ui()
+			_refresh_hover_preview()
+			if ui != null:
+				ui.show_toast("💉 Pipeta: Objeto '%s' selecionado!" % obj_type, Color(0.40, 0.85, 1.0))
+			return
+
+	# 2. Tenta capturar Grama Vetorial contínua
+	if vector_grass != null:
+		var grass_type: String = vector_grass.get_type_at_point(hit_2d)
+		if not grass_type.is_empty():
+			active_layer = EditLayer.GRASS
+			active_grass_id = grass_type
+			if active_tool == ToolMode.PICKER:
+				active_tool = ToolMode.BRUSH
+			_sync_all_ui()
+			_refresh_hover_preview()
+			if ui != null:
+				ui.show_toast("💉 Pipeta: Grama '%s' selecionada!" % grass_type, Color(0.40, 0.85, 1.0))
+			return
+
+	# 3. Tenta capturar Bloco de Terreno da Ilha
+	if terrain_grid.has(cell):
+		var terr_entry: Dictionary = terrain_grid[cell] as Dictionary
+		var is_auto: bool = bool(terr_entry.get("auto", false))
+		var tile_id: String = "auto_island" if is_auto else String(terr_entry.get("tile_id", "tile_plain_grass"))
+		active_layer = EditLayer.TERRAIN
+		active_terrain_id = tile_id
+		current_rot_deg = int(terr_entry.get("rot", 0))
+		if active_tool == ToolMode.PICKER:
+			active_tool = ToolMode.BRUSH
+		_sync_all_ui()
+		_refresh_hover_preview()
+		if ui != null:
+			ui.show_toast("💉 Pipeta: Terreno selecionado!" if is_auto else "💉 Pipeta: Tile '%s' selecionado!" % tile_id, Color(0.40, 0.85, 1.0))
+		return
+
+	if ui != null:
+		ui.show_toast("💉 Pipeta: Nenhum elemento na célula [%d, %d]" % [cell.x, cell.y], Color(0.7, 0.7, 0.7))
 
 func _place_spawn_at(cell: Vector2i) -> void:
 	spawn_cell = cell

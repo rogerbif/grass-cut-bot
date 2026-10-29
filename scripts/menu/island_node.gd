@@ -741,18 +741,15 @@ func update_visuals() -> void:
 	if is_unlocked:
 		level_label.text = str(level_number)
 		if stars_earned > 0:
-			var stars_str: String = ""
-			for i: int in range(stars_earned):
-				stars_str += "⭐"
-			stars_label.text = stars_str
+			stars_label.text = "%d / 3" % stars_earned
 			stars_label.visible = true
 		else:
 			stars_label.text = "ATUAL"
 			stars_label.visible = true
 	else:
-		level_label.text = "🔒"
-		stars_label.text = ""
-		stars_label.visible = false
+		level_label.text = str(level_number)
+		stars_label.text = "BLOQ"
+		stars_label.visible = true
 
 	# Ajusta o material da placa (madeira/pedra fosca com status)
 	if plaque_board != null:

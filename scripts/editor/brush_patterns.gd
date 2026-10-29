@@ -7,7 +7,8 @@ enum ShapeType {
 	DIAMOND = 3,
 	HEART = 4,
 	STAR = 5,
-	CROSS = 6
+	CROSS = 6,
+	RING = 7
 }
 
 const SHAPE_INFO: Array[Dictionary] = [
@@ -17,7 +18,8 @@ const SHAPE_INFO: Array[Dictionary] = [
 	{ "id": ShapeType.DIAMOND, "name": "Losango",     "icon": "🔶" },
 	{ "id": ShapeType.HEART,   "name": "Coração",     "icon": "❤️" },
 	{ "id": ShapeType.STAR,    "name": "Estrela",     "icon": "⭐" },
-	{ "id": ShapeType.CROSS,   "name": "Cruz",        "icon": "➕" }
+	{ "id": ShapeType.CROSS,   "name": "Cruz",        "icon": "➕" },
+	{ "id": ShapeType.RING,    "name": "Anel Circular", "icon": "⭕" }
 ]
 
 # Bitmaps para Coração em 3 escalas (Pequeno 5x5, Médio 7x7, Grande 9x9)
@@ -134,6 +136,19 @@ static func get_brush_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 				if d != 0:
 					offsets.append(Vector2i(0, d))
 
+		ShapeType.RING:
+			var ring_r: float = float(clamped_size) * 2.0
+			var num_pts: int = maxi(6, clamped_size * 4)
+			var seen_cells: Dictionary = {}
+			for i in range(num_pts):
+				var ang: float = float(i) * TAU / float(num_pts)
+				var ox: int = roundi(ring_r * cos(ang))
+				var oz: int = roundi(ring_r * sin(ang))
+				var c: Vector2i = Vector2i(ox, oz)
+				if not seen_cells.has(c):
+					seen_cells[c] = true
+					offsets.append(c)
+
 		_:
 			offsets.append(Vector2i.ZERO)
 
@@ -240,6 +255,18 @@ static func get_field_offsets(shape: int, brush_size: int) -> Array[Vector2i]:
 					if absi(dx) <= bar_w_cells or absi(dz) <= bar_w_cells:
 						offsets.append(Vector2i(dx, dz))
 
+		ShapeType.RING:
+			var r_mid: float = radius_m
+			var r_inner: float = maxf(0.10, r_mid - 0.25)
+			var r_outer: float = r_mid + 0.25
+			var r_in_sq: float = r_inner * r_inner
+			var r_out_sq: float = r_outer * r_outer
+			for dz: int in range(-cell_r, cell_r + 1):
+				for dx: int in range(-cell_r, cell_r + 1):
+					var dist_sq: float = float(dx * dx + dz * dz) * 0.04
+					if dist_sq >= r_in_sq and dist_sq <= r_out_sq:
+						offsets.append(Vector2i(dx, dz))
+
 		_:
 			offsets.append(Vector2i.ZERO)
 
@@ -254,6 +281,15 @@ static func get_circle_polygon(center: Vector2, radius_m: float, segments: int =
 		var a: float = float(i) * TAU / float(segs)
 		poly[i] = center + Vector2(cos(a), sin(a)) * radius_m
 	return poly
+
+## Gera polígonos de anel circular (anel externo e furo interno) para grama vetorial
+static func get_ring_polygons(center: Vector2, radius_m: float, thickness_m: float = 0.50, segments: int = 24) -> Dictionary:
+	var r_out: float = radius_m + thickness_m * 0.5
+	var r_in: float = maxf(0.10, radius_m - thickness_m * 0.5)
+	return {
+		"outer": get_circle_polygon(center, r_out, segments),
+		"hole": get_circle_polygon(center, r_in, segments)
+	}
 
 ## Gera polígono vetorial analítico fechado para carimbos no plano XZ
 static func get_vector_stamp_polygon(
@@ -347,6 +383,12 @@ static func get_vector_stamp_polygon(
 			poly.append(center + Vector2(-arm_l, arm_w))
 			poly.append(center + Vector2(-arm_l, -arm_w))
 			poly.append(center + Vector2(-arm_w, -arm_w))
+
+		ShapeType.RING:
+			var segs: int = 24
+			for i: int in range(segs):
+				var a: float = float(i) * TAU / float(segs)
+				poly.append(center + Vector2(cos(a), sin(a)) * r)
 
 		_:
 			var segs: int = 20

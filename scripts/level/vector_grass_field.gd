@@ -69,6 +69,19 @@ func add_shape(type_name: String, outer_poly: PackedVector2Array, holes_list: Ar
 	})
 	return shape_id
 
+## Retorna o tipo de grama presente em uma coordenada contínua 2D (X, Z no mundo)
+func get_type_at_point(point: Vector2) -> String:
+	# Itera do mais recente ao mais antigo (ordem de sobreposição Z)
+	for i in range(shapes.size() - 1, -1, -1):
+		var s: Dictionary = shapes[i]
+		var poly: PackedVector2Array = s.get("polygon", PackedVector2Array()) as PackedVector2Array
+		if poly.size() < 3:
+			continue
+		var holes_list: Array = s.get("holes", []) as Array
+		if Geometry2D.is_point_in_polygon(point, poly) and not _is_point_in_any_hole(point, holes_list):
+			return String(s.get("type", "grass_green"))
+	return ""
+
 ## Mescla um novo polígono desenhado nas formas existentes do mesmo tipo (Auto-Merge via Clipper C++)
 ## e substitui (recorta) automaticamente qualquer outra cor/tipo que esteja por baixo da área pintada!
 func merge_or_add_shape(type_name: String, new_poly: PackedVector2Array) -> void:

@@ -10,7 +10,7 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 
 # Top Bar
 @onready var coins_label: Label = $CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
-@onready var energy_label: Label = $CanvasLayer/TopBar/HBox/EnergyContainer/EnergyLabel
+@onready var energy_label: Label = $CanvasLayer/TopBar/HBox/EnergyContainer.find_child("EnergyLabel", true, false) as Label
 @onready var title_label: Label = $CanvasLayer/TopBar/HBox/TitleContainer/TitleLabel
 @onready var settings_btn: Button = $CanvasLayer/TopBar/HBox/SettingsButton
 
@@ -355,7 +355,7 @@ func _update_top_bar() -> void:
 	if coins_label != null and UpgradeManager != null:
 		coins_label.text = str(UpgradeManager.total_coins)
 	if energy_label != null:
-		energy_label.text = "❤️ 5 Max"
+		energy_label.text = "5 Max"
 
 func _on_play_level_requested(lvl_to_play: int) -> void:
 	if AudioManager != null:

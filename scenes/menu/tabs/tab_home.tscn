@@ -76,7 +76,7 @@ focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_play_btn")
-text = "Level 1 ▶"
+text = "Level 1"
 
 [node name="ToggleViewBtn" type="Button" parent="BottomAction/HBox"]
 custom_minimum_size = Vector2(120, 68)
@@ -85,4 +85,4 @@ focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
-text = "🗺️ MAP"
+text = "MAP"

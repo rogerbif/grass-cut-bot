@@ -1,5 +1,10 @@
 extends Control
 
+const ICON_LEAF: Texture2D = preload("res://assets/icons/icon_leaf.svg")
+const ICON_WHEAT: Texture2D = preload("res://assets/icons/icon_wheat.svg")
+const ICON_FLOWER: Texture2D = preload("res://assets/icons/icon_flower.svg")
+const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
+
 @onready var top_bar: PanelContainer = $TopBar
 @onready var timer_label: Label = $TopBar/HBox/TimerContainer/TimerLabel
 @onready var pause_button: Button = $TopBar/HBox/PauseButton
@@ -28,6 +33,10 @@ func _ready() -> void:
 	# Oculta modais inicialmente e garante top_bar visível
 	if top_bar != null:
 		top_bar.visible = true
+	if pause_button != null:
+		pause_button.icon = ICON_PAUSE
+		pause_button.expand_icon = true
+		pause_button.text = ""
 	pause_modal.visible = false
 	victory_modal.visible = false
 	game_over_modal.visible = false
@@ -151,48 +160,48 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	var vbox = VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 
-	var icon_label = Label.new()
-	icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var icon_rect: TextureRect = TextureRect.new()
+	icon_rect.custom_minimum_size = Vector2(26, 26)
+	icon_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
 	match plant_type:
 		"grass", "grass_green":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(0.35, 0.95, 0.40)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(0.35, 0.95, 0.40)
 		"grass_yellow":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(0.98, 0.88, 0.25)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(0.98, 0.88, 0.25)
 		"grass_blue":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(0.35, 0.75, 1.0)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(0.35, 0.75, 1.0)
 		"grass_purple":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(0.85, 0.45, 1.0)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(0.85, 0.45, 1.0)
 		"grass_white":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(0.95, 0.95, 0.95)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(0.95, 0.95, 0.95)
 		"grass_red":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(1.0, 0.35, 0.35)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(1.0, 0.35, 0.35)
 		"grass_black":
-			icon_label.text = "🌿"
-			icon_label.modulate = Color(0.40, 0.40, 0.45)
-		"wheat": icon_label.text = "🌾"
-		"flower": icon_label.text = "🌸"
-		"flower_rose": icon_label.text = "🌹"
-		"flower_daisy": icon_label.text = "🌼"
-		"flower_sunflower": icon_label.text = "🌻"
-		"flower_bell": icon_label.text = "🔔"
-		"flower_corolla": icon_label.text = "🏵️"
-		"flower_tulip": icon_label.text = "🌷"
-		"flower_bed": icon_label.text = "🪻"
-		_: icon_label.text = "🌱"
-	icon_label.add_theme_font_size_override("font_size", 24)
+			icon_rect.texture = ICON_LEAF
+			icon_rect.modulate = Color(0.40, 0.40, 0.45)
+		"wheat":
+			icon_rect.texture = ICON_WHEAT
+		"flower", "flower_rose", "flower_daisy", "flower_sunflower", "flower_bell", "flower_corolla", "flower_tulip", "flower_bed":
+			icon_rect.texture = ICON_FLOWER
+		_:
+			icon_rect.texture = ICON_LEAF
 
 	var count_lbl = Label.new()
 	count_lbl.text = str(target)
 	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	count_lbl.add_theme_font_size_override("font_size", 18)
 
-	vbox.add_child(icon_label)
+	vbox.add_child(icon_rect)
 	vbox.add_child(count_lbl)
 	card_panel.add_child(vbox)
 	goals_container.add_child(card_panel)
@@ -200,14 +209,14 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	goal_cards[plant_type] = {
 		"container": card_panel,
 		"count_label": count_lbl,
-		"icon_label": icon_label,
+		"icon_rect": icon_rect,
 		"style": style
 	}
 
 func _on_goal_completed(plant_type: String) -> void:
 	if goal_cards.has(plant_type):
 		var card = goal_cards[plant_type]
-		card["count_label"].text = "✔"
+		card["count_label"].text = "OK"
 		card["count_label"].modulate = Color(0.3, 1.0, 0.4)
 		card["style"].bg_color = Color(0.1, 0.4, 0.2, 0.9)
 
@@ -230,6 +239,10 @@ func _on_restart_pressed() -> void:
 	_is_restarting = true
 	if top_bar != null:
 		top_bar.visible = true
+	if pause_button != null:
+		pause_button.icon = ICON_PAUSE
+		pause_button.expand_icon = true
+		pause_button.text = ""
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	GameManager.restart_level()
@@ -237,6 +250,10 @@ func _on_restart_pressed() -> void:
 func _on_next_level_pressed() -> void:
 	if top_bar != null:
 		top_bar.visible = true
+	if pause_button != null:
+		pause_button.icon = ICON_PAUSE
+		pause_button.expand_icon = true
+		pause_button.text = ""
 	if AudioManager != null:
 		AudioManager.play_sfx("fast_forward")
 	GameManager.next_level()
@@ -251,19 +268,19 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 		var time_taken: float = maxf(0.0, GameManager.time_limit - GameManager.time_left)
 		var mins: int = int(time_taken / 60.0)
 		var secs: int = int(time_taken) % 60
-		victory_time_label.text = "⏱️ %d:%02d" % [mins, secs]
+		victory_time_label.text = "Tempo: %d:%02d" % [mins, secs]
 
 	var next_btn: Button = $VictoryModal.find_child("NextBtn", true, false) as Button
 	if GameManager.current_level >= 20:
 		if victory_title_label != null:
-			victory_title_label.text = "🏆 Campeão do Jardim! 🏆"
+			victory_title_label.text = "Campeão do Jardim!"
 		if next_btn != null:
-			next_btn.text = "Ciclo Mestre (Fase 1) 👑"
+			next_btn.text = "Ciclo Mestre (Fase 1) >"
 	else:
 		if victory_title_label != null:
 			victory_title_label.text = "Fase %02d Concluída!" % GameManager.current_level
 		if next_btn != null:
-			next_btn.text = "Próxima Fase ➔"
+			next_btn.text = "Próxima Fase >"
 
 	victory_modal.visible = true
 

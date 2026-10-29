@@ -113,6 +113,7 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 - `❤️ Coração` (Equação implícita cardióide contínua)
 - `⭐ Estrela` (Modulação radial de 5 pontas)
 - `➕ Cruz`
+- `⭕ Anel Circular` (Distribuição em circunferência uniforme com centro oco para flores, rochas ou grama)
 
 ---
 
@@ -124,6 +125,7 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular. |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
+| **Pipeta (Conta-Gotas / Eyedropper)** | `5`, `I` ou `Alt + Clique Esquerdo` | Amostra o objeto, grama vetorial ou terreno sob o cursor e troca automaticamente para a camada e item correspondente. |
 | **Modo Escala do Pincel (Padrão)** | `S` | Seleciona o modo de ajuste de **Escala** (ferramenta padrão inicial) e direciona os atalhos `[` e `]` para tamanho. |
 | **Modo Rotação** | `R` | Seleciona o modo de **Rotação** e direciona os atalhos `[` e `]` para giro ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |
 | **Diminuir Escala / Girar Esquerda** | `[` (ou `-`, `Numpad -`) | **Se Modo Escala:** diminui tamanho do pincel ($-1$, ou $-5$ com `Shift`).<br>**Se Modo Rotação:** gira para a esquerda ($-5^\circ$, ou $-25^\circ$ com `Shift`; $-90^\circ$ no terreno). |
