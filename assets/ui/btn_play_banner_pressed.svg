@@ -28,12 +28,12 @@
 
   <!-- ================= 1. CYBER TECH ACCENTS (100% STATIC FRAME - ZERO MOVEMENT) ================= -->
   <!-- Top-Right Dark Bracket Plate (EXACTLY IDENTICAL TO NORMAL STATE) -->
-  <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97 Q 410 104 402 104 L 392 104 L 416 73 Q 419 68 416 63 L 398 33 Q 394 26 386 26 L 220 26 Z"
+  <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 441 60 436 68 L 424 94 Q 418 108 410 118 Q 405 124 396 124 L 388 124 L 404 104 Q 412 88 418 72 Q 420 66 416 62 L 398 33 Q 394 26 386 26 L 220 26 Z"
         fill="#0b2834" />
 
   <!-- Top-Right Neon Lines (EXACTLY IDENTICAL TO NORMAL STATE) -->
   <line x1="222" y1="18" x2="330" y2="18" stroke="#00f5a8" stroke-width="3.5" stroke-linecap="round" />
-  <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97"
+  <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 441 60 436 68 L 424 94 Q 418 108 410 118"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- Bottom-Left Detached Cyber Bracket (EXACTLY IDENTICAL TO NORMAL STATE) -->
@@ -43,7 +43,8 @@
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- ================= 2. 3D BASE / LOWER BEVEL (COMPRESSED/SUNKEN INNER BODY) ================= -->
-  <path d="M 18 107 L 24 122 Q 28 127 36 127 L 388 127 Q 396 127 402 121 L 421 84 Q 424 78 420 72 L 416 72 L 398 117 Q 394 120 388 120 L 26 120 L 14 97 Z"
+  <!-- Base 3D comprimida sem pontas no lado esquerdo -->
+  <path d="M 24 117 L 18 122 Q 22 127 30 127 L 384 127 Q 394 127 402 121 L 421 84 Q 424 78 420 72 L 416 72 L 398 117 Q 394 120 388 120 L 24 120 Z"
         fill="url(#base_3d_grad_pressed)" stroke="#114b0e" stroke-width="1.5" stroke-linejoin="round" />
 
   <!-- ================= 3. MAIN BUTTON FACE (SUNKEN INNER BODY - SHIFTED DOWN BY 7PX) ================= -->

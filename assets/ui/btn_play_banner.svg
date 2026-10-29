@@ -29,13 +29,13 @@
   </defs>
 
   <!-- ================= 1. CYBER TECH ACCENTS (STATIC FRAME) ================= -->
-  <!-- Top-Right Dark Bracket Plate (wrapping around the chevron point) -->
-  <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97 Q 410 104 402 104 L 392 104 L 416 73 Q 419 68 416 63 L 398 33 Q 394 26 386 26 L 220 26 Z"
+  <!-- Top-Right Dark Bracket Plate (wrapping around chevron and open along the lower-right edge) -->
+  <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 441 60 436 68 L 424 94 Q 418 108 410 118 Q 405 124 396 124 L 388 124 L 404 104 Q 412 88 418 72 Q 420 66 416 62 L 398 33 Q 394 26 386 26 L 220 26 Z"
         fill="#0b2834" />
 
-  <!-- Top-Right Neon Lines -->
+  <!-- Top-Right Neon Lines (mais aberta acompanhando o desenho do botão) -->
   <line x1="222" y1="18" x2="330" y2="18" stroke="#00f5a8" stroke-width="3.5" stroke-linecap="round" />
-  <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97"
+  <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 441 60 436 68 L 424 94 Q 418 108 410 118"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- Bottom-Left Detached Cyber Bracket -->
@@ -44,12 +44,13 @@
   <path d="M 24 96 L 11 126 Q 8 136 18 136 L 58 136"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-  <!-- ================= 2. 3D BASE / LOWER BEVEL (RAISED INNER BODY) ================= -->
-  <path d="M 16 100 L 24 120 Q 28 128 36 128 L 388 128 Q 396 128 402 121 L 421 76 Q 424 70 420 64 L 416 64 L 398 110 Q 394 114 388 114 L 26 114 L 14 90 Z"
+  <!-- ================= 2. 3D BASE / LOWER BEVEL (SEM PONTAS NO LADO ESQUERDO) ================= -->
+  <!-- Base 3D segue perfeitamente a silhueta da face, sem vértices externos soltos -->
+  <path d="M 24 110 L 16 124 Q 20 128 28 128 L 384 128 Q 394 128 402 121 L 421 76 Q 424 70 420 64 L 416 64 L 398 110 Q 394 114 388 114 L 24 114 Z"
         fill="url(#base_3d_grad)" stroke="#114b0e" stroke-width="1.5" stroke-linejoin="round" />
 
   <!-- Dark rim along bottom edge -->
-  <path d="M 28 124 L 36 129 L 388 129 L 398 122 L 395 126 L 386 131 L 34 131 L 25 126 Z"
+  <path d="M 28 124 L 36 129 L 384 129 L 396 122 L 393 126 L 384 131 L 34 131 L 25 126 Z"
         fill="#0d380b" />
 
   <!-- ================= 3. MAIN BUTTON FACE (RAISED INNER BODY) ================= -->

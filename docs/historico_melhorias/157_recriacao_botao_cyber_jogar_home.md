@@ -53,10 +53,14 @@ O usuário enviou uma captura de referência contendo um botão estilizado de a�
   - O suporte superior-direito com a linha ciano neon e o suporte angular inferior-esquerdo permanecem rigorosamente idênticos e fixos entre o estado normal ([`btn_play_banner.svg`](../../assets/ui/btn_play_banner.svg)) e o estado pressionado ([`btn_play_banner_pressed.svg`](../../assets/ui/btn_play_banner_pressed.svg)).
   - Ao pressionar (`button_down`), **somente o miolo amarelo, base 3D e rótulo de texto descem em $7\text{px}$** (`PRESS_SINK_OFFSET = 7.0`), criando a sensação física nítida de que o botão afunda para dentro do seu chassi tecnológico sem mover a carcaça exterior.
 
+### 6. Eliminação da Ponta Esquerda e Abertura Harmônica da Moldura Direita
+- **Remoção da Ponta Esquerda:** Eliminados os vértices soltos da base 3D que avançavam para além do plano inclinado da face em $y=90\text{px}$, alinhando a base rigorosamente com a aresta da face em $(24, 110)$ e descendo suavemente para $(16, 124)$, resultando em uma borda esquerda 100% lisa, reta e contínua.
+- **Abertura da Moldura Direita:** O traço neon ciano e a placa escura posterior foram reangulados para abrir de forma suave e ampla (`L 424 94 Q 418 108 410 118`), contornando a descida inferior do chevron com folga harmoniosa e dinâmica, acompanhando fielmente o desenho do botão.
+
 ---
 
 ## 📊 Validação e Conformidade
 1. **Zero Warnings Estrito (Mandamento 1):** Compilação e execução via Godot 4.7 headless sem warnings ou erros.
 2. **Reimportação Atômica (Mandamento 12):** Executado `godot --headless --editor --quit` para regenerar o cache de todos os novos SVGs.
-3. **Teste Visual:** Captura de tela dos estados normal e pressionado gerada e validada em `state_normal_preview.png` e `state_pressed_preview.png`.
-4. **SemVer:** Incrementado para `v0.12.86-alpha`.
+3. **Teste Visual:** Captura de tela dos estados normal e pressionado gerada e validada em `state_normal_preview.png` e `bottom_bar_preview.png`.
+4. **SemVer:** Incrementado para `v0.12.87-alpha`.
