@@ -7,7 +7,7 @@ const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
 const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
 
 @onready var top_bar: PanelContainer = $TopBar
-@onready var timer_label: Label = $TopBar/HBox/TimerContainer/TimerLabel
+@onready var timer_label: Label = $TopBar/HBox/TimerContainer.find_child("TimerLabel", true, false) as Label
 @onready var pause_button: Button = $TopBar/HBox/PauseButton
 @onready var coins_label: Label = $TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
 @onready var goals_container: HBoxContainer = $TopBar/HBox/GoalsContainer

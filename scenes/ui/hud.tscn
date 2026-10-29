@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://hud_scene_01"]
+[gd_scene load_steps=15 format=3 uid="uid://hud_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_refresh.svg" id="6_refresh"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="7_play"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_wrench.svg" id="8_wrench"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_clock.svg" id="9_clock"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
 bg_color = Color(0.08, 0.1, 0.14, 0.6)
@@ -119,11 +120,24 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="TimerContainer" type="PanelContainer" parent="TopBar/HBox"]
-custom_minimum_size = Vector2(90, 48)
+custom_minimum_size = Vector2(100, 48)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
 
-[node name="TimerLabel" type="Label" parent="TopBar/HBox/TimerContainer"]
+[node name="HBoxTimer" type="HBoxContainer" parent="TopBar/HBox/TimerContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="ClockIcon" type="TextureRect" parent="TopBar/HBox/TimerContainer/HBoxTimer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("9_clock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TimerLabel" type="Label" parent="TopBar/HBox/TimerContainer/HBoxTimer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "1:30"
@@ -273,70 +287,64 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 
-[node name="Star1" type="Label" parent="VictoryModal/VictoryHeader/StarsArc"]
+[node name="Star1" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
+custom_minimum_size = Vector2(72, 72)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = -32.0
-offset_right = -60.0
-offset_bottom = 54.0
+offset_left = -135.0
+offset_top = -25.0
+offset_right = -63.0
+offset_bottom = 47.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = -0.22
-pivot_offset = Vector2(40, 43)
-theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 0.8)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 72
-text = "⭐"
-horizontal_alignment = 1
-vertical_alignment = 1
+pivot_offset = Vector2(36, 36)
+texture = ExtResource("4_star")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Star2" type="Label" parent="VictoryModal/VictoryHeader/StarsArc"]
+[node name="Star2" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
+custom_minimum_size = Vector2(92, 92)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -50.0
-offset_top = -65.0
-offset_right = 50.0
-offset_bottom = 45.0
+offset_left = -46.0
+offset_top = -60.0
+offset_right = 46.0
+offset_bottom = 32.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(50, 55)
-theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 0.8)
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 94
-text = "⭐"
-horizontal_alignment = 1
-vertical_alignment = 1
+pivot_offset = Vector2(46, 46)
+texture = ExtResource("4_star")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Star3" type="Label" parent="VictoryModal/VictoryHeader/StarsArc"]
+[node name="Star3" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
+custom_minimum_size = Vector2(72, 72)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 60.0
-offset_top = -32.0
-offset_right = 140.0
-offset_bottom = 54.0
+offset_left = 63.0
+offset_top = -25.0
+offset_right = 135.0
+offset_bottom = 47.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = 0.22
-pivot_offset = Vector2(40, 43)
-theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 0.8)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 72
-text = "⭐"
-horizontal_alignment = 1
-vertical_alignment = 1
+pivot_offset = Vector2(36, 36)
+texture = ExtResource("4_star")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="StatsPill" type="PanelContainer" parent="VictoryModal/VictoryHeader"]
 layout_mode = 2

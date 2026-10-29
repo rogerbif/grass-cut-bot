@@ -33,24 +33,21 @@ func _setup_styles() -> void:
 	progress_bar.max_value = 100.0
 
 	var bg_style: StyleBoxFlat = StyleBoxFlat.new()
-	bg_style.bg_color = Color(0.10, 0.13, 0.16, 0.88)
-	bg_style.set_corner_radius_all(6)
-	bg_style.border_color = Color(0.22, 0.27, 0.32, 0.95)
-	bg_style.set_border_width_all(1)
+	bg_style.bg_color = Color(0.08, 0.11, 0.16, 0.94)
+	bg_style.set_corner_radius_all(10)
+	bg_style.border_color = Color(0.18, 0.24, 0.32, 0.95)
+	bg_style.set_border_width_all(2)
 	progress_bar.add_theme_stylebox_override("background", bg_style)
 
 	var fill_style: StyleBoxFlat = StyleBoxFlat.new()
 	fill_style.bg_color = COLOR_FILL_NORMAL
-	fill_style.set_corner_radius_all(6)
+	fill_style.set_corner_radius_all(10)
 	progress_bar.add_theme_stylebox_override("fill", fill_style)
 
 	if level_label != null:
 		level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		level_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		level_label.add_theme_color_override("font_color", Color.WHITE)
-		level_label.add_theme_color_override("font_outline_color", Color.BLACK)
-		level_label.add_theme_constant_override("outline_size", 2)
-		level_label.add_theme_font_size_override("font_size", 13)
+		level_label.add_theme_font_size_override("font_size", 24)
 
 func _on_blade_level_changed(new_level: int, is_max: bool) -> void:
 	var prev_lvl: int = _current_level
@@ -76,8 +73,14 @@ func _update_text() -> void:
 		return
 	if _is_max or _current_level >= 6:
 		level_label.text = "MAX"
+		level_label.add_theme_color_override("font_color", Color(0.08, 0.10, 0.14, 1.0))
+		level_label.add_theme_color_override("font_outline_color", Color.TRANSPARENT)
+		level_label.add_theme_constant_override("outline_size", 0)
 	else:
 		level_label.text = "Lv. %d" % _current_level
+		level_label.add_theme_color_override("font_color", Color.WHITE)
+		level_label.add_theme_color_override("font_outline_color", Color(0.06, 0.08, 0.12, 1.0))
+		level_label.add_theme_constant_override("outline_size", 6)
 
 func _update_fill_color() -> void:
 	if progress_bar == null:

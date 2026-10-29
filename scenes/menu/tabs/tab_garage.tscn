@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://tab_garage_scene_01"]
+[gd_scene load_steps=8 format=3 uid="uid://tab_garage_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_garage.gd" id="1_garage"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_wrench.svg" id="3_wrench"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.09, 0.12, 0.17, 0.94)
@@ -76,11 +77,24 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="Panel/Scroll/VBox"]
+[node name="TitleBar" type="HBoxContainer" parent="Panel/Scroll/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TitleIcon" type="TextureRect" parent="Panel/Scroll/VBox/TitleBar"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_wrench")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="Panel/Scroll/VBox/TitleBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Oficina do Bot"
-horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BladeBanner" type="PanelContainer" parent="Panel/Scroll/VBox"]
 layout_mode = 2
@@ -105,10 +119,10 @@ text = "Lâmina Atual: Lâmina Estelar Tripla (Tier 1)"
 [node name="CoinsBanner" type="HBoxContainer" parent="Panel/Scroll/VBox"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="Icon" type="TextureRect" parent="Panel/Scroll/VBox/CoinsBanner"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("2_coin")
@@ -142,14 +156,39 @@ theme_override_font_sizes/font_size = 14
 text = "Nível 1 • Raio: 0.90m • Vel: 3.25m/s"
 
 [node name="BuyBtn" type="Button" parent="Panel/Scroll/VBox/BladeCard"]
-custom_minimum_size = Vector2(110, 48)
+custom_minimum_size = Vector2(100, 46)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 focus_mode = 0
-theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_buy")
-text = "75 Moedas"
+
+[node name="HBox" type="HBoxContainer" parent="Panel/Scroll/VBox/BladeCard/BuyBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="BtnIcon" type="TextureRect" parent="Panel/Scroll/VBox/BladeCard/BuyBtn/HBox"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_coin")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BtnLabel" type="Label" parent="Panel/Scroll/VBox/BladeCard/BuyBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "75"
+vertical_alignment = 1
 
 [node name="TipLabel" type="Label" parent="Panel/Scroll/VBox"]
 layout_mode = 2

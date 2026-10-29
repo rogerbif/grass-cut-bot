@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/menu/bottom_nav_bar.gd" id="1_navbar"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_wrench.svg" id="2_wrench"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_home.svg" id="3_home"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_collection.svg" id="4_leaf"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_leaf.svg" id="4_leaf"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_store.svg" id="5_store"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]

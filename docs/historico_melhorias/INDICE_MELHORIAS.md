@@ -161,6 +161,7 @@ Este documento é o **Índice Canônico e Catálogo de Navegação** de todas as
 
 | [`120_arredondamento_padrao_cantos_20_fases.md`](./120_arredondamento_padrao_cantos_20_fases.md) | Arredondamento Padrão dos Cantos das 20 Fases Canônicas ($R = 0.28\text{m}$) | Algoritmo analítico de curvatura tangencial de cantos convexos em `IslandMeshBuilder` com raio canônico de $0.28\text{m}$ (5 arcos circulares) e migração em lote dos 20 níveis para JSON v4 com geometria contínua suave $C^1$. |
 | [`137_herbario_botanico_e_sistema_de_colecao_com_10_marcos.md`](./137_herbario_botanico_e_sistema_de_colecao_com_10_marcos.md) | Ativação do Herbário Botânico da Ilha (`TabCollection`) e Sistema de Maestria com 10 Níveis | Catálogo oficial das 15 espécies em `PlantDatabase`, persistência cumulativa de colheitas em `SaveManager`, UI responsiva com barra de progresso, filtros por categoria e 10 níveis de marcos de recompensa com resgate em moedas. |
+| [`154_polimento_icones_ui_estrelas_e_barra_lamina.md`](./154_polimento_icones_ui_estrelas_e_barra_lamina.md) | Polimento de Ícones UI, Estrelas de Vitória Vetoriais e Legibilidade da Barra da Lâmina | Ícone de folha na Collection, ícone de ferramenta no título e moeda compacta na Garage, Play e Map centralizados na Home, estrelas vetoriais sem tofu `[2B 50]`, ícone de relógio no HUD e barra de lâmina 3D em alta resolução com contraste total. |
 
 ---
 

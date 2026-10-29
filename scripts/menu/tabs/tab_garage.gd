@@ -5,6 +5,8 @@ extends Control
 
 @onready var blade_lvl_label: Label = $Panel/Scroll/VBox/BladeCard/Info/LevelLabel
 @onready var blade_buy_btn: Button = $Panel/Scroll/VBox/BladeCard/BuyBtn
+@onready var buy_btn_icon: TextureRect = $Panel/Scroll/VBox/BladeCard/BuyBtn/HBox/BtnIcon
+@onready var buy_btn_label: Label = $Panel/Scroll/VBox/BladeCard/BuyBtn/HBox/BtnLabel
 
 func _ready() -> void:
 	if blade_buy_btn != null:
@@ -39,20 +41,23 @@ func refresh_ui() -> void:
 
 		if lvl >= 6:
 			blade_lvl_label.text = "Nível MAX (6) • Raio: %.2fm • Vel: %.2fm/s" % [radius, speed]
-			blade_buy_btn.text = "MAX"
-			blade_buy_btn.icon = preload("res://assets/icons/icon_checkmark.svg")
+			if buy_btn_label != null: buy_btn_label.text = "MAX"
+			if buy_btn_icon != null:
+				buy_btn_icon.texture = preload("res://assets/icons/icon_checkmark.svg")
+				buy_btn_icon.visible = true
 			blade_buy_btn.disabled = true
 		elif lvl >= 5:
 			blade_lvl_label.text = "Nível %d • Raio: %.2fm • Vel: %.2fm/s\n(Próximo nível somente por corte na partida)" % [lvl, radius, speed]
-			blade_buy_btn.text = "MÁX LOJA"
-			blade_buy_btn.icon = null
+			if buy_btn_label != null: buy_btn_label.text = "MÁX LOJA"
+			if buy_btn_icon != null: buy_btn_icon.visible = false
 			blade_buy_btn.disabled = true
 		else:
 			var cost: int = UpgradeManager.get_blade_upgrade_cost()
 			blade_lvl_label.text = "Nível %d -> %d • Raio: %.2fm • Vel: %.2fm/s" % [lvl, lvl + 1, radius + 0.10, speed + 0.30]
-			blade_buy_btn.text = "%d" % cost
-			blade_buy_btn.icon = preload("res://assets/icons/icon_coin.svg")
-			blade_buy_btn.add_theme_constant_override("icon_max_width", 20)
+			if buy_btn_label != null: buy_btn_label.text = "%d" % cost
+			if buy_btn_icon != null:
+				buy_btn_icon.texture = preload("res://assets/icons/icon_coin.svg")
+				buy_btn_icon.visible = true
 			blade_buy_btn.disabled = (UpgradeManager.total_coins < cost)
 
 func _on_buy_blade_pressed() -> void:

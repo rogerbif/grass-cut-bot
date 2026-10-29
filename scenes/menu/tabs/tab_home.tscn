@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://tab_home_scene_01"]
+[gd_scene load_steps=7 format=3 uid="uid://tab_home_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_home.gd" id="1_home"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="2_play"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map.svg" id="3_map"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_btn"]
 bg_color = Color(0.16, 0.78, 0.44, 0.95)
@@ -73,17 +75,66 @@ custom_minimum_size = Vector2(360, 68)
 layout_mode = 2
 pivot_offset = Vector2(180, 34)
 focus_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_play_btn")
+
+[node name="HBoxPlay" type="HBoxContainer" parent="BottomAction/HBox/PlayBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="LevelLabel" type="Label" parent="BottomAction/HBox/PlayBtn/HBoxPlay"]
+layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_play_btn")
 text = "Level 1"
+vertical_alignment = 1
+
+[node name="PlayIcon" type="TextureRect" parent="BottomAction/HBox/PlayBtn/HBoxPlay"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_play")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ToggleViewBtn" type="Button" parent="BottomAction/HBox"]
 custom_minimum_size = Vector2(120, 68)
 layout_mode = 2
 focus_mode = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_constants/icon_max_width = 26
-theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
+
+[node name="HBoxToggle" type="HBoxContainer" parent="BottomAction/HBox/ToggleViewBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="ToggleIcon" type="TextureRect" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_map")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ToggleLabel" type="Label" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
 text = "MAP"
+vertical_alignment = 1
