@@ -353,8 +353,6 @@ func _rotate_active_step() -> void:
 func _sync_all_ui() -> void:
 	if ui == null:
 		return
-	if ui.has_method("get_configured_time_limit"):
-		time_limit = ui.get_configured_time_limit()
 	ui.sync_state(
 		active_layer,
 		active_tool,
@@ -1409,23 +1407,29 @@ func _load_or_init_level(lvl_id: int) -> void:
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
 		if ui != null:
+			if ui.has_method("set_level_time_limit"):
+				ui.set_level_time_limit(time_limit)
+			ui.update_level_header(current_level_id, grid_width, grid_height, time_limit, true)
 			ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 		var saved_goals: Dictionary = data.get("goals", {}) as Dictionary
 		if ui != null and ui.has_method("set_configured_goals"):
 			ui.set_configured_goals(saved_goals)
 		if ui != null:
-			ui.show_toast("📂 Fase %02d carregada (%s)" % [lvl_id, json_path.get_file()], Color(0.35, 0.85, 1.0))
+			ui.show_toast("📂 Fase %02d carregada (⏱️ %.0fs)" % [lvl_id, time_limit], Color(0.35, 0.85, 1.0))
 	else:
 		# Se não existe JSON para este nível ainda, monta uma ilha padrão inicial
 		_build_default_island_for_level(lvl_id)
 		grid_overlay.rebuild_grid(grid_width, grid_height, CELL_SIZE)
 		_rebuild_3d_world()
 		if ui != null:
+			if ui.has_method("set_level_time_limit"):
+				ui.set_level_time_limit(time_limit)
+			ui.update_level_header(current_level_id, grid_width, grid_height, time_limit, true)
 			ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 		if ui != null and ui.has_method("set_configured_goals"):
 			ui.set_configured_goals({})
 		if ui != null:
-			ui.show_toast("✨ Nova Fase %02d iniciada (Ilha 3D)" % lvl_id, Color(0.4, 0.95, 0.6))
+			ui.show_toast("✨ Nova Fase %02d iniciada (⏱️ %.0fs)" % [lvl_id, time_limit], Color(0.4, 0.95, 0.6))
 
 func _build_default_island_for_level(lvl_id: int) -> void:
 	grid_width = 24
@@ -1483,7 +1487,7 @@ func save_current_level_json() -> void:
 		CELL_SIZE
 	)
 	if ok:
-		ui.show_toast("💾 Salvo em res://data/levels/level_%02d.json" % current_level_id, Color(0.25, 0.95, 0.5))
+		ui.show_toast("💾 Fase %02d salva! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.25, 0.95, 0.5))
 	else:
 		ui.show_toast("❌ Erro ao salvar JSON da fase!", Color(0.95, 0.3, 0.3))
 
@@ -1507,7 +1511,7 @@ func bake_current_level_tscn() -> void:
 		CELL_SIZE
 	)
 	if ok:
-		ui.show_toast("📦 Cena exportada: res://scenes/levels/level_%02d.tscn" % current_level_id, Color(0.7, 0.5, 1.0))
+		ui.show_toast("📦 Cena exportada: Fase %02d (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.7, 0.5, 1.0))
 	else:
 		ui.show_toast("❌ Falha ao exportar cena .tscn", Color(0.95, 0.3, 0.3))
 

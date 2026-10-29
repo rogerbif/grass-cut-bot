@@ -216,6 +216,10 @@ func _build_top_bar() -> void:
 	spin_level.step = 1
 	spin_level.value = 1
 	spin_level.custom_minimum_size = Vector2(70, 32)
+	spin_level.get_line_edit().text_submitted.connect(func(_text: String) -> void:
+		get_viewport().gui_release_focus()
+		level_load_requested.emit(int(spin_level.value))
+	)
 	hbox.add_child(spin_level)
 
 	var btn_load: Button = _create_styled_button("📂 Abrir", Color(0.3, 0.75, 0.95))
@@ -1008,7 +1012,7 @@ func sync_state(
 				btn_mirror.text = "🪞 Espelho [X]: Quádruplo (X+Z)"
 				_set_button_selected(btn_mirror, true, Color(0.95, 0.85, 0.35))
 
-func update_level_header(level_id: int, width: int, height: int, time_limit: float) -> void:
+func update_level_header(level_id: int, width: int, height: int, time_limit: float, force_time_sync: bool = false) -> void:
 	if spin_level != null:
 		spin_level.set_value_no_signal(float(level_id))
 	if spin_width != null:
@@ -1017,8 +1021,20 @@ func update_level_header(level_id: int, width: int, height: int, time_limit: flo
 		spin_height.set_value_no_signal(float(height))
 	if spin_time != null:
 		var le: LineEdit = spin_time.get_line_edit()
-		if le == null or not le.has_focus():
+		if force_time_sync or le == null or not le.has_focus():
+			if force_time_sync and le != null:
+				le.release_focus()
 			spin_time.set_value_no_signal(time_limit)
+			if le != null and (force_time_sync or not le.has_focus()):
+				le.text = str(int(time_limit)) if is_equal_approx(time_limit, roundf(time_limit)) else str(time_limit)
+
+func set_level_time_limit(new_time: float) -> void:
+	if spin_time != null:
+		var le: LineEdit = spin_time.get_line_edit()
+		if le != null:
+			le.release_focus()
+			le.text = str(int(new_time)) if is_equal_approx(new_time, roundf(new_time)) else str(new_time)
+		spin_time.set_value_no_signal(new_time)
 
 func get_configured_time_limit() -> float:
 	if spin_time != null:

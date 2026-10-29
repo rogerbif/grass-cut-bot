@@ -7,8 +7,9 @@ const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.g
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 
 func _ready() -> void:
-	print("--- TESTE: TEMPO DE DURACAO E METAS POR DEFAULT (FLORES SEPARADAS) ---")
+	print("--- TESTE: TEMPO DE DURACAO INDIVIDUAL POR FASE, METAS POR DEFAULT E FLORES SEPARADAS ---")
 	test_time_limit_saving_and_sync()
+	test_level_time_limits_from_json()
 	test_default_active_goals_with_total_count()
 	test_individual_flowers_in_vegetation_grid()
 	print("--- TODOS OS TESTES PASSARAM COM SUCESSO! ---")
@@ -34,14 +35,61 @@ func test_time_limit_saving_and_sync() -> void:
 	assert(ui.call("get_configured_time_limit") == 210.0, "get_configured_time_limit deve retornar 210.0 após digitação")
 
 	# 4. Verifica se update_level_header não sobrescreve valor se o LineEdit estiver com foco
-	# Simula ganho de foco
 	le.grab_focus()
-	ui.call("update_level_header", 1, 12, 8, 90.0)
-	assert(spin_t.value == 210.0, "update_level_header não deve sobrescrever enquanto usuário está digitando/focado")
+	ui.call("update_level_header", 1, 12, 8, 90.0, false)
+	assert(spin_t.value == 210.0, "update_level_header (sem force) não deve sobrescrever enquanto usuário está digitando/focado")
 	le.release_focus()
 
-	print("✔ Teste 1: Configuração e sincronização do tempo de duração validadas!")
+	# 5. force_time_sync = true DEVE sobrescrever mesmo sem foco (simula carregamento de fase)
+	ui.call("update_level_header", 1, 12, 8, 60.0, true)
+	assert(ui.call("get_configured_time_limit") == 60.0, "force_time_sync deve sobrescrever o valor para 60.0")
+
+	# 6. Testa set_level_time_limit diretamente (simula _load_or_init_level)
+	ui.call("set_level_time_limit", 135.0)
+	assert(ui.call("get_configured_time_limit") == 135.0, "set_level_time_limit deve definir o valor para 135.0")
+
+	# 7. Troca de fase: valores individuais distintos por fase
+	ui.call("set_level_time_limit", 190.0)  # Fase 20 tem 190s
+	assert(ui.call("get_configured_time_limit") == 190.0, "set_level_time_limit deve definir 190.0 (tempo da fase 20)")
+
+	print("✔ Teste 1: Configuração, sincronização e individualidade do tempo por fase validadas!")
 	ui.queue_free()
+
+func test_level_time_limits_from_json() -> void:
+	const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+	# Lê os JSONs das fases reais e verifica que cada uma tem seu tempo próprio registrado
+	var times: Dictionary = {
+		1: 60.0,
+		2: 80.0,
+		5: 135.0,
+		10: 150.0,
+		20: 190.0,
+	}
+	for lvl: Variant in times.keys():
+		var level_num: int = int(lvl)
+		var json_path: String = "res://data/levels/level_%02d.json" % level_num
+		var data: Dictionary = LevelJsonLoader.load_json_file(json_path) as Dictionary
+		assert(not data.is_empty(), "JSON da fase %d deve existir e ser não-vazio" % level_num)
+		var loaded_time: float = float(data.get("time_limit", -1.0))
+		var expected: float = float(times[lvl])
+		assert(is_equal_approx(loaded_time, expected),
+			"Fase %d deve ter time_limit=%.0f mas leu %.0f" % [level_num, expected, loaded_time])
+
+	# Verifica que a UI exibe o valor correto após set_level_time_limit
+	var ui: Control = LevelEditorUiScript.new()
+	add_child(ui)
+	var spin_t: SpinBox = ui.get("spin_time") as SpinBox
+	for lvl_v: Variant in times.keys():
+		var expected_t: float = float(times[lvl_v])
+		ui.call("set_level_time_limit", expected_t)
+		var read_t: float = ui.call("get_configured_time_limit")
+		assert(is_equal_approx(read_t, expected_t),
+			"UI deve exibir/retornar %.0f após set_level_time_limit, mas retornou %.0f" % [expected_t, read_t])
+		assert(is_equal_approx(float(spin_t.value), expected_t),
+			"SpinBox deve ter valor %.0f após set_level_time_limit" % expected_t)
+	ui.queue_free()
+
+	print("✔ Teste 2: Cada fase preserva seu tempo individual no JSON e a UI exibe corretamente ao carregar!")
 
 func test_default_active_goals_with_total_count() -> void:
 	var ui: Control = LevelEditorUiScript.new()
@@ -104,7 +152,7 @@ func test_default_active_goals_with_total_count() -> void:
 	assert(goals_cfg.has("flower_tulip"), "Metas devem conter flower_tulip")
 	assert(not goals_cfg.has("flower_daisy"), "Metas não devem conter flower_daisy")
 
-	print("✔ Teste 2: Metas marcadas por default com valor total para gramas e flores individuais validadas!")
+	print("✔ Teste 3: Metas marcadas por default com valor total para gramas e flores individuais validadas!")
 	ui.queue_free()
 
 func test_individual_flowers_in_vegetation_grid() -> void:
@@ -136,5 +184,5 @@ func test_individual_flowers_in_vegetation_grid() -> void:
 	assert(goals.has("flower_sunflower"), "Deve conter 'flower_sunflower' individual")
 	assert(goals.has("flower_bell"), "Deve conter 'flower_bell' individual")
 
-	print("✔ Teste 3: Todas as 8 flores operam como metas 100% individuais no VegetationGrid!")
+	print("✔ Teste 4: Todas as 8 flores operam como metas 100% individuais no VegetationGrid!")
 	vg.queue_free()
