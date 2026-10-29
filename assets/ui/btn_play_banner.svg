@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="430" height="126" viewBox="14 16 430 126">
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="138" viewBox="0 10 450 138">
   <defs>
     <!-- Ultra Vibrant Neon Chartreuse Gradients -->
     <linearGradient id="main_face_grad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -38,13 +38,14 @@
   <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-  <!-- Bottom-Left Detached Cyber Bracket -->
-  <path d="M 24 92 L 34 92 L 14 126 Q 12 135 20 135 L 62 135 L 62 143 L 18 143 Q 5 143 4 130 L 14 110 Z"
+  <!-- Bottom-Left Detached Cyber Bracket (Garantido sem corte com margem generosa) -->
+  <path d="M 24 92 L 34 92 L 15 125 Q 12 135 20 135 L 62 135 L 62 143 L 18 143 Q 6 143 5 130 L 14 110 Z"
         fill="#0b2834" />
-  <path d="M 24 96 L 10 126 Q 8 136 18 136 L 58 136"
+  <path d="M 24 96 L 11 126 Q 8 136 18 136 L 58 136"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- ================= 2. 3D BASE / LOWER BEVEL (DARK GREEN) ================= -->
+  <!-- Thick 3D extruded base under the yellow face -->
   <path d="M 16 106 L 24 126 Q 28 134 36 134 L 388 134 Q 396 134 402 127 L 421 82 Q 424 76 420 70 L 416 70 L 398 116 Q 394 120 388 120 L 26 120 L 14 96 Z"
         fill="url(#base_3d_grad)" stroke="#114b0e" stroke-width="1.5" stroke-linejoin="round" />
 

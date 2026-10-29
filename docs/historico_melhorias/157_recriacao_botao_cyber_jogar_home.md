@@ -42,8 +42,15 @@ O usuário enviou uma captura de referência contendo um botão estilizado de a�
 
 ---
 
+### 4. Ajuste Fino de Enquadramento e Correção do Corte no Canto Esquerdo
+- **Diagnóstico:** O `viewBox` anterior dos SVGs iniciava em $x=14$, o que causava o recorte vertical abrupto das coordenadas mais externas do suporte cyber inferior-esquerdo (que atingiam $x=5$ a $8$ com espessura de traço de $4\text{px}$).
+- **Resolução:** O `viewBox` foi expandido para `viewBox="0 10 450 138"`, garantindo margem respirável em todos os 4 eixos (topo, base, esquerda e direita).
+- O botão em `tab_home.tscn` foi redimensionado para `Vector2(440, 135)`, preservando a proporção nativa da peça e eliminando 100% de qualquer recorte visual.
+
+---
+
 ## 📊 Validação e Conformidade
 1. **Zero Warnings Estrito (Mandamento 1):** Compilação e execução via Godot 4.7 headless sem warnings ou erros.
 2. **Reimportação Atômica (Mandamento 12):** Executado `godot --headless --editor --quit` para regenerar o cache de todos os novos SVGs.
 3. **Teste Visual:** Captura de tela gerada e validada em `rendered_preview_button.png` e `bottom_bar_preview.png`.
-4. **SemVer:** Incrementado de `0.12.82-alpha` para `0.12.83-alpha`.
+4. **SemVer:** Incrementado de `0.12.82-alpha` para `0.12.84-alpha`.

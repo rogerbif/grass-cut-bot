@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="430" height="126" viewBox="14 16 430 126">
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="138" viewBox="0 10 450 138">
   <defs>
     <!-- Gradients -->
     <linearGradient id="main_face_grad_pressed" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -34,9 +34,10 @@
   <path d="M 374 23 L 402 23 Q 408 23 414 27 L 434 57 Q 438 63 435 70 L 424 91"
         fill="none" stroke="#00f2aa" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
 
-  <path d="M 24 97 L 34 97 L 14 129 Q 12 137 20 137 L 62 137 L 62 145 L 18 145 Q 6 145 5 133 L 14 115 Z"
+  <!-- Bottom-Left Detached Cyber Bracket (Sem corte com margem generosa) -->
+  <path d="M 24 97 L 34 97 L 15 128 Q 12 137 20 137 L 62 137 L 62 145 L 18 145 Q 6 145 5 133 L 14 115 Z"
         fill="#0b2834" />
-  <path d="M 24 101 L 10 129 Q 8 139 18 139 L 58 139"
+  <path d="M 24 101 L 11 129 Q 8 139 18 139 L 58 139"
         fill="none" stroke="#00f2aa" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
 
   <!-- ================= 2. 3D BASE / LOWER BEVEL (COMPRESSED) ================= -->

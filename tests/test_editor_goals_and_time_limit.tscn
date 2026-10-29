@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://ci71q8x9y2z3a"]
+[gd_scene format=3 uid="uid://ci71q8yay203a"]
 
 [ext_resource type="Script" path="res://tests/test_editor_goals_and_time_limit.gd" id="1_test"]
 
