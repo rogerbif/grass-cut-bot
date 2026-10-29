@@ -353,6 +353,8 @@ func _rotate_active_step() -> void:
 func _sync_all_ui() -> void:
 	if ui == null:
 		return
+	if ui.has_method("get_configured_time_limit"):
+		time_limit = ui.get_configured_time_limit()
 	ui.sync_state(
 		active_layer,
 		active_tool,
@@ -1461,6 +1463,8 @@ func _build_default_island_for_level(lvl_id: int) -> void:
 		)
 
 func save_current_level_json() -> void:
+	if ui != null and ui.has_method("get_configured_time_limit"):
+		time_limit = ui.get_configured_time_limit()
 	IslandAutotiler.apply_autotile(terrain_grid)
 	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
 	var ok: bool = LevelSerializer.save_level_json(
@@ -1484,6 +1488,8 @@ func save_current_level_json() -> void:
 		ui.show_toast("❌ Erro ao salvar JSON da fase!", Color(0.95, 0.3, 0.3))
 
 func bake_current_level_tscn() -> void:
+	if ui != null and ui.has_method("get_configured_time_limit"):
+		time_limit = ui.get_configured_time_limit()
 	IslandAutotiler.apply_autotile(terrain_grid)
 	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
 	var ok: bool = LevelSerializer.bake_to_tscn(
@@ -1515,6 +1521,9 @@ func _start_playtest() -> void:
 	if terrain_grid.is_empty():
 		ui.show_toast("⚠️ Crie pelo menos 1 bloco de ilha antes de testar!", Color(0.95, 0.65, 0.2))
 		return
+
+	if ui != null and ui.has_method("get_configured_time_limit"):
+		time_limit = ui.get_configured_time_limit()
 
 	is_playtesting = true
 	is_painting_lmb = false

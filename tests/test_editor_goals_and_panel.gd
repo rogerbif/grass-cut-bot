@@ -18,7 +18,7 @@ func test_goals_ui_separation_and_constraints() -> void:
 
 	# 1. Verifica se todos os itens de GOALS_CATALOG foram criados
 	var catalog: Array = LevelEditorUiScript.GOALS_CATALOG
-	assert(catalog.size() == 9, "Devem existir 9 itens no catálogo de metas (7 cores de grama + trigo + flor)")
+	assert(catalog.size() == 16, "Devem existir 16 itens no catálogo de metas (7 cores de grama + trigo + 8 flores)")
 
 	var chks: Dictionary = ui.get("_goal_checkboxes") as Dictionary
 	var totals: Dictionary = ui.get("_goal_total_labels") as Dictionary
@@ -33,7 +33,7 @@ func test_goals_ui_separation_and_constraints() -> void:
 		var spin: SpinBox = spins[k] as SpinBox
 		assert(not spin.visible, "Spinbox de %s deve iniciar fechado/oculto" % k)
 
-	print("✔ Todos os 9 tipos de metas criados e inicializados com SpinBox fechado")
+	print("✔ Todos os 16 tipos de metas criados e inicializados com SpinBox fechado")
 
 	# 2. Simula contagem de campo: 248 green, 244 blue, 28 purple, 8 wheat, 4 flowers, 0 yellow
 	var vg = VectorGrassFieldScript.new()
@@ -53,12 +53,12 @@ func test_goals_ui_separation_and_constraints() -> void:
 	var green_count: int = int(last_detected.get("grass_green", 0))
 	var yellow_count: int = int(last_detected.get("grass_yellow", 0))
 	var wheat_count: int = int(last_detected.get("wheat", 0))
-	var flower_count: int = int(last_detected.get("flower", 0))
+	var rose_count: int = int(last_detected.get("flower_rose", 0))
 
 	assert(green_count > 0, "Grama verde deve ser detectada (>0)")
 	assert(yellow_count == 0, "Grama amarela deve ter 0 tufos detectados")
 	assert(wheat_count == 1, "Trigo deve ter 1 detectado")
-	assert(flower_count == 1, "Flor deve ter 1 detectada")
+	assert(rose_count == 1, "Rosa Nobre deve ter 1 detectada individualmente")
 
 	# Verifica se item com 0 tufos desativa o checkbox
 	var chk_yellow: CheckBox = chks["grass_yellow"] as CheckBox
@@ -68,9 +68,8 @@ func test_goals_ui_separation_and_constraints() -> void:
 	var chk_green: CheckBox = chks["grass_green"] as CheckBox
 	var spin_green: SpinBox = spins["grass_green"] as SpinBox
 	assert(not chk_green.disabled, "Grama verde com tufos deve ter checkbox habilitado")
-
-	chk_green.button_pressed = true
-	assert(spin_green.visible, "Ao ativar como meta, o SpinBox deve abrir (visible=true)")
+	assert(chk_green.button_pressed, "Grama verde presente deve vir marcada por padrão")
+	assert(spin_green.visible, "Ao estar ativa como meta por padrão, o SpinBox deve abrir (visible=true)")
 	assert(spin_green.min_value == 1, "Valor mínimo do SpinBox deve ser 1 (não pode ser zero ou negativo)")
 	assert(spin_green.max_value == green_count, "Valor máximo deve ser igual ao total de tufos na fase (%d)" % green_count)
 	assert(spin_green.value == green_count, "Valor padrão deve ser o total de tufos (%d)" % green_count)

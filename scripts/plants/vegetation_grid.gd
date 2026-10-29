@@ -899,11 +899,8 @@ func _build_from_vector_field(
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
-		if flower_counts_by_type.size() <= 2:
-			for f_key: Variant in flower_counts_by_type.keys():
-				goals[String(f_key)] = int(flower_counts_by_type[f_key])
-		else:
-			goals["flower"] = _total_physical_flower
+		for f_key: Variant in flower_counts_by_type.keys():
+			goals[String(f_key)] = int(flower_counts_by_type[f_key])
 
 	return goals
 
@@ -1233,11 +1230,8 @@ func _build_from_vegetation_field(
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
-		if flower_counts_by_type.size() <= 2:
-			for f_key: Variant in flower_counts_by_type.keys():
-				goals[String(f_key)] = int(flower_counts_by_type[f_key])
-		else:
-			goals["flower"] = _total_physical_flower
+		for f_key: Variant in flower_counts_by_type.keys():
+			goals[String(f_key)] = int(flower_counts_by_type[f_key])
 
 	return goals
 

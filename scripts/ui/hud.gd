@@ -192,8 +192,30 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 			icon_rect.modulate = Color(0.40, 0.40, 0.45)
 		"wheat":
 			icon_rect.texture = ICON_WHEAT
-		"flower", "flower_rose", "flower_daisy", "flower_sunflower", "flower_bell", "flower_corolla", "flower_tulip", "flower_bed":
+		"flower":
 			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(1.0, 0.18, 0.65)
+		"flower_rose":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(1.0, 0.08, 0.35)
+		"flower_daisy":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(1.0, 1.0, 1.0)
+		"flower_sunflower":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(1.0, 0.88, 0.0)
+		"flower_bell":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(0.12, 0.65, 1.0)
+		"flower_corolla":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(1.0, 0.50, 0.05)
+		"flower_tulip":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(1.0, 0.08, 0.24)
+		"flower_bed":
+			icon_rect.texture = ICON_FLOWER
+			icon_rect.modulate = Color(0.88, 0.30, 1.0)
 		_:
 			icon_rect.texture = ICON_LEAF
 

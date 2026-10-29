@@ -11,8 +11,15 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "grass_white", "name": "🤍 Grama Branca", "color": Color(0.92, 0.94, 0.98), "unit": "tufos" },
 	{ "key": "grass_red", "name": "❤️ Grama Vermelha", "color": Color(0.95, 0.37, 0.38), "unit": "tufos" },
 	{ "key": "grass_black", "name": "🖤 Grama Preta", "color": Color(0.48, 0.48, 0.55), "unit": "tufos" },
-	{ "key": "wheat", "name": "🌾 Trigo", "color": Color(1.0, 0.82, 0.28), "unit": "trigos" },
-	{ "key": "flower", "name": "🌸 Flores", "color": Color(1.0, 0.50, 0.75), "unit": "flores" }
+	{ "key": "wheat", "name": "🌾 Trigo Maduro", "color": Color(1.0, 0.82, 0.28), "unit": "trigos" },
+	{ "key": "flower", "name": "🌸 Flor Silvestre", "color": Color(1.0, 0.18, 0.65), "unit": "flores" },
+	{ "key": "flower_rose", "name": "🌹 Rosa Nobre", "color": Color(1.0, 0.08, 0.35), "unit": "rosas" },
+	{ "key": "flower_daisy", "name": "🌼 Margarida", "color": Color(1.0, 1.0, 1.0), "unit": "margaridas" },
+	{ "key": "flower_sunflower", "name": "🌻 Girassol", "color": Color(1.0, 0.88, 0.0), "unit": "girassóis" },
+	{ "key": "flower_bell", "name": "🔔 Flor Sino", "color": Color(0.12, 0.65, 1.0), "unit": "sinos" },
+	{ "key": "flower_corolla", "name": "🏵️ Cravo Corola", "color": Color(1.0, 0.50, 0.05), "unit": "cravos" },
+	{ "key": "flower_tulip", "name": "🌷 Tulipa Imperial", "color": Color(1.0, 0.08, 0.24), "unit": "tulipas" },
+	{ "key": "flower_bed", "name": "🪻 Canteiro Florido", "color": Color(0.88, 0.30, 1.0), "unit": "canteiros" }
 ]
 
 signal level_load_requested(level_id: int)
@@ -77,6 +84,7 @@ var _goal_checkboxes: Dictionary = {}
 var _goal_spinboxes: Dictionary = {}
 var _goal_total_labels: Dictionary = {}
 var _goal_manually_edited: Dictionary = {}
+var _goal_manually_unchecked: Dictionary = {}
 var _last_detected_counts: Dictionary = {}
 var lbl_world_metrics: Label
 
@@ -266,6 +274,20 @@ func _build_top_bar() -> void:
 	spin_time.custom_minimum_size = Vector2(74, 32)
 	spin_time.value_changed.connect(func(v: float) -> void:
 		time_limit_changed.emit(v)
+	)
+	var le_time: LineEdit = spin_time.get_line_edit()
+	le_time.text_changed.connect(func(new_text: String) -> void:
+		if new_text.is_valid_float():
+			var val: float = float(new_text)
+			time_limit_changed.emit(val)
+	)
+	le_time.text_submitted.connect(func(_new_text: String) -> void:
+		spin_time.apply()
+		time_limit_changed.emit(spin_time.value)
+	)
+	le_time.focus_exited.connect(func() -> void:
+		spin_time.apply()
+		time_limit_changed.emit(spin_time.value)
 	)
 	hbox.add_child(spin_time)
 
@@ -738,12 +760,14 @@ func _build_goals_metric_section(parent_box: VBoxContainer) -> void:
 					chk.set_pressed_no_signal(false)
 					spin.visible = false
 					return
+				_goal_manually_unchecked.erase(g_key)
 				spin.visible = true
 				spin.min_value = 1
 				spin.max_value = total
 				if not _goal_manually_edited.get(g_key, false) or spin.value > total or spin.value < 1:
 					spin.value = total
 			else:
+				_goal_manually_unchecked[g_key] = true
 				spin.visible = false
 		)
 
@@ -992,7 +1016,18 @@ func update_level_header(level_id: int, width: int, height: int, time_limit: flo
 	if spin_height != null:
 		spin_height.set_value_no_signal(float(height))
 	if spin_time != null:
-		spin_time.set_value_no_signal(time_limit)
+		var le: LineEdit = spin_time.get_line_edit()
+		if le == null or not le.has_focus():
+			spin_time.set_value_no_signal(time_limit)
+
+func get_configured_time_limit() -> float:
+	if spin_time != null:
+		var le: LineEdit = spin_time.get_line_edit()
+		if le != null and le.has_focus() and not le.text.is_empty():
+			if le.text.is_valid_float():
+				return clampf(float(le.text), float(spin_time.min_value), float(spin_time.max_value))
+		return float(spin_time.value)
+	return 90.0
 
 func update_goals_summary(
 	terrain_count: int,
@@ -1001,12 +1036,14 @@ func update_goals_summary(
 	vector_field: RefCounted = null
 ) -> void:
 	var grass_by_type: Dictionary = {}
+	var flower_by_type: Dictionary = {}
 	for gm in GOALS_CATALOG:
 		var k_str: String = String(gm["key"])
 		if k_str.begins_with("grass_"):
 			grass_by_type[k_str] = 0
+		elif k_str.begins_with("flower"):
+			flower_by_type[k_str] = 0
 	var wheat_tufts: int = 0
-	var flower_c: int = 0
 	var rock_c: int = 0
 
 	if vector_field != null and vector_field.has_method("sample_all_tufts"):
@@ -1017,8 +1054,10 @@ func update_goals_summary(
 				var t_type: String = String(td.get("type", "grass_green"))
 				if t_type == "wheat":
 					wheat_tufts += 1
-				elif t_type == "flower" or t_type.begins_with("flower"):
-					flower_c += 1
+				elif flower_by_type.has(t_type):
+					flower_by_type[t_type] = int(flower_by_type[t_type]) + 1
+				elif t_type.begins_with("flower"):
+					flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
 				elif grass_by_type.has(t_type):
 					grass_by_type[t_type] = int(grass_by_type[t_type]) + 1
 				else:
@@ -1037,8 +1076,10 @@ func update_goals_summary(
 	for k: Variant in object_grid:
 		var entry: Dictionary = object_grid[k] as Dictionary
 		var t: String = String(entry.get("type", ""))
-		if t.begins_with("flower"):
-			flower_c += 1
+		if flower_by_type.has(t):
+			flower_by_type[t] = int(flower_by_type[t]) + 1
+		elif t.begins_with("flower"):
+			flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
 		elif t == "wheat":
 			wheat_tufts += 1
 		elif t == "rock":
@@ -1052,8 +1093,8 @@ func update_goals_summary(
 			total_count = int(grass_by_type.get(g_key, 0))
 		elif g_key == "wheat":
 			total_count = wheat_tufts
-		elif g_key == "flower":
-			total_count = flower_c
+		elif flower_by_type.has(g_key):
+			total_count = int(flower_by_type.get(g_key, 0))
 
 		_last_detected_counts[g_key] = total_count
 
@@ -1074,8 +1115,12 @@ func update_goals_summary(
 				chk.disabled = true
 				if chk.button_pressed:
 					chk.set_pressed_no_signal(false)
+				_goal_manually_unchecked.erase(g_key)
 			else:
 				chk.disabled = false
+				# Regra canônica: se há plantas no mapa e não foi desmarcado manualmente, fica ativo por padrão
+				if not _goal_manually_unchecked.get(g_key, false) and not chk.button_pressed:
+					chk.set_pressed_no_signal(true)
 
 		if spin != null:
 			if total_count > 0:
@@ -1091,6 +1136,7 @@ func update_goals_summary(
 				spin.min_value = 1
 				spin.max_value = 1
 				spin.set_value_no_signal(1.0)
+				_goal_manually_edited.erase(g_key)
 
 			if chk != null:
 				spin.visible = chk.button_pressed and total_count > 0
@@ -1111,6 +1157,7 @@ func get_configured_goals() -> Dictionary:
 
 func set_configured_goals(goals: Dictionary) -> void:
 	_goal_manually_edited.clear()
+	_goal_manually_unchecked.clear()
 	var has_saved_goals: bool = not goals.is_empty()
 	for gm in GOALS_CATALOG:
 		var k: String = String(gm["key"])
@@ -1129,6 +1176,9 @@ func set_configured_goals(goals: Dictionary) -> void:
 			elif k == "grass_green" and goals.has("grass"):
 				is_active = true
 				goal_val = int(goals["grass"])
+			else:
+				if total > 0:
+					_goal_manually_unchecked[k] = true
 		else:
 			if total > 0:
 				is_active = true
@@ -1176,6 +1226,20 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 		var icon: String = "🌿"
 		if k_str == "wheat":
 			icon = "🌾"
+		elif k_str == "flower_rose":
+			icon = "🌹"
+		elif k_str == "flower_daisy":
+			icon = "🌼"
+		elif k_str == "flower_sunflower":
+			icon = "🌻"
+		elif k_str == "flower_bell":
+			icon = "🔔"
+		elif k_str == "flower_corolla":
+			icon = "🏵️"
+		elif k_str == "flower_tulip":
+			icon = "🌷"
+		elif k_str == "flower_bed":
+			icon = "🪻"
 		elif k_str.begins_with("flower"):
 			icon = "🌸"
 		elif k_str == "grass_yellow":
