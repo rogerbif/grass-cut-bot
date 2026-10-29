@@ -47,10 +47,16 @@ O usuário enviou uma captura de referência contendo um botão estilizado de a�
 - **Resolução:** O `viewBox` foi expandido para `viewBox="0 10 450 138"`, garantindo margem respirável em todos os 4 eixos (topo, base, esquerda e direita).
 - O botão em `tab_home.tscn` foi redimensionado para `Vector2(440, 135)`, preservando a proporção nativa da peça e eliminando 100% de qualquer recorte visual.
 
+### 5. Elevação da Parte Interna & Moldura Estática (Efeito de Afundamento Mecânico)
+- **Elevação do Corpo Interno:** O topo da face amarela e base verde foi elevado em $6\text{px}$ (de $y=36$ para $y=30$), diminuindo a folga para com a linha neon superior e deixando o botão mais imponente e volumoso.
+- **Moldura Externa 100% Estática no Pressionamento:**
+  - O suporte superior-direito com a linha ciano neon e o suporte angular inferior-esquerdo permanecem rigorosamente idênticos e fixos entre o estado normal ([`btn_play_banner.svg`](../../assets/ui/btn_play_banner.svg)) e o estado pressionado ([`btn_play_banner_pressed.svg`](../../assets/ui/btn_play_banner_pressed.svg)).
+  - Ao pressionar (`button_down`), **somente o miolo amarelo, base 3D e rótulo de texto descem em $7\text{px}$** (`PRESS_SINK_OFFSET = 7.0`), criando a sensação física nítida de que o botão afunda para dentro do seu chassi tecnológico sem mover a carcaça exterior.
+
 ---
 
 ## 📊 Validação e Conformidade
 1. **Zero Warnings Estrito (Mandamento 1):** Compilação e execução via Godot 4.7 headless sem warnings ou erros.
 2. **Reimportação Atômica (Mandamento 12):** Executado `godot --headless --editor --quit` para regenerar o cache de todos os novos SVGs.
-3. **Teste Visual:** Captura de tela gerada e validada em `rendered_preview_button.png` e `bottom_bar_preview.png`.
-4. **SemVer:** Incrementado de `0.12.82-alpha` para `0.12.84-alpha`.
+3. **Teste Visual:** Captura de tela dos estados normal e pressionado gerada e validada em `state_normal_preview.png` e `state_pressed_preview.png`.
+4. **SemVer:** Incrementado para `v0.12.86-alpha`.
