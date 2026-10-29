@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <path d="M24 6 L6 22 L11 22 L11 40 C11 41.1 11.9 42 13 42 L20 42 L20 30 L28 30 L28 42 L35 42 C36.1 42 37 41.1 37 40 L37 22 L42 22 Z" fill="#64B5F6" stroke="#E3F2FD" stroke-width="2" stroke-linejoin="round"/>
-  <rect x="22" y="16" width="4" height="6" rx="1" fill="#E3F2FD"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+    <path fill="#E8EAF6" d="M41,42H7V13h34V42z"/>
+    <rect x="7" y="37" fill="#C5CAE9" width="34" height="5"/>
+    <path fill="#D84315" d="M28,42V31.918C28,29.754,26.182,28,23.986,28c-2.194,0-3.975,1.754-3.975,3.918V42H28z"/>
+    <g fill="#01579B">
+        <rect x="32" y="27" width="5" height="8"/>
+        <rect x="11" y="27" width="5" height="8"/>
+    </g>
+    <path fill="#D32F2F" d="M43,25H30.208L24,15.482L17.792,25H5V6h38V25z"/>
+    <path fill="#FF8A65" d="M25.5,34c-0.275,0-0.5,0.225-0.5,0.5v2c0,0.275,0.225,0.5,0.5,0.5s0.5-0.225,0.5-0.5v-2 C26,34.225,25.775,34,25.5,34"/>
+    <polygon fill="#B71C1C" points="14.37,25 17.792,25 24,15.482 30.208,25 34,25 24.186,10"/>
 </svg>
