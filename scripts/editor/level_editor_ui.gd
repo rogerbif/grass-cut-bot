@@ -352,7 +352,7 @@ func _build_left_panel() -> void:
 
 	# 2. Ferramentas
 	var lbl_tools: Label = Label.new()
-	lbl_tools.text = "FERRAMENTAS [1..6] / [Alt+Clique]"
+	lbl_tools.text = "FERRAMENTAS [1..4]"
 	lbl_tools.add_theme_font_size_override("font_size", 13)
 	lbl_tools.add_theme_color_override("font_color", Color(0.55, 0.88, 1.0))
 	vbox.add_child(lbl_tools)
@@ -361,9 +361,7 @@ func _build_left_panel() -> void:
 		{ "id": 0, "name": "🖌️ [1] Pincel / Carimbo", "color": Color(0.25, 0.88, 0.52) },
 		{ "id": 1, "name": "🧽 [2] Borracha (Apagar)", "color": Color(0.95, 0.38, 0.38) },
 		{ "id": 2, "name": "🔲 [3] Retângulo (Box Fill)", "color": Color(0.98, 0.78, 0.22) },
-		{ "id": 3, "name": "🤖 [4] Posicionar Spawn", "color": Color(0.95, 0.85, 0.25) },
-		{ "id": 4, "name": "💉 [5 / I] Pipeta (Conta-Gotas)", "color": Color(0.40, 0.85, 1.0) },
-		{ "id": 5, "name": "📦 [6 / M] Seleção & Mover", "color": Color(0.88, 0.55, 0.98) }
+		{ "id": 3, "name": "🤖 [4] Posicionar Spawn", "color": Color(0.95, 0.85, 0.25) }
 	]
 
 	for tm in tools_meta:
@@ -1155,7 +1153,7 @@ func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> v
 	if lbl_status == null:
 		return
 	var cell_str: String = "[%d, %d]" % [cell.x, cell.y] if in_bounds else "[Fora da Grade]"
-	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [X]: Espelho  |  [Alt+Esq/5]: Pipeta  |  [6/M]: Seleção  |  [F1]: Playtest" % [
+	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [X]: Espelho  |  [F1]: Playtest" % [
 		cell_str, world_pos.x, world_pos.z
 	]
 

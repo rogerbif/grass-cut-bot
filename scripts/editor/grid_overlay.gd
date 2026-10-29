@@ -5,15 +5,11 @@ const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 var grid_mesh_inst: MeshInstance3D
 var preview_fill_inst: MeshInstance3D
 var preview_line_inst: MeshInstance3D
-var selection_fill_inst: MeshInstance3D
-var selection_line_inst: MeshInstance3D
 var axis_line_inst: MeshInstance3D
 
 var _grid_mat: StandardMaterial3D
 var _preview_fill_mat: StandardMaterial3D
 var _preview_line_mat: StandardMaterial3D
-var _selection_fill_mat: StandardMaterial3D
-var _selection_line_mat: StandardMaterial3D
 var _axis_line_mat: StandardMaterial3D
 
 var current_width: int = 14
@@ -39,19 +35,6 @@ func _ready() -> void:
 	_preview_line_mat.no_depth_test = true
 	_preview_line_mat.albedo_color = Color(0.4, 1.0, 0.75, 0.95)
 
-	_selection_fill_mat = StandardMaterial3D.new()
-	_selection_fill_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_selection_fill_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_selection_fill_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_selection_fill_mat.no_depth_test = true
-	_selection_fill_mat.albedo_color = Color(0.85, 0.45, 1.0, 0.25)
-
-	_selection_line_mat = StandardMaterial3D.new()
-	_selection_line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_selection_line_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_selection_line_mat.no_depth_test = true
-	_selection_line_mat.albedo_color = Color(0.95, 0.65, 1.0, 0.95)
-
 	grid_mesh_inst = MeshInstance3D.new()
 	grid_mesh_inst.material_override = _grid_mat
 	add_child(grid_mesh_inst)
@@ -63,14 +46,6 @@ func _ready() -> void:
 	preview_line_inst = MeshInstance3D.new()
 	preview_line_inst.material_override = _preview_line_mat
 	add_child(preview_line_inst)
-
-	selection_fill_inst = MeshInstance3D.new()
-	selection_fill_inst.material_override = _selection_fill_mat
-	add_child(selection_fill_inst)
-
-	selection_line_inst = MeshInstance3D.new()
-	selection_line_inst.material_override = _selection_line_mat
-	add_child(selection_line_inst)
 
 	_axis_line_mat = StandardMaterial3D.new()
 	_axis_line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -322,94 +297,6 @@ func update_brush_preview(
 
 	preview_fill_inst.mesh = im_fill
 	preview_line_inst.mesh = im_line
-
-## Atualiza o retângulo visual de seleção múltipla (Selection Box / Marquee)
-func update_selection_preview(
-	rect: Rect2i,
-	is_active: bool,
-	fill_col: Color = Color(0.85, 0.45, 1.0, 0.22),
-	line_col: Color = Color(0.95, 0.65, 1.0, 0.95)
-) -> void:
-	if selection_fill_inst == null or selection_line_inst == null:
-		return
-
-	if not is_active or rect.size.x <= 0 or rect.size.y <= 0:
-		selection_fill_inst.mesh = null
-		selection_line_inst.mesh = null
-		return
-
-	_selection_fill_mat.albedo_color = fill_col
-	_selection_line_mat.albedo_color = line_col
-
-	var im_fill: ImmediateMesh = ImmediateMesh.new()
-	var im_line: ImmediateMesh = ImmediateMesh.new()
-	var y_h: float = 0.040
-
-	var min_c: Vector2i = rect.position
-	var max_c: Vector2i = rect.position + rect.size - Vector2i(1, 1)
-
-	var p_min: Vector3 = LevelJsonLoader.grid_to_world(min_c.x, min_c.y, current_width, current_height, cell_size)
-	var p_max: Vector3 = LevelJsonLoader.grid_to_world(max_c.x, max_c.y, current_width, current_height, cell_size)
-
-	var half: float = cell_size * 0.5
-	var x0: float = p_min.x - half
-	var x1: float = p_max.x + half
-	var z0: float = p_min.z - half
-	var z1: float = p_max.z + half
-
-	var v0: Vector3 = Vector3(x0, y_h, z0)
-	var v1: Vector3 = Vector3(x1, y_h, z0)
-	var v2: Vector3 = Vector3(x1, y_h, z1)
-	var v3: Vector3 = Vector3(x0, y_h, z1)
-
-	im_fill.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
-	im_fill.surface_add_vertex(v0)
-	im_fill.surface_add_vertex(v1)
-	im_fill.surface_add_vertex(v2)
-
-	im_fill.surface_add_vertex(v0)
-	im_fill.surface_add_vertex(v2)
-	im_fill.surface_add_vertex(v3)
-	im_fill.surface_end()
-
-	im_line.surface_begin(Mesh.PRIMITIVE_LINES)
-	# Contorno externo retangular
-	im_line.surface_add_vertex(v0)
-	im_line.surface_add_vertex(v1)
-	im_line.surface_add_vertex(v1)
-	im_line.surface_add_vertex(v2)
-	im_line.surface_add_vertex(v2)
-	im_line.surface_add_vertex(v3)
-	im_line.surface_add_vertex(v3)
-	im_line.surface_add_vertex(v0)
-
-	# Cantoneiras reforçadas para estética visual profissional
-	var bracket_len: float = minf(cell_size * 0.75, (x1 - x0) * 0.3)
-	# Canto Top-Left
-	im_line.surface_add_vertex(v0)
-	im_line.surface_add_vertex(v0 + Vector3(bracket_len, 0.002, 0.0))
-	im_line.surface_add_vertex(v0)
-	im_line.surface_add_vertex(v0 + Vector3(0.0, 0.002, bracket_len))
-	# Canto Top-Right
-	im_line.surface_add_vertex(v1)
-	im_line.surface_add_vertex(v1 - Vector3(bracket_len, -0.002, 0.0))
-	im_line.surface_add_vertex(v1)
-	im_line.surface_add_vertex(v1 + Vector3(0.0, 0.002, bracket_len))
-	# Canto Bottom-Right
-	im_line.surface_add_vertex(v2)
-	im_line.surface_add_vertex(v2 - Vector3(bracket_len, -0.002, 0.0))
-	im_line.surface_add_vertex(v2)
-	im_line.surface_add_vertex(v2 - Vector3(0.0, -0.002, bracket_len))
-	# Canto Bottom-Left
-	im_line.surface_add_vertex(v3)
-	im_line.surface_add_vertex(v3 + Vector3(bracket_len, 0.002, 0.0))
-	im_line.surface_add_vertex(v3)
-	im_line.surface_add_vertex(v3 - Vector3(0.0, -0.002, bracket_len))
-
-	im_line.surface_end()
-
-	selection_fill_inst.mesh = im_fill
-	selection_line_inst.mesh = im_line
 
 ## Atualiza a linha guia dos eixos de simetria do modo espelho
 func update_mirror_axis(mirror_mode: int) -> void:

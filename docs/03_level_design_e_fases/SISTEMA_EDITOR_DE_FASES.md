@@ -113,7 +113,6 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 - `❤️ Coração` (Equação implícita cardióide contínua)
 - `⭐ Estrela` (Modulação radial de 5 pontas)
 - `➕ Cruz`
-- `⭕ Anel Circular` (Distribuição em circunferência uniforme com centro oco para flores, rochas ou grama)
 
 ---
 
@@ -125,11 +124,6 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular. |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
-| **Pipeta (Conta-Gotas / Eyedropper)** | `5`, `I` ou `Alt + Clique Esquerdo` | Amostra o objeto, grama vetorial ou terreno sob o cursor e troca automaticamente para a camada e item correspondente. |
-| **Seleção Múltipla & Mover** | `6` ou `M` | Cria caixa de seleção (Marquee). Arrastar dentro da seleção move o grupo; fora inicia nova caixa. |
-| **Duplicar Seleção** | `Ctrl + D` | Duplica o grupo selecionado em 1 clique e ativa o modo carimbo para estampar cópias pelo mapa. |
-| **Copiar / Colar Seleção** | `Ctrl + C` / `Ctrl + V` | Copia para área de transferência e cola no mapa na posição clicada. |
-| **Deletar Seleção** | `Delete` ou `Backspace` | Deleta todo o terreno e objetos dentro da seleção ativa (com suporte a `Ctrl+Z`). |
 | **Modo Espelho / Simetria** | `X` | Alterna os modos de simetria: Desligado $\to$ Horizontal (X) $\to$ Vertical (Z) $\to$ Quádruplo (X+Z) $\to$ Desligado, desenhando em tempo real com linhas guias e preview holográfico simultâneo. |
 | **Modo Escala do Pincel (Padrão)** | `S` | Seleciona o modo de ajuste de **Escala** (ferramenta padrão inicial) e direciona os atalhos `[` e `]` para tamanho. |
 | **Modo Rotação** | `R` | Seleciona o modo de **Rotação** e direciona os atalhos `[` e `]` para giro ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |

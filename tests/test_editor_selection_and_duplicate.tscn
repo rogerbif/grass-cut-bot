@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://cmdv3g3ft538g"]
-
-[ext_resource type="Script" path="res://tests/test_editor_selection_and_duplicate.gd" id="1_test"]
-
-[node name="TestEditorSelectionAndDuplicate" type="Node"]
-script = ExtResource("1_test")

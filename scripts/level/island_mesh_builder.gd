@@ -367,8 +367,9 @@ static func convert_tile_grid_to_polygons(
 	corner_radius: float = DEFAULT_CORNER_RADIUS,
 	arc_steps: int = DEFAULT_CORNER_ARC_STEPS
 ) -> Array[PackedVector2Array]:
+	var empty_res: Array[PackedVector2Array] = []
 	if terrain_list.is_empty():
-		return []
+		return empty_res
 
 	var offset_x: float = -(float(width) * cell_size) / 2.0 + (cell_size / 2.0)
 	var offset_z: float = -(float(height) * cell_size) / 2.0 + (cell_size / 2.0)
@@ -394,7 +395,7 @@ static func convert_tile_grid_to_polygons(
 		squares.append(sq)
 
 	if squares.is_empty():
-		return []
+		return empty_res
 
 	# Fusão progressiva dos quadrados adjacentes
 	var merged_polys: Array[PackedVector2Array] = [squares[0]]
