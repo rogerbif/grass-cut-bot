@@ -1,6 +1,10 @@
 extends Camera3D
 
-@export var target_path: NodePath
+@export var target_path: NodePath:
+	set(v):
+		target_path = v
+		if is_inside_tree() and has_node(target_path):
+			target = get_node(target_path) as Node3D
 @export var base_canonical_offset: Vector3 = Vector3(0.0, 7.7511, 9.1619) # 100% canônico (12.0m no Lv 6 MAX)
 @export var follow_speed: float = 8.0
 
@@ -109,9 +113,11 @@ func reset_cam() -> void:
 	_in_victory_cam = false
 	if _victory_tween != null and _victory_tween.is_valid():
 		_victory_tween.kill()
+	if (target == null or not is_instance_valid(target)) and has_node(target_path):
+		target = get_node(target_path) as Node3D
 	var lvl: int = UpgradeManager.blade_level if UpgradeManager != null else 1
 	_apply_blade_level_zoom(lvl, false)
-	if target:
+	if target and is_instance_valid(target):
 		look_at_from_position(target.global_position + _current_gameplay_offset, target.global_position, Vector3.UP)
 	else:
 		look_at_from_position(global_position, global_position - _current_gameplay_offset, Vector3.UP)
@@ -122,7 +128,7 @@ func _on_shake_requested(intensity: float, duration: float) -> void:
 	shake_duration = duration
 
 func _physics_process(delta: float) -> void:
-	if not target:
+	if not target or not is_instance_valid(target):
 		return
 
 	if _in_victory_cam:

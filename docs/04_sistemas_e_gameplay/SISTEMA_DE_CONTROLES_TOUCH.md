@@ -29,11 +29,12 @@ Para máxima nitidez em qualquer densidade de pixels mobile (telas HD, Full HD e
 
 ---
 
-## 3. Compatibilidade com Teclado e Mouse no PC
+## 3. Compatibilidade com Teclado, Mouse e Gamepad/Joystick Físico (PC e Web)
 
-Para permitir iterações de desenvolvimento e testes instantâneos no ambiente de desenvolvimento:
+Para máxima acessibilidade no PC, Web e dispositivos com controles conectados:
+- **Gamepad / Joystick Físico (Nativo & Web Gamepad API):** Leitura do analógico esquerdo (`JOY_AXIS_LEFT_X`, `JOY_AXIS_LEFT_Y`) e D-Pad direcional de controles Xbox, PlayStation, 8BitDo e genéricos via USB ou Bluetooth. Inclui zona morta analógica calibrada de `0.15` para proteção contra drift.
 - **Mouse:** O mouse simula toques de tela graças ao parâmetro `pointing/emulate_touch_from_mouse = true` em `project.godot`.
-- **Teclado:** Quando não houver toque ativo na tela, o script lê diretamente as teclas **WASD** ou as **Setas do Teclado**, convertendo a direção ortogonal/diagonal em vetor unitário e repassando ao cortador.
+- **Teclado:** Quando não houver toque ativo na tela nem comando analógico no gamepad, o script lê diretamente as teclas **WASD** ou as **Setas do Teclado**, convertendo a direção ortogonal/diagonal em vetor unitário e repassando ao cortador.
 
 ---
 

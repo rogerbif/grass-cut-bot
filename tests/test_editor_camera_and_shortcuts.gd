@@ -44,7 +44,37 @@ func test_playtest_game_camera_presence() -> int:
 		editor.queue_free()
 		return 1
 
-	print("PASS: PlaytestGameCamera configurada com sucesso com FOV 48.0 e script canônico IsometricCamera.")
+	# Valida ativação e rastreamento dinâmico durante playtest
+	editor.call("_start_playtest")
+	var cutter: Node3D = editor.get("_playtest_cutter") as Node3D
+	if cutter == null or playtest_cam.get("target") != cutter:
+		printerr("FAIL: playtest_cam.target não foi atribuído ao cortador no _start_playtest!")
+		editor.queue_free()
+		return 1
+
+	if not playtest_cam.current:
+		printerr("FAIL: playtest_cam deveria estar ativa (current = true) durante o playtest!")
+		editor.queue_free()
+		return 1
+
+	var pos_before: Vector3 = playtest_cam.global_position
+	cutter.global_position = Vector3(10.0, 0.1, -8.0)
+	for i in range(10):
+		playtest_cam.call("_physics_process", 0.016)
+	var pos_after: Vector3 = playtest_cam.global_position
+
+	if pos_after.x <= pos_before.x + 0.5:
+		printerr("FAIL: playtest_cam não acompanhou o movimento do cortador!")
+		editor.queue_free()
+		return 1
+
+	editor.call("_stop_playtest")
+	if playtest_cam.get("target") != null or playtest_cam.current:
+		printerr("FAIL: playtest_cam não foi desativada/limpa no _stop_playtest!")
+		editor.queue_free()
+		return 1
+
+	print("PASS: PlaytestGameCamera configurada com sucesso com FOV 48.0, script IsometricCamera e rastreamento dinâmico 1:1.")
 	editor.queue_free()
 	return 0
 

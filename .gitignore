@@ -10,6 +10,7 @@
 *.log
 
 # Builds e pacotes exportados
+build/
 builds/
 export/
 *.apk

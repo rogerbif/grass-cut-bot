@@ -1503,9 +1503,11 @@ func _start_playtest() -> void:
 
 	if playtest_game_camera != null:
 		editor_camera.current = false
-		playtest_game_camera.current = true
+		editor_camera.movement_enabled = false
+		playtest_game_camera.set("target", _playtest_cutter)
 		playtest_game_camera.set("target_path", playtest_game_camera.get_path_to(_playtest_cutter))
 		playtest_game_camera.call("reset_cam")
+		playtest_game_camera.make_current()
 	else:
 		editor_camera.follow_target = _playtest_cutter
 	ui.show_toast("🎮 Playtest Iniciado! Câmera Oficial Ativa", Color(0.35, 0.95, 0.5))
@@ -1534,7 +1536,8 @@ func _stop_playtest() -> void:
 	if playtest_game_camera != null:
 		playtest_game_camera.current = false
 		playtest_game_camera.set("target", null)
-	editor_camera.current = true
+	editor_camera.movement_enabled = true
+	editor_camera.make_current()
 	editor_camera.restore_editor_view()
 	ui.set_playtest_mode(false)
 	_sync_all_ui()

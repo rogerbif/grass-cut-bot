@@ -58,7 +58,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	if version_label != null:
-		version_label.text = "%s • Mobile Edition" % GameVersion.get_display_name()
+		var edition: String = "Web Edition" if OS.has_feature("web") else ("PC Edition" if OS.has_feature("pc") else "Mobile Edition")
+		version_label.text = "%s • %s" % [GameVersion.get_display_name(), edition]
 		version_label.mouse_filter = Control.MOUSE_FILTER_STOP
 		version_label.gui_input.connect(_on_version_gui_input)
 
@@ -112,7 +113,8 @@ func _ready() -> void:
 
 func open_modal() -> void:
 	if version_label != null:
-		version_label.text = "%s • Mobile Edition" % GameVersion.get_display_name()
+		var edition: String = "Web Edition" if OS.has_feature("web") else ("PC Edition" if OS.has_feature("pc") else "Mobile Edition")
+		version_label.text = "%s • %s" % [GameVersion.get_display_name(), edition]
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	visible = true

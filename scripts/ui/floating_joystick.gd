@@ -121,8 +121,40 @@ func _process(_delta: float) -> void:
 			joystick_moved.emit(Vector2.ZERO)
 		return
 
-	# Fallback para teclado (WASD / Setas) se o joystick não estiver ativo (apenas fora do mobile)
-	if not is_active and not _is_mobile:
+	# Se o joystick virtual de toque/mouse estiver ativo, ele tem prioridade
+	if is_active:
+		return
+
+	# 1. Leitura de Gamepad / Joystick físico (Analógico esquerdo)
+	var joy_x: float = Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
+	var joy_y: float = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+	var joy_vec: Vector2 = Vector2(joy_x, joy_y)
+
+	# 2. Leitura de D-Pad físico (caso o analógico esteja na zona morta)
+	if joy_vec.length_squared() < 0.04:
+		var dpad_vec: Vector2 = Vector2.ZERO
+		if Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_RIGHT):
+			dpad_vec.x += 1.0
+		if Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_LEFT):
+			dpad_vec.x -= 1.0
+		if Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_DOWN):
+			dpad_vec.y += 1.0
+		if Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP):
+			dpad_vec.y -= 1.0
+		if dpad_vec != Vector2.ZERO:
+			joy_vec = dpad_vec.normalized()
+
+	# Aplica deadzone de 0.15 no gamepad físico
+	const JOY_DEADZONE: float = 0.15
+	var joy_len: float = joy_vec.length()
+	if joy_len > JOY_DEADZONE:
+		var norm_mag: float = clampf((joy_len - JOY_DEADZONE) / (1.0 - JOY_DEADZONE), 0.0, 1.0)
+		output_vector = joy_vec.normalized() * norm_mag
+		joystick_moved.emit(output_vector)
+		return
+
+	# 3. Fallback para teclado (WASD / Setas) fora do mobile
+	if not _is_mobile:
 		var keyboard_dir: Vector2 = Vector2.ZERO
 		if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
 			keyboard_dir.x += 1.0
@@ -136,9 +168,12 @@ func _process(_delta: float) -> void:
 		if keyboard_dir != Vector2.ZERO:
 			output_vector = keyboard_dir.normalized()
 			joystick_moved.emit(output_vector)
-		elif output_vector != Vector2.ZERO:
-			output_vector = Vector2.ZERO
-			joystick_moved.emit(Vector2.ZERO)
+			return
+
+	# 4. Sem entrada ativa: reseta para repouso se havia vetor anterior
+	if output_vector != Vector2.ZERO:
+		output_vector = Vector2.ZERO
+		joystick_moved.emit(Vector2.ZERO)
 
 func _draw() -> void:
 	if is_active:

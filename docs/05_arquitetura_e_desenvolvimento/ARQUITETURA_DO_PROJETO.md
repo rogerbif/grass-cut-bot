@@ -69,7 +69,7 @@ grass-cut-bot/
 ├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador Mestre
 ├── GDD.md                     # Ponteiro de referência rápida para o GDD canônico
 ├── default_bus_layout.tres    # Configuração dos 3 barramentos de áudio da Godot
-├── export_presets.cfg         # Configuração de exportação Android APK/AAB
+├── export_presets.cfg         # Configuração de exportação Android APK/AAB e Web (HTML5/Wasm)
 ├── icon.png                   # Ícone oficial de alta definição
 └── project.godot              # Arquivo de configuração central da Godot Engine 4 (v0.12.31-alpha)
 ```
