@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="138" viewBox="0 10 260 138">
+  <defs>
+    <!-- Ultra Vibrant Electric Cyan/Blue Gradients -->
+    <linearGradient id="main_face_blue_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#02f0ff" />
+      <stop offset="25%" stop-color="#00d2fe" />
+      <stop offset="65%" stop-color="#00a2ff" />
+      <stop offset="100%" stop-color="#007afc" />
+    </linearGradient>
+
+    <linearGradient id="base_3d_blue_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0e78fe" />
+      <stop offset="35%" stop-color="#0a64dc" />
+      <stop offset="100%" stop-color="#0242a6" />
+    </linearGradient>
+
+    <linearGradient id="top_gloss_blue_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </linearGradient>
+
+    <radialGradient id="center_glint_blue" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1.0" />
+      <stop offset="25%" stop-color="#80f8ff" stop-opacity="0.95" />
+      <stop offset="60%" stop-color="#00d4ff" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.0" />
+    </radialGradient>
+  </defs>
+
+  <!-- ================= 1. CYBER TECH ACCENTS (STATIC FRAME) ================= -->
+  <!-- Top-Right Dark Bracket Plate (Narrowed for Map Button) -->
+  <path d="M 80 18 L 212 18 Q 218 18 224 23 L 246 53 Q 251 60 246 68 L 234 94 Q 228 108 220 118 Q 215 124 206 124 L 198 124 L 214 104 Q 222 88 228 72 Q 230 66 226 62 L 208 33 Q 204 26 196 26 L 80 26 Z"
+        fill="#07212e" />
+
+  <!-- Top-Right Neon Lines (Electric Cyan) -->
+  <line x1="82" y1="18" x2="150" y2="18" stroke="#00f5ff" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M 184 18 L 212 18 Q 218 18 224 23 L 246 53 Q 251 60 246 68 L 234 94 Q 228 108 220 118"
+        fill="none" stroke="#00f5ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Bottom-Left Detached Cyber Bracket (Identical to Play Button) -->
+  <path d="M 24 92 L 34 92 L 15 125 Q 12 135 20 135 L 62 135 L 62 143 L 18 143 Q 6 143 5 130 L 14 110 Z"
+        fill="#07212e" />
+  <path d="M 24 96 L 11 126 Q 8 136 18 136 L 58 136"
+        fill="none" stroke="#00f5ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- ================= 2. 3D BASE / LOWER BEVEL (DEEP COBALT BLUE) ================= -->
+  <path d="M 24 110 L 16 124 Q 20 128 28 128 L 194 128 Q 204 128 212 121 L 231 76 Q 234 70 230 64 L 226 64 L 208 110 Q 204 114 198 114 L 24 114 Z"
+        fill="url(#base_3d_blue_grad)" stroke="#023080" stroke-width="1.5" stroke-linejoin="round" />
+
+  <!-- Dark rim along bottom edge -->
+  <path d="M 28 124 L 36 129 L 194 129 L 206 122 L 203 126 L 194 131 L 34 131 L 25 126 Z"
+        fill="#022464" />
+
+  <!-- ================= 3. MAIN BUTTON FACE (AZURE CYAN GRADIENT) ================= -->
+  <path d="M 72 30 
+           L 206 30 
+           Q 213 30 217 35 
+           L 229 59 
+           Q 232 63 228 67 
+           L 209 105 
+           Q 206 110 198 110 
+           L 24 110 
+           Q 16 110 18 102 
+           L 60 37 
+           Q 63 30 72 30 Z"
+        fill="url(#main_face_blue_grad)"
+        stroke="#0075d4"
+        stroke-width="2.5"
+        stroke-linejoin="round" />
+
+  <!-- ================= 4. GLOSS & HIGHLIGHTS ================= -->
+  <path d="M 74 32 
+           L 204 32 
+           Q 210 32 213 36 L 220 48 L 208 50 L 200 41 L 76 41 L 66 54 L 61 52 Q 66 32 74 32 Z"
+        fill="url(#top_gloss_blue_grad)" />
+
+  <!-- Inner top-left specular curve -->
+  <path d="M 68 32 Q 62 38 60 50" 
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.9" />
+
+  <!-- ================= 5. CENTER FLARE ================= -->
+  <ellipse cx="120" cy="110" rx="26" ry="8" fill="url(#center_glint_blue)" />
+  <ellipse cx="120" cy="110" rx="10" ry="3" fill="#ffffff" fill-opacity="0.95" />
+
+</svg>

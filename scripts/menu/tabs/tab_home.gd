@@ -10,7 +10,7 @@ signal toggle_view_requested
 @onready var toggle_icon: TextureRect = $BottomAction/HBox/ToggleViewBtn/HBoxToggle/ToggleIcon
 
 const ICON_PLAY: Texture2D = preload("res://assets/icons/icon_play.svg")
-const ICON_MAP: Texture2D = preload("res://assets/icons/icon_map.svg")
+const ICON_MAP: Texture2D = preload("res://assets/icons/icon_map_banner.svg")
 
 var current_level_selected: int = 1
 var is_map_mode: bool = false
@@ -38,7 +38,7 @@ func set_view_mode(map_view: bool) -> void:
 		else:
 			toggle_icon.visible = true
 			toggle_icon.texture = ICON_MAP
-			toggle_label.text = "MAP"
+			toggle_label.text = "MAPA"
 	update_level_display(current_level_selected)
 
 func _on_play_pressed() -> void:

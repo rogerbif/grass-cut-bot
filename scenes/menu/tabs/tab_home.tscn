@@ -1,11 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://tab_home_scene_01"]
+[gd_scene load_steps=12 format=3 uid="uid://tab_home_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_home.gd" id="1_home"]
 [ext_resource type="Script" path="res://scripts/ui/cyber_play_button.gd" id="2_cyber_btn"]
 [ext_resource type="Texture2D" path="res://assets/ui/btn_play_banner.svg" id="3_bg_normal"]
 [ext_resource type="Texture2D" path="res://assets/ui/btn_play_banner_pressed.svg" id="4_bg_pressed"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_play_triangle.svg" id="5_icon_play"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_map.svg" id="6_map"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map_banner.svg" id="6_map"]
+[ext_resource type="Script" path="res://scripts/ui/cyber_toggle_button.gd" id="7_cyber_toggle"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_map_banner.svg" id="8_map_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_map_banner_pressed.svg" id="9_map_pressed"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
 
@@ -56,19 +59,19 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -272.0
+offset_left = -341.0
 offset_top = -68.0
-offset_right = 272.0
+offset_right = 341.0
 offset_bottom = 68.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="PlayBtn" type="Button" parent="BottomAction/HBox"]
-custom_minimum_size = Vector2(440, 135)
+custom_minimum_size = Vector2(415, 135)
 layout_mode = 2
-pivot_offset = Vector2(220, 67)
+pivot_offset = Vector2(207, 67)
 focus_mode = 0
 theme_override_styles/normal = SubResource("StyleBoxEmpty_none")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_none")
@@ -136,13 +139,17 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="ToggleViewBtn" type="Button" parent="BottomAction/HBox"]
-custom_minimum_size = Vector2(88, 88)
+custom_minimum_size = Vector2(254, 135)
 layout_mode = 2
-size_flags_vertical = 4
+pivot_offset = Vector2(127, 67)
 focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_none")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_none")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_none")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_none")
+script = ExtResource("7_cyber_toggle")
 
-[node name="HBoxToggle" type="HBoxContainer" parent="BottomAction/HBox/ToggleViewBtn"]
+[node name="BgNormal" type="TextureRect" parent="BottomAction/HBox/ToggleViewBtn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -150,22 +157,55 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("8_map_normal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BgPressed" type="TextureRect" parent="BottomAction/HBox/ToggleViewBtn"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_map_pressed")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HBoxToggle" type="HBoxContainer" parent="BottomAction/HBox/ToggleViewBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 16.0
+offset_right = -36.0
+offset_bottom = -38.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 4
+theme_override_constants/separation = 10
+
+[node name="ToggleLabel" type="Label" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.35)
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = SubResource("SystemFont_button")
+theme_override_font_sizes/font_size = 28
+text = "MAPA"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ToggleIcon" type="TextureRect" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(30, 34)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 texture = ExtResource("6_map")
 expand_mode = 1
 stretch_mode = 5
-
-[node name="ToggleLabel" type="Label" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.85, 0.98, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "MAP"
-vertical_alignment = 1
