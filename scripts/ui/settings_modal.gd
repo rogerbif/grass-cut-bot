@@ -4,13 +4,16 @@ signal modal_closed
 
 @onready var graphics_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles.get_node_or_null("GraphicsBtn") as Button
 @onready var music_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn
+@onready var music_label: Label = $Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn.find_child("Label", true, false) as Label
 @onready var sfx_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn
+@onready var sfx_label: Label = $Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn.find_child("Label", true, false) as Label
 @onready var vib_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/VibBtn
 
 @onready var save_local_btn: Button = $Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn
 @onready var google_btn: Button = $Panel/VBox/SaveSection/VBoxSave/GoogleBtn
 @onready var fb_btn: Button = $Panel/VBox/SaveSection/VBoxSave/FacebookBtn
 @onready var reset_btn: Button = $Panel/VBox/SaveSection/VBoxSave.get_node_or_null("ResetBtn") as Button
+@onready var reset_label: Label = $Panel/VBox/SaveSection/VBoxSave.find_child("ResetBtn", true, false).find_child("Label", true, false) as Label if $Panel/VBox/SaveSection/VBoxSave.find_child("ResetBtn", true, false) != null else null
 
 @onready var support_btn: Button = $Panel/VBox/SupportSection/SupportBtn
 @onready var version_label: Label = $Panel/VBox/SupportSection.get_node_or_null("VersionLabel") as Label
@@ -209,10 +212,16 @@ func _update_toggle_visuals() -> void:
 			_:
 				graphics_btn.text = "Gráficos 3D: Balanceada (85% FSR)"
 
-	if music_btn != null:
+	if music_label != null:
+		music_label.text = "Música: " + ("ON" if music_enabled else "OFF")
+	elif music_btn != null:
 		music_btn.text = "Música: " + ("ON" if music_enabled else "OFF")
-	if sfx_btn != null:
+
+	if sfx_label != null:
+		sfx_label.text = "Sons FX: " + ("ON" if sfx_enabled else "OFF")
+	elif sfx_btn != null:
 		sfx_btn.text = "Sons FX: " + ("ON" if sfx_enabled else "OFF")
+
 	if vib_btn != null:
 		vib_btn.text = "Vibração: " + ("ON" if vib_enabled else "OFF")
 
@@ -269,18 +278,24 @@ func _on_reset_pressed() -> void:
 	if not _reset_confirmation_pending:
 		_reset_confirmation_pending = true
 		_show_toast("Clique novamente para confirmar o reset!")
-		if reset_btn != null:
+		if reset_label != null:
+			reset_label.text = "Confirmar Reset Geral?"
+		elif reset_btn != null:
 			reset_btn.text = "Confirmar Reset Geral?"
 		var tw: Tween = create_tween()
 		tw.tween_interval(4.0)
 		tw.tween_callback(func() -> void:
 			_reset_confirmation_pending = false
-			if reset_btn != null:
+			if reset_label != null:
+				reset_label.text = "Resetar Progresso"
+			elif reset_btn != null:
 				reset_btn.text = "Resetar Progresso"
 		)
 	else:
 		_reset_confirmation_pending = false
-		if reset_btn != null:
+		if reset_label != null:
+			reset_label.text = "Resetar Progresso"
+		elif reset_btn != null:
 			reset_btn.text = "Resetar Progresso"
 		if SaveManager != null:
 			SaveManager.reset_to_defaults()

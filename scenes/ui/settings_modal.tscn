@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://settings_modal_scene_01"]
+[gd_scene load_steps=11 format=3 uid="uid://settings_modal_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_modal.gd" id="1_settings"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_cancel.svg" id="2_cancel"]
@@ -48,6 +48,13 @@ content_margin_top = 10.0
 content_margin_right = 16.0
 content_margin_bottom = 10.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_close"]
+bg_color = Color(0.18, 0.23, 0.32, 0.7)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
 [node name="SettingsModal" type="Control"]
 process_mode = 3
 layout_mode = 3
@@ -96,6 +103,9 @@ text = "Configurações"
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 focus_mode = 0
+theme_override_constants/icon_max_width = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_close")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_close")
 icon = ExtResource("2_cancel")
 icon_alignment = 1
 expand_icon = true
@@ -135,21 +145,67 @@ text = "Gráficos 3D: Balanceada (FSR)"
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 focus_mode = 0
-theme_override_constants/icon_max_width = 24
-theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn/HBox"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_music")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 text = "Música: ON"
-icon = ExtResource("3_music")
+vertical_alignment = 1
 
 [node name="SfxBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 focus_mode = 0
-theme_override_constants/icon_max_width = 24
-theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn/HBox"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_speaker")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 text = "Som FX: ON"
-icon = ExtResource("4_speaker")
+vertical_alignment = 1
 
 [node name="VibBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
 custom_minimum_size = Vector2(0, 48)
@@ -201,12 +257,35 @@ text = "Conectar Facebook"
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 focus_mode = 0
-theme_override_constants/icon_max_width = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/SaveSection/VBoxSave/ResetBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/SaveSection/VBoxSave/ResetBtn/HBox"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("5_refresh")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/SaveSection/VBoxSave/ResetBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.45, 0.45, 1)
 theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 text = "Resetar Progresso"
-icon = ExtResource("5_refresh")
+vertical_alignment = 1
 
 [node name="SupportSection" type="VBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
