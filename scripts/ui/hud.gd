@@ -4,6 +4,7 @@ const ICON_LEAF: Texture2D = preload("res://assets/icons/icon_leaf.svg")
 const ICON_WHEAT: Texture2D = preload("res://assets/icons/icon_wheat.svg")
 const ICON_FLOWER: Texture2D = preload("res://assets/icons/icon_flower.svg")
 const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
+const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
 
 @onready var top_bar: PanelContainer = $TopBar
 @onready var timer_label: Label = $TopBar/HBox/TimerContainer/TimerLabel
@@ -18,9 +19,9 @@ const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
 
 # Elementos da comemoração de vitória e modais
 @onready var victory_title_label: Label = $VictoryModal.find_child("Title", true, false) as Label
-@onready var star_1_label: Label = $VictoryModal.find_child("Star1", true, false) as Label
-@onready var star_2_label: Label = $VictoryModal.find_child("Star2", true, false) as Label
-@onready var star_3_label: Label = $VictoryModal.find_child("Star3", true, false) as Label
+@onready var star_1_rect: Control = $VictoryModal.find_child("Star1", true, false) as Control
+@onready var star_2_rect: Control = $VictoryModal.find_child("Star2", true, false) as Control
+@onready var star_3_rect: Control = $VictoryModal.find_child("Star3", true, false) as Control
 @onready var victory_time_label: Label = $VictoryModal.find_child("TimeLabel", true, false) as Label
 @onready var victory_coins_label: Label = $VictoryModal.find_child("CoinsEarnedLabel", true, false) as Label
 @onready var victory_bottom_bar: PanelContainer = $VictoryModal.find_child("BottomBar", true, false) as PanelContainer
@@ -275,43 +276,41 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 		if victory_title_label != null:
 			victory_title_label.text = "Campeão do Jardim!"
 		if next_btn != null:
-			next_btn.text = "Ciclo Mestre (Fase 1) >"
+			next_btn.text = "Ciclo Mestre (Fase 1)"
 	else:
 		if victory_title_label != null:
 			victory_title_label.text = "Fase %02d Concluída!" % GameManager.current_level
 		if next_btn != null:
-			next_btn.text = "Próxima Fase >"
+			next_btn.text = "Próxima Fase"
 
 	victory_modal.visible = true
 
 	# Configura animação das estrelas em arco
-	var stars: Array[Label] = []
-	if star_1_label: stars.append(star_1_label)
-	if star_2_label: stars.append(star_2_label)
-	if star_3_label: stars.append(star_3_label)
+	var stars: Array[Control] = []
+	if star_1_rect: stars.append(star_1_rect)
+	if star_2_rect: stars.append(star_2_rect)
+	if star_3_rect: stars.append(star_3_rect)
 
 	var earned: int = clampi(stars_earned, 1, 3)
 	for i in range(stars.size()):
-		var lbl: Label = stars[i]
-		lbl.scale = Vector2.ZERO
+		var star_node: Control = stars[i]
+		star_node.scale = Vector2.ZERO
 		var is_star_won: bool = (i + 1) <= earned
 		var delay: float = 0.25 * float(i)
 
 		if is_star_won:
-			lbl.modulate = Color(1.0, 1.0, 1.0, 1.0)
-			lbl.text = "⭐"
+			star_node.modulate = Color(1.0, 1.0, 1.0, 1.0)
 			get_tree().create_timer(delay, true, false, true).timeout.connect(func() -> void:
 				var star_tween: Tween = create_tween()
-				star_tween.tween_property(lbl, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				star_tween.tween_property(star_node, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 				if AudioManager != null:
 					AudioManager.play_sfx("star_pop", 0.05)
 			)
 		else:
-			lbl.modulate = Color(0.45, 0.5, 0.6, 0.45)
-			lbl.text = "☆"
+			star_node.modulate = Color(0.25, 0.32, 0.42, 0.45)
 			get_tree().create_timer(delay, true, false, true).timeout.connect(func() -> void:
 				var star_tween: Tween = create_tween()
-				star_tween.tween_property(lbl, "scale", Vector2.ONE * 0.85, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+				star_tween.tween_property(star_node, "scale", Vector2.ONE * 0.85, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			)
 
 	# Anima a entrada da barra inferior deslizando de baixo para cima
@@ -382,4 +381,6 @@ func _update_card(key: String, card: Control, title: String) -> void:
 	var cost_btn = card.get_node("BuyBtn") as Button
 	lbl.text = "%s (Nv. %d)" % [title, lvl]
 	cost_btn.text = "%d" % cost
+	cost_btn.icon = ICON_COIN
+	cost_btn.add_theme_constant_override("icon_max_width", 18)
 	cost_btn.disabled = (UpgradeManager.total_coins < cost)

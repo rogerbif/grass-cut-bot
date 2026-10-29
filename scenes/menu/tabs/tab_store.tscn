@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://tab_store_scene_01"]
+[gd_scene load_steps=8 format=3 uid="uid://tab_store_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_store.gd" id="1_store"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_safe.svg" id="3_safe"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.09, 0.12, 0.17, 0.94)
@@ -129,10 +131,13 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Icon" type="Label" parent="Panel/Scroll/VBox/Pack1/HBox"]
+[node name="Icon" type="TextureRect" parent="Panel/Scroll/VBox/Pack1/HBox"]
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "$"
+size_flags_vertical = 4
+texture = ExtResource("2_coin")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/Pack1/HBox"]
 layout_mode = 2
@@ -156,10 +161,13 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Icon" type="Label" parent="Panel/Scroll/VBox/Pack2/HBox"]
+[node name="Icon" type="TextureRect" parent="Panel/Scroll/VBox/Pack2/HBox"]
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "+"
+size_flags_vertical = 4
+texture = ExtResource("3_safe")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Info" type="VBoxContainer" parent="Panel/Scroll/VBox/Pack2/HBox"]
 layout_mode = 2

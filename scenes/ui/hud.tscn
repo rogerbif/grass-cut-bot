@@ -1,9 +1,13 @@
-[gd_scene load_steps=9 format=3 uid="uid://hud_scene_01"]
+[gd_scene load_steps=14 format=3 uid="uid://hud_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_pause.svg" id="3_pause"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_star.svg" id="4_star"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_home.svg" id="5_home"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_refresh.svg" id="6_refresh"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="7_play"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_wrench.svg" id="8_wrench"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
 bg_color = Color(0.08, 0.1, 0.14, 0.6)
@@ -202,26 +206,34 @@ horizontal_alignment = 1
 [node name="ResumeBtn" type="Button" parent="PauseModal/Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 20
 text = "Continuar"
+icon = ExtResource("7_play")
 
 [node name="RestartBtn" type="Button" parent="PauseModal/Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 20
 text = "Reiniciar Fase"
+icon = ExtResource("6_refresh")
 
 [node name="WorkshopBtn" type="Button" parent="PauseModal/Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 20
 text = "Oficina"
+icon = ExtResource("8_wrench")
 
 [node name="MenuBtn" type="Button" parent="PauseModal/Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 20
 text = "Menu Inicial"
+icon = ExtResource("5_home")
 
 [node name="VictoryModal" type="Control" parent="."]
 visible = false
@@ -436,15 +448,19 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
+theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 20
 text = "Repetir Fase"
+icon = ExtResource("6_refresh")
 
 [node name="MenuBtn" type="Button" parent="GameOverModal/Panel/VBox"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 focus_mode = 0
+theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 18
 text = "Menu Inicial"
+icon = ExtResource("5_home")
 layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 20
@@ -510,7 +526,9 @@ text = "Raio da Lâmina (Nv. 1)"
 [node name="BuyBtn" type="Button" parent="WorkshopModal/Panel/VBox/UpgradesList/RadiusCard"]
 custom_minimum_size = Vector2(90, 40)
 layout_mode = 2
-text = "50 🪙"
+theme_override_constants/icon_max_width = 18
+text = "50"
+icon = ExtResource("2_coin")
 
 [node name="PowerCard" type="HBoxContainer" parent="WorkshopModal/Panel/VBox/UpgradesList"]
 layout_mode = 2
@@ -526,7 +544,9 @@ text = "Potência e Fio (Nv. 1)"
 [node name="BuyBtn" type="Button" parent="WorkshopModal/Panel/VBox/UpgradesList/PowerCard"]
 custom_minimum_size = Vector2(90, 40)
 layout_mode = 2
-text = "100 🪙"
+theme_override_constants/icon_max_width = 18
+text = "100"
+icon = ExtResource("2_coin")
 
 [node name="SpeedCard" type="HBoxContainer" parent="WorkshopModal/Panel/VBox/UpgradesList"]
 layout_mode = 2
@@ -542,7 +562,9 @@ text = "Velocidade (Nv. 1)"
 [node name="BuyBtn" type="Button" parent="WorkshopModal/Panel/VBox/UpgradesList/SpeedCard"]
 custom_minimum_size = Vector2(90, 40)
 layout_mode = 2
-text = "60 🪙"
+theme_override_constants/icon_max_width = 18
+text = "60"
+icon = ExtResource("2_coin")
 
 [node name="MultiplierCard" type="HBoxContainer" parent="WorkshopModal/Panel/VBox/UpgradesList"]
 layout_mode = 2
@@ -558,10 +580,14 @@ text = "Multiplicador (Nv. 1)"
 [node name="BuyBtn" type="Button" parent="WorkshopModal/Panel/VBox/UpgradesList/MultiplierCard"]
 custom_minimum_size = Vector2(90, 40)
 layout_mode = 2
-text = "150 🪙"
+theme_override_constants/icon_max_width = 18
+text = "150"
+icon = ExtResource("2_coin")
 
 [node name="CloseBtn" type="Button" parent="WorkshopModal/Panel/VBox"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
+theme_override_constants/icon_max_width = 20
 theme_override_font_sizes/font_size = 18
 text = "Voltar ao Jogo"
+icon = ExtResource("7_play")

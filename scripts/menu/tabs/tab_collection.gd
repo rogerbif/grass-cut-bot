@@ -109,9 +109,9 @@ func refresh_ui() -> void:
 		percent_label.text = "%d%%" % pct
 
 	if chip_harvest_label != null:
-		chip_harvest_label.text = "🌾 Ceifados: %s" % _format_number(total_harvest)
+		chip_harvest_label.text = "Ceifados: %s" % _format_number(total_harvest)
 	if chip_milestones_label != null:
-		chip_milestones_label.text = "⭐ Marcos: %d / %d" % [total_milestones_claimed, total_species * 10]
+		chip_milestones_label.text = "Marcos: %d / %d" % [total_milestones_claimed, total_species * 10]
 
 	_update_filter_buttons()
 	refresh_cards()
@@ -181,12 +181,23 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	icon_panel.add_theme_stylebox_override("panel", icon_sb)
 	icon_panel.custom_minimum_size = Vector2(56, 56)
 
-	var icon_lbl: Label = Label.new()
-	icon_lbl.text = String(sp.get("icon", "🌱")) if is_disc else "❓"
-	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	icon_lbl.add_theme_font_size_override("font_size", 28 if is_disc else 24)
-	icon_panel.add_child(icon_lbl)
+	var icon_rect: TextureRect = TextureRect.new()
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.custom_minimum_size = Vector2(38, 38)
+	if is_disc:
+		var cat: String = String(sp.get("category", "grass"))
+		if cat == "flower":
+			icon_rect.texture = preload("res://assets/icons/icon_flower.svg")
+		elif cat == "crop":
+			icon_rect.texture = preload("res://assets/icons/icon_wheat.svg")
+		else:
+			icon_rect.texture = preload("res://assets/icons/icon_leaf.svg")
+		icon_rect.modulate = theme_col
+	else:
+		icon_rect.texture = preload("res://assets/icons/icon_leaf.svg")
+		icon_rect.modulate = Color(0.4, 0.45, 0.55, 0.4)
+	icon_panel.add_child(icon_rect)
 	hbox.add_child(icon_panel)
 
 	# --- 2. Informações e Progresso ---
@@ -288,7 +299,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			m_bar.max_value = float(target)
 			m_bar.value = clampf(float(harvest_count), float(prev_target), float(target))
 		else:
-			milestone_title_lbl.text = "⭐ MESTRE MÁXIMO (10/10)"
+			milestone_title_lbl.text = "MESTRE MÁXIMO (10/10)"
 			milestone_title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3, 1.0))
 			m_bar.min_value = 0.0
 			m_bar.max_value = 1.0
@@ -302,7 +313,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	if not is_disc:
 		var lock_lbl: Label = Label.new()
-		lock_lbl.text = "BLOQUEADA\n🔒"
+		lock_lbl.text = "BLOQUEADA"
 		lock_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lock_lbl.add_theme_font_size_override("font_size", 11)
 		lock_lbl.add_theme_color_override("font_color", Color(0.55, 0.60, 0.65, 0.75))
@@ -315,7 +326,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		if harvest_count >= target_req:
 			# Botão Ativo de Coleta
 			var claim_btn: Button = Button.new()
-			claim_btn.text = "COLETAR\n+%d 🪙" % coin_rew
+			claim_btn.text = "COLETAR\n+%d Moedas" % coin_rew
 			claim_btn.add_theme_font_size_override("font_size", 12)
 
 			var btn_sb: StyleBoxFlat = StyleBoxFlat.new()
@@ -335,14 +346,14 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		else:
 			# Mostra próximo marco pendente
 			var badge: Label = Label.new()
-			badge.text = "Lv %d/10\n+%d 🪙" % [claimed_lvl, coin_rew]
+			badge.text = "Lv %d/10\n+%d Moedas" % [claimed_lvl, coin_rew]
 			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			badge.add_theme_font_size_override("font_size", 11)
 			badge.add_theme_color_override("font_color", Color(0.65, 0.75, 0.85, 0.7))
 			action_vbox.add_child(badge)
 	else:
 		var max_lbl: Label = Label.new()
-		max_lbl.text = "COMPLETO\n👑 MAX"
+		max_lbl.text = "COMPLETO\nMAX"
 		max_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		max_lbl.add_theme_font_size_override("font_size", 11)
 		max_lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))

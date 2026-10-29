@@ -108,7 +108,7 @@ outline_size = 14
 [node name="StarsLabel" type="Label3D" parent="Plaque"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0.08)
 double_sided = false
-text = "⭐⭐⭐"
+text = "0 / 3"
 font_size = 34
 outline_size = 8
 

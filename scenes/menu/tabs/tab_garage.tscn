@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://tab_garage_scene_01"]
+[gd_scene load_steps=7 format=3 uid="uid://tab_garage_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_garage.gd" id="1_garage"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.09, 0.12, 0.17, 0.94)
@@ -104,6 +105,15 @@ text = "Lâmina Atual: Lâmina Estelar Tripla (Tier 1)"
 [node name="CoinsBanner" type="HBoxContainer" parent="Panel/Scroll/VBox"]
 layout_mode = 2
 alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="Panel/Scroll/VBox/CoinsBanner"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_coin")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CoinsValLabel" type="Label" parent="Panel/Scroll/VBox/CoinsBanner"]
 layout_mode = 2

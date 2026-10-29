@@ -39,16 +39,20 @@ func refresh_ui() -> void:
 
 		if lvl >= 6:
 			blade_lvl_label.text = "Nível MAX (6) • Raio: %.2fm • Vel: %.2fm/s" % [radius, speed]
-			blade_buy_btn.text = "MAX ✔"
+			blade_buy_btn.text = "MAX"
+			blade_buy_btn.icon = preload("res://assets/icons/icon_checkmark.svg")
 			blade_buy_btn.disabled = true
 		elif lvl >= 5:
 			blade_lvl_label.text = "Nível %d • Raio: %.2fm • Vel: %.2fm/s\n(Próximo nível somente por corte na partida)" % [lvl, radius, speed]
 			blade_buy_btn.text = "MÁX LOJA"
+			blade_buy_btn.icon = null
 			blade_buy_btn.disabled = true
 		else:
 			var cost: int = UpgradeManager.get_blade_upgrade_cost()
-			blade_lvl_label.text = "Nível %d ➔ %d • Raio: %.2fm • Vel: %.2fm/s" % [lvl, lvl + 1, radius + 0.10, speed + 0.30]
-			blade_buy_btn.text = "%d 🪙" % cost
+			blade_lvl_label.text = "Nível %d -> %d • Raio: %.2fm • Vel: %.2fm/s" % [lvl, lvl + 1, radius + 0.10, speed + 0.30]
+			blade_buy_btn.text = "%d" % cost
+			blade_buy_btn.icon = preload("res://assets/icons/icon_coin.svg")
+			blade_buy_btn.add_theme_constant_override("icon_max_width", 20)
 			blade_buy_btn.disabled = (UpgradeManager.total_coins < cost)
 
 func _on_buy_blade_pressed() -> void:
