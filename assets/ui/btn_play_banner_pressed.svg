@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="450" height="138" viewBox="0 10 450 138">
   <defs>
-    <!-- Gradients -->
+    <!-- Pressed Gradients -->
     <linearGradient id="main_face_grad_pressed" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#eaf308" />
       <stop offset="25%" stop-color="#daf005" />
@@ -26,56 +26,58 @@
     </radialGradient>
   </defs>
 
-  <!-- ================= 1. CYBER TECH ACCENTS (BACKGROUND) ================= -->
-  <path d="M 220 23 L 402 23 Q 408 23 414 27 L 434 57 Q 438 63 435 70 L 424 91 Q 420 97 412 97 L 402 97 L 416 75 Q 418 71 416 67 L 398 35 Q 394 31 386 31 L 220 31 Z"
+  <!-- ================= 1. CYBER TECH ACCENTS (100% STATIC FRAME - ZERO MOVEMENT) ================= -->
+  <!-- Top-Right Dark Bracket Plate (EXACTLY IDENTICAL TO NORMAL STATE) -->
+  <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97 Q 410 104 402 104 L 392 104 L 416 73 Q 419 68 416 63 L 398 33 Q 394 26 386 26 L 220 26 Z"
         fill="#0b2834" />
 
-  <line x1="222" y1="23" x2="330" y2="23" stroke="#00f2aa" stroke-width="3" stroke-linecap="round" />
-  <path d="M 374 23 L 402 23 Q 408 23 414 27 L 434 57 Q 438 63 435 70 L 424 91"
-        fill="none" stroke="#00f2aa" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Top-Right Neon Lines (EXACTLY IDENTICAL TO NORMAL STATE) -->
+  <line x1="222" y1="18" x2="330" y2="18" stroke="#00f5a8" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97"
+        fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-  <!-- Bottom-Left Detached Cyber Bracket (Sem corte com margem generosa) -->
-  <path d="M 24 97 L 34 97 L 15 128 Q 12 137 20 137 L 62 137 L 62 145 L 18 145 Q 6 145 5 133 L 14 115 Z"
+  <!-- Bottom-Left Detached Cyber Bracket (EXACTLY IDENTICAL TO NORMAL STATE) -->
+  <path d="M 24 92 L 34 92 L 15 125 Q 12 135 20 135 L 62 135 L 62 143 L 18 143 Q 6 143 5 130 L 14 110 Z"
         fill="#0b2834" />
-  <path d="M 24 101 L 11 129 Q 8 139 18 139 L 58 139"
-        fill="none" stroke="#00f2aa" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 24 96 L 11 126 Q 8 136 18 136 L 58 136"
+        fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-  <!-- ================= 2. 3D BASE / LOWER BEVEL (COMPRESSED) ================= -->
-  <path d="M 18 112 L 24 126 Q 28 131 36 131 L 388 131 Q 396 131 402 125 L 421 88 Q 424 82 420 76 L 416 76 L 398 122 Q 394 125 388 125 L 26 125 L 14 102 Z"
+  <!-- ================= 2. 3D BASE / LOWER BEVEL (COMPRESSED/SUNKEN INNER BODY) ================= -->
+  <path d="M 18 107 L 24 122 Q 28 127 36 127 L 388 127 Q 396 127 402 121 L 421 84 Q 424 78 420 72 L 416 72 L 398 117 Q 394 120 388 120 L 26 120 L 14 97 Z"
         fill="url(#base_3d_grad_pressed)" stroke="#114b0e" stroke-width="1.5" stroke-linejoin="round" />
 
-  <!-- ================= 3. MAIN BUTTON FACE (SHIFTED DOWN BY 6PX) ================= -->
-  <path d="M 72 42 
-           L 396 42 
-           Q 403 42 407 47 
-           L 419 71 
-           Q 422 75 418 79 
-           L 399 117 
-           Q 396 122 388 122 
-           L 24 122 
-           Q 16 122 18 114 
-           L 60 49 
-           Q 63 42 72 42 Z"
+  <!-- ================= 3. MAIN BUTTON FACE (SUNKEN INNER BODY - SHIFTED DOWN BY 7PX) ================= -->
+  <path d="M 72 37 
+           L 396 37 
+           Q 403 37 407 42 
+           L 419 66 
+           Q 422 70 418 74 
+           L 399 112 
+           Q 396 117 388 117 
+           L 24 117 
+           Q 16 117 18 109 
+           L 60 44 
+           Q 63 37 72 37 Z"
         fill="url(#main_face_grad_pressed)"
         stroke="#5d9600"
         stroke-width="2.5"
         stroke-linejoin="round" />
 
   <!-- ================= 4. GLOSS & HIGHLIGHTS ================= -->
-  <path d="M 74 44 
-           L 394 44 
-           Q 400 44 403 48 
-           L 410 60 
-           L 398 62 
-           L 390 53 
-           L 76 53 
-           L 66 66 
-           L 61 64 Q 66 44 74 44 Z"
+  <path d="M 74 39 
+           L 394 39 
+           Q 400 39 403 43 
+           L 410 55 
+           L 398 57 
+           L 390 48 
+           L 76 48 
+           L 66 61 
+           L 61 59 Q 66 39 74 39 Z"
         fill="url(#top_gloss_grad_pressed)" />
 
-  <path d="M 68 44 Q 62 50 60 62" 
+  <path d="M 68 39 Q 62 45 60 57" 
         fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.6" />
 
-  <!-- ================= 5. GOLDEN CENTER FLARE ================= -->
-  <ellipse cx="206" cy="122" rx="26" ry="7" fill="url(#center_glint_pressed)" />
+  <!-- ================= 5. GOLDEN CENTER FLARE (SUNKEN) ================= -->
+  <ellipse cx="206" cy="117" rx="26" ry="7" fill="url(#center_glint_pressed)" />
 </svg>

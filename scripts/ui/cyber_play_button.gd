@@ -3,13 +3,15 @@ class_name CyberPlayButton
 
 ## Botão Arcade/Cyber estilizado para a tela Home do Grass Cut Bot.
 ## Reproduz a estética com corte angular à esquerda, ponta chevron à direita,
-## base 3D extrudada com compressão mecânica tátil e feedback háptico.
+## base 3D extrudada com compressão mecânica tátil e moldura cyber estática.
 
 @onready var bg_normal: TextureRect = $BgNormal
 @onready var bg_pressed: TextureRect = $BgPressed
 @onready var hbox_play: HBoxContainer = $HBoxPlay
 @onready var level_label: Label = $HBoxPlay/LevelLabel
 @onready var play_icon: TextureRect = $HBoxPlay/PlayIcon
+
+const PRESS_SINK_OFFSET: float = 7.0
 
 var is_down: bool = false
 
@@ -38,7 +40,7 @@ func _on_btn_down() -> void:
 	if bg_pressed != null:
 		bg_pressed.visible = true
 	if hbox_play != null:
-		hbox_play.position.y += 4.0
+		hbox_play.position.y += PRESS_SINK_OFFSET
 
 func _on_btn_up() -> void:
 	if not is_down:
@@ -49,7 +51,7 @@ func _on_btn_up() -> void:
 	if bg_pressed != null:
 		bg_pressed.visible = false
 	if hbox_play != null:
-		hbox_play.position.y -= 4.0
+		hbox_play.position.y -= PRESS_SINK_OFFSET
 
 func _on_btn_pressed() -> void:
 	# Mandamento 8: Feedback Háptico e Sensorial Contínuo

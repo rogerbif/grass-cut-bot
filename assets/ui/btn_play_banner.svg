@@ -28,7 +28,7 @@
     </radialGradient>
   </defs>
 
-  <!-- ================= 1. CYBER TECH ACCENTS (BACKGROUND) ================= -->
+  <!-- ================= 1. CYBER TECH ACCENTS (STATIC FRAME) ================= -->
   <!-- Top-Right Dark Bracket Plate (wrapping around the chevron point) -->
   <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97 Q 410 104 402 104 L 392 104 L 416 73 Q 419 68 416 63 L 398 33 Q 394 26 386 26 L 220 26 Z"
         fill="#0b2834" />
@@ -38,51 +38,49 @@
   <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-  <!-- Bottom-Left Detached Cyber Bracket (Garantido sem corte com margem generosa) -->
+  <!-- Bottom-Left Detached Cyber Bracket -->
   <path d="M 24 92 L 34 92 L 15 125 Q 12 135 20 135 L 62 135 L 62 143 L 18 143 Q 6 143 5 130 L 14 110 Z"
         fill="#0b2834" />
   <path d="M 24 96 L 11 126 Q 8 136 18 136 L 58 136"
         fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
-  <!-- ================= 2. 3D BASE / LOWER BEVEL (DARK GREEN) ================= -->
-  <!-- Thick 3D extruded base under the yellow face -->
-  <path d="M 16 106 L 24 126 Q 28 134 36 134 L 388 134 Q 396 134 402 127 L 421 82 Q 424 76 420 70 L 416 70 L 398 116 Q 394 120 388 120 L 26 120 L 14 96 Z"
+  <!-- ================= 2. 3D BASE / LOWER BEVEL (RAISED INNER BODY) ================= -->
+  <path d="M 16 100 L 24 120 Q 28 128 36 128 L 388 128 Q 396 128 402 121 L 421 76 Q 424 70 420 64 L 416 64 L 398 110 Q 394 114 388 114 L 26 114 L 14 90 Z"
         fill="url(#base_3d_grad)" stroke="#114b0e" stroke-width="1.5" stroke-linejoin="round" />
 
-  <!-- Dark rim along very bottom edge -->
-  <path d="M 28 130 L 36 135 L 388 135 L 398 128 L 395 132 L 386 137 L 34 137 L 25 132 Z"
+  <!-- Dark rim along bottom edge -->
+  <path d="M 28 124 L 36 129 L 388 129 L 398 122 L 395 126 L 386 131 L 34 131 L 25 126 Z"
         fill="#0d380b" />
 
-  <!-- ================= 3. MAIN BUTTON FACE (ELECTRIC LIME GRADIENT) ================= -->
-  <path d="M 72 36 
-           L 396 36 
-           Q 403 36 407 41 
-           L 419 65 
-           Q 422 69 418 73 
-           L 399 111 
-           Q 396 116 388 116 
-           L 24 116 
-           Q 16 116 18 108 
-           L 60 43 
-           Q 63 36 72 36 Z"
+  <!-- ================= 3. MAIN BUTTON FACE (RAISED INNER BODY) ================= -->
+  <path d="M 72 30 
+           L 396 30 
+           Q 403 30 407 35 
+           L 419 59 
+           Q 422 63 418 67 
+           L 399 105 
+           Q 396 110 388 110 
+           L 24 110 
+           Q 16 110 18 102 
+           L 60 37 
+           Q 63 30 72 30 Z"
         fill="url(#main_face_grad)"
         stroke="#70b000"
         stroke-width="2.5"
         stroke-linejoin="round" />
 
   <!-- ================= 4. GLOSS & HIGHLIGHTS ================= -->
-  <!-- Top edge gloss stripe -->
-  <path d="M 74 38 
-           L 394 38 
-           Q 400 38 403 42 L 410 54 L 398 56 L 390 47 L 76 47 L 66 60 L 61 58 Q 66 38 74 38 Z"
+  <path d="M 74 32 
+           L 394 32 
+           Q 400 32 403 36 L 410 48 L 398 50 L 390 41 L 76 41 L 66 54 L 61 52 Q 66 32 74 32 Z"
         fill="url(#top_gloss_grad)" />
 
-  <!-- Inner top-left white specular curve -->
-  <path d="M 68 38 Q 62 44 60 56" 
+  <!-- Inner top-left specular curve -->
+  <path d="M 68 32 Q 62 38 60 50" 
         fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.9" />
 
-  <!-- ================= 5. GOLDEN CENTER FLARE (ON BOTTOM LIP) ================= -->
-  <ellipse cx="206" cy="116" rx="30" ry="9" fill="url(#center_glint)" />
-  <ellipse cx="206" cy="116" rx="12" ry="3.5" fill="#ffffff" fill-opacity="0.95" />
+  <!-- ================= 5. GOLDEN CENTER FLARE ================= -->
+  <ellipse cx="206" cy="110" rx="30" ry="9" fill="url(#center_glint)" />
+  <ellipse cx="206" cy="110" rx="12" ry="3.5" fill="#ffffff" fill-opacity="0.95" />
 
 </svg>
