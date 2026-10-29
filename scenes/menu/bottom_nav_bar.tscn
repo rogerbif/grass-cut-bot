@@ -1,38 +1,16 @@
 [gd_scene load_steps=9 format=3 uid="uid://bottom_nav_bar_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/bottom_nav_bar.gd" id="1_navbar"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_wrench.svg" id="2_wrench"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_home.svg" id="3_home"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_leaf.svg" id="4_leaf"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_store.svg" id="5_store"]
+[ext_resource type="PackedScene" path="res://scenes/ui/cyber_nav_button.tscn" id="2_btn_scene"]
+[ext_resource type="Texture2D" path="res://assets/ui/navbar/nav_bar_chassis.svg" id="3_chassis"]
+[ext_resource type="Texture2D" path="res://assets/icons/navbar/nav_icon_home.svg" id="4_icon_home"]
+[ext_resource type="Texture2D" path="res://assets/icons/navbar/nav_icon_garage.svg" id="5_icon_garage"]
+[ext_resource type="Texture2D" path="res://assets/icons/navbar/nav_icon_collection.svg" id="6_icon_collection"]
+[ext_resource type="Texture2D" path="res://assets/icons/navbar/nav_icon_store.svg" id="7_icon_store"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
-bg_color = Color(0.08, 0.11, 0.16, 0.94)
-corner_radius_top_left = 22
-corner_radius_top_right = 22
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 12.0
-shadow_color = Color(0, 0, 0, 0.35)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.14, 0.18, 0.25, 0.7)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
-bg_color = Color(0.2, 0.45, 0.88, 0.95)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[node name="BottomNavBar" type="PanelContainer"]
+[node name="BottomNavBar" type="Control"]
 custom_minimum_size = Vector2(0, 104)
+layout_mode = 3
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -40,158 +18,54 @@ anchor_bottom = 1.0
 offset_top = -104.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
 script = ExtResource("1_navbar")
 
+[node name="BackgroundRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_chassis")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="HBox" type="HBoxContainer" parent="."]
-layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="BtnGarage" type="Button" parent="HBox"]
-custom_minimum_size = Vector2(0, 84)
-layout_mode = 2
-size_flags_horizontal = 3
-pivot_offset = Vector2(80, 42)
-focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-
-[node name="VBox" type="VBoxContainer" parent="HBox/BtnGarage"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+theme_override_constants/separation = 2
 alignment = 1
-theme_override_constants/separation = 4
 
-[node name="Icon" type="TextureRect" parent="HBox/BtnGarage/VBox"]
-custom_minimum_size = Vector2(28, 28)
+[node name="BtnHome" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("2_wrench")
-expand_mode = 1
-stretch_mode = 5
+tab_id = 0
+title_text = "Home"
+icon_texture = ExtResource("4_icon_home")
 
-[node name="Title" type="Label" parent="HBox/BtnGarage/VBox"]
+[node name="BtnGarage" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Garage"
-horizontal_alignment = 1
-vertical_alignment = 1
+tab_id = 1
+title_text = "Garage"
+icon_texture = ExtResource("5_icon_garage")
 
-[node name="BtnHome" type="Button" parent="HBox"]
-custom_minimum_size = Vector2(0, 84)
+[node name="BtnCollection" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
-size_flags_horizontal = 3
-pivot_offset = Vector2(80, 42)
-focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+tab_id = 2
+title_text = "Collection"
+icon_texture = ExtResource("6_icon_collection")
 
-[node name="VBox" type="VBoxContainer" parent="HBox/BtnHome"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="HBox/BtnHome/VBox"]
-custom_minimum_size = Vector2(28, 28)
+[node name="BtnStore" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("3_home")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Title" type="Label" parent="HBox/BtnHome/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Home"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BtnCollection" type="Button" parent="HBox"]
-custom_minimum_size = Vector2(0, 84)
-layout_mode = 2
-size_flags_horizontal = 3
-pivot_offset = Vector2(80, 42)
-focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-
-[node name="VBox" type="VBoxContainer" parent="HBox/BtnCollection"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="HBox/BtnCollection/VBox"]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("4_leaf")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Title" type="Label" parent="HBox/BtnCollection/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Collection"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BtnStore" type="Button" parent="HBox"]
-custom_minimum_size = Vector2(0, 84)
-layout_mode = 2
-size_flags_horizontal = 3
-pivot_offset = Vector2(80, 42)
-focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-
-[node name="VBox" type="VBoxContainer" parent="HBox/BtnStore"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="HBox/BtnStore/VBox"]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("5_store")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Title" type="Label" parent="HBox/BtnStore/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Store"
-horizontal_alignment = 1
-vertical_alignment = 1
+tab_id = 3
+title_text = "Store"
+icon_texture = ExtResource("7_icon_store")

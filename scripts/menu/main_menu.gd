@@ -71,8 +71,8 @@ func _ready() -> void:
 		menu_camera.island_snapped.connect(_on_camera_island_snapped)
 		menu_camera.scroll_focus_changed.connect(_on_camera_scroll_focus_changed)
 
-	# Inicia na aba Home e visão do Bot
-	_switch_tab(1)
+	# Inicia na aba Home e visão do Bot (Home agora é índice 0)
+	_switch_tab(0)
 	_update_plaques_view_mode(false, false)
 	_update_islands_visibility(false, selected_level)
 
@@ -338,7 +338,8 @@ func _on_tab_changed(tab_idx: int) -> void:
 	_switch_tab(tab_idx)
 
 func _switch_tab(tab_idx: int) -> void:
-	var tabs: Array[Control] = [tab_garage, tab_home, tab_collection, tab_store]
+	# Nova ordem de abas aprovada: [Home = 0, Garage = 1, Collection = 2, Store = 3]
+	var tabs: Array[Control] = [tab_home, tab_garage, tab_collection, tab_store]
 	for i: int in range(tabs.size()):
 		var t: Control = tabs[i]
 		if t != null:
@@ -346,8 +347,8 @@ func _switch_tab(tab_idx: int) -> void:
 			if t.visible and t.has_method("refresh_ui"):
 				t.call("refresh_ui")
 
-	# Se for para outra aba que não a Home, garante visão do bot ou reseta mapa
-	if tab_idx != 1 and menu_camera != null:
+	# Se for para outra aba que não a Home (índice 0), garante visão do bot ou reseta mapa
+	if tab_idx != 0 and menu_camera != null:
 		if menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
 			menu_camera.switch_to_bot_view()
 

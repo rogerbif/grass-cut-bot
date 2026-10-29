@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="96" viewBox="0 0 720 96">
+  <defs>
+    <linearGradient id="chassis_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0b1728" stop-opacity="0.98" />
+      <stop offset="50%" stop-color="#060f1b" stop-opacity="0.98" />
+      <stop offset="100%" stop-color="#040912" stop-opacity="1.0" />
+    </linearGradient>
+    <linearGradient id="chassis_top_border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f5ff" stop-opacity="0.6" />
+      <stop offset="15%" stop-color="#123b5c" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#1b4d75" stop-opacity="0.9" />
+      <stop offset="85%" stop-color="#123b5c" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#00f5ff" stop-opacity="0.6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Cyber Chassis polygon with angled corner cuts on far left & far right -->
+  <!-- Left cut: (0, 32) to (24, 0). Right cut: (696, 0) to (720, 32) -->
+  <path d="M 26 2 
+           L 694 2 
+           Q 698 2 701 5 
+           L 718 26 
+           Q 720 29 720 34 
+           L 720 96 
+           L 0 96 
+           L 0 34 
+           Q 0 29 2 26 
+           L 19 5 
+           Q 22 2 26 2 Z" 
+        fill="url(#chassis_grad)" />
+
+  <!-- Top accent border line -->
+  <path d="M 2 28 L 22 6 Q 24 3 28 3 L 692 3 Q 696 3 698 6 L 718 28" 
+        fill="none" 
+        stroke="url(#chassis_top_border)" 
+        stroke-width="2.5" 
+        stroke-linecap="round" />
+
+  <!-- Corner cyber notches -->
+  <path d="M 4 36 L 4 52" stroke="#00f5ff" stroke-width="2" stroke-linecap="round" stroke-opacity="0.7" />
+  <path d="M 716 36 L 716 52" stroke="#00f5ff" stroke-width="2" stroke-linecap="round" stroke-opacity="0.7" />
+</svg>

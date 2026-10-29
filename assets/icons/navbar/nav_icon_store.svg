@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Storefront silhouette in solid white -->
+  <!-- Awning Top Bar -->
+  <path d="M 6 16 L 42 16 Q 43 16 43 17 L 42 22 Q 41 24 39 24 Q 37 24 36 22 Q 35 24 33 24 Q 31 24 30 22 Q 29 24 27 24 Q 25 24 24 22 Q 23 24 21 24 Q 19 24 18 22 Q 17 24 15 24 Q 13 24 12 22 Q 11 24 9 24 Q 7 24 6 22 L 5 17 Q 5 16 6 16 Z" fill="#ffffff" />
+  
+  <!-- Store Base & Door/Window Cutout -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M 8 22 
+           L 40 22 
+           L 40 40 
+           Q 40 42 38 42 
+           L 10 42 
+           Q 8 42 8 40 Z
+           M 13 27 
+           L 23 27 
+           L 23 35 
+           L 13 35 Z
+           M 27 27 
+           L 35 27 
+           L 35 42 
+           L 27 42 Z" 
+        fill="#ffffff" />
+</svg>

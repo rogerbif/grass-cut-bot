@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="90" height="12" viewBox="0 0 90 12">
+  <defs>
+    <radialGradient id="pill_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1.0" />
+      <stop offset="35%" stop-color="#38f2ff" stop-opacity="0.95" />
+      <stop offset="75%" stop-color="#00d4ff" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer ambient glow -->
+  <rect x="0" y="0" width="90" height="12" rx="6" fill="url(#pill_glow)" />
+
+  <!-- Intense central core pill -->
+  <rect x="6" y="2.5" width="78" height="6" rx="3" fill="#20e9fe" />
+  <rect x="18" y="3.5" width="54" height="3" rx="1.5" fill="#ffffff" fill-opacity="0.95" />
+</svg>

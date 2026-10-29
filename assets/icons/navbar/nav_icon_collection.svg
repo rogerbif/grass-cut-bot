@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Organic 3-leaf sprout matching reference -->
+  <!-- Left Leaf -->
+  <path d="M 19 31 C 12 30 7 22 10 15 C 17 14 21 21 21 27 C 20.2 28.5 19.6 29.8 19 31 Z" fill="#ffffff" />
+  
+  <!-- Right Leaf -->
+  <path d="M 28 27 C 35 25 39 16 36 10 C 29 10 25 18 26 24 C 26.6 25 27.3 26 28 27 Z" fill="#ffffff" />
+
+  <!-- Center Top Leaf -->
+  <path d="M 24 20 C 19 14 20 6 24 4 C 28 6 29 14 24 20 Z" fill="#ffffff" />
+
+  <!-- Stem -->
+  <path d="M 24 20 C 24 27 24 35 24 42" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+</svg>
