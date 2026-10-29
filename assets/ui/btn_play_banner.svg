@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="430" height="126" viewBox="14 16 430 126">
+  <defs>
+    <!-- Ultra Vibrant Neon Chartreuse Gradients -->
+    <linearGradient id="main_face_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8ff0a" />
+      <stop offset="25%" stop-color="#ecff05" />
+      <stop offset="65%" stop-color="#d4ff02" />
+      <stop offset="100%" stop-color="#b6fa00" />
+    </linearGradient>
+
+    <linearGradient id="base_3d_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38b620" />
+      <stop offset="35%" stop-color="#2ca418" />
+      <stop offset="100%" stop-color="#187212" />
+    </linearGradient>
+
+    <linearGradient id="top_gloss_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </linearGradient>
+
+    <radialGradient id="center_glint" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1.0" />
+      <stop offset="25%" stop-color="#fffb88" stop-opacity="0.95" />
+      <stop offset="60%" stop-color="#ffea00" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#ffea00" stop-opacity="0.0" />
+    </radialGradient>
+  </defs>
+
+  <!-- ================= 1. CYBER TECH ACCENTS (BACKGROUND) ================= -->
+  <!-- Top-Right Dark Bracket Plate (wrapping around the chevron point) -->
+  <path d="M 220 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97 Q 410 104 402 104 L 392 104 L 416 73 Q 419 68 416 63 L 398 33 Q 394 26 386 26 L 220 26 Z"
+        fill="#0b2834" />
+
+  <!-- Top-Right Neon Lines -->
+  <line x1="222" y1="18" x2="330" y2="18" stroke="#00f5a8" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M 374 18 L 402 18 Q 408 18 414 23 L 436 53 Q 440 60 436 67 L 416 97"
+        fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Bottom-Left Detached Cyber Bracket -->
+  <path d="M 24 92 L 34 92 L 14 126 Q 12 135 20 135 L 62 135 L 62 143 L 18 143 Q 5 143 4 130 L 14 110 Z"
+        fill="#0b2834" />
+  <path d="M 24 96 L 10 126 Q 8 136 18 136 L 58 136"
+        fill="none" stroke="#00f5a8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- ================= 2. 3D BASE / LOWER BEVEL (DARK GREEN) ================= -->
+  <path d="M 16 106 L 24 126 Q 28 134 36 134 L 388 134 Q 396 134 402 127 L 421 82 Q 424 76 420 70 L 416 70 L 398 116 Q 394 120 388 120 L 26 120 L 14 96 Z"
+        fill="url(#base_3d_grad)" stroke="#114b0e" stroke-width="1.5" stroke-linejoin="round" />
+
+  <!-- Dark rim along very bottom edge -->
+  <path d="M 28 130 L 36 135 L 388 135 L 398 128 L 395 132 L 386 137 L 34 137 L 25 132 Z"
+        fill="#0d380b" />
+
+  <!-- ================= 3. MAIN BUTTON FACE (ELECTRIC LIME GRADIENT) ================= -->
+  <path d="M 72 36 
+           L 396 36 
+           Q 403 36 407 41 
+           L 419 65 
+           Q 422 69 418 73 
+           L 399 111 
+           Q 396 116 388 116 
+           L 24 116 
+           Q 16 116 18 108 
+           L 60 43 
+           Q 63 36 72 36 Z"
+        fill="url(#main_face_grad)"
+        stroke="#70b000"
+        stroke-width="2.5"
+        stroke-linejoin="round" />
+
+  <!-- ================= 4. GLOSS & HIGHLIGHTS ================= -->
+  <!-- Top edge gloss stripe -->
+  <path d="M 74 38 
+           L 394 38 
+           Q 400 38 403 42 L 410 54 L 398 56 L 390 47 L 76 47 L 66 60 L 61 58 Q 66 38 74 38 Z"
+        fill="url(#top_gloss_grad)" />
+
+  <!-- Inner top-left white specular curve -->
+  <path d="M 68 38 Q 62 44 60 56" 
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.9" />
+
+  <!-- ================= 5. GOLDEN CENTER FLARE (ON BOTTOM LIP) ================= -->
+  <ellipse cx="206" cy="116" rx="30" ry="9" fill="url(#center_glint)" />
+  <ellipse cx="206" cy="116" rx="12" ry="3.5" fill="#ffffff" fill-opacity="0.95" />
+
+</svg>

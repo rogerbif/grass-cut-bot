@@ -134,7 +134,20 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
   - **Legendas Rebaixadas:** Textos com `font_size = 13` rebaixados com espaçamento vertical confortável (`separation = 4`).
   - **Abas:**
     - `Garage` 🔧: Acesso direto à Oficina de Upgrades do `UpgradeManager` (Evolução Unificada da Lâmina até o Nível 5 com Moedas).
-    - `Home` 🏠: Tela principal com botão em destaque `"Level X ▶"` e alternância de Câmera (`MAP` / `BOT`).
+    - `Home` 🏠: Tela principal com o botão arcade/cyber heroico `"JOGAR - Fase X ▶"` (`CyberPlayButton`), alternância de câmera (`MAP` / `BOT`) e visão isométrica da ilha tropical.
+
+### 3.5 Botão Heroico da Home: Banner Arcade/Cyber (`CyberPlayButton`)
+- **Estética Visual Exclusiva:** Inspirado nos botões heroicos de jogos mobile arcade/cyberpunk, substitui o botão simples anterior por uma peça gráfica personalizada de alto contraste (`res://assets/ui/btn_play_banner.svg`):
+  - **Corte Angular à Esquerda:** Chanfro inclinado a $\sim 62^\circ$ com cantos arredondados suaves.
+  - **Ponta Chevron à Direita:** Formato de flecha/seta indicativa com vértice arredondado apontando para a direita.
+  - **Gradiente Verde-Lima / Chartreuse:** Superfície superior vibrante com gradiente elétrico (`#f8ff0a` ➔ `#b6fa00`), reflexo especular vítreo superior em arco translúcido e contorno em verde floresta (`#70b000`).
+  - **Base 3D Extrudada com Compressão Tátil:** Chanfro inferior espesso em verde-escuro folha (`#38b620` ➔ `#187212`) com flare estelar dourado no centro inferior.
+  - **Molduras Cyber Tech Flutuantes:** Suporte angular no canto inferior esquerdo com linha de contorno ciano/lima neon (`#00f5a8`), e suporte angular superior-direito com aba e contorno em chevron no mesmo tom luminoso.
+  - **Tipografia e Ícone de Alto Contraste:** Rótulo em negrito pesado (`font_weight = 900`, azul-marinho profundo `#071826`) `"JOGAR - Fase %d"` acompanhado de triângulo de play sólido `▶` de $24\text{px}$.
+- **Mecânica Tátil 3D e Game Feel:**
+  - **Compressão Mecânica:** Ao pressionar (`button_down`), a textura alterna instantaneamente para a versão comprimida (`btn_play_banner_pressed.svg`) e o texto/ícone desloca-se $4\text{px}$ para baixo, simulando um botão físico de arcade sendo empurrado.
+  - **Feedback Háptico e Áudio:** Dispara vibração tátil de $15\text{ms}$ (`Input.vibrate_handheld(15)`) e o SFX de confirmação (`AudioManager.play_sfx("confirm")`).
+  - **Escala Elástica:** Ao clicar, aplica um tween de pulso sutil ($0.96 \times \rightarrow 1.0 \times$).
     - `Collection` 🌿: Herbário ilustrado com as espécies da ilha (Grama Verde, Amarela, Azul, Roxa, Trigo e Flores Nobres).
     - `Store` 🏪: Loja de pacotes de moedas e resgate de recompensas diárias.
 

@@ -3,7 +3,7 @@ extends Control
 signal play_level_requested(level_number: int)
 signal toggle_view_requested
 
-@onready var play_btn: Button = $BottomAction/HBox/PlayBtn
+@onready var play_btn: Button = $BottomAction/HBox/PlayBtn as Button
 @onready var play_label: Label = $BottomAction/HBox/PlayBtn/HBoxPlay/LevelLabel
 @onready var toggle_btn: Button = $BottomAction/HBox/ToggleViewBtn
 @onready var toggle_label: Label = $BottomAction/HBox/ToggleViewBtn/HBoxToggle/ToggleLabel
@@ -24,11 +24,10 @@ func _ready() -> void:
 
 func update_level_display(lvl: int) -> void:
 	current_level_selected = lvl
-	if play_label != null:
-		if is_map_mode:
-			play_label.text = "JOGAR - Fase %d" % current_level_selected
-		else:
-			play_label.text = "Level %d" % current_level_selected
+	if play_btn != null and play_btn.has_method("set_level_number"):
+		play_btn.call("set_level_number", current_level_selected)
+	elif play_label != null:
+		play_label.text = "JOGAR - Fase %d" % current_level_selected
 
 func set_view_mode(map_view: bool) -> void:
 	is_map_mode = map_view
@@ -46,7 +45,7 @@ func _on_play_pressed() -> void:
 	# Efeito de pulso rápido no botão
 	if play_btn != null:
 		var tw: Tween = create_tween()
-		tw.tween_property(play_btn, "scale", Vector2(0.94, 0.94), 0.08)
+		tw.tween_property(play_btn, "scale", Vector2(0.96, 0.96), 0.08)
 		tw.tween_property(play_btn, "scale", Vector2(1.0, 1.0), 0.08)
 	play_level_requested.emit(current_level_selected)
 

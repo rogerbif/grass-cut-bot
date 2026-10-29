@@ -1,36 +1,31 @@
-[gd_scene load_steps=7 format=3 uid="uid://tab_home_scene_01"]
+[gd_scene load_steps=10 format=3 uid="uid://tab_home_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_home.gd" id="1_home"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="2_play"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_map.svg" id="3_map"]
+[ext_resource type="Script" path="res://scripts/ui/cyber_play_button.gd" id="2_cyber_btn"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_play_banner.svg" id="3_bg_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_play_banner_pressed.svg" id="4_bg_pressed"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_play_triangle.svg" id="5_icon_play"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map.svg" id="6_map"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_btn"]
-bg_color = Color(0.16, 0.78, 0.44, 0.95)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(1, 1, 1, 0.95)
-corner_radius_top_left = 28
-corner_radius_top_right = 28
-corner_radius_bottom_right = 28
-corner_radius_bottom_left = 28
-shadow_color = Color(0, 0, 0, 0.3)
-shadow_size = 12
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
+
+[sub_resource type="SystemFont" id="SystemFont_button"]
+font_names = PackedStringArray("Segoe UI", "Arial Black", "Montserrat", "sans-serif")
+font_weight = 900
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_btn"]
-bg_color = Color(0.18, 0.45, 0.88, 0.95)
+bg_color = Color(0.08, 0.16, 0.24, 0.92)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.85, 0.92, 1, 0.9)
-corner_radius_top_left = 22
-corner_radius_top_right = 22
-corner_radius_bottom_right = 22
-corner_radius_bottom_left = 22
-shadow_color = Color(0, 0, 0, 0.25)
-shadow_size = 8
+border_color = Color(0.0, 0.95, 0.67, 0.85)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 6
 
 [node name="TabHome" type="Control"]
 layout_mode = 3
@@ -48,8 +43,8 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -186.0
-offset_bottom = -110.0
+offset_top = -240.0
+offset_bottom = -108.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
@@ -61,27 +56,60 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -34.0
-offset_right = 280.0
-offset_bottom = 34.0
+offset_left = -270.0
+offset_top = -64.0
+offset_right = 270.0
+offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 alignment = 1
 
 [node name="PlayBtn" type="Button" parent="BottomAction/HBox"]
-custom_minimum_size = Vector2(360, 68)
+custom_minimum_size = Vector2(430, 126)
 layout_mode = 2
-pivot_offset = Vector2(180, 34)
+pivot_offset = Vector2(215, 63)
 focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_play_btn")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_none")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_none")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_none")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_none")
+script = ExtResource("2_cyber_btn")
+
+[node name="BgNormal" type="TextureRect" parent="BottomAction/HBox/PlayBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg_normal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BgPressed" type="TextureRect" parent="BottomAction/HBox/PlayBtn"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_bg_pressed")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="HBoxPlay" type="HBoxContainer" parent="BottomAction/HBox/PlayBtn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 42.0
+offset_top = 18.0
+offset_right = -42.0
+offset_bottom = -30.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -91,23 +119,26 @@ theme_override_constants/separation = 12
 [node name="LevelLabel" type="Label" parent="BottomAction/HBox/PlayBtn/HBoxPlay"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-text = "Level 1"
+theme_override_colors/font_color = Color(0.027, 0.094, 0.149, 1)
+theme_override_fonts/font = SubResource("SystemFont_button")
+theme_override_font_sizes/font_size = 30
+text = "JOGAR - Fase 3"
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="PlayIcon" type="TextureRect" parent="BottomAction/HBox/PlayBtn/HBoxPlay"]
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("2_play")
+texture = ExtResource("5_icon_play")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ToggleViewBtn" type="Button" parent="BottomAction/HBox"]
-custom_minimum_size = Vector2(120, 68)
+custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
 theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_btn")
 
@@ -120,21 +151,21 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 
 [node name="ToggleIcon" type="TextureRect" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("3_map")
+texture = ExtResource("6_map")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ToggleLabel" type="Label" parent="BottomAction/HBox/ToggleViewBtn/HBoxToggle"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.85, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 18
 text = "MAP"
 vertical_alignment = 1
