@@ -54,3 +54,10 @@ Este documento reúne os requisitos técnicos, presets de exportação e diretri
   - `variant/thread_support = false`
   - `progressive_web_app/ensure_cross_origin_isolation_headers = false`
 - **Vantagem Estrutural:** Não exige cabeçalhos COOP (`Cross-Origin-Opener-Policy: same-origin`) nem COEP (`Cross-Origin-Embedder-Policy: require-corp`), permitindo hospedagem imediata em qualquer servidor web estático (GitHub Pages, itch.io, Vercel, Netlify, Apache, Nginx).
+
+---
+
+## 6. Ícones SVG e Tela de Loading
+
+- **Nunca use emojis em `Label`/`Button` para a UI:** na Web as fontes de emoji do sistema não existem e o texto vira caixas hexadecimais ("tofu"). Use os SVGs de `assets/icons/` via `TextureRect` ou `Button.icon`.
+- **Loading customizado:** `web_shell/shell.html` (preset Web, `html/custom_html_shell`) exibe logo, barra de progresso com porcentagem real e dicas, com fade-out ao iniciar. Mantenha os placeholders `$GODOT_URL`, `$GODOT_CONFIG`, `$GODOT_PROJECT_NAME` e `$GODOT_HEAD_INCLUDE`.
