@@ -114,7 +114,7 @@ size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="SettingsButton" type="TextureButton" parent="CanvasLayer/TopBar/HBox"]
-custom_minimum_size = Vector2(52, 52)
+custom_minimum_size = Vector2(58, 52)
 layout_mode = 2
 size_flags_vertical = 4
 focus_mode = 0
