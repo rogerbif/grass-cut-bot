@@ -19,7 +19,7 @@ func test_blade_progression() -> void:
 	assert_true(UpgradeManager.blade_level == 1, "Nível inicial é 1")
 	assert_true(UpgradeManager.blade_xp == 0.0, "XP inicial é 0.0")
 	assert_true(is_equal_approx(UpgradeManager.get_blade_radius(), 0.90), "Raio do Nível 1 é 0.90m")
-	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 3.25), "Velocidade do Nível 1 é 3.25m/s")
+	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 1.95), "Velocidade do Nível 1 é 1.95m/s")
 	assert_true(UpgradeManager.get_blade_tier() == 1, "Tier visual no Nível 1 é 1")
 
 	# 2. Teste de Ganho de XP e Level Up (Lv 1 -> Lv 2: precisa de 50 XP)
@@ -30,7 +30,7 @@ func test_blade_progression() -> void:
 	UpgradeManager.add_blade_xp(25.0)
 	assert_true(UpgradeManager.blade_level == 2 and is_equal_approx(UpgradeManager.blade_xp, 0.0), "Subiu para Lv 2 com 50 XP")
 	assert_true(is_equal_approx(UpgradeManager.get_blade_radius(), 1.00), "Raio do Nível 2 é 1.00m")
-	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 3.55), "Velocidade do Nível 2 é 3.55m/s")
+	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 2.13), "Velocidade do Nível 2 é 2.13m/s")
 
 	# 3. Subir até Nível 6 (MAX)
 	# Lv 2 -> 3: 100 XP
@@ -42,7 +42,7 @@ func test_blade_progression() -> void:
 	UpgradeManager.add_blade_xp(180.0)
 	assert_true(UpgradeManager.blade_level == 4, "Subiu para Lv 4")
 	assert_true(is_equal_approx(UpgradeManager.get_blade_radius(), 1.20), "Raio do Nível 4 é 1.20m")
-	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 4.15), "Velocidade do Nível 4 é 4.15m/s")
+	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 2.49), "Velocidade do Nível 4 é 2.49m/s")
 
 	# Lv 4 -> 5: 280 XP
 	UpgradeManager.add_blade_xp(280.0)
@@ -53,7 +53,7 @@ func test_blade_progression() -> void:
 	UpgradeManager.add_blade_xp(400.0)
 	assert_true(UpgradeManager.blade_level == 6, "Subiu para Lv 6 (MAX)")
 	assert_true(is_equal_approx(UpgradeManager.get_blade_radius(), 1.40), "Raio do Nível 6 (MAX) é 1.40m")
-	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 4.75), "Velocidade do Nível 6 (MAX) é 4.75m/s")
+	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 2.85), "Velocidade do Nível 6 (MAX) é 2.85m/s")
 	assert_true(UpgradeManager.get_blade_tier() == 4, "Tier visual no Nível 6 é 4 (Hexagonal)")
 	assert_true(is_equal_approx(UpgradeManager.get_progress_ratio(), 1.0), "Ratio no MAX é 1.0 (100%)")
 

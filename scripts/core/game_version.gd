@@ -1,18 +1,18 @@
-class_name GameVersion
+﻿class_name GameVersion
 extends RefCounted
 
 ## Gerenciador Central de Versionamento - Grass Cut Bot (Game SemVer).
-## Fonte canÃƒÂ´nica para a versÃƒÂ£o do jogo, ciclo de maturidade (Alpha, Beta, Gold)
-## e compatibilidade de saves e presets de exportaÃƒÂ§ÃƒÂ£o.
+## Fonte canÃƒÆ’Ã‚Â´nica para a versÃƒÆ’Ã‚Â£o do jogo, ciclo de maturidade (Alpha, Beta, Gold)
+## e compatibilidade de saves e presets de exportaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.
 
 const MAJOR: int = 0
 const MINOR: int = 12
-const PATCH: int = 91
+const PATCH: int = 93
 const STAGE: String = "ALPHA" # "PRE-ALPHA", "ALPHA", "BETA", "RC", "RELEASE"
 const BUILD_TYPE: String = "dev" # "dev", "nightly", "public"
 
-## Retorna a versÃƒÂ£o crua sem prefixo 'v' (ex: "0.12.67-alpha").
-## LÃƒÂª dinamicamente do ProjectSettings se disponÃƒÂ­vel para garantir sincronizaÃƒÂ§ÃƒÂ£o automÃƒÂ¡tica.
+## Retorna a versÃƒÆ’Ã‚Â£o crua sem prefixo 'v' (ex: "0.12.67-alpha").
+## LÃƒÆ’Ã‚Âª dinamicamente do ProjectSettings se disponÃƒÆ’Ã‚Â­vel para garantir sincronizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o automÃƒÆ’Ã‚Â¡tica.
 static func get_raw_version() -> String:
 	var proj_ver: String = String(ProjectSettings.get_setting("application/config/version", ""))
 	if not proj_ver.is_empty():
@@ -22,18 +22,18 @@ static func get_raw_version() -> String:
 		base += "-%s" % STAGE.to_lower()
 	return base
 
-## Retorna a string semÃƒÂ¢ntica padrÃƒÂ£o com prefixo 'v' (ex: "v0.12.67-alpha")
+## Retorna a string semÃƒÆ’Ã‚Â¢ntica padrÃƒÆ’Ã‚Â£o com prefixo 'v' (ex: "v0.12.67-alpha")
 static func get_version_string() -> String:
 	var raw: String = get_raw_version()
 	if not raw.begins_with("v"):
 		return "v%s" % raw
 	return raw
 
-## Retorna o nome completo com tÃƒÂ­tulo do jogo (ex: "Grass Cut Bot v0.12.67-alpha")
+## Retorna o nome completo com tÃƒÆ’Ã‚Â­tulo do jogo (ex: "Grass Cut Bot v0.12.67-alpha")
 static func get_display_name() -> String:
 	return "Grass Cut Bot %s" % get_version_string()
 
-## Retorna um cÃƒÂ³digo numÃƒÂ©rico de versÃƒÂ£o para versionCode do Android (ex: 1267 para 0.12.67)
+## Retorna um cÃƒÆ’Ã‚Â³digo numÃƒÆ’Ã‚Â©rico de versÃƒÆ’Ã‚Â£o para versionCode do Android (ex: 1267 para 0.12.67)
 static func get_version_code() -> int:
 	var raw: String = get_raw_version()
 	var clean: String = raw.trim_prefix("v").split("-")[0]
@@ -42,27 +42,27 @@ static func get_version_code() -> int:
 		return parts[0].to_int() * 10000 + parts[1].to_int() * 100 + parts[2].to_int()
 	return MAJOR * 10000 + MINOR * 100 + PATCH
 
-## Retorna se a versÃƒÂ£o atual ÃƒÂ© Pre-Alpha
+## Retorna se a versÃƒÆ’Ã‚Â£o atual ÃƒÆ’Ã‚Â© Pre-Alpha
 static func is_pre_alpha() -> bool:
 	return get_raw_version().to_upper().contains("PRE-ALPHA")
 
-## Retorna se a versÃƒÂ£o atual ÃƒÂ© Alpha
+## Retorna se a versÃƒÆ’Ã‚Â£o atual ÃƒÆ’Ã‚Â© Alpha
 static func is_alpha() -> bool:
 	return get_raw_version().to_upper().contains("ALPHA") and not is_pre_alpha()
 
-## Retorna se a versÃƒÂ£o atual ÃƒÂ© Beta
+## Retorna se a versÃƒÆ’Ã‚Â£o atual ÃƒÆ’Ã‚Â© Beta
 static func is_beta() -> bool:
 	return get_raw_version().to_upper().contains("BETA")
 
-## Retorna se a versÃƒÂ£o atual ÃƒÂ© Release Candidate (Freeze)
+## Retorna se a versÃƒÆ’Ã‚Â£o atual ÃƒÆ’Ã‚Â© Release Candidate (Freeze)
 static func is_rc() -> bool:
 	return get_raw_version().to_upper().contains("RC")
 
-## Retorna se a versÃƒÂ£o atual ÃƒÂ© de LanÃƒÂ§amento Comercial / Gold Master
+## Retorna se a versÃƒÆ’Ã‚Â£o atual ÃƒÆ’Ã‚Â© de LanÃƒÆ’Ã‚Â§amento Comercial / Gold Master
 static func is_release() -> bool:
 	return not is_pre_alpha() and not is_alpha() and not is_beta() and not is_rc()
 
-## Retorna um dicionÃƒÂ¡rio estruturado com todos os metadados da versÃƒÂ£o
+## Retorna um dicionÃƒÆ’Ã‚Â¡rio estruturado com todos os metadados da versÃƒÆ’Ã‚Â£o
 static func get_full_info() -> Dictionary:
 	var raw: String = get_raw_version()
 	var clean: String = raw.trim_prefix("v").split("-")[0]

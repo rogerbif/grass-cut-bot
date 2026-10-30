@@ -143,8 +143,8 @@ func get_blade_radius() -> float:
 	return 0.90 + float(blade_level - 1) * 0.10
 
 func get_cutter_speed() -> float:
-	# Velocidade base de 3.25m/s + 0.30m/s por nível (Lv 1 = 3.25m/s ... Lv 6 = 4.75m/s)
-	return 3.25 + float(blade_level - 1) * 0.30
+	# Velocidade reduzida em 40%: base de 1.95m/s + 0.18m/s por nível (Lv 1 = 1.95m/s ... Lv 6 = 2.85m/s)
+	return 1.95 + float(blade_level - 1) * 0.18
 
 func get_cutter_power() -> int:
 	return 1

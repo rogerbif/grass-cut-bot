@@ -34,14 +34,14 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
 
-- **Zoom Dinâmico Adaptativo (6.0m no Lv 1 até 12.0m no Lv 6 MAX):**
-  - **Nível 1 (Base):** Distância em $6.0\text{m}$ (`offset = Vector3(0.0, 3.8756, 4.5809)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento com excelente visibilidade do robô e do corredor imediato de vegetação.
-  - **Níveis 2 a 5:** Afastamento gradual linear (+1.2m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
-    - Lv 1: $6.0\text{m}$ (`Vector3(0.0, 3.8756, 4.5809)`)
-    - Lv 2: $7.2\text{m}$ (`Vector3(0.0, 4.6507, 5.4971)`)
-    - Lv 3: $8.4\text{m}$ (`Vector3(0.0, 5.4258, 6.4133)`)
-    - Lv 4: $9.6\text{m}$ (`Vector3(0.0, 6.2009, 7.3295)`)
-    - Lv 5: $10.8\text{m}$ (`Vector3(0.0, 6.9760, 8.2457)`)
+- **Zoom Dinâmico Adaptativo (8.4m no Lv 1 até 12.0m no Lv 6 MAX):**
+  - **Nível 1 (Base):** Distância em $8.4\text{m}$ (`offset = Vector3(0.0, 5.4258, 6.4133)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento 40% mais recuado/afastado para visão panorâmica confortável do início da partida.
+  - **Níveis 2 a 5:** Afastamento gradual linear (+0.72m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
+    - Lv 1: $8.4\text{m}$ (`Vector3(0.0, 5.4258, 6.4133)`)
+    - Lv 2: $9.12\text{m}$ (`Vector3(0.0, 5.8908, 6.9630)`)
+    - Lv 3: $9.84\text{m}$ (`Vector3(0.0, 6.3559, 7.5127)`)
+    - Lv 4: $10.56\text{m}$ (`Vector3(0.0, 6.8210, 8.0624)`)
+    - Lv 5: $11.28\text{m}$ (`Vector3(0.0, 7.2860, 8.6121)`)
     - Lv 6: $12.0\text{m}$ (`Vector3(0.0, 7.7511, 9.1619)`)
   - **Nível 6 (MAX):** Distância canônica máxima de $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`), conferindo ampla visão panorâmica para manusear com total destreza e segurança a serra estelar de $1.40\text{m}$ de raio.
   - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por impacto contra obstáculos sólidos.

@@ -42,7 +42,7 @@ script = ExtResource("3_level")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="IsometricCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.762668, 0.64679, 0, -0.64679, 0.762668, 0, 3.8756, 4.5809)
+transform = Transform3D(1, 0, 0, 0, 0.762668, 0.64679, 0, -0.64679, 0.762668, 0, 5.4258, 6.4133)
 current = true
 fov = 48.0
 script = ExtResource("5_camera")

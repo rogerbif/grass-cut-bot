@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-@export var base_speed: float = 3.25
+@export var base_speed: float = 1.95
 @export var acceleration: float = 24.0
 @export var friction: float = 18.0
 @export var rotation_speed: float = 720.0 # Graus por segundo de rotação da serra em velocidade máxima (+20% ativo)

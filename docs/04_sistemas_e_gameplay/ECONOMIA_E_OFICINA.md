@@ -24,12 +24,12 @@ A evolução do cortador é unificada e opera em duas frentes complementares:
 ### Tabela de Níveis, Raio, Velocidade e Custos
 | Nível | Raio da Lâmina | Velocidade do Bot | Tier Visual | Custo na Garagem | XP para Próximo Nível |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| **1** | **0.90 m** | **3.25 m/s** | Tier 1 (Tripla) | Inicial (Grátis) | 50 XP (~4-6s) |
-| **2** | **1.00 m** | **3.55 m/s** | Tier 1 (Tripla) | 75 🪙 | 100 XP (~10s) |
-| **3** | **1.10 m** | **3.85 m/s** | Tier 2 (Quádrupla) | 150 🪙 | 180 XP (~1 fase) |
-| **4** | **1.20 m** | **4.15 m/s** | Tier 2 (Quádrupla) | 300 🪙 | 280 XP (~1.5 fases) |
-| **5** | **1.30 m** | **4.45 m/s** | Tier 3 (Titânio) | 550 🪙 | 400 XP (~2 fases) |
-| **6 (MAX)** | **1.40 m** | **4.75 m/s** | Tier 4 (Hexagonal Dourada) | *Exclusivo Gameplay* | **0 XP (Barra Cheia / MAX)** |
+| **1** | **0.90 m** | **1.95 m/s** | Tier 1 (Tripla) | Inicial (Grátis) | 50 XP (~4-6s) |
+| **2** | **1.00 m** | **2.13 m/s** | Tier 1 (Tripla) | 75 🪙 | 100 XP (~10s) |
+| **3** | **1.10 m** | **2.31 m/s** | Tier 2 (Quádrupla) | 150 🪙 | 180 XP (~1 fase) |
+| **4** | **1.20 m** | **2.49 m/s** | Tier 2 (Quádrupla) | 300 🪙 | 280 XP (~1.5 fases) |
+| **5** | **1.30 m** | **2.67 m/s** | Tier 3 (Titânio) | 550 🪙 | 400 XP (~2 fases) |
+| **6 (MAX)** | **1.40 m** | **2.85 m/s** | Tier 4 (Hexagonal Dourada) | *Exclusivo Gameplay* | **0 XP (Barra Cheia / MAX)** |
 
 ---
 
