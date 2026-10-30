@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="54" viewBox="0 0 160 54">
+  <defs>
+    <linearGradient id="coin_bg_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0a1d30" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#050e18" stop-opacity="0.98" />
+    </linearGradient>
+    <linearGradient id="coin_border_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2bd9fe" />
+      <stop offset="50%" stop-color="#1480b0" />
+      <stop offset="100%" stop-color="#0e5676" />
+    </linearGradient>
+  </defs>
+
+  <!-- Chamfered plate: top-left chamfer (10px) and bottom-right chamfer (12px) -->
+  <path d="M 12 2 
+           L 156 2 
+           Q 158 2 158 4 
+           L 158 40 
+           L 146 52 
+           L 4 52 
+           Q 2 52 2 50 
+           L 2 14 
+           L 12 2 Z" 
+        fill="url(#coin_bg_grad)" 
+        stroke="url(#coin_border_grad)" 
+        stroke-width="2.5" 
+        stroke-linejoin="round" />
+
+  <!-- Top highlight cyber line -->
+  <path d="M 16 4 L 152 4" stroke="#8bf0ff" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.6" />
+</svg>

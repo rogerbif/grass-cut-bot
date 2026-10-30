@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="170" height="54" viewBox="0 0 170 54">
+  <defs>
+    <linearGradient id="life_bg_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141738" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#090a1c" stop-opacity="0.98" />
+    </linearGradient>
+    <linearGradient id="life_border_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#46a0fc" />
+      <stop offset="50%" stop-color="#586ffc" />
+      <stop offset="100%" stop-color="#8852ff" />
+    </linearGradient>
+  </defs>
+
+  <!-- Parallelogram/slanted right edge plate: top-left chamfer (10px) and slanted right edge -->
+  <path d="M 12 2 
+           L 148 2 
+           L 168 40 
+           L 158 52 
+           L 4 52 
+           Q 2 52 2 50 
+           L 2 14 
+           L 12 2 Z" 
+        fill="url(#life_bg_grad)" 
+        stroke="url(#life_border_grad)" 
+        stroke-width="2.5" 
+        stroke-linejoin="round" />
+
+  <!-- Top highlight cyber line -->
+  <path d="M 16 4 L 144 4" stroke="#a0c8ff" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.6" />
+</svg>

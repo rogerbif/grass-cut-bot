@@ -1,4 +1,4 @@
-﻿; Engine configuration file.
+; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
 ; since the parameters that go here are not all obvious.
 ;
@@ -8,10 +8,12 @@
 
 config_version=5
 
+"Ã¯Â»Â¿config_version"=5
+
 [application]
 
 config/name="Grass Cut Bot"
-config/version="0.12.89-alpha"
+config/version="0.12.90-alpha"
 run/main_scene="res://scenes/menu/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 boot_splash/image="uid://3pegaomvcdut"

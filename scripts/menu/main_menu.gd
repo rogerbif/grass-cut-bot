@@ -9,10 +9,10 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 @onready var ocean_mesh: MeshInstance3D = $World.get_node_or_null("OceanMesh") as MeshInstance3D
 
 # Top Bar
-@onready var coins_label: Label = $CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
-@onready var energy_label: Label = $CanvasLayer/TopBar/HBox/EnergyContainer.find_child("EnergyLabel", true, false) as Label
-@onready var title_label: Label = $CanvasLayer/TopBar/HBox/TitleContainer/TitleLabel
-@onready var settings_btn: Button = $CanvasLayer/TopBar/HBox/SettingsButton
+# Top Bar (Cyber Resource Badges)
+@onready var coin_badge: CyberResourceBadge = $CanvasLayer/TopBar/HBox/CoinBadge as CyberResourceBadge
+@onready var life_badge: CyberResourceBadge = $CanvasLayer/TopBar/HBox/LifeBadge as CyberResourceBadge
+@onready var settings_btn: TextureButton = $CanvasLayer/TopBar/HBox/SettingsButton as TextureButton
 
 # Modais e Abas
 @onready var settings_modal: Control = $CanvasLayer/SettingsModal
@@ -59,6 +59,11 @@ func _ready() -> void:
 	if settings_btn != null and settings_modal != null:
 		settings_btn.pressed.connect(settings_modal.open_modal)
 
+
+	if coin_badge != null:
+		coin_badge.plus_pressed.connect(_on_badge_plus_pressed)
+	if life_badge != null:
+		life_badge.plus_pressed.connect(_on_badge_plus_pressed)
 	if bottom_nav != null:
 		bottom_nav.tab_changed.connect(_on_tab_changed)
 
@@ -275,8 +280,8 @@ func _on_toggle_view_requested() -> void:
 func _on_camera_view_mode_changed(is_map: bool) -> void:
 	if tab_home != null and tab_home.has_method("set_view_mode"):
 		tab_home.set_view_mode(is_map)
-	if title_label != null:
-		title_label.text = "Mapa de Fases" if is_map else "Ilha Tropical"
+
+
 	_update_plaques_view_mode(is_map, true)
 	_update_islands_visibility(is_map, selected_level)
 
@@ -353,10 +358,16 @@ func _switch_tab(tab_idx: int) -> void:
 			menu_camera.switch_to_bot_view()
 
 func _update_top_bar() -> void:
-	if coins_label != null and UpgradeManager != null:
-		coins_label.text = str(UpgradeManager.total_coins)
-	if energy_label != null:
-		energy_label.text = "5 Max"
+	if coin_badge != null and UpgradeManager != null:
+		coin_badge.set_value_text(str(UpgradeManager.total_coins))
+	if life_badge != null:
+		life_badge.set_value_text("5 Max")
+
+func _on_badge_plus_pressed() -> void:
+	# Abre a aba da Loja (Store = 3) diretamente via bottom_nav
+	if bottom_nav != null and bottom_nav.has_method("select_tab"):
+		bottom_nav.call("select_tab", 3)
+
 
 func _on_play_level_requested(lvl_to_play: int) -> void:
 	if AudioManager != null:

@@ -13,6 +13,11 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="11_coin"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_heart.svg" id="12_heart"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="13_gear"]
+[ext_resource type="PackedScene" uid="uid://cyber_res_badge_01" path="res://scenes/ui/cyber_resource_badge.tscn" id="14_cyber_badge"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/badge_coin_bg.svg" id="15_coin_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/badge_life_bg.svg" id="16_life_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/btn_settings_cyber.svg" id="17_settings_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/btn_settings_cyber_pressed.svg" id="18_settings_pressed"]
 
 [sub_resource type="Environment" id="Environment_menu"]
 background_mode = 1
@@ -77,86 +82,46 @@ script = ExtResource("2_camera")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="TopBar" type="PanelContainer" parent="CanvasLayer"]
+[node name="TopBar" type="MarginContainer" parent="CanvasLayer"]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 86.0
 grow_horizontal = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_top")
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="HBox" type="HBoxContainer" parent="CanvasLayer/TopBar"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="CoinsContainer" type="PanelContainer" parent="CanvasLayer/TopBar/HBox"]
-custom_minimum_size = Vector2(90, 48)
+[node name="CoinBadge" parent="CanvasLayer/TopBar/HBox" instance=ExtResource("14_cyber_badge")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
+icon_texture = ExtResource("11_coin")
+bg_texture = ExtResource("15_coin_bg")
+initial_text = "0"
 
-[node name="HBoxCoins" type="HBoxContainer" parent="CanvasLayer/TopBar/HBox/CoinsContainer"]
+[node name="LifeBadge" parent="CanvasLayer/TopBar/HBox" instance=ExtResource("14_cyber_badge")]
 layout_mode = 2
-theme_override_constants/separation = 6
+icon_texture = ExtResource("12_heart")
+bg_texture = ExtResource("16_life_bg")
+initial_text = "5 Max"
 
-[node name="Icon" type="TextureRect" parent="CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("11_coin")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CoinsLabel" type="Label" parent="CanvasLayer/TopBar/HBox/CoinsContainer/HBoxCoins"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "0"
-vertical_alignment = 1
-
-[node name="EnergyContainer" type="PanelContainer" parent="CanvasLayer/TopBar/HBox"]
-custom_minimum_size = Vector2(105, 48)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
-
-[node name="HBoxEnergy" type="HBoxContainer" parent="CanvasLayer/TopBar/HBox/EnergyContainer"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 6
-
-[node name="BladeIcon" type="TextureRect" parent="CanvasLayer/TopBar/HBox/EnergyContainer/HBoxEnergy"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("12_heart")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="EnergyLabel" type="Label" parent="CanvasLayer/TopBar/HBox/EnergyContainer/HBoxEnergy"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "5 Max"
-horizontal_alignment = 1
-vertical_alignment = 1
-[node name="TitleContainer" type="HBoxContainer" parent="CanvasLayer/TopBar/HBox"]
+[node name="Spacer" type="Control" parent="CanvasLayer/TopBar/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-alignment = 2
+mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="CanvasLayer/TopBar/HBox/TitleContainer"]
+[node name="SettingsButton" type="TextureButton" parent="CanvasLayer/TopBar/HBox"]
+custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 20
-text = "Ilha Tropical"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="SettingsButton" type="Button" parent="CanvasLayer/TopBar/HBox"]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
-icon = ExtResource("13_gear")
-icon_alignment = 1
-expand_icon = true
+texture_normal = ExtResource("17_settings_normal")
+texture_pressed = ExtResource("18_settings_pressed")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="TabViews" type="Control" parent="CanvasLayer"]
 layout_mode = 3
