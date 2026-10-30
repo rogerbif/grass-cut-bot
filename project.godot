@@ -8,12 +8,11 @@
 
 config_version=5
 
-"ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¯ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿config_version"=5
 
 [application]
 
 config/name="Grass Cut Bot"
-config/version="0.12.93-alpha"
+config/version="0.12.94-alpha"
 run/main_scene="res://scenes/menu/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 boot_splash/image="uid://3pegaomvcdut"
