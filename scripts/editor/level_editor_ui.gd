@@ -4,7 +4,7 @@ const TilePaletteDB = preload("res://scripts/editor/tile_palette_db.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 
 const GOALS_CATALOG: Array[Dictionary] = [
-	{ "key": "grass_green", "name": "🌿 Grama Verde", "color": Color(0.36, 0.78, 0.41), "unit": "tufos" },
+	{ "key": "grass_green", "name": "🌿 Grama Verde", "color": Color(0.28, 0.81, 0.10), "unit": "tufos" },
 	{ "key": "grass_yellow", "name": "🌼 Grama Amarela", "color": Color(0.95, 0.83, 0.35), "unit": "tufos" },
 	{ "key": "grass_blue", "name": "💠 Grama Azul", "color": Color(0.39, 0.74, 0.96), "unit": "tufos" },
 	{ "key": "grass_purple", "name": "🔮 Grama Violeta", "color": Color(0.76, 0.46, 0.92), "unit": "tufos" },

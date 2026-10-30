@@ -7,8 +7,8 @@ uniform sampler2D cut_tex : hint_default_transparent, filter_linear;
 
 uniform vec2 island_origin = vec2(0.0, 0.0);
 uniform vec2 island_size = vec2(10.0, 10.0);
-uniform vec4 lawn_color : source_color = vec4(0.20, 0.58, 0.25, 0.55);
-uniform vec4 mowed_color : source_color = vec4(0.38, 0.76, 0.32, 0.40);
+uniform vec4 lawn_color : source_color = vec4(0.22, 0.65, 0.12, 0.55);
+uniform vec4 mowed_color : source_color = vec4(0.53, 0.81, 0.30, 0.40);
 
 void vertex() {
 	// Leve elevação Y (+0.005m) sobre o topo do bloco de terreno para evitar z-fighting

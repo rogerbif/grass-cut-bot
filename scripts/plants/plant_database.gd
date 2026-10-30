@@ -57,7 +57,7 @@ static func get_all_species() -> Array[Dictionary]:
 			"category": "grass",
 			"name": "Grama Verde Esmeralda",
 			"icon": "🌱",
-			"color": Color(0.22, 0.69, 0.20, 1.0),
+			"color": Color(0.28, 0.81, 0.10, 1.0),
 			"origin_level": 1,
 			"hits": 1,
 			"reward_coins": 1,

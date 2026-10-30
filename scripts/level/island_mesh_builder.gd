@@ -25,8 +25,8 @@ const PALETTE_TEXTURE_PATH: String = "res://assets/models/tiles/tile_island_cent
 const FOAM_SHADER_PATH: String = "res://shaders/coastal_foam.gdshader"
 
 # Parâmetros Canônicos do Solo da Ilha e Falésias (Calibrados)
-static var ground_base_color: Color = Color(0.14, 0.45, 0.19, 1.0)
-static var ground_brightness: float = 0.80
+static var ground_base_color: Color = Color(0.53, 0.81, 0.30, 1.0)
+static var ground_brightness: float = 0.95
 static var ground_diffuse_toon: bool = true
 const CLIFF_COLOR: Color = Color(0.4667, 0.2431, 0.1451, 1.0)
 const DIRT_COLOR: Color = Color(0.38, 0.25, 0.15, 1.0)

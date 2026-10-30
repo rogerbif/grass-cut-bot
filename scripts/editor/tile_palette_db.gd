@@ -66,7 +66,7 @@ const GRASS_ITEMS: Array[Dictionary] = [
 		"id": "grass_green",
 		"name": "Grama Verde",
 		"icon": "🌿",
-		"color": Color(0.36, 0.78, 0.41),
+		"color": Color(0.28, 0.81, 0.10),
 		"goal_key": "grass",
 		"category": "grass"
 	},
