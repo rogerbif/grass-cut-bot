@@ -4,7 +4,7 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 roughness = 0.92
-albedo_color = Color(0.32, 0.68, 0.22, 1)
+albedo_color = Color(0.600, 0.9176, 0.2471, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ground"]
 material = SubResource("StandardMaterial3D_ground")
@@ -12,7 +12,7 @@ size = Vector3(3.6, 0.4, 3.2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cliff"]
 roughness = 0.95
-albedo_color = Color(0.36, 0.22, 0.15, 1)
+albedo_color = Color(0.9451, 0.6706, 0.3961, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_cliff"]
 material = SubResource("StandardMaterial3D_cliff")
@@ -20,7 +20,7 @@ size = Vector3(3.6, 0.6, 3.2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_foam"]
 roughness = 0.85
-albedo_color = Color(0.6, 0.9, 0.96, 1)
+albedo_color = Color(0.88, 0.98, 1.0, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_foam"]
 material = SubResource("StandardMaterial3D_foam")
@@ -28,7 +28,7 @@ size = Vector3(3.9, 0.04, 3.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sand"]
 roughness = 0.9
-albedo_color = Color(0.88, 0.8, 0.54, 1)
+albedo_color = Color(0.96, 0.82, 0.60, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_sand"]
 material = SubResource("StandardMaterial3D_sand")
