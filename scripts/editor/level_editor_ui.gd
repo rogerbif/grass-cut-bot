@@ -1106,7 +1106,8 @@ func update_goals_summary(
 		var g_unit: String = String(gm.get("unit", "tufos"))
 		var total_count: int = 0
 		if g_key.begins_with("grass_"):
-			total_count = int(grass_by_type.get(g_key, 0))
+			var raw_grass: int = int(grass_by_type.get(g_key, 0))
+			total_count = maxi(1, int(ceilf(float(raw_grass) / 6.0))) if raw_grass > 0 else 0
 		elif g_key == "wheat":
 			total_count = wheat_tufts
 		elif flower_by_type.has(g_key):

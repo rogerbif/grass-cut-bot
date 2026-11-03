@@ -103,13 +103,13 @@ func test_goals_ui_separation_and_constraints() -> void:
 
 	# Salva e recarrega metas configuradas
 	var custom_cfg: Dictionary = {
-		"grass_green": 10,
+		"grass_green": valid_val,
 		"wheat": 1
 	}
 	ui.call("set_configured_goals", custom_cfg)
 	assert(chk_green.button_pressed, "grass_green deve estar marcado após set_configured_goals")
 	assert(spin_green.visible, "spin_green deve estar visível")
-	assert(int(spin_green.value) == 10, "spin_green deve ter valor 10")
+	assert(int(spin_green.value) == valid_val, "spin_green deve ter valor %d" % valid_val)
 
 	var chk_wheat: CheckBox = chks["wheat"] as CheckBox
 	var spin_wheat: SpinBox = spins["wheat"] as SpinBox
@@ -141,14 +141,14 @@ func test_vegetation_grid_custom_goals() -> void:
 		"objects": [],
 		"spawn": { "gx": 4, "gz": 4 },
 		"goals": {
-			"grass_green": 15
+			"grass_green": 5
 		}
 	}
 
 	var goals: Dictionary = vg.call("build_from_level_json", dummy_level_data, null, null) as Dictionary
 	assert(vg.get("_has_custom_goals") == true, "_has_custom_goals deve ser true para nível com metas personalizadas")
 	assert(goals.has("grass_green"), "goals deve conter grass_green")
-	assert(int(goals["grass_green"]) == 15, "grass_green deve ter meta 15")
+	assert(int(goals["grass_green"]) == 5, "grass_green deve ter meta 5")
 
 	print("✔ VegetationGrid: Detecção e processamento de metas personalizadas 1:1 validados!")
 	vg.queue_free()

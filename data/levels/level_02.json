@@ -1,8 +1,8 @@
 {
 	"goals": {
-		"grass_blue": 126,
-		"grass_green": 204,
-		"grass_yellow": 377
+		"grass_blue": 21,
+		"grass_green": 34,
+		"grass_yellow": 63
 	},
 	"grass_vectors": [
 		{

@@ -71,6 +71,7 @@ const VEG_TYPES: Array[String] = [
 ]
 
 const GRID_STEP: float = 0.40
+const GRASS_TUFTS_PER_UNIT: int = 6
 const TUFT_HIT_RADIUS_BONUS: float = 0.0
 const MULTI_HIT_COOLDOWN_SEC: float = 0.28
 const HIDDEN_TRANSFORM: Transform3D = Transform3D(
@@ -482,7 +483,16 @@ func build_from_level_json(
 			goals.clear()
 			for g_key: Variant in custom_goals:
 				var k_str: String = String(g_key)
-				goals[k_str] = int(custom_goals[g_key])
+				var raw_val: int = int(custom_goals[g_key])
+				if k_str == "grass" or k_str.begins_with("grass_"):
+					var phys_cnt: int = _total_physical_grass if k_str == "grass" else int(_remaining_grass_by_type.get(k_str, 0))
+					var max_grouped: int = maxi(1, int(ceilf(float(phys_cnt) / float(GRASS_TUFTS_PER_UNIT))))
+					if phys_cnt > 0 and raw_val > max_grouped:
+						goals[k_str] = clampi(int(ceilf(float(raw_val) / float(GRASS_TUFTS_PER_UNIT))), 1, max_grouped)
+					else:
+						goals[k_str] = raw_val
+				else:
+					goals[k_str] = raw_val
 
 	# 5. Posiciona o cortador no spawn
 	var spawn_dict: Dictionary = data.get("spawn", {}) as Dictionary
@@ -893,9 +903,9 @@ func _build_from_vector_field(
 	if grass_counts_by_type.size() > 1 or (grass_counts_by_type.size() == 1 and not grass_counts_by_type.has("grass_green")):
 		for g_key: Variant in grass_counts_by_type.keys():
 			var g_count: int = int(grass_counts_by_type[g_key])
-			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / 10.0)))
+			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
 	else:
-		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
+		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / float(GRASS_TUFTS_PER_UNIT))))
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
@@ -1224,9 +1234,9 @@ func _build_from_vegetation_field(
 	if grass_counts_by_type.size() > 1 or (grass_counts_by_type.size() == 1 and not grass_counts_by_type.has("grass_green")):
 		for g_key: Variant in grass_counts_by_type.keys():
 			var g_count: int = int(grass_counts_by_type[g_key])
-			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / 10.0)))
+			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
 	else:
-		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / 10.0)))
+		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / float(GRASS_TUFTS_PER_UNIT))))
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
@@ -1446,23 +1456,15 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						if gm != null and not _has_goal_safe(p_key) and _has_goal_safe("grass"):
 							target_goal = "grass"
 
-						if _has_custom_goals:
-							# Metas personalizadas do editor são medidas em tufos diretos (1 tufo ceifado = 1 meta)
-							if gm != null and _has_goal_safe(target_goal):
+						# Agrupamento canônico: cada 6 tufos visuais de grama contam como 1 (meta + número flutuante)
+						if acc >= GRASS_TUFTS_PER_UNIT:
+							acc -= GRASS_TUFTS_PER_UNIT
+							if gm != null and (not _has_custom_goals or _has_goal_safe(target_goal)):
 								gm.call("register_cut", target_goal, 1, p_pos)
-							if g_rem <= 0 and gm != null:
-								while _get_remaining_goal_safe(target_goal) > 0:
-									gm.call("register_cut", target_goal, 1, p_pos)
-						else:
-							# Modo padrão dos 20 níveis canônicos (lotes de 10 tufos = 1 unidade virtual)
-							if acc >= 10:
-								acc -= 10
-								if gm != null:
-									gm.call("register_cut", target_goal, 1, p_pos)
-							elif g_rem <= 0 and acc > 0:
-								acc = 0
-								if gm != null and _get_remaining_goal_safe(target_goal) > 0:
-									gm.call("register_cut", target_goal, 1, p_pos)
+						elif g_rem <= 0 and acc > 0:
+							acc = 0
+							if gm != null and _get_remaining_goal_safe(target_goal) > 0:
+								gm.call("register_cut", target_goal, 1, p_pos)
 
 						_grass_cut_accumulator_by_type[p_key] = acc
 
