@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://blade_progress_bar_scene"]
 
 [ext_resource type="Script" path="res://scripts/cutter/blade_progress_bar.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://blade_bar_frame_cyber" path="res://assets/ui/cutter/blade_bar_frame_cyber.svg" id="2_frame"]
-[ext_resource type="Texture2D" uid="uid://blade_bar_fill_cyber" path="res://assets/ui/cutter/blade_bar_fill_cyber.svg" id="3_fill"]
+[ext_resource type="Texture2D" uid="uid://sx88nb4x3bwb" path="res://assets/ui/cutter/blade_bar_frame_cyber.svg" id="2_frame"]
+[ext_resource type="Texture2D" uid="uid://dxuafdgw0qntv" path="res://assets/ui/cutter/blade_bar_fill_cyber.svg" id="3_fill"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_bar"]
 viewport_path = NodePath("SubViewport")

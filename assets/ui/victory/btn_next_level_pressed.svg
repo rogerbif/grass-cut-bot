@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 84" width="580" height="84">
+  <defs>
+    <linearGradient id="btn_next_bg_p" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38b000"/>
+      <stop offset="100%" stop-color="#004b23"/>
+    </linearGradient>
+
+    <linearGradient id="btn_next_base_p" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#002914"/>
+      <stop offset="100%" stop-color="#00140a"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M 32 24 L 536 24 L 562 46 L 548 80 L 22 80 L 8 52 Z"
+        fill="url(#btn_next_base_p)"/>
+
+  <!-- Placa afundada 6px -->
+  <path d="M 32 16
+           L 536 16
+           L 562 40
+           L 548 74
+           L 22 74
+           L 8 44
+           Z"
+        fill="url(#btn_next_bg_p)"
+        stroke="#ccff33"
+        stroke-width="2.8"
+        stroke-linejoin="round"/>
+</svg>

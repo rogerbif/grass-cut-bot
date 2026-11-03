@@ -194,6 +194,7 @@ func _trigger_victory_celebration() -> void:
 	if UpgradeManager != null:
 		UpgradeManager.add_coins(level_coins)
 
+	# Gravação atômica imediata da vitória para persistência garantida
 	var stars: int = 1
 	if SaveManager != null:
 		stars = SaveManager.record_level_victory(current_level, time_left, time_limit, level_coins)

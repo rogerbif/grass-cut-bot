@@ -8,7 +8,7 @@ const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
 
 @onready var top_bar: PanelContainer = $TopBar
 @onready var timer_label: Label = $TopBar/HBox/TimerContainer.find_child("TimerLabel", true, false) as Label
-@onready var pause_button: Button = $TopBar/HBox/PauseButton
+@onready var pause_button: BaseButton = $TopBar/HBox/PauseButton as BaseButton
 @onready var coins_label: Label = $TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
 @onready var goals_container: HBoxContainer = $TopBar/HBox/GoalsContainer
 
@@ -24,7 +24,8 @@ const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
 @onready var star_3_rect: Control = $VictoryModal.find_child("Star3", true, false) as Control
 @onready var victory_time_label: Label = $VictoryModal.find_child("TimeLabel", true, false) as Label
 @onready var victory_coins_label: Label = $VictoryModal.find_child("CoinsEarnedLabel", true, false) as Label
-@onready var victory_bottom_bar: PanelContainer = $VictoryModal.find_child("BottomBar", true, false) as PanelContainer
+@onready var victory_bottom_bar: Control = $VictoryModal.find_child("BottomBar", true, false) as Control
+@onready var victory_next_label: Label = $VictoryModal.find_child("NextLabel", true, false) as Label
 @onready var game_over_reason_label: Label = $GameOverModal/Panel/VBox/ReasonLabel
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
@@ -34,10 +35,10 @@ func _ready() -> void:
 	# Oculta modais inicialmente e garante top_bar visível
 	if top_bar != null:
 		top_bar.visible = true
-	if pause_button != null:
-		pause_button.icon = ICON_PAUSE
-		pause_button.expand_icon = true
-		pause_button.text = ""
+	if pause_button is Button:
+		(pause_button as Button).icon = ICON_PAUSE
+		(pause_button as Button).expand_icon = true
+		(pause_button as Button).text = ""
 	pause_modal.visible = false
 	victory_modal.visible = false
 	game_over_modal.visible = false
@@ -74,13 +75,13 @@ func _ready() -> void:
 	if $PauseModal/Panel/VBox.has_node("MenuBtn"):
 		_connect_button($PauseModal/Panel/VBox/MenuBtn, _on_menu_pressed)
 
-	var next_btn: Button = $VictoryModal.find_child("NextBtn", true, false) as Button
+	var next_btn: BaseButton = $VictoryModal.find_child("NextBtn", true, false) as BaseButton
 	if next_btn:
 		_connect_button(next_btn, _on_next_level_pressed)
-	var restart_btn: Button = $VictoryModal.find_child("RestartBtn", true, false) as Button
+	var restart_btn: BaseButton = $VictoryModal.find_child("RestartBtn", true, false) as BaseButton
 	if restart_btn:
 		_connect_button(restart_btn, _on_restart_pressed)
-	var menu_btn: Button = $VictoryModal.find_child("MenuBtn", true, false) as Button
+	var menu_btn: BaseButton = $VictoryModal.find_child("MenuBtn", true, false) as BaseButton
 	if menu_btn:
 		_connect_button(menu_btn, _on_menu_pressed)
 
@@ -101,7 +102,7 @@ func _on_menu_pressed() -> void:
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
-func _connect_button(btn: Button, callback: Callable) -> void:
+func _connect_button(btn: BaseButton, callback: Callable) -> void:
 	if btn == null:
 		return
 	btn.pressed.connect(callback)
@@ -291,19 +292,18 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 		var time_taken: float = maxf(0.0, GameManager.time_limit - GameManager.time_left)
 		var mins: int = int(time_taken / 60.0)
 		var secs: int = int(time_taken) % 60
-		victory_time_label.text = "Tempo: %d:%02d" % [mins, secs]
+		victory_time_label.text = "%d:%02d" % [mins, secs]
 
-	var next_btn: Button = $VictoryModal.find_child("NextBtn", true, false) as Button
 	if GameManager.current_level >= 20:
 		if victory_title_label != null:
-			victory_title_label.text = "Campeão do Jardim!"
-		if next_btn != null:
-			next_btn.text = "Ciclo Mestre (Fase 1)"
+			victory_title_label.text = "CAMPEÃO DO JARDIM!"
+		if victory_next_label != null:
+			victory_next_label.text = "CICLO MESTRE (FASE 1)"
 	else:
 		if victory_title_label != null:
-			victory_title_label.text = "Fase %02d Concluída!" % GameManager.current_level
-		if next_btn != null:
-			next_btn.text = "Próxima Fase"
+			victory_title_label.text = "FASE %02d CONCLUÍDA!" % GameManager.current_level
+		if victory_next_label != null:
+			victory_next_label.text = "PRÓXIMA FASE"
 
 	victory_modal.visible = true
 

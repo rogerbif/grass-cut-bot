@@ -270,7 +270,7 @@ func record_level_victory(level_num: int, time_left: float, time_limit: float, c
 	var pl: Dictionary = save_data.get("player", {}) as Dictionary
 	var cur_max: int = int(pl.get("max_unlocked_level", 1))
 	pl["max_unlocked_level"] = maxi(cur_max, level_num + 1)
-	pl["last_played_level"] = level_num
+	pl["last_played_level"] = level_num + 1
 	save_data["player"] = pl
 
 	save_game()

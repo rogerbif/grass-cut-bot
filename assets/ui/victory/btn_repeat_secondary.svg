@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 72" width="280" height="72">
+  <defs>
+    <!-- Gradiente azul-violeta profundo mecha (conforme referência) -->
+    <linearGradient id="btn_rep_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4361ee"/>
+      <stop offset="50%" stop-color="#3a0ca3"/>
+      <stop offset="100%" stop-color="#240046"/>
+    </linearGradient>
+
+    <linearGradient id="btn_rep_border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7209b7"/>
+      <stop offset="50%" stop-color="#4cc9f0"/>
+      <stop offset="100%" stop-color="#4361ee"/>
+    </linearGradient>
+
+    <linearGradient id="btn_rep_base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#240046"/>
+      <stop offset="100%" stop-color="#10002b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Camada Base 3D Inferior -->
+  <path d="M 22 18 L 258 18 L 272 32 L 272 58 L 258 68 L 22 68 L 8 58 L 8 32 Z"
+        fill="url(#btn_rep_base)"/>
+
+  <!-- Placa Superior do Botão -->
+  <path d="M 22 10 L 258 10 L 272 24 L 272 48 L 258 60 L 22 60 L 8 48 L 8 24 Z"
+        fill="url(#btn_rep_bg)"
+        stroke="url(#btn_rep_border)"
+        stroke-width="2.5"
+        stroke-linejoin="round"/>
+
+  <!-- Brilho no topo -->
+  <path d="M 24 13 L 256 13"
+        stroke="#ffffff"
+        stroke-width="1.8"
+        opacity="0.45"/>
+</svg>

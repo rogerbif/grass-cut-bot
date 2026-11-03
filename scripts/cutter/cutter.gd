@@ -182,6 +182,9 @@ func _on_game_state_changed(new_state: int) -> void:
 		play_defeat_reaction()
 	elif new_state == GameManager.GameState.PLAYING:
 		reset_orientation_to_camera()
+		var blade_bar_node: Node3D = get_node_or_null("BladeProgressBar") as Node3D
+		if blade_bar_node != null:
+			blade_bar_node.visible = true
 		if robot_eyes != null:
 			robot_eyes.set_screen_off(false)
 
@@ -215,6 +218,10 @@ func play_victory_celebration() -> void:
 	_victory_idle_active = false
 	velocity = Vector3.ZERO
 	input_direction = Vector2.ZERO
+
+	var blade_bar: Node3D = get_node_or_null("BladeProgressBar") as Node3D
+	if blade_bar != null:
+		blade_bar.visible = false
 
 	if robot_eyes != null:
 		robot_eyes.trigger_victory_reaction()

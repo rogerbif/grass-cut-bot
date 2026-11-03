@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" width="280" height="64">
+  <defs>
+    <!-- Gradiente escuro translúcido cyber -->
+    <linearGradient id="pill_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a192e" stop-opacity="0.94"/>
+      <stop offset="50%" stop-color="#0d2442" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#050e1b" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- Borda neon ciano -->
+    <linearGradient id="pill_border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00b4d8"/>
+      <stop offset="50%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#00b4d8"/>
+    </linearGradient>
+
+    <filter id="pill_glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Forma de cápsula chanfrada com degrau superior (conforme referência visual) -->
+  <path d="M 22 12
+           L 242 12
+           L 258 4
+           L 272 4
+           L 278 18
+           L 262 56
+           L 18 56
+           L 4 38
+           Z"
+        fill="url(#pill_bg)"
+        stroke="url(#pill_border)"
+        stroke-width="2.2"
+        stroke-linejoin="round"
+        filter="url(#pill_glow)"/>
+
+  <!-- Brilho no topo interno -->
+  <path d="M 22 14 L 242 14"
+        stroke="#ffffff"
+        stroke-width="1.2"
+        opacity="0.3"/>
+</svg>

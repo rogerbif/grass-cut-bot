@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 84" width="580" height="84">
+  <defs>
+    <!-- Gradiente Verde-Lima Elétrico Brilhante -->
+    <linearGradient id="btn_next_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#70e000"/>
+      <stop offset="35%" stop-color="#38b000"/>
+      <stop offset="100%" stop-color="#007200"/>
+    </linearGradient>
+
+    <!-- Borda neon luminosa -->
+    <linearGradient id="btn_next_border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ccff33"/>
+      <stop offset="50%" stop-color="#38b000"/>
+      <stop offset="100%" stop-color="#00f5d4"/>
+    </linearGradient>
+
+    <!-- Base 3D verde escura -->
+    <linearGradient id="btn_next_base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#004b23"/>
+      <stop offset="100%" stop-color="#002914"/>
+    </linearGradient>
+
+    <!-- Filtro de sombra -->
+    <filter id="next_shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Camada Base 3D Inferior Extrudada -->
+  <path d="M 32 20 L 536 20 L 562 42 L 548 78 L 22 78 L 8 48 Z"
+        fill="url(#btn_next_base)"/>
+
+  <!-- Placa Superior do Botão com chanfros acentuados estilo banner -->
+  <path d="M 32 10
+           L 536 10
+           L 562 34
+           L 548 68
+           L 22 68
+           L 8 38
+           Z"
+        fill="url(#btn_next_bg)"
+        stroke="url(#btn_next_border)"
+        stroke-width="2.8"
+        stroke-linejoin="round"
+        filter="url(#next_shadow)"/>
+
+  <!-- Brilho no topo interno -->
+  <path d="M 36 14 L 532 14"
+        stroke="#ffffff"
+        stroke-width="2.2"
+        opacity="0.6"/>
+</svg>
