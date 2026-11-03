@@ -1,43 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 420" width="320" height="420">
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="164" viewBox="0 0 640 164">
   <defs>
-    <!-- Gradiente profundo azul marinho / violeta escuro cyber -->
-    <linearGradient id="card_bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b1b36" stop-opacity="0.96"/>
-      <stop offset="60%" stop-color="#141a38" stop-opacity="0.94"/>
-      <stop offset="100%" stop-color="#080f24" stop-opacity="0.98"/>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1830" stop-opacity="0.96"/>
+      <stop offset="55%" stop-color="#111936" stop-opacity="0.96"/>
+      <stop offset="100%" stop-color="#1E143C" stop-opacity="0.96"/>
     </linearGradient>
-
-    <!-- Borda neon ciano suave -->
-    <linearGradient id="card_border" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#00d2ff"/>
-      <stop offset="50%" stop-color="#3a86ff"/>
-      <stop offset="100%" stop-color="#8338ec"/>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2AD4E8" stop-opacity="0.88"/>
+      <stop offset="50%" stop-color="#3A7BE0" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#7842E8" stop-opacity="0.88"/>
     </linearGradient>
-
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.45"/>
-    </filter>
   </defs>
-
-  <!-- Forma do cartão com chanfros superiores elegantes (estilo mecha/card) -->
-  <path d="M 24 6
-           L 296 6
-           L 314 24
-           L 314 396
-           L 296 414
-           L 24 414
-           L 6 396
-           L 6 24
-           Z"
-        fill="url(#card_bg)"
-        stroke="url(#card_border)"
-        stroke-width="2.5"
-        stroke-linejoin="round"
-        filter="url(#shadow)"/>
-
-  <!-- Brilho na borda interna superior -->
-  <path d="M 24 8 L 296 8"
-        stroke="#ffffff"
-        stroke-width="1.2"
-        opacity="0.25"/>
+  <!-- Main Chamfered Horizontal Card Frame -->
+  <polygon points="18,3 622,3 637,18 637,146 622,161 18,161 3,146 3,18"
+           fill="url(#cardBg)"
+           stroke="url(#borderGrad)"
+           stroke-width="2.5"/>
+  <!-- Subtle Inner Frame Line -->
+  <polygon points="21,8 619,8 632,21 632,143 619,156 21,156 8,143 8,21"
+           fill="none"
+           stroke="#64D8FF"
+           stroke-opacity="0.16"
+           stroke-width="1"/>
 </svg>

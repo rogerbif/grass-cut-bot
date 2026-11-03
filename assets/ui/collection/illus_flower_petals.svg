@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="petalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="70%" stop-color="#E6E6E6"/>
+      <stop offset="100%" stop-color="#B8B8B8"/>
+    </linearGradient>
+  </defs>
+  <!-- Top Center Blossom -->
+  <g transform="translate(56, 28)">
+    <circle cx="0" cy="-12" r="9" fill="url(#petalGrad)"/>
+    <circle cx="11" cy="-4" r="9" fill="url(#petalGrad)"/>
+    <circle cx="7" cy="10" r="9" fill="url(#petalGrad)"/>
+    <circle cx="-7" cy="10" r="9" fill="url(#petalGrad)"/>
+    <circle cx="-11" cy="-4" r="9" fill="url(#petalGrad)"/>
+    <circle cx="0" cy="0" r="6.5" fill="#FFCA28"/>
+  </g>
+  <!-- Left Blossom -->
+  <g transform="translate(30, 50)">
+    <circle cx="0" cy="-11" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="10" cy="-3" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="6" cy="9" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="-6" cy="9" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="-10" cy="-3" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="0" cy="0" r="6" fill="#FFCA28"/>
+  </g>
+  <!-- Right Blossom -->
+  <g transform="translate(92, 46)">
+    <circle cx="0" cy="-11" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="10" cy="-3" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="6" cy="9" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="-6" cy="9" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="-10" cy="-3" r="8.5" fill="url(#petalGrad)"/>
+    <circle cx="0" cy="0" r="6" fill="#FFCA28"/>
+  </g>
+  <!-- Lower Left Blossom -->
+  <g transform="translate(46, 76)">
+    <circle cx="0" cy="-10" r="8" fill="url(#petalGrad)"/>
+    <circle cx="9.5" cy="-3" r="8" fill="url(#petalGrad)"/>
+    <circle cx="6" cy="8.5" r="8" fill="url(#petalGrad)"/>
+    <circle cx="-6" cy="8.5" r="8" fill="url(#petalGrad)"/>
+    <circle cx="-9.5" cy="-3" r="8" fill="url(#petalGrad)"/>
+    <circle cx="0" cy="0" r="5.5" fill="#FFCA28"/>
+  </g>
+  <!-- Lower Right Blossom -->
+  <g transform="translate(80, 74)">
+    <circle cx="0" cy="-10" r="8" fill="url(#petalGrad)"/>
+    <circle cx="9.5" cy="-3" r="8" fill="url(#petalGrad)"/>
+    <circle cx="6" cy="8.5" r="8" fill="url(#petalGrad)"/>
+    <circle cx="-6" cy="8.5" r="8" fill="url(#petalGrad)"/>
+    <circle cx="-9.5" cy="-3" r="8" fill="url(#petalGrad)"/>
+    <circle cx="0" cy="0" r="5.5" fill="#FFCA28"/>
+  </g>
+</svg>

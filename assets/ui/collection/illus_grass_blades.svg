@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bladeBack" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#B8B8B8"/>
+      <stop offset="100%" stop-color="#525252"/>
+    </linearGradient>
+    <linearGradient id="bladeMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EAEAEA"/>
+      <stop offset="100%" stop-color="#787878"/>
+    </linearGradient>
+    <linearGradient id="bladeFront" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="65%" stop-color="#D8D8D8"/>
+      <stop offset="100%" stop-color="#909090"/>
+    </linearGradient>
+  </defs>
+  <!-- Back row blades -->
+  <path d="M36,78 C30,52 20,34 14,22 C24,30 38,48 44,76 Z" fill="url(#bladeBack)"/>
+  <path d="M50,74 C46,44 38,24 32,12 C42,24 54,44 58,72 Z" fill="url(#bladeBack)"/>
+  <path d="M66,72 C68,42 74,20 82,10 C78,26 74,46 74,74 Z" fill="url(#bladeBack)"/>
+  <path d="M84,78 C92,50 102,32 112,22 C104,36 96,54 92,80 Z" fill="url(#bladeBack)"/>
+  <path d="M58,74 C56,42 58,20 62,8 C66,22 66,44 66,74 Z" fill="url(#bladeBack)"/>
+
+  <!-- Mid row blades -->
+  <path d="M26,82 C20,62 12,48 6,40 C18,46 30,60 36,84 Z" fill="url(#bladeMid)"/>
+  <path d="M42,84 C36,56 26,38 20,26 C32,36 44,56 52,86 Z" fill="url(#bladeMid)"/>
+  <path d="M60,84 C54,50 48,28 44,14 C56,28 64,52 68,86 Z" fill="url(#bladeMid)"/>
+  <path d="M72,86 C76,54 86,34 96,20 C88,38 82,58 80,86 Z" fill="url(#bladeMid)"/>
+  <path d="M88,84 C96,62 108,46 118,36 C108,48 98,64 94,86 Z" fill="url(#bladeMid)"/>
+
+  <!-- Front bright hero blades -->
+  <path d="M34,88 C30,66 22,52 16,44 C26,50 38,66 44,90 Z" fill="url(#bladeFront)"/>
+  <path d="M48,92 C46,62 40,40 36,24 C46,38 54,62 58,94 Z" fill="url(#bladeFront)"/>
+  <path d="M62,96 C62,62 66,36 72,16 C72,38 70,64 70,96 Z" fill="url(#bladeFront)"/>
+  <path d="M74,92 C80,64 90,46 100,32 C92,48 84,68 82,92 Z" fill="url(#bladeFront)"/>
+  <path d="M54,96 C52,72 46,56 40,44 C50,54 58,72 62,98 Z" fill="url(#bladeFront)"/>
+  <path d="M66,98 C70,74 78,58 86,46 C80,60 74,76 72,98 Z" fill="url(#bladeFront)"/>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="wheatGlow" cx="50%" cy="52%" r="46%">
+      <stop offset="0%" stop-color="#FFCA28" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#0A1428" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldGrain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF078"/>
+      <stop offset="55%" stop-color="#FFC11E"/>
+      <stop offset="100%" stop-color="#C87A08"/>
+    </linearGradient>
+    <linearGradient id="stemGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5A93B"/>
+      <stop offset="100%" stop-color="#8C5814"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="54" fill="url(#wheatGlow)"/>
+
+  <!-- Stems crossed at bottom -->
+  <path d="M44,114 C46,84 40,54 32,20" stroke="url(#stemGold)" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M36,112 C52,86 68,54 84,18" stroke="url(#stemGold)" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+  <path d="M28,104 C56,90 82,72 108,48" stroke="url(#stemGold)" stroke-width="5" stroke-linecap="round" fill="none"/>
+
+  <!-- Left Stalk Grains -->
+  <g transform="translate(36, 46) rotate(-14)">
+    <ellipse cx="-7" cy="18" rx="6" ry="10" transform="rotate(-28 -7 18)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="7" cy="16" rx="6" ry="10" transform="rotate(28 7 16)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="-7" cy="4" rx="6" ry="10" transform="rotate(-28 -7 4)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="7" cy="2" rx="6" ry="10" transform="rotate(28 7 2)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="-6" cy="-10" rx="5.5" ry="9.5" transform="rotate(-25 -6 -10)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="6" cy="-12" rx="5.5" ry="9.5" transform="rotate(25 6 -12)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="0" cy="-24" rx="5.5" ry="10" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+  </g>
+
+  <!-- Center-Right Stalk Grains -->
+  <g transform="translate(72, 42) rotate(24)">
+    <ellipse cx="-7" cy="20" rx="6" ry="10.5" transform="rotate(-28 -7 20)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="7" cy="18" rx="6" ry="10.5" transform="rotate(28 7 18)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="-7" cy="6" rx="6" ry="10.5" transform="rotate(-28 -7 6)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="7" cy="4" rx="6" ry="10.5" transform="rotate(28 7 4)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="-6" cy="-8" rx="5.5" ry="9.5" transform="rotate(-25 -6 -8)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="6" cy="-10" rx="5.5" ry="9.5" transform="rotate(25 6 -10)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="0" cy="-22" rx="5.5" ry="10" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+  </g>
+
+  <!-- Right Angled Stalk Grains -->
+  <g transform="translate(88, 66) rotate(56)">
+    <ellipse cx="-7" cy="16" rx="5.8" ry="9.5" transform="rotate(-28 -7 16)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="7" cy="14" rx="5.8" ry="9.5" transform="rotate(28 7 14)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="-6" cy="2" rx="5.8" ry="9.5" transform="rotate(-28 -6 2)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="6" cy="0" rx="5.8" ry="9.5" transform="rotate(28 6 0)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="-5" cy="-10" rx="5" ry="8.5" transform="rotate(-24 -5 -10)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="5" cy="-12" rx="5" ry="8.5" transform="rotate(24 5 -12)" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+    <ellipse cx="0" cy="-22" rx="5" ry="9" fill="url(#goldGrain)" stroke="#6B3F06" stroke-width="1"/>
+  </g>
+</svg>

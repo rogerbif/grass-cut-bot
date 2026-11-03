@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://tab_collection_scene_01"]
+[gd_scene load_steps=8 format=3 uid="uid://tab_collection_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_collection.gd" id="1_collection"]
 [ext_resource type="Texture2D" uid="uid://de1kigwhd8acf" path="res://assets/icons/icon_leaf.svg" id="2_leaf"]
@@ -6,20 +6,30 @@
 [ext_resource type="Texture2D" uid="uid://cytinwx5c0xl6" path="res://assets/ui/collection/collection_prog_fill.svg" id="4_fill"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0.06, 0.09, 0.14, 0.96)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
-content_margin_left = 12.0
+bg_color = Color(0.06, 0.09, 0.15, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.48, 0.72, 0.45)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+content_margin_left = 14.0
 content_margin_top = 14.0
-content_margin_right = 12.0
+content_margin_right = 14.0
 content_margin_bottom = 14.0
 shadow_color = Color(0, 0, 0, 0.45)
 shadow_size = 14
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_claim_all"]
-bg_color = Color(0.18, 0.68, 0.35, 0.95)
+bg_color = Color(0.16, 0.68, 0.38, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.98, 0.62, 0.85)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -28,6 +38,22 @@ content_margin_left = 12.0
 content_margin_top = 6.0
 content_margin_right = 12.0
 content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip"]
+bg_color = Color(0.09, 0.14, 0.24, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.55, 0.82, 0.45)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
 
 [node name="TabCollection" type="Control"]
 layout_mode = 3
@@ -57,7 +83,7 @@ theme_override_constants/separation = 10
 
 [node name="HeaderVBox" type="VBoxContainer" parent="Panel/MainVBox"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="TitleHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
 layout_mode = 2
@@ -118,38 +144,66 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.04, 0.08, 0.14, 0.9)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 14
+theme_override_colors/font_outline_color = Color(0, 0.08, 0.16, 0.9)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 13
 text = "Descobertas: 3 / 15 (20%)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BtnClaimAll" type="Button" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
 visible = false
+custom_minimum_size = Vector2(138, 36)
 layout_mode = 2
-focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxFlat_claim_all")
+theme_override_styles/hover = SubResource("StyleBoxFlat_claim_all")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_claim_all")
 text = "Coletar Tudo ✨"
+
+[node name="ChipsHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ChipHarvest" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
+
+[node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipHarvest"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "Ceifados: 0"
+horizontal_alignment = 1
+
+[node name="ChipMilestones" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
+
+[node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipMilestones"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.88, 0.55, 1)
+theme_override_font_sizes/font_size = 12
+text = "Marcos: 0 / 150"
+horizontal_alignment = 1
 
 [node name="Scroll" type="ScrollContainer" parent="Panel/MainVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
-vertical_scroll_mode = 1
 
-[node name="GridMargin" type="MarginContainer" parent="Panel/MainVBox/Scroll"]
+[node name="CardsMargin" type="MarginContainer" parent="Panel/MainVBox/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 14
 
-[node name="CardsGrid" type="GridContainer" parent="Panel/MainVBox/Scroll/GridMargin"]
+[node name="CardsVBox" type="VBoxContainer" parent="Panel/MainVBox/Scroll/CardsMargin"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 14
-columns = 2
+theme_override_constants/separation = 12

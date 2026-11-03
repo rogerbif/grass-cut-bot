@@ -238,6 +238,13 @@ static func get_all_species() -> Array[Dictionary]:
 		}
 	]
 
+	# Ordena todas as 15 espécies de forma crescente pela fase de origem (origin_level)
+	_species_cache.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var lvl_a: int = int(a.get("origin_level", 1))
+		var lvl_b: int = int(b.get("origin_level", 1))
+		return lvl_a < lvl_b
+	)
+
 	_species_by_key.clear()
 	for s: Dictionary in _species_cache:
 		_species_by_key[String(s["key"])] = s

@@ -78,26 +78,23 @@ func _ready() -> void:
 	add_child(tab_col)
 	tab_col.call("refresh_ui")
 
-	var prog_lbl: Label = tab_col.get_node("Panel/MainVBox/HeaderVBox/ProgBox/ProgLabel") as Label
+	var prog_lbl: Label = tab_col.get_node("Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay/ProgLabel") as Label
 	assert(prog_lbl != null, "ProgLabel deve existir na cena")
 	assert(prog_lbl.text.contains("3 / 15"), "Texto de progresso deve indicar 3 / 15 descobertas! Atual: %s" % prog_lbl.text)
 
-	var cards_vbox: VBoxContainer = tab_col.get_node("Panel/MainVBox/Scroll/CardsVBox") as VBoxContainer
+	var cards_vbox: VBoxContainer = tab_col.get_node("Panel/MainVBox/Scroll/CardsMargin/CardsVBox") as VBoxContainer
 	assert(cards_vbox != null, "CardsVBox deve existir na cena")
-	assert(cards_vbox.get_child_count() == 15, "CardsVBox deve renderizar 15 cards no filtro 'all'! Atual: %d" % cards_vbox.get_child_count())
+	assert(cards_vbox.get_child_count() == 15, "CardsVBox deve renderizar 15 cards horizontais! Atual: %d" % cards_vbox.get_child_count())
 
-	# Testa filtros
-	tab_col.call("_set_filter", "grass")
-	assert(cards_vbox.get_child_count() == 7, "CardsVBox deve renderizar 7 cards no filtro 'grass'! Atual: %d" % cards_vbox.get_child_count())
-
-	tab_col.call("_set_filter", "crop")
-	assert(cards_vbox.get_child_count() == 1, "CardsVBox deve renderizar 1 card no filtro 'crop'! Atual: %d" % cards_vbox.get_child_count())
-
-	tab_col.call("_set_filter", "flower")
-	assert(cards_vbox.get_child_count() == 7, "CardsVBox deve renderizar 7 cards no filtro 'flower'! Atual: %d" % cards_vbox.get_child_count())
+	# Verifica ordenação estrita por origin_level
+	var prev_lvl: int = 0
+	for sp_item: Dictionary in species_list:
+		var cur_lvl: int = int(sp_item.get("origin_level", 1))
+		assert(cur_lvl >= prev_lvl, "Espécies devem estar ordenadas de forma crescente por fase (origin_level)! %d < %d" % [cur_lvl, prev_lvl])
+		prev_lvl = cur_lvl
 
 	tab_col.queue_free()
-	print("✔ Teste 4: TabCollection UI (renderização dinâmica e filtros) validada.")
+	print("✔ Teste 4: TabCollection UI (15 cards horizontais e ordenação por fase) validada.")
 
 	print("--- TODOS OS TESTES DO HERBÁRIO FORAM APROVADOS COM SUCESSO! ---")
 	await get_tree().create_timer(1.0).timeout

@@ -1,22 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" width="160" height="36">
+<svg xmlns="http://www.w3.org/2000/svg" width="176" height="28" viewBox="0 0 176 28">
   <defs>
-    <linearGradient id="badge_disc_grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#007200"/>
-      <stop offset="50%" stop-color="#00b4d8"/>
-      <stop offset="100%" stop-color="#007200"/>
+    <linearGradient id="discFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#18684C"/>
+      <stop offset="100%" stop-color="#0C382A"/>
+    </linearGradient>
+    <linearGradient id="discStroke" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#52FFA8"/>
+      <stop offset="100%" stop-color="#1ED67E"/>
     </linearGradient>
   </defs>
-
-  <!-- Tag chanfrada estilo badge militar/cyber com contorno neon verde -->
-  <path d="M 12 3
-           L 148 3
-           L 157 18
-           L 148 33
-           L 12 33
-           L 3 18
-           Z"
-        fill="#042818"
-        stroke="#00ff88"
-        stroke-width="1.8"
-        stroke-linejoin="round"/>
+  <!-- Trapezoid Tab Matching Reference Example -->
+  <polygon points="4,2 172,2 158,26 18,26"
+           fill="url(#discFill)"
+           stroke="url(#discStroke)"
+           stroke-width="2"
+           stroke-linejoin="round"/>
 </svg>
