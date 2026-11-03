@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://blade_progress_bar_scene"]
 
 [ext_resource type="Script" path="res://scripts/cutter/blade_progress_bar.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://blade_bar_frame_cyber" path="res://assets/ui/cutter/blade_bar_frame_cyber.svg" id="2_frame"]
+[ext_resource type="Texture2D" uid="uid://blade_bar_fill_cyber" path="res://assets/ui/cutter/blade_bar_fill_cyber.svg" id="3_fill"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_bar"]
 viewport_path = NodePath("SubViewport")
@@ -12,7 +14,7 @@ script = ExtResource("1_script")
 disable_3d = true
 transparent_bg = true
 gui_disable_input = true
-size = Vector2i(280, 52)
+size = Vector2i(340, 100)
 render_target_update_mode = 4
 
 [node name="Control" type="Control" parent="SubViewport"]
@@ -23,29 +25,36 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ProgressBar" type="ProgressBar" parent="SubViewport/Control"]
+[node name="TextureProgressBar" type="TextureProgressBar" parent="SubViewport/Control"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+min_value = 0.0
+max_value = 100.0
 value = 0.0
-show_percentage = false
+fill_mode = 0
+nine_patch_stretch = false
+texture_under = ExtResource("2_frame")
+texture_progress = ExtResource("3_fill")
 
-[node name="LevelLabel" type="Label" parent="SubViewport/Control/ProgressBar"]
+[node name="LevelLabel" type="Label" parent="SubViewport/Control"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 4.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "Lv. 1"
+text = "NÍVEL 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-billboard = 1
 cast_shadow = 0
-pixel_size = 0.003
+pixel_size = 0.0055
+no_depth_test = true
+render_priority = 3
 texture = SubResource("ViewportTexture_bar")

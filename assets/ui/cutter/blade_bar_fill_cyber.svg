@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" width="340" height="100">
+  <defs>
+    <!-- Gradiente de Preenchimento Cyan / Verde Esmeralda Vibrante -->
+    <linearGradient id="fill_grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00c8ff"/>
+      <stop offset="35%" stop-color="#00f0ff"/>
+      <stop offset="75%" stop-color="#00ffaa"/>
+      <stop offset="100%" stop-color="#46ff9d"/>
+    </linearGradient>
+
+    <!-- Gradiente de Brilho Superior -->
+    <linearGradient id="fill_shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Forma de Preenchimento Total 100% que preenche a calha interna -->
+  <path d="M 42 23
+           L 246 23
+           L 262 17
+           L 305 17
+           L 322 34
+           L 291 73
+           L 42 73
+           L 26 57
+           Z"
+        fill="url(#fill_grad)"/>
+
+  <!-- Brilho translúcido na metade superior -->
+  <path d="M 42 23
+           L 246 23
+           L 262 17
+           L 305 17
+           L 314 26
+           L 34 48
+           L 26 57
+           Z"
+        fill="url(#fill_shine)"/>
+</svg>
