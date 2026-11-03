@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Gradiente Ouro 3D Principal -->
+    <linearGradient id="gold_main" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff77a"/>
+      <stop offset="45%" stop-color="#ffd000"/>
+      <stop offset="100%" stop-color="#ff8800"/>
+    </linearGradient>
+
+    <!-- Facetas Claras (Topo/Esquerda) -->
+    <linearGradient id="facet_light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#ffea5a" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ffc300" stop-opacity="0.4"/>
+    </linearGradient>
+
+    <!-- Facetas Sombreadas (Base/Direita) -->
+    <linearGradient id="facet_dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f79d00" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#c95b00" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <filter id="star_shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#star_shadow)">
+    <!-- Silhueta Base da Estrela -->
+    <polygon points="64,8 80,44 120,48 90,74 98,114 64,93 30,114 38,74 8,48 48,44"
+             fill="url(#gold_main)"
+             stroke="#fff8a6"
+             stroke-width="3"
+             stroke-linejoin="round"/>
+
+    <!-- Facetas 3D de Luz (do centro 64,65 para os vértices) -->
+    <!-- Ponta Superior Esquerda -->
+    <polygon points="64,65 64,8 48,44" fill="url(#facet_light)"/>
+    <!-- Ponta Esquerda Superior -->
+    <polygon points="64,65 8,48 48,44" fill="url(#facet_light)"/>
+    <!-- Ponta Direita Superior -->
+    <polygon points="64,65 80,44 120,48" fill="url(#facet_light)" opacity="0.6"/>
+    <!-- Ponta Inferior Esquerda Clara -->
+    <polygon points="64,65 38,74 30,114" fill="url(#facet_light)" opacity="0.5"/>
+
+    <!-- Facetas 3D de Sombra (Relevo chanfrado) -->
+    <!-- Ponta Superior Direita -->
+    <polygon points="64,65 64,8 80,44" fill="url(#facet_dark)" opacity="0.55"/>
+    <!-- Ponta Direita Inferior -->
+    <polygon points="64,65 120,48 90,74" fill="url(#facet_dark)" opacity="0.75"/>
+    <!-- Ponta Inferior Direita -->
+    <polygon points="64,65 90,74 98,114" fill="url(#facet_dark)" opacity="0.6"/>
+    <polygon points="64,65 98,114 64,93" fill="url(#facet_dark)" opacity="0.85"/>
+    <!-- Ponta Inferior Esquerda Escura -->
+    <polygon points="64,65 64,93 30,114" fill="url(#facet_dark)" opacity="0.65"/>
+    <polygon points="64,65 8,48 38,74" fill="url(#facet_dark)" opacity="0.55"/>
+
+    <!-- Brilho Central no Vértice Topo -->
+    <polyline points="49,44 64,11 79,44" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
+  </g>
+</svg>

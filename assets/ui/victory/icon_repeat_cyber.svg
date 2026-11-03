@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Seta Circular de Repetição em Lilás / Azul Claro Brilhante (fiel à referência) -->
+  <path d="M 24 8
+           A 16 16 0 1 1 10.5 32.5"
+        stroke="#a5b4fc"
+        stroke-width="5.5"
+        stroke-linecap="round"
+        fill="none"/>
+  <!-- Ponta da Seta no Topo Esquerdo -->
+  <polygon points="24,1 24,15 12,8" fill="#a5b4fc"/>
+</svg>

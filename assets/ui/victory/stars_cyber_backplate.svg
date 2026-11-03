@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 130" width="420" height="130">
+  <defs>
+    <!-- Fundo Cyber Escuro Translúcido -->
+    <linearGradient id="plate_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0b2848" stop-opacity="0.92"/>
+      <stop offset="50%" stop-color="#081d36" stop-opacity="0.94"/>
+      <stop offset="100%" stop-color="#041022" stop-opacity="0.96"/>
+    </linearGradient>
+
+    <!-- Borda Neon Ciano -->
+    <linearGradient id="plate_border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="50%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#00d2ff"/>
+    </linearGradient>
+
+    <!-- Feixe de Brilho Dourado Radial -->
+    <radialGradient id="gold_glow" cx="50%" cy="48%" r="48%">
+      <stop offset="0%" stop-color="#ffea00" stop-opacity="0.45"/>
+      <stop offset="55%" stop-color="#00f5d4" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#00f5d4" stop-opacity="0.0"/>
+    </radialGradient>
+
+    <filter id="neon_shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Halo Luminoso de Fundo -->
+  <ellipse cx="210" cy="65" rx="190" ry="56" fill="url(#gold_glow)"/>
+
+  <!-- Placa Hexagonal Dupla Chanfrada (acompanha o trio de estrelas) -->
+  <path d="M 38 42
+           L 124 42
+           L 146 22
+           L 274 22
+           L 296 42
+           L 382 42
+           L 402 62
+           L 402 88
+           L 382 106
+           L 38 106
+           L 18 88
+           L 18 62
+           Z"
+        fill="url(#plate_bg)"
+        stroke="url(#plate_border)"
+        stroke-width="2.5"
+        stroke-linejoin="round"
+        filter="url(#neon_shadow)"/>
+
+  <!-- Linhas de Circuito / Grid Tecnológico Sutil Interno -->
+  <line x1="45" y1="54" x2="375" y2="54" stroke="#00f5d4" stroke-width="1" stroke-opacity="0.22" stroke-dasharray="6,6"/>
+  <line x1="45" y1="92" x2="375" y2="92" stroke="#00f5d4" stroke-width="1" stroke-opacity="0.22" stroke-dasharray="8,4"/>
+
+  <!-- Faíscas / Raios Dourados ao redor da estrela central (como na referência) -->
+  <line x1="168" y1="8" x2="178" y2="20" stroke="#ffe66d" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="252" y1="8" x2="242" y2="20" stroke="#ffe66d" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="184" y1="122" x2="192" y2="110" stroke="#ffe66d" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="236" y1="122" x2="228" y2="110" stroke="#ffe66d" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="152" cy="16" r="2.2" fill="#ffffff" opacity="0.9"/>
+  <circle cx="268" cy="16" r="2.2" fill="#ffffff" opacity="0.9"/>
+  <circle cx="96" cy="32" r="2" fill="#ffe66d" opacity="0.85"/>
+  <circle cx="324" cy="32" r="2" fill="#ffe66d" opacity="0.85"/>
+</svg>

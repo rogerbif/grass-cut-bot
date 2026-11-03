@@ -1,43 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" width="280" height="64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 68" width="280" height="68">
   <defs>
-    <!-- Gradiente escuro translúcido cyber -->
-    <linearGradient id="pill_bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a192e" stop-opacity="0.94"/>
-      <stop offset="50%" stop-color="#0d2442" stop-opacity="0.92"/>
-      <stop offset="100%" stop-color="#050e1b" stop-opacity="0.95"/>
+    <!-- Gradiente Azul-Marinho Profundo Translúcido (idêntico à referência) -->
+    <linearGradient id="pill_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f2847" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#08162b" stop-opacity="0.97"/>
     </linearGradient>
 
-    <!-- Borda neon ciano -->
+    <!-- Borda Ciano Luminosa -->
     <linearGradient id="pill_border" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00b4d8"/>
+      <stop offset="0%" stop-color="#00d2ff"/>
       <stop offset="50%" stop-color="#00f5d4"/>
       <stop offset="100%" stop-color="#00b4d8"/>
     </linearGradient>
 
-    <filter id="pill_glow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.5"/>
+    <filter id="pill_shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.45"/>
     </filter>
   </defs>
 
-  <!-- Forma de cápsula chanfrada com degrau superior (conforme referência visual) -->
-  <path d="M 22 12
-           L 242 12
-           L 258 4
-           L 272 4
-           L 278 18
-           L 262 56
-           L 18 56
-           L 4 38
-           Z"
-        fill="url(#pill_bg)"
-        stroke="url(#pill_border)"
-        stroke-width="2.2"
-        stroke-linejoin="round"
-        filter="url(#pill_glow)"/>
+  <g filter="url(#pill_shadow)">
+    <!-- Aba Superior com Listras Cyber (conforme referência) -->
+    <polygon points="18,12 26,4 82,4 90,12" fill="#00f5d4"/>
+    <!-- Listras Diagonais Escuras na Aba -->
+    <line x1="60" y1="12" x2="66" y2="4" stroke="#08162b" stroke-width="2.2"/>
+    <line x1="67" y1="12" x2="73" y2="4" stroke="#08162b" stroke-width="2.2"/>
+    <line x1="74" y1="12" x2="80" y2="4" stroke="#08162b" stroke-width="2.2"/>
+    <line x1="81" y1="12" x2="87" y2="4" stroke="#08162b" stroke-width="2.2"/>
 
-  <!-- Brilho no topo interno -->
-  <path d="M 22 14 L 242 14"
-        stroke="#ffffff"
-        stroke-width="1.2"
-        opacity="0.3"/>
+    <!-- Corpo Octogonal Chanfrado Simétrico -->
+    <polygon points="18,12 262,12 274,24 274,48 262,60 18,60 6,48 6,24"
+             fill="url(#pill_bg)"
+             stroke="url(#pill_border)"
+             stroke-width="2.4"
+             stroke-linejoin="round"/>
+
+    <!-- Linha de Brilho Superior Interna -->
+    <line x1="20" y1="15" x2="260" y2="15" stroke="#ffffff" stroke-width="1.2" opacity="0.25"/>
+  </g>
 </svg>

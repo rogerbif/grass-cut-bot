@@ -286,7 +286,7 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 	if top_bar != null:
 		top_bar.visible = false
 	if victory_coins_label != null:
-		victory_coins_label.text = "+ %d Moedas" % coins_earned
+		victory_coins_label.text = "+ %d MOEDAS" % coins_earned
 
 	if victory_time_label != null and GameManager != null:
 		var time_taken: float = maxf(0.0, GameManager.time_limit - GameManager.time_left)

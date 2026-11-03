@@ -1,23 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 72" width="280" height="72">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 84" width="300" height="84">
   <defs>
-    <linearGradient id="btn_menu_bg_p" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#0077b6"/>
-      <stop offset="100%" stop-color="#023e8a"/>
+    <linearGradient id="menu_bg_p" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#07162c" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#041022" stop-opacity="0.99"/>
     </linearGradient>
-
-    <linearGradient id="btn_menu_base_p" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#03045e"/>
-      <stop offset="100%" stop-color="#011627"/>
+    <linearGradient id="menu_border_p" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00a8e8"/>
+      <stop offset="100%" stop-color="#00f5d4"/>
     </linearGradient>
   </defs>
 
-  <path d="M 22 22 L 258 22 L 272 34 L 272 62 L 258 70 L 22 70 L 8 62 L 8 34 Z"
-        fill="url(#btn_menu_base_p)"/>
-
-  <!-- Placa afundada 6px -->
-  <path d="M 22 16 L 258 16 L 272 28 L 272 52 L 258 64 L 22 64 L 8 52 L 8 28 Z"
-        fill="url(#btn_menu_bg_p)"
-        stroke="#00f5d4"
-        stroke-width="2.5"
-        stroke-linejoin="round"/>
+  <polygon points="22,14 278,14 292,28 292,60 278,74 22,74 8,60 8,28"
+           fill="url(#menu_bg_p)"
+           stroke="url(#menu_border_p)"
+           stroke-width="2.6"
+           stroke-linejoin="round"/>
 </svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 18" width="600" height="18">
+  <defs>
+    <!-- Gradiente Linear Ciano Transparente nas Pontas -->
+    <linearGradient id="div_line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f5d4" stop-opacity="0.0"/>
+      <stop offset="15%" stop-color="#00d2ff" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#80ffdb" stop-opacity="1.0"/>
+      <stop offset="85%" stop-color="#00d2ff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#00f5d4" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <radialGradient id="center_flare" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f5d4" stop-opacity="0.75"/>
+      <stop offset="60%" stop-color="#00bbf9" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#00bbf9" stop-opacity="0.0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Brilho Difuso Central -->
+  <ellipse cx="300" cy="9" rx="180" ry="8" fill="url(#center_flare)"/>
+
+  <!-- Linha Principal -->
+  <line x1="20" y1="9" x2="580" y2="9" stroke="url(#div_line)" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- Núcleo Luminoso Central -->
+  <line x1="210" y1="9" x2="390" y2="9" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" opacity="0.85"/>
+</svg>

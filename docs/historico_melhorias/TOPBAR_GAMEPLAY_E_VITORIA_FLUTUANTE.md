@@ -1,6 +1,6 @@
 # Registro de Melhoria: TopBar Moderna de Gameplay e Tela de Sucesso Flutuante com Persistência Imediata 🏆✨
 
-- **Versão:** `v0.12.98-alpha`
+- **Versão:** `v0.12.99-alpha`
 - **Data:** 03/11/2026
 - **Status:** Concluído e Validado
 - **Domínios:** Interface & HUD, Game Feel, Persistência & Gameplay
@@ -13,16 +13,16 @@
    - Transpor e harmonizar os elementos visuais introduzidos na TopBar da Home (`main_menu.tscn`) para a HUD de gameplay (`hud.tscn`).
    - Substituição dos containers rústicos de tempo e moedas por badges chanfrados estilo cyber-mecha (`badge_coin_bg.svg`).
    - Botão de Pausa atualizado com TextureButton estilizado no mesmo design de chip chanfrado do botão de configurações (`btn_pause_cyber.svg` e `btn_pause_cyber_pressed.svg`).
-2. **Tela de Sucesso Flutuante (Victory Screen):**
-   - Eliminação de qualquer card, painel ou sobreposição retangular opaca que ocultava o cenário e o robô.
-   - Preservação integral do robô 3D comemorando alegremente sobre o gramado limpo da ilha.
+2. **Tela de Sucesso Flutuante (Victory Screen Fiel à Proposta):**
+   - Eliminação de qualquer card central ou painel com base que ocultava o cenário e o robô, mantendo os elementos flutuantes diretamente sobre o robô comemorando.
    - Cabeçalho flutuante composto por:
-     - Ícone vetorial de troféu dourado (`icon_trophy.svg`) e texto de fase concluída ("FASE 01 CONCLUÍDA!").
-     - Arco de estrelas parabólico flutuante com animação de pop-in e áudio sutil.
-     - Pílulas flutuantes holográficas (`badge_stat_pill.svg`) exibindo Tempo decorrido e Moedas conquistadas.
-   - Barra de Ações flutuante inferior contendo botões estilizados:
-     - `Menu` (`btn_menu_secondary.svg`) e `Repetir` (`btn_repeat_secondary.svg`).
-     - Botão verde luminoso destacado `Próxima Fase ▶` (`btn_next_level.svg`).
+     - Ícone vetorial de troféu neon ciano (`icon_trophy.svg`), título em fonte bold ("FASE 01 CONCLUÍDA!") e linha divisória luminosa (`header_cyber_divider.svg`).
+     - Placa holográfica chanfrada de fundo das estrelas (`stars_cyber_backplate.svg`) com faíscas douradas e trio de estrelas 3D chanfradas (`star_3d_gold.svg`) animadas em arco.
+     - Cápsulas largas chanfradas (`badge_stat_pill.svg` / `badge_stat_pill_right.svg`, `288x68` px) com abas superiores listradas, ícone de cronômetro cyber (`icon_stopwatch_cyber.svg`) e texto em caixa alta (`+ XXX MOEDAS`).
+   - Barra de Ações flutuante inferior contendo botões fiéis à proposta:
+     - `MENU` (`btn_menu_secondary.svg` em azul-marinho profundo com borda ciano e ícone `icon_home_cyan.svg`).
+     - `REPETIR` (`btn_repeat_secondary.svg` em azul-violeta profundo com borda roxa neon e ícone `icon_repeat_cyber.svg`).
+     - Botão verde-esmeralda neon de destaque `PRÓXIMA FASE ▶` (`btn_next_level.svg`, `102` px de altura) com texto e seta em azul-petróleo escuro para máximo contraste e colchetes tecnológicos externos.
 3. **Ocultação da Barra de Nível e TopBar na Vitória:**
    - Garantir que a barra de nível da lâmina (`BladeProgressBar`) e a `TopBar` sejam ocultadas durante a celebração de vitória.
 4. **Persistência Atômica Imediata da Fase:**

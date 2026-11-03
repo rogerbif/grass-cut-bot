@@ -1,52 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 84" width="580" height="84">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 112" width="620" height="112">
   <defs>
-    <!-- Gradiente Verde-Lima Elétrico Brilhante -->
-    <linearGradient id="btn_next_bg" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#70e000"/>
-      <stop offset="35%" stop-color="#38b000"/>
-      <stop offset="100%" stop-color="#007200"/>
+    <!-- Gradiente Neon Esmeralda / Verde-Menta Elétrico (fiel à referência) -->
+    <linearGradient id="next_face" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38ff7a"/>
+      <stop offset="50%" stop-color="#14e864"/>
+      <stop offset="100%" stop-color="#05b84c"/>
     </linearGradient>
 
-    <!-- Borda neon luminosa -->
-    <linearGradient id="btn_next_border" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ccff33"/>
-      <stop offset="50%" stop-color="#38b000"/>
+    <!-- Base 3D Esmeralda Escura -->
+    <linearGradient id="next_base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#047a32"/>
+      <stop offset="100%" stop-color="#03471e"/>
+    </linearGradient>
+
+    <!-- Borda Luminosa Branca/Verde -->
+    <linearGradient id="next_rim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b8ffcf"/>
+      <stop offset="50%" stop-color="#ffffff"/>
       <stop offset="100%" stop-color="#00f5d4"/>
     </linearGradient>
 
-    <!-- Base 3D verde escura -->
-    <linearGradient id="btn_next_base" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#004b23"/>
-      <stop offset="100%" stop-color="#002914"/>
-    </linearGradient>
-
-    <!-- Filtro de sombra -->
-    <filter id="next_shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000000" flood-opacity="0.5"/>
+    <filter id="neon_btn_glow" x="-12%" y="-15%" width="124%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#00f59b" flood-opacity="0.35"/>
     </filter>
   </defs>
 
-  <!-- Camada Base 3D Inferior Extrudada -->
-  <path d="M 32 20 L 536 20 L 562 42 L 548 78 L 22 78 L 8 48 Z"
-        fill="url(#btn_next_base)"/>
+  <!-- ================= 1. MOLDURA E TRAÇOS CYBER EXTERNOS ================= -->
+  <!-- Aba Superior Central Verde-Limão -->
+  <polygon points="340,14 348,6 410,6 418,14" fill="#38ff7a"/>
 
-  <!-- Placa Superior do Botão com chanfros acentuados estilo banner -->
-  <path d="M 32 10
-           L 536 10
-           L 562 34
-           L 548 68
-           L 22 68
-           L 8 38
-           Z"
-        fill="url(#btn_next_bg)"
-        stroke="url(#btn_next_border)"
-        stroke-width="2.8"
-        stroke-linejoin="round"
-        filter="url(#next_shadow)"/>
+  <!-- Colchete Neon Direito -->
+  <polyline points="546,12 586,12 608,48 584,96 470,96"
+            fill="none"
+            stroke="#00f5d4"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            opacity="0.9"/>
+  <!-- Traço Diagonal Externo Direito -->
+  <line x1="600" y1="68" x2="588" y2="92" stroke="#00f5d4" stroke-width="3.5" stroke-linecap="round"/>
 
-  <!-- Brilho no topo interno -->
-  <path d="M 36 14 L 532 14"
-        stroke="#ffffff"
-        stroke-width="2.2"
-        opacity="0.6"/>
+  <!-- Traços Diagonais Externos Esquerdos -->
+  <line x1="22" y1="44" x2="10" y2="70" stroke="#38ff7a" stroke-width="4" stroke-linecap="round"/>
+  <polyline points="18,76 34,98 92,98"
+            fill="none"
+            stroke="#00f5d4"
+            stroke-width="2.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            opacity="0.85"/>
+
+  <!-- ================= 2. CORPO 3D E FACE PRINCIPAL ================= -->
+  <g filter="url(#neon_btn_glow)">
+    <!-- Base 3D Inferior -->
+    <polygon points="44,26 574,26 596,58 574,92 44,92 22,58"
+             fill="url(#next_base)"
+             stroke="#00f5d4"
+             stroke-width="1.8"
+             stroke-linejoin="round"/>
+
+    <!-- Face Principal Luminosa -->
+    <polygon points="44,18 574,18 594,50 574,82 44,82 24,50"
+             fill="url(#next_face)"
+             stroke="url(#next_rim)"
+             stroke-width="3"
+             stroke-linejoin="round"/>
+
+    <!-- Reflexo Superior Glassy -->
+    <polygon points="48,22 570,22 584,44 34,44"
+             fill="#ffffff"
+             opacity="0.22"/>
+  </g>
 </svg>

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://hud_scene_01"]
+[gd_scene load_steps=33 format=3 uid="uid://hud_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
@@ -9,17 +9,25 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="7_play"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_wrench.svg" id="8_wrench"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_clock.svg" id="9_clock"]
-[ext_resource type="Texture2D" uid="uid://t8x0bwcwd5kh" path="res://assets/ui/topbar/btn_pause_cyber.svg" id="10_pause_cyber"]
-[ext_resource type="Texture2D" uid="uid://ll3muhx337fa" path="res://assets/ui/topbar/btn_pause_cyber_pressed.svg" id="11_pause_cyber_pressed"]
-[ext_resource type="Texture2D" uid="uid://brs8vbdmr6dhc" path="res://assets/icons/icon_trophy.svg" id="12_trophy"]
-[ext_resource type="Texture2D" uid="uid://bau04h0grbong" path="res://assets/ui/victory/badge_stat_pill.svg" id="13_stat_pill"]
-[ext_resource type="Texture2D" uid="uid://btibesi5b2g80" path="res://assets/ui/victory/btn_menu_secondary.svg" id="14_btn_menu"]
-[ext_resource type="Texture2D" uid="uid://kjsn3ihds3rx" path="res://assets/ui/victory/btn_menu_secondary_pressed.svg" id="15_btn_menu_pressed"]
-[ext_resource type="Texture2D" uid="uid://b0dpnpctrna0k" path="res://assets/ui/victory/btn_repeat_secondary.svg" id="16_btn_repeat"]
-[ext_resource type="Texture2D" uid="uid://bh37e1u2sxqje" path="res://assets/ui/victory/btn_repeat_secondary_pressed.svg" id="17_btn_repeat_pressed"]
-[ext_resource type="Texture2D" uid="uid://f57mh5q1dhnh" path="res://assets/ui/victory/btn_next_level.svg" id="18_btn_next"]
-[ext_resource type="Texture2D" uid="uid://dw8uyjdeohym7" path="res://assets/ui/victory/btn_next_level_pressed.svg" id="19_btn_next_pressed"]
-[ext_resource type="Texture2D" uid="uid://dugqe42k20ug5" path="res://assets/ui/topbar/badge_coin_bg.svg" id="20_badge_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/btn_pause_cyber.svg" id="10_pause_cyber"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/btn_pause_cyber_pressed.svg" id="11_pause_cyber_pressed"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_trophy.svg" id="12_trophy"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/badge_stat_pill.svg" id="13_stat_pill"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/btn_menu_secondary.svg" id="14_btn_menu"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/btn_menu_secondary_pressed.svg" id="15_btn_menu_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/btn_repeat_secondary.svg" id="16_btn_repeat"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/btn_repeat_secondary_pressed.svg" id="17_btn_repeat_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/btn_next_level.svg" id="18_btn_next"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/btn_next_level_pressed.svg" id="19_btn_next_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/topbar/badge_coin_bg.svg" id="20_badge_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/star_3d_gold.svg" id="21_star_3d"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/stars_cyber_backplate.svg" id="22_stars_plate"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/badge_stat_pill_right.svg" id="23_stat_pill_r"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/icon_stopwatch_cyber.svg" id="24_stopwatch"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/icon_home_cyan.svg" id="25_home_cyan"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/icon_repeat_cyber.svg" id="26_repeat_cyber"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/header_cyber_divider.svg" id="27_header_div"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_play_triangle.svg" id="28_play_tri"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
 bg_color = Color(0.08, 0.1, 0.14, 0.6)
@@ -108,6 +116,10 @@ shadow_color = Color(0, 0, 0, 0.4)
 shadow_size = 8
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
+
+[sub_resource type="SystemFont" id="SystemFont_bold"]
+font_names = PackedStringArray("Segoe UI", "Arial Black", "Montserrat", "sans-serif")
+font_weight = 900
 
 [node name="HUD" type="Control"]
 process_mode = 3
@@ -302,21 +314,21 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -330.0
-offset_top = 40.0
-offset_right = 330.0
-offset_bottom = 340.0
+offset_left = -335.0
+offset_top = 48.0
+offset_right = 335.0
+offset_bottom = 390.0
 grow_horizontal = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="TitleBox" type="HBoxContainer" parent="VictoryModal/VictoryHeader"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
 [node name="TrophyIcon" type="TextureRect" parent="VictoryModal/VictoryHeader/TitleBox"]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -327,88 +339,118 @@ stretch_mode = 5
 [node name="Title" type="Label" parent="VictoryModal/VictoryHeader/TitleBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
-theme_override_colors/font_outline_color = Color(0.04, 0.12, 0.18, 0.95)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_colors/font_outline_color = Color(0.03, 0.1, 0.2, 0.98)
 theme_override_constants/shadow_offset_y = 3
 theme_override_constants/outline_size = 10
-theme_override_font_sizes/font_size = 32
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 34
 text = "FASE 01 CONCLUÍDA!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StarsArc" type="Control" parent="VictoryModal/VictoryHeader"]
-custom_minimum_size = Vector2(0, 110)
+[node name="HeaderDivider" type="TextureRect" parent="VictoryModal/VictoryHeader"]
+custom_minimum_size = Vector2(560, 14)
 layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("27_header_div")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Star1" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
-custom_minimum_size = Vector2(72, 72)
+[node name="StarsArc" type="Control" parent="VictoryModal/VictoryHeader"]
+custom_minimum_size = Vector2(0, 145)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StarsBackplate" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
+custom_minimum_size = Vector2(440, 134)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -135.0
-offset_top = -25.0
-offset_right = -63.0
-offset_bottom = 47.0
+offset_left = -220.0
+offset_top = -67.0
+offset_right = 220.0
+offset_bottom = 67.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = -0.22
-pivot_offset = Vector2(36, 36)
 mouse_filter = 2
-texture = ExtResource("4_star")
+texture = ExtResource("22_stars_plate")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star1" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -168.0
+offset_top = -36.0
+offset_right = -72.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -0.18
+pivot_offset = Vector2(48, 48)
+mouse_filter = 2
+texture = ExtResource("21_star_3d")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Star2" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
-custom_minimum_size = Vector2(92, 92)
+custom_minimum_size = Vector2(124, 124)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -46.0
-offset_top = -60.0
-offset_right = 46.0
-offset_bottom = 32.0
+offset_left = -62.0
+offset_top = -72.0
+offset_right = 62.0
+offset_bottom = 52.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(46, 46)
+pivot_offset = Vector2(62, 62)
 mouse_filter = 2
-texture = ExtResource("4_star")
+texture = ExtResource("21_star_3d")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Star3" type="TextureRect" parent="VictoryModal/VictoryHeader/StarsArc"]
-custom_minimum_size = Vector2(72, 72)
+custom_minimum_size = Vector2(96, 96)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 63.0
-offset_top = -25.0
-offset_right = 135.0
-offset_bottom = 47.0
+offset_left = 72.0
+offset_top = -36.0
+offset_right = 168.0
+offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.22
-pivot_offset = Vector2(36, 36)
+rotation = 0.18
+pivot_offset = Vector2(48, 48)
 mouse_filter = 2
-texture = ExtResource("4_star")
+texture = ExtResource("21_star_3d")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="StatsHBox" type="HBoxContainer" parent="VictoryModal/VictoryHeader"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 16
+theme_override_constants/separation = 18
 
 [node name="TimePill" type="PanelContainer" parent="VictoryModal/VictoryHeader/StatsHBox"]
-custom_minimum_size = Vector2(160, 52)
+custom_minimum_size = Vector2(288, 68)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
 
@@ -417,48 +459,65 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("13_stat_pill")
 expand_mode = 1
+stretch_mode = 5
 
-[node name="HBoxTime" type="HBoxContainer" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill"]
+[node name="Margin" type="MarginContainer" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill"]
 layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 8
+mouse_filter = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 20
 
-[node name="ClockIcon" type="TextureRect" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill/HBoxTime"]
-custom_minimum_size = Vector2(22, 22)
+[node name="HBoxTime" type="HBoxContainer" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill/Margin"]
+layout_mode = 2
+alignment = 0
+theme_override_constants/separation = 12
+
+[node name="ClockIcon" type="TextureRect" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill/Margin/HBoxTime"]
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("9_clock")
+texture = ExtResource("24_stopwatch")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TimeLabel" type="Label" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill/HBoxTime"]
+[node name="TimeLabel" type="Label" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill/Margin/HBoxTime"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45)
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 25
 text = "0:24"
 vertical_alignment = 1
 
 [node name="CoinsPill" type="PanelContainer" parent="VictoryModal/VictoryHeader/StatsHBox"]
-custom_minimum_size = Vector2(180, 52)
+custom_minimum_size = Vector2(288, 68)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
 
 [node name="CoinsBg" type="TextureRect" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill"]
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("13_stat_pill")
+texture = ExtResource("23_stat_pill_r")
 expand_mode = 1
+stretch_mode = 5
 
-[node name="HBoxCoins" type="HBoxContainer" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill"]
+[node name="Margin" type="MarginContainer" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 18
+
+[node name="HBoxCoins" type="HBoxContainer" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill/Margin"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="CoinIcon" type="TextureRect" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill/HBoxCoins"]
-custom_minimum_size = Vector2(24, 24)
+[node name="CoinIcon" type="TextureRect" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill/Margin/HBoxCoins"]
+custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -466,12 +525,13 @@ texture = ExtResource("2_coin")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CoinsEarnedLabel" type="Label" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill/HBoxCoins"]
+[node name="CoinsEarnedLabel" type="Label" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill/Margin/HBoxCoins"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.25, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.84, 0.25, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45)
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 21
 text = "+ 332 MOEDAS"
 vertical_alignment = 1
 
@@ -481,13 +541,13 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 32.0
-offset_top = -170.0
-offset_right = -32.0
-offset_bottom = -30.0
+offset_left = 36.0
+offset_top = -224.0
+offset_right = -36.0
+offset_bottom = -34.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 alignment = 1
 
 [node name="SecondaryHBox" type="HBoxContainer" parent="VictoryModal/BottomBar"]
@@ -496,7 +556,7 @@ theme_override_constants/separation = 16
 alignment = 1
 
 [node name="MenuBtn" type="TextureButton" parent="VictoryModal/BottomBar/SecondaryHBox"]
-custom_minimum_size = Vector2(160, 56)
+custom_minimum_size = Vector2(288, 76)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
@@ -510,32 +570,34 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
 [node name="MenuIcon" type="TextureRect" parent="VictoryModal/BottomBar/SecondaryHBox/MenuBtn/MenuLabelBox"]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("5_home")
+texture = ExtResource("25_home_cyan")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="MenuLabel" type="Label" parent="VictoryModal/BottomBar/SecondaryHBox/MenuBtn/MenuLabelBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45)
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 23
 text = "MENU"
 vertical_alignment = 1
 
 [node name="RestartBtn" type="TextureButton" parent="VictoryModal/BottomBar/SecondaryHBox"]
-custom_minimum_size = Vector2(160, 56)
+custom_minimum_size = Vector2(288, 76)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
@@ -549,32 +611,34 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
 [node name="RepeatIcon" type="TextureRect" parent="VictoryModal/BottomBar/SecondaryHBox/RestartBtn/RepeatLabelBox"]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("6_refresh")
+texture = ExtResource("26_repeat_cyber")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="RepeatLabel" type="Label" parent="VictoryModal/BottomBar/SecondaryHBox/RestartBtn/RepeatLabelBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45)
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 23
 text = "REPETIR"
 vertical_alignment = 1
 
 [node name="NextBtn" type="TextureButton" parent="VictoryModal/BottomBar"]
-custom_minimum_size = Vector2(0, 68)
+custom_minimum_size = Vector2(0, 102)
 layout_mode = 2
 focus_mode = 0
 texture_normal = ExtResource("18_btn_next")
@@ -587,29 +651,29 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="NextLabel" type="Label" parent="VictoryModal/BottomBar/NextBtn/NextLabelBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.027, 0.11, 0.16, 1)
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 27
 text = "PRÓXIMA FASE"
 vertical_alignment = 1
 
-[node name="NextArrow" type="Label" parent="VictoryModal/BottomBar/NextBtn/NextLabelBox"]
+[node name="NextArrow" type="TextureRect" parent="VictoryModal/BottomBar/NextBtn/NextLabelBox"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 20
-text = "▶"
-vertical_alignment = 1
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("28_play_tri")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="GameOverModal" type="ColorRect" parent="."]
 visible = false
