@@ -2,23 +2,27 @@ extends Control
 
 signal modal_closed
 
-@onready var graphics_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles.get_node_or_null("GraphicsBtn") as Button
-@onready var music_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn
-@onready var music_label: Label = $Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn.find_child("Label", true, false) as Label
-@onready var sfx_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn
-@onready var sfx_label: Label = $Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn.find_child("Label", true, false) as Label
-@onready var vib_btn: Button = $Panel/VBox/AudioSection/VBox/HBoxToggles/VibBtn
+const TEX_TOGGLE_ON: Texture2D = preload("res://assets/ui/settings/toggle_on.svg")
+const TEX_TOGGLE_OFF: Texture2D = preload("res://assets/ui/settings/toggle_off.svg")
 
-@onready var save_local_btn: Button = $Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn
-@onready var google_btn: Button = $Panel/VBox/SaveSection/VBoxSave/GoogleBtn
-@onready var fb_btn: Button = $Panel/VBox/SaveSection/VBoxSave/FacebookBtn
-@onready var reset_btn: Button = $Panel/VBox/SaveSection/VBoxSave.get_node_or_null("ResetBtn") as Button
-@onready var reset_label: Label = $Panel/VBox/SaveSection/VBoxSave.find_child("ResetBtn", true, false).find_child("Label", true, false) as Label if $Panel/VBox/SaveSection/VBoxSave.find_child("ResetBtn", true, false) != null else null
+@onready var graphics_btn: BaseButton = find_child("GraphicsBtn", true, false) as BaseButton
+@onready var music_btn: BaseButton = find_child("MusicBtn", true, false) as BaseButton
+@onready var music_state_label: Label = music_btn.get_node_or_null("StateLabel") as Label if music_btn != null else null
+@onready var sfx_btn: BaseButton = find_child("SfxBtn", true, false) as BaseButton
+@onready var sfx_state_label: Label = sfx_btn.get_node_or_null("StateLabel") as Label if sfx_btn != null else null
+@onready var vib_btn: BaseButton = find_child("VibBtn", true, false) as BaseButton
+@onready var vib_state_label: Label = vib_btn.get_node_or_null("StateLabel") as Label if vib_btn != null else null
 
-@onready var support_btn: Button = $Panel/VBox/SupportSection/SupportBtn
-@onready var version_label: Label = $Panel/VBox/SupportSection.get_node_or_null("VersionLabel") as Label
-@onready var close_btn: Button = $Panel/Header/CloseBtn
-@onready var toast_label: Label = $Panel/ToastLabel
+@onready var save_local_btn: BaseButton = find_child("SaveLocalBtn", true, false) as BaseButton
+@onready var google_btn: BaseButton = find_child("GoogleBtn", true, false) as BaseButton
+@onready var fb_btn: BaseButton = find_child("FacebookBtn", true, false) as BaseButton
+@onready var reset_btn: BaseButton = find_child("ResetBtn", true, false) as BaseButton
+@onready var reset_label: Label = reset_btn.find_child("Label", true, false) as Label if reset_btn != null else null
+
+@onready var support_btn: BaseButton = find_child("SupportBtn", true, false) as BaseButton
+@onready var version_label: Label = find_child("VersionLabel", true, false) as Label
+@onready var close_btn: BaseButton = find_child("CloseBtn", true, false) as BaseButton
+@onready var toast_label: Label = find_child("ToastLabel", true, false) as Label
 
 var graphics_quality: String = "balanced"
 var music_enabled: bool = true
@@ -79,14 +83,14 @@ func _ready() -> void:
 			if SaveManager != null:
 				SaveManager.set_setting("vib_enabled", false)
 
-		var toggles_box: Node = get_node_or_null("Panel/VBox/AudioSection/VBox/HBoxToggles")
+		var toggles_box: Node = find_child("HBoxToggles", true, false)
 		if toggles_box != null:
 			android_vib_hint_btn = Button.new()
 			android_vib_hint_btn.custom_minimum_size = Vector2(0, 42)
 			android_vib_hint_btn.focus_mode = Control.FOCUS_NONE
 			android_vib_hint_btn.add_theme_font_size_override("font_size", 14)
 			android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.82, 0.35, 1.0))
-			android_vib_hint_btn.text = "⚙️ Ajustar Vibração no Celular"
+			android_vib_hint_btn.text = "Ajustar Vibração no Celular"
 			android_vib_hint_btn.pressed.connect(_on_android_vib_hint_pressed)
 			toggles_box.add_child(android_vib_hint_btn)
 
@@ -147,10 +151,10 @@ func _on_graphics_toggled() -> void:
 			_show_toast("Qualidade 3D: Alta (100% Nativa)")
 		"high":
 			graphics_quality = "balanced"
-			_show_toast("Qualidade 3D: Balanceada (85% FSR) ⭐")
+			_show_toast("Qualidade 3D: Balanceada (85% FSR)")
 		_:
 			graphics_quality = "balanced"
-			_show_toast("Qualidade 3D: Balanceada (85% FSR) ⭐")
+			_show_toast("Qualidade 3D: Balanceada (85% FSR)")
 
 	if SaveManager != null:
 		SaveManager.set_setting("graphics_quality", graphics_quality)
@@ -202,28 +206,31 @@ func _on_android_vib_hint_pressed() -> void:
 	_waiting_for_android_haptic_toggle = true
 	_open_android_sound_settings()
 
+func _apply_switch_state(btn: BaseButton, state_lbl: Label, is_on: bool) -> void:
+	if btn is TextureButton:
+		var tb: TextureButton = btn as TextureButton
+		tb.texture_normal = TEX_TOGGLE_ON if is_on else TEX_TOGGLE_OFF
+		tb.texture_pressed = TEX_TOGGLE_ON if is_on else TEX_TOGGLE_OFF
+	if state_lbl != null:
+		state_lbl.text = "LIGADO" if is_on else "DESL."
+		state_lbl.offset_left = 12.0 if is_on else 42.0
+		state_lbl.offset_right = -40.0 if is_on else -10.0
+		state_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0) if is_on else Color(0.62, 0.72, 0.85, 1.0))
+
 func _update_toggle_visuals() -> void:
-	if graphics_btn != null:
+	if graphics_btn is Button:
+		var gb: Button = graphics_btn as Button
 		match graphics_quality:
 			"high":
-				graphics_btn.text = "Gráficos 3D: Alta (100% Nativa)"
+				gb.text = "Gráficos 3D: Alta (100% Nativa)"
 			"eco":
-				graphics_btn.text = "Gráficos 3D: Econômica (70% FSR)"
+				gb.text = "Gráficos 3D: Econômica (70% FSR)"
 			_:
-				graphics_btn.text = "Gráficos 3D: Balanceada (85% FSR)"
+				gb.text = "Gráficos 3D: Balanceada (85% FSR)"
 
-	if music_label != null:
-		music_label.text = "Música: " + ("ON" if music_enabled else "OFF")
-	elif music_btn != null:
-		music_btn.text = "Música: " + ("ON" if music_enabled else "OFF")
-
-	if sfx_label != null:
-		sfx_label.text = "Sons FX: " + ("ON" if sfx_enabled else "OFF")
-	elif sfx_btn != null:
-		sfx_btn.text = "Sons FX: " + ("ON" if sfx_enabled else "OFF")
-
-	if vib_btn != null:
-		vib_btn.text = "Vibração: " + ("ON" if vib_enabled else "OFF")
+	_apply_switch_state(music_btn, music_state_label, music_enabled)
+	_apply_switch_state(sfx_btn, sfx_state_label, sfx_enabled)
+	_apply_switch_state(vib_btn, vib_state_label, vib_enabled)
 
 	if android_vib_hint_btn != null:
 		var haptic_on: bool = _is_android_haptic_feedback_enabled()
@@ -280,23 +287,17 @@ func _on_reset_pressed() -> void:
 		_show_toast("Clique novamente para confirmar o reset!")
 		if reset_label != null:
 			reset_label.text = "Confirmar Reset Geral?"
-		elif reset_btn != null:
-			reset_btn.text = "Confirmar Reset Geral?"
 		var tw: Tween = create_tween()
 		tw.tween_interval(4.0)
 		tw.tween_callback(func() -> void:
 			_reset_confirmation_pending = false
 			if reset_label != null:
 				reset_label.text = "Resetar Progresso"
-			elif reset_btn != null:
-				reset_btn.text = "Resetar Progresso"
 		)
 	else:
 		_reset_confirmation_pending = false
 		if reset_label != null:
 			reset_label.text = "Resetar Progresso"
-		elif reset_btn != null:
-			reset_btn.text = "Resetar Progresso"
 		if SaveManager != null:
 			SaveManager.reset_to_defaults()
 		_show_toast("Progresso reiniciado com sucesso!")

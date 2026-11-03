@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
+  <defs>
+    <linearGradient id="s_body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dce7f5"/>
+      <stop offset="100%" stop-color="#7f96b5"/>
+    </linearGradient>
+    <linearGradient id="s_cone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4e627d"/>
+      <stop offset="100%" stop-color="#2b394d"/>
+    </linearGradient>
+  </defs>
+  <rect x="5" y="16" width="9" height="12" rx="2.5" fill="#6d83a3"/>
+  <polygon points="12,16 28,7 28,37 12,28" fill="url(#s_body)"/>
+  <ellipse cx="28" cy="22" rx="6.5" ry="15" fill="url(#s_cone)" stroke="#c5d5ea" stroke-width="2"/>
+  <ellipse cx="27" cy="22" rx="3" ry="5" fill="#9bb0cc"/>
+</svg>

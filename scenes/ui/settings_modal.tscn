@@ -1,59 +1,98 @@
-[gd_scene load_steps=11 format=3 uid="uid://settings_modal_scene_01"]
+[gd_scene load_steps=28 format=3 uid="uid://settings_modal_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_modal.gd" id="1_settings"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_cancel.svg" id="2_cancel"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_music.svg" id="3_music"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_speaker.svg" id="4_speaker"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_refresh.svg" id="5_refresh"]
+[ext_resource type="Texture2D" path="res://assets/ui/collection/panel_cyber_main.svg" id="2_panel_main"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="3_gear"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/btn_close_cyber.svg" id="4_btn_close"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/section_frame_cyber.svg" id="5_sec_frame"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/inner_card_cyber.svg" id="6_inner_card"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_settings_music.svg" id="7_icon_music"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_settings_sfx.svg" id="8_icon_sfx"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_settings_vibration.svg" id="9_icon_vib"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/toggle_on.svg" id="10_toggle_on"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/btn_action_cyber.svg" id="11_btn_action"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/btn_action_cyber_pressed.svg" id="12_btn_action_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/btn_danger_cyber.svg" id="13_btn_danger"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/btn_danger_cyber_pressed.svg" id="14_btn_danger_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_floppy_cyber.svg" id="15_icon_floppy"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_google_g.svg" id="16_icon_google"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_facebook_f.svg" id="17_icon_fb"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_trash_red.svg" id="18_icon_trash"]
+[ext_resource type="Texture2D" path="res://assets/ui/settings/icon_envelope_cyber.svg" id="19_icon_envelope"]
+[ext_resource type="Texture2D" path="res://assets/ui/victory/header_cyber_divider.svg" id="20_divider"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal_panel"]
-bg_color = Color(0.1, 0.13, 0.18, 0.96)
-corner_radius_top_left = 28
-corner_radius_top_right = 28
-corner_radius_bottom_right = 28
-corner_radius_bottom_left = 28
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_modal_panel"]
+texture = ExtResource("2_panel_main")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
 content_margin_left = 28.0
-content_margin_top = 28.0
+content_margin_top = 24.0
 content_margin_right = 28.0
-content_margin_bottom = 24.0
-shadow_color = Color(0, 0, 0, 0.45)
-shadow_size = 18
+content_margin_bottom = 26.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.16, 0.2, 0.28, 0.85)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_section"]
+texture = ExtResource("5_sec_frame")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
 content_margin_left = 18.0
 content_margin_top = 16.0
 content_margin_right = 18.0
-content_margin_bottom = 16.0
+content_margin_bottom = 18.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
-bg_color = Color(0.22, 0.3, 0.42, 0.9)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_inner_card"]
+texture = ExtResource("6_inner_card")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_action"]
+texture = ExtResource("11_btn_action")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_action_pressed"]
+texture = ExtResource("12_btn_action_p")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_danger"]
+texture = ExtResource("13_btn_danger")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_danger_pressed"]
+texture = ExtResource("14_btn_danger_p")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toast"]
-bg_color = Color(0.15, 0.65, 0.35, 0.95)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+bg_color = Color(0.1, 0.58, 0.32, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.95, 0.55, 1)
 content_margin_left = 16.0
 content_margin_top = 10.0
 content_margin_right = 16.0
 content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_close"]
-bg_color = Color(0.18, 0.23, 0.32, 0.7)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
 
 [node name="SettingsModal" type="Control"]
 process_mode = 3
@@ -72,7 +111,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.04, 0.06, 0.1, 0.72)
+color = Color(0.03, 0.06, 0.11, 0.55)
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -81,43 +120,86 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -455.0
-offset_right = 300.0
-offset_bottom = 455.0
+offset_left = -330.0
+offset_top = -470.0
+offset_right = 330.0
+offset_bottom = 480.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_modal_panel")
-
-[node name="Header" type="HBoxContainer" parent="Panel"]
-layout_mode = 2
-size_flags_vertical = 0
-
-[node name="Title" type="Label" parent="Panel/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 28
-text = "Configurações"
-
-[node name="CloseBtn" type="Button" parent="Panel/Header"]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-focus_mode = 0
-theme_override_constants/icon_max_width = 22
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_close")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_close")
-icon = ExtResource("2_cancel")
-icon_alignment = 1
-expand_icon = true
+theme_override_styles/panel = SubResource("StyleBoxTexture_modal_panel")
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-size_flags_vertical = 4
 theme_override_constants/separation = 18
+
+[node name="HeaderWrapper" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Control" parent="Panel/VBox/HeaderWrapper"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="TitleHBox" type="HBoxContainer" parent="Panel/VBox/HeaderWrapper/Header"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -22.0
+offset_right = 160.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="GearIcon" type="TextureRect" parent="Panel/VBox/HeaderWrapper/Header/TitleHBox"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_gear")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.8, 0.88, 0.98, 1)
+
+[node name="Title" type="Label" parent="Panel/VBox/HeaderWrapper/Header/TitleHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Configurações"
+
+[node name="CloseBtn" type="TextureButton" parent="Panel/VBox/HeaderWrapper/Header"]
+custom_minimum_size = Vector2(46, 46)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -46.0
+offset_top = -23.0
+offset_bottom = 23.0
+grow_horizontal = 0
+grow_vertical = 2
+focus_mode = 0
+texture_normal = ExtResource("4_btn_close")
+texture_pressed = ExtResource("4_btn_close")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="HeaderDivider" type="TextureRect" parent="Panel/VBox/HeaderWrapper"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+texture = ExtResource("20_divider")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="AudioSection" type="PanelContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+theme_override_styles/panel = SubResource("StyleBoxTexture_section")
 
 [node name="VBox" type="VBoxContainer" parent="Panel/VBox/AudioSection"]
 layout_mode = 2
@@ -125,139 +207,279 @@ theme_override_constants/separation = 12
 
 [node name="Label" type="Label" parent="Panel/VBox/AudioSection/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.88, 0.95, 1)
+theme_override_colors/font_color = Color(0.76, 0.85, 0.95, 1)
 theme_override_font_sizes/font_size = 18
-text = "Desempenho, Áudio e Tátil"
+text = "ÁUDIO E FEEDBACK TÁTIL"
 
-[node name="HBoxToggles" type="VBoxContainer" parent="Panel/VBox/AudioSection/VBox"]
+[node name="InnerCard" type="PanelContainer" parent="Panel/VBox/AudioSection/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_styles/panel = SubResource("StyleBoxTexture_inner_card")
 
-[node name="GraphicsBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
-custom_minimum_size = Vector2(0, 48)
+[node name="HBoxToggles" type="VBoxContainer" parent="Panel/VBox/AudioSection/VBox/InnerCard"]
 layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MusicRow" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/MusicRow"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("7_icon_music")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/MusicRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 21
+text = "Música"
+vertical_alignment = 1
+
+[node name="MusicBtn" type="TextureButton" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/MusicRow"]
+custom_minimum_size = Vector2(132, 46)
+layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "Gráficos 3D: Balanceada (FSR)"
+texture_normal = ExtResource("10_toggle_on")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="MusicBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-
-[node name="HBox" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn"]
+[node name="StateLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/MusicRow/MusicBtn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 14.0
+offset_right = -42.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 10
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "LIGADO"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn/HBox"]
-custom_minimum_size = Vector2(22, 22)
+[node name="SfxRow" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/SfxRow"]
+custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("3_music")
+texture = ExtResource("8_icon_sfx")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/MusicBtn/HBox"]
+[node name="TitleLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/SfxRow"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-text = "Música: ON"
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 21
+text = "Sons (FX)"
 vertical_alignment = 1
 
-[node name="SfxBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
-custom_minimum_size = Vector2(0, 48)
+[node name="SfxBtn" type="TextureButton" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/SfxRow"]
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+texture_normal = ExtResource("10_toggle_on")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="HBox" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn"]
+[node name="StateLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/SfxRow/SfxBtn"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 14.0
+offset_right = -42.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-alignment = 1
-theme_override_constants/separation = 10
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "LIGADO"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn/HBox"]
-custom_minimum_size = Vector2(22, 22)
+[node name="VibRow" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/VibRow"]
+custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("4_speaker")
+texture = ExtResource("9_icon_vib")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Panel/VBox/AudioSection/VBox/HBoxToggles/SfxBtn/HBox"]
+[node name="TitleLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/VibRow"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-text = "Som FX: ON"
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 21
+text = "Vibração"
 vertical_alignment = 1
 
-[node name="VibBtn" type="Button" parent="Panel/VBox/AudioSection/VBox/HBoxToggles"]
-custom_minimum_size = Vector2(0, 48)
+[node name="VibBtn" type="TextureButton" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/VibRow"]
+custom_minimum_size = Vector2(132, 46)
 layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "Vibração: ON"
+texture_normal = ExtResource("10_toggle_on")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="StateLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/VibRow/VibBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_right = -42.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "LIGADO"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SaveSection" type="PanelContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+theme_override_styles/panel = SubResource("StyleBoxTexture_section")
 
 [node name="VBoxSave" type="VBoxContainer" parent="Panel/VBox/SaveSection"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
 [node name="Label" type="Label" parent="Panel/VBox/SaveSection/VBoxSave"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.88, 0.95, 1)
+theme_override_colors/font_color = Color(0.76, 0.85, 0.95, 1)
 theme_override_font_sizes/font_size = 18
-text = "Salvar Progresso (Nuvem / Local)"
+text = "SALVAR PROGRESSO (Nuvem / Local)"
 
 [node name="SaveLocalBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_action_pressed")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn/HBox"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("15_icon_floppy")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 19
 text = "Salvar Localmente"
+vertical_alignment = 1
 
 [node name="GoogleBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_action_pressed")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/SaveSection/VBoxSave/GoogleBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/SaveSection/VBoxSave/GoogleBtn/HBox"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("16_icon_google")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/SaveSection/VBoxSave/GoogleBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 19
 text = "Conectar Conta Google"
+vertical_alignment = 1
 
 [node name="FacebookBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_action_pressed")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/SaveSection/VBoxSave/FacebookBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/SaveSection/VBoxSave/FacebookBtn/HBox"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("17_icon_fb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/SaveSection/VBoxSave/FacebookBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 19
 text = "Conectar Facebook"
+vertical_alignment = 1
 
 [node name="ResetBtn" type="Button" parent="Panel/VBox/SaveSection/VBoxSave"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_danger")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_danger")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_danger_pressed")
 
 [node name="HBox" type="HBoxContainer" parent="Panel/VBox/SaveSection/VBoxSave/ResetBtn"]
 layout_mode = 1
@@ -268,42 +490,70 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="Icon" type="TextureRect" parent="Panel/VBox/SaveSection/VBoxSave/ResetBtn/HBox"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("5_refresh")
+texture = ExtResource("18_icon_trash")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="Panel/VBox/SaveSection/VBoxSave/ResetBtn/HBox"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.45, 0.45, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.28, 0.28, 1)
+theme_override_font_sizes/font_size = 19
 text = "Resetar Progresso"
 vertical_alignment = 1
 
 [node name="SupportSection" type="VBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 14
 
 [node name="SupportBtn" type="Button" parent="Panel/VBox/SupportSection"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 focus_mode = 0
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_action_pressed")
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/SupportSection/SupportBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/SupportSection/SupportBtn/HBox"]
+custom_minimum_size = Vector2(24, 20)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("19_icon_envelope")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/VBox/SupportSection/SupportBtn/HBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 19
 text = "Contatar Suporte"
+vertical_alignment = 1
 
 [node name="VersionLabel" type="Label" parent="Panel/VBox/SupportSection"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.65, 0.75, 1)
+theme_override_colors/font_color = Color(0.55, 0.65, 0.76, 1)
 theme_override_font_sizes/font_size = 14
-text = "Grass Cut Bot v0.5.6 • Mobile Edition"
+text = "Grass Cut Bot v0.12.107-alpha • Mobile Edition"
 horizontal_alignment = 1
 
 [node name="ToastLabel" type="Label" parent="Panel"]

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
+  <defs>
+    <linearGradient id="m_grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d0ddef"/>
+      <stop offset="100%" stop-color="#7c93b3"/>
+    </linearGradient>
+  </defs>
+  <path d="M16,32 L16,11 L36,7 L36,28" fill="none" stroke="url(#m_grad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="16,10 36,6 36,13 16,17" fill="url(#m_grad)"/>
+  <ellipse cx="11.5" cy="33" rx="6.2" ry="4.8" transform="rotate(-18 11.5 33)" fill="url(#m_grad)"/>
+  <ellipse cx="31.5" cy="29" rx="6.2" ry="4.8" transform="rotate(-18 31.5 29)" fill="url(#m_grad)"/>
+</svg>

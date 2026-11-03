@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="132" height="46" viewBox="0 0 132 46">
+  <defs>
+    <linearGradient id="pill_off" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#162234"/>
+      <stop offset="100%" stop-color="#1e2e46"/>
+    </linearGradient>
+    <linearGradient id="knob_off" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6c7f99"/>
+      <stop offset="100%" stop-color="#44546b"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="128" height="42" rx="21" fill="url(#pill_off)" stroke="#384e6e" stroke-width="1.5"/>
+  <circle cx="24" cy="23" r="17" fill="url(#knob_off)" stroke="#29384d" stroke-width="1.5"/>
+</svg>
