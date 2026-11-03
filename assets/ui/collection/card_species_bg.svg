@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 420" width="320" height="420">
+  <defs>
+    <!-- Gradiente profundo azul marinho / violeta escuro cyber -->
+    <linearGradient id="card_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1b36" stop-opacity="0.96"/>
+      <stop offset="60%" stop-color="#141a38" stop-opacity="0.94"/>
+      <stop offset="100%" stop-color="#080f24" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <!-- Borda neon ciano suave -->
+    <linearGradient id="card_border" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="50%" stop-color="#3a86ff"/>
+      <stop offset="100%" stop-color="#8338ec"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Forma do cartão com chanfros superiores elegantes (estilo mecha/card) -->
+  <path d="M 24 6
+           L 296 6
+           L 314 24
+           L 314 396
+           L 296 414
+           L 24 414
+           L 6 396
+           L 6 24
+           Z"
+        fill="url(#card_bg)"
+        stroke="url(#card_border)"
+        stroke-width="2.5"
+        stroke-linejoin="round"
+        filter="url(#shadow)"/>
+
+  <!-- Brilho na borda interna superior -->
+  <path d="M 24 8 L 296 8"
+        stroke="#ffffff"
+        stroke-width="1.2"
+        opacity="0.25"/>
+</svg>

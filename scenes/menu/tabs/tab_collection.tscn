@@ -1,33 +1,25 @@
-[gd_scene load_steps=8 format=3 uid="uid://tab_collection_scene_01"]
+[gd_scene load_steps=7 format=3 uid="uid://tab_collection_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_collection.gd" id="1_collection"]
+[ext_resource type="Texture2D" uid="uid://de1kigwhd8acf" path="res://assets/icons/icon_leaf.svg" id="2_leaf"]
+[ext_resource type="Texture2D" uid="uid://1478kv18uocv" path="res://assets/ui/collection/collection_prog_track.svg" id="3_track"]
+[ext_resource type="Texture2D" uid="uid://cytinwx5c0xl6" path="res://assets/ui/collection/collection_prog_fill.svg" id="4_fill"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0.09, 0.12, 0.17, 0.94)
+bg_color = Color(0.06, 0.09, 0.14, 0.96)
 corner_radius_top_left = 24
 corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
-content_margin_left = 16.0
-content_margin_top = 16.0
-content_margin_right = 16.0
-content_margin_bottom = 16.0
-shadow_color = Color(0, 0, 0, 0.35)
-shadow_size = 12
+content_margin_left = 12.0
+content_margin_top = 14.0
+content_margin_right = 12.0
+content_margin_bottom = 14.0
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 14
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip"]
-bg_color = Color(0.14, 0.19, 0.27, 0.9)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 10.0
-content_margin_top = 4.0
-content_margin_right = 10.0
-content_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_filter_normal"]
-bg_color = Color(0.14, 0.18, 0.25, 0.8)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_claim_all"]
+bg_color = Color(0.18, 0.68, 0.35, 0.95)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -36,31 +28,6 @@ content_margin_left = 12.0
 content_margin_top = 6.0
 content_margin_right = 12.0
 content_margin_bottom = 6.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_filter_active"]
-bg_color = Color(0.20, 0.55, 0.35, 0.95)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 12.0
-content_margin_top = 6.0
-content_margin_right = 12.0
-content_margin_bottom = 6.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prog_bg"]
-bg_color = Color(0.12, 0.15, 0.20, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prog_fg"]
-bg_color = Color(0.22, 0.75, 0.38, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [node name="TabCollection" type="Control"]
 layout_mode = 3
@@ -76,10 +43,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 104.0
-offset_right = -20.0
-offset_bottom = -112.0
+offset_left = 14.0
+offset_top = 96.0
+offset_right = -14.0
+offset_bottom = -106.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
@@ -92,108 +59,97 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="Panel/MainVBox/HeaderVBox"]
+[node name="TitleHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
 layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="TitleIcon" type="TextureRect" parent="Panel/MainVBox/HeaderVBox/TitleHBox"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_leaf")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="Panel/MainVBox/HeaderVBox/TitleHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 22
-text = "Herbário Botânico da Ilha"
-horizontal_alignment = 1
+text = "Herbário da Ilha & Itens"
+vertical_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Panel/MainVBox/HeaderVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+theme_override_colors/font_color = Color(0.72, 0.82, 0.94, 0.9)
 theme_override_font_sizes/font_size = 13
-text = "Catálogo oficial das espécies nativas e descobertas"
+text = "Catálogo botânico das espécies nativas descobertas"
 horizontal_alignment = 1
 
 [node name="ProgBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="ProgLabel" type="Label" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "Descobertas: 0 / 15"
-
-[node name="ProgressBar" type="ProgressBar" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
-custom_minimum_size = Vector2(0, 12)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_prog_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_prog_fg")
-max_value = 15.0
-show_percentage = false
-
-[node name="PercentLabel" type="Label" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.9, 0.5, 1)
-theme_override_font_sizes/font_size = 13
-text = "0%"
-
-[node name="ChipsHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
-layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ChipHarvest" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
+[node name="ProgressOverlay" type="Control" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
 
-[node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipHarvest"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Ceifados: 0"
+[node name="ProgressBar" type="TextureProgressBar" parent="Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 15.0
+value = 3.0
+nine_patch_stretch = true
+stretch_margin_left = 22
+stretch_margin_right = 22
+texture_under = ExtResource("3_track")
+texture_progress = ExtResource("4_fill")
+
+[node name="ProgLabel" type="Label" parent="Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.04, 0.08, 0.14, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "Descobertas: 3 / 15 (20%)"
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="ChipMilestones" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
+[node name="BtnClaimAll" type="Button" parent="Panel/MainVBox/HeaderVBox/ProgBox"]
+visible = false
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
-
-[node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipMilestones"]
-layout_mode = 2
+focus_mode = 0
 theme_override_font_sizes/font_size = 12
-text = "Marcos: 0 / 150"
-horizontal_alignment = 1
-
-[node name="FilterHBox" type="HBoxContainer" parent="Panel/MainVBox"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="BtnAll" type="Button" parent="Panel/MainVBox/FilterHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_filter_active")
-text = "Todas (15)"
-
-[node name="BtnGrass" type="Button" parent="Panel/MainVBox/FilterHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_filter_normal")
-text = "Gramas (7)"
-
-[node name="BtnCrops" type="Button" parent="Panel/MainVBox/FilterHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_filter_normal")
-text = "Culturas (1)"
-
-[node name="BtnFlowers" type="Button" parent="Panel/MainVBox/FilterHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_filter_normal")
-text = "Flores (7)"
+theme_override_styles/normal = SubResource("StyleBoxFlat_claim_all")
+text = "Coletar Tudo ✨"
 
 [node name="Scroll" type="ScrollContainer" parent="Panel/MainVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
 
-[node name="CardsVBox" type="VBoxContainer" parent="Panel/MainVBox/Scroll"]
+[node name="GridMargin" type="MarginContainer" parent="Panel/MainVBox/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 16
+
+[node name="CardsGrid" type="GridContainer" parent="Panel/MainVBox/Scroll/GridMargin"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 14
+columns = 2

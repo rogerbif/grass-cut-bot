@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="lock_neon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#00b4d8"/>
+    </linearGradient>
+
+    <filter id="lock_glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.0" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Ponto de Interrogação no Topo -->
+  <text x="50" y="32" font-family="sans-serif" font-weight="900" font-size="28" fill="#00f5d4" text-anchor="middle" opacity="0.9" filter="url(#lock_glow)">?</text>
+
+  <!-- Arco do Cadeado -->
+  <path d="M 36 50 L 36 40 C 36 28 64 28 64 40 L 64 50"
+        fill="none"
+        stroke="url(#lock_neon)"
+        stroke-width="7"
+        stroke-linecap="round"/>
+
+  <!-- Corpo do Cadeado -->
+  <rect x="25" y="48" width="50" height="42" rx="10"
+        fill="#041224"
+        stroke="url(#lock_neon)"
+        stroke-width="4.5"
+        filter="url(#lock_glow)"/>
+
+  <!-- Orifício da Chave -->
+  <circle cx="50" cy="65" r="4.5" fill="#00f5d4"/>
+  <polygon points="48,66 52,66 53,78 47,78" fill="#00f5d4"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" width="160" height="36">
+  <!-- Tag chanfrada escura para bloqueado -->
+  <path d="M 12 3
+           L 148 3
+           L 157 18
+           L 148 33
+           L 12 33
+           L 3 18
+           Z"
+        fill="#1c0f16"
+        stroke="#e63946"
+        stroke-width="1.8"
+        stroke-linejoin="round"/>
+</svg>

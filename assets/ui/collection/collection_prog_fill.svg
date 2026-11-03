@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 44" width="520" height="44">
+  <defs>
+    <!-- Gradiente ciano vibrante para o progresso -->
+    <linearGradient id="cyber_fill_grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0096c7"/>
+      <stop offset="40%" stop-color="#00b4d8"/>
+      <stop offset="85%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#70e000"/>
+    </linearGradient>
+
+    <!-- Brilho superior -->
+    <linearGradient id="cyber_shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M 22 2
+           L 498 2
+           L 516 22
+           L 498 42
+           L 22 42
+           L 4 22
+           Z"
+        fill="url(#cyber_fill_grad)"/>
+
+  <!-- Brilho na metade superior -->
+  <path d="M 22 2
+           L 498 2
+           L 508 14
+           L 12 14
+           Z"
+        fill="url(#cyber_shine)"/>
+</svg>

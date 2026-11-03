@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" width="160" height="36">
+  <defs>
+    <linearGradient id="badge_disc_grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#007200"/>
+      <stop offset="50%" stop-color="#00b4d8"/>
+      <stop offset="100%" stop-color="#007200"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tag chanfrada estilo badge militar/cyber com contorno neon verde -->
+  <path d="M 12 3
+           L 148 3
+           L 157 18
+           L 148 33
+           L 12 33
+           L 3 18
+           Z"
+        fill="#042818"
+        stroke="#00ff88"
+        stroke-width="1.8"
+        stroke-linejoin="round"/>
+</svg>
