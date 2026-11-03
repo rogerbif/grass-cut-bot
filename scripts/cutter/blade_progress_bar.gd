@@ -16,7 +16,7 @@ const COLOR_OUTLINE_NORMAL: Color = Color(0.02, 0.06, 0.12, 0.95)
 const COLOR_OUTLINE_MAX: Color = Color(0.24, 0.14, 0.02, 0.95)
 
 # Offset no espaço global/câmera relativo ao bot (abaixo do bot na tela)
-const SCREEN_OFFSET: Vector3 = Vector3(0.0, 0.15, 1.15)
+const SCREEN_OFFSET: Vector3 = Vector3(0.0, 0.15, 1.68)
 
 var _target_node: Node3D = null
 var _current_level: int = 1

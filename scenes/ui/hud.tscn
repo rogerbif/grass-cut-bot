@@ -30,13 +30,11 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_play_triangle.svg" id="28_play_tri"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
-bg_color = Color(0.08, 0.1, 0.14, 0.6)
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+bg_color = Color(0.08, 0.1, 0.14, 0)
 content_margin_left = 16.0
-content_margin_top = 16.0
+content_margin_top = 48.0
 content_margin_right = 16.0
-content_margin_bottom = 16.0
+content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 bg_color = Color(0.12, 0.15, 0.2, 0.85)
@@ -136,32 +134,41 @@ script = ExtResource("1_hud")
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 90.0
+offset_bottom = 175.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_top")
 
-[node name="HBox" type="HBoxContainer" parent="TopBar"]
+[node name="VBox" type="VBoxContainer" parent="TopBar"]
 layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="HBox" type="HBoxContainer" parent="TopBar/VBox"]
+layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 10
 
-[node name="TimerContainer" type="PanelContainer" parent="TopBar/HBox"]
+[node name="TimerContainer" type="PanelContainer" parent="TopBar/VBox/HBox"]
 custom_minimum_size = Vector2(104, 50)
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
 
-[node name="TimerBg" type="TextureRect" parent="TopBar/HBox/TimerContainer"]
+[node name="TimerBg" type="TextureRect" parent="TopBar/VBox/HBox/TimerContainer"]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("20_badge_bg")
 expand_mode = 1
 
-[node name="HBoxTimer" type="HBoxContainer" parent="TopBar/HBox/TimerContainer"]
+[node name="HBoxTimer" type="HBoxContainer" parent="TopBar/VBox/HBox/TimerContainer"]
 layout_mode = 2
+mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 6
 
-[node name="ClockIcon" type="TextureRect" parent="TopBar/HBox/TimerContainer/HBoxTimer"]
+[node name="ClockIcon" type="TextureRect" parent="TopBar/VBox/HBox/TimerContainer/HBoxTimer"]
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_vertical = 4
@@ -170,7 +177,7 @@ texture = ExtResource("9_clock")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TimerLabel" type="Label" parent="TopBar/HBox/TimerContainer/HBoxTimer"]
+[node name="TimerLabel" type="Label" parent="TopBar/VBox/HBox/TimerContainer/HBoxTimer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
@@ -180,24 +187,26 @@ text = "1:30"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CoinsContainer" type="PanelContainer" parent="TopBar/HBox"]
+[node name="CoinsContainer" type="PanelContainer" parent="TopBar/VBox/HBox"]
 custom_minimum_size = Vector2(104, 50)
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
 
-[node name="CoinsBg" type="TextureRect" parent="TopBar/HBox/CoinsContainer"]
+[node name="CoinsBg" type="TextureRect" parent="TopBar/VBox/HBox/CoinsContainer"]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("20_badge_bg")
 expand_mode = 1
 
-[node name="HBoxCoins" type="HBoxContainer" parent="TopBar/HBox/CoinsContainer"]
+[node name="HBoxCoins" type="HBoxContainer" parent="TopBar/VBox/HBox/CoinsContainer"]
 layout_mode = 2
+mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 6
 
-[node name="Icon" type="TextureRect" parent="TopBar/HBox/CoinsContainer/HBoxCoins"]
+[node name="Icon" type="TextureRect" parent="TopBar/VBox/HBox/CoinsContainer/HBoxCoins"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -207,7 +216,7 @@ texture = ExtResource("2_coin")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CoinsLabel" type="Label" parent="TopBar/HBox/CoinsContainer/HBoxCoins"]
+[node name="CoinsLabel" type="Label" parent="TopBar/VBox/HBox/CoinsContainer/HBoxCoins"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
@@ -216,13 +225,12 @@ theme_override_font_sizes/font_size = 18
 text = "0"
 vertical_alignment = 1
 
-[node name="GoalsContainer" type="HBoxContainer" parent="TopBar/HBox"]
+[node name="Spacer" type="Control" parent="TopBar/VBox/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-alignment = 1
-theme_override_constants/separation = 8
+mouse_filter = 2
 
-[node name="PauseButton" type="TextureButton" parent="TopBar/HBox"]
+[node name="PauseButton" type="TextureButton" parent="TopBar/VBox/HBox"]
 custom_minimum_size = Vector2(58, 52)
 layout_mode = 2
 size_flags_vertical = 4
@@ -231,6 +239,12 @@ texture_normal = ExtResource("10_pause_cyber")
 texture_pressed = ExtResource("11_pause_cyber_pressed")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="GoalsContainer" type="HBoxContainer" parent="TopBar/VBox"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 0
+theme_override_constants/separation = 8
 
 [node name="PauseModal" type="ColorRect" parent="."]
 visible = false

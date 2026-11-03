@@ -7,10 +7,10 @@ const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
 const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
 
 @onready var top_bar: PanelContainer = $TopBar
-@onready var timer_label: Label = $TopBar/HBox/TimerContainer.find_child("TimerLabel", true, false) as Label
-@onready var pause_button: BaseButton = $TopBar/HBox/PauseButton as BaseButton
-@onready var coins_label: Label = $TopBar/HBox/CoinsContainer/HBoxCoins/CoinsLabel
-@onready var goals_container: HBoxContainer = $TopBar/HBox/GoalsContainer
+@onready var timer_label: Label = $TopBar.find_child("TimerLabel", true, false) as Label
+@onready var pause_button: BaseButton = $TopBar.find_child("PauseButton", true, false) as BaseButton
+@onready var coins_label: Label = $TopBar.find_child("CoinsLabel", true, false) as Label
+@onready var goals_container: HBoxContainer = $TopBar.find_child("GoalsContainer", true, false) as HBoxContainer
 
 @onready var pause_modal: Control = $PauseModal
 @onready var victory_modal: Control = $VictoryModal
@@ -263,10 +263,10 @@ func _on_restart_pressed() -> void:
 	_is_restarting = true
 	if top_bar != null:
 		top_bar.visible = true
-	if pause_button != null:
-		pause_button.icon = ICON_PAUSE
-		pause_button.expand_icon = true
-		pause_button.text = ""
+	if pause_button is Button:
+		(pause_button as Button).icon = ICON_PAUSE
+		(pause_button as Button).expand_icon = true
+		(pause_button as Button).text = ""
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	GameManager.restart_level()
@@ -274,10 +274,10 @@ func _on_restart_pressed() -> void:
 func _on_next_level_pressed() -> void:
 	if top_bar != null:
 		top_bar.visible = true
-	if pause_button != null:
-		pause_button.icon = ICON_PAUSE
-		pause_button.expand_icon = true
-		pause_button.text = ""
+	if pause_button is Button:
+		(pause_button as Button).icon = ICON_PAUSE
+		(pause_button as Button).expand_icon = true
+		(pause_button as Button).text = ""
 	if AudioManager != null:
 		AudioManager.play_sfx("fast_forward")
 	GameManager.next_level()
