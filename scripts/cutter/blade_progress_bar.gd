@@ -4,6 +4,8 @@ extends Node3D
 @onready var sub_viewport: SubViewport = $SubViewport
 @onready var progress_bar: TextureProgressBar = $SubViewport/Control/TextureProgressBar
 @onready var level_label: Label = $SubViewport/Control/LevelLabel
+@onready var crown_icon: TextureRect = $SubViewport/Control.get_node_or_null("CrownIcon") as TextureRect
+@onready var star_icon: TextureRect = $SubViewport/Control.get_node_or_null("StarIcon") as TextureRect
 @onready var sprite_3d: Sprite3D = $Sprite3D
 
 const TEXTURE_FILL_NORMAL: Texture2D = preload("res://assets/ui/cutter/blade_bar_fill_cyber.svg")
@@ -91,14 +93,22 @@ func _update_visual_theme() -> void:
 
 	if _is_max:
 		progress_bar.texture_progress = TEXTURE_FILL_MAX
-		level_label.text = "👑 NÍVEL MAX ⭐"
+		level_label.text = "NÍVEL MAX"
 		level_label.add_theme_color_override("font_color", COLOR_LABEL_MAX)
 		level_label.add_theme_color_override("font_outline_color", COLOR_OUTLINE_MAX)
+		if crown_icon != null:
+			crown_icon.visible = true
+		if star_icon != null:
+			star_icon.visible = true
 	else:
 		progress_bar.texture_progress = TEXTURE_FILL_NORMAL
 		level_label.text = "NÍVEL %d" % _current_level
 		level_label.add_theme_color_override("font_color", COLOR_LABEL_NORMAL)
 		level_label.add_theme_color_override("font_outline_color", COLOR_OUTLINE_NORMAL)
+		if crown_icon != null:
+			crown_icon.visible = false
+		if star_icon != null:
+			star_icon.visible = false
 
 func play_level_up_reaction() -> void:
 	if sprite_3d == null:

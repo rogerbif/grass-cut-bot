@@ -35,9 +35,17 @@ void vertex() {
 	distortUV = use_world_coords ? (v_world_pos.xz * world_scale * 0.5) : UV;
 }
 
+float _srgb_to_linear_1(float c) {
+	return (c <= 0.04045) ? (c / 12.92) : pow((c + 0.055) / 1.055, 2.4);
+}
+
 void fragment() {
 	// 1. Amostra de ruído de distorção para mar agitado suave
 	vec4 distortNoiseSample = texture(distortNoise, distortUV);
+	if (OUTPUT_IS_SRGB) {
+		distortNoiseSample.x = _srgb_to_linear_1(distortNoiseSample.x);
+		distortNoiseSample.y = _srgb_to_linear_1(distortNoiseSample.y);
+	}
 	vec2 distortAmount = (distortNoiseSample.xy * 2.0 - 1.0) * surface_distortion_amount;
 
 	// 2. Amostra de cristas de ondas de superfície com deslocamento temporal
@@ -46,10 +54,16 @@ void fragment() {
 		(noiseUV.y + TIME * surface_noise_scroll.y + distortAmount.y)
 	);
 	float surfaceNoiseSample = texture(surfaceNoise, noise_uv).r;
+	if (OUTPUT_IS_SRGB) {
+		surfaceNoiseSample = pow(max(surfaceNoiseSample, 0.0001), 2.15);
+	}
 	float surfaceNoiseAmount = smoothstep(surface_noise_cutoff - SMOOTHSTEP_AA, surface_noise_cutoff + SMOOTHSTEP_AA, surfaceNoiseSample);
 
 	// 3. Cor da água: gradiente tropical suave modulado pelas ondulações de superfície
 	vec4 waterColor = mix(_DepthGradientShallow, _DepthGradientDeep, surfaceNoiseSample * 0.45);
+	if (OUTPUT_IS_SRGB) {
+		waterColor.rgb *= vec3(0.81, 0.695, 0.85);
+	}
 
 	// 4. Cristas de espuma branca em mar aberto
 	vec4 final_color = mix(waterColor, foam_color, surfaceNoiseAmount * foam_color.a);

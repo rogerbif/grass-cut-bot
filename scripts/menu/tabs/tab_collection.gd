@@ -143,7 +143,7 @@ func refresh_ui() -> void:
 	var claimable_count: int = _get_claimable_milestones_count(all_species)
 	if btn_claim_all != null:
 		btn_claim_all.visible = (claimable_count > 0)
-		btn_claim_all.text = "Coletar Tudo (%d) ✨" % claimable_count
+		btn_claim_all.text = "Coletar Tudo (%d)" % claimable_count
 
 	refresh_cards()
 
@@ -495,7 +495,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			action_vbox.add_child(badge_panel)
 	else:
 		var max_lbl: Label = Label.new()
-		max_lbl.text = "COMPLETO\nMAX 🏆"
+		max_lbl.text = "COMPLETO\nMAX"
 		max_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		max_lbl.add_theme_font_size_override("font_size", 11)
 		max_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.25, 1.0))

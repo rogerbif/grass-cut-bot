@@ -146,7 +146,7 @@ theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBoxTexture_claim_all")
 theme_override_styles/hover = SubResource("StyleBoxTexture_claim_all")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_claim_all")
-text = "Coletar Tudo ✨"
+text = "Coletar Tudo"
 
 [node name="ChipsHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
 layout_mode = 2

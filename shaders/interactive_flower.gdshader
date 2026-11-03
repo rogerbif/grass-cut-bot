@@ -80,6 +80,9 @@ void fragment() {
 	// Se for miolo (COLOR.g > 0.5 assado no Blender), aplica center_color; senão petal_color
 	vec3 base_col = (COLOR.g > 0.5) ? center_color.rgb : petal_color.rgb;
 	base_col *= shade;
+	if (OUTPUT_IS_SRGB) {
+		base_col *= vec3(0.78, 0.78, 0.78);
+	}
 	ALBEDO = base_col;
 	ROUGHNESS = roughness;
 	SPECULAR = specular;

@@ -12,7 +12,10 @@ Este documento reúne os requisitos técnicos, presets de exportação e diretri
     renderer/rendering_method="mobile"
     renderer/rendering_method.web="gl_compatibility"
     ```
-  - Enquanto o APK Android utiliza a API Vulkan Mobile de alta performance, a compilação Web utiliza automaticamente WebGL2 / OpenGL ES 3.0, garantindo compatibilidade universal com Chrome, Firefox, Safari e Edge sem falhas de drivers.
+  - Enquanto o APK Android utiliza a API Vulkan Mobile de alta performance (pipeline Linear + ACES Tonemap), a compilação Web utiliza automaticamente WebGL2 / OpenGL ES 3.0 (`OUTPUT_IS_SRGB == true`).
+  - **Paridade Visual e Cromática 1:1 (Isolada por Backend):**
+    - Nos shaders (`toon_water.gdshader`, `interactive_grass.gdshader`, `interactive_flower.gdshader`, `lawn_base_decal.gdshader`), blocos condicionais `if (OUTPUT_IS_SRGB)` decodificam texturas de ruído (`sRGB -> Linear`) e compensam a ausência do ACES Tonemap no WebGL2 sem tocar em 1 único pixel do pipeline Mobile (`!OUTPUT_IS_SRGB`).
+    - Em `IslandMeshBuilder`, `cutter.gd` e `menu_bot.gd`, a calibração de cores de vértice/superfície para `gl_compatibility` garante que o solo (`#30C34A`), a falésia (`#F2AA64`) e o aço da lâmina (`#868C8C`) sejam idênticos à versão Mobile.
 - **CPUParticles3D Otimizadas:**
   - O pool estático de partículas (`CPUParticles3D`) em `plant.gd` evita o uso de compute shaders ou transform feedback exigentes do WebGL2, garantindo 60 FPS estáveis mesmo em navegadores modestos.
 

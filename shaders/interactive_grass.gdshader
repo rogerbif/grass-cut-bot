@@ -133,6 +133,13 @@ void fragment() {
 	// Curva quadrática que mantém color_base bem visível até ~45% da altura da folha antes de subir para color_light
 	float grad_t = smoothstep(0.10, 0.92, h * h);
 	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
+	if (OUTPUT_IS_SRGB) {
+		// Compensa o mix Linear + ACES Tonemap do pipeline Mobile quando em gl_compatibility (Web)
+		vec3 cb_lin = pow(max(color_base.rgb, vec3(0.0001)), vec3(2.2));
+		vec3 cl_lin = pow(max(color_light.rgb, vec3(0.0001)), vec3(2.2));
+		vec3 mix_lin = mix(cb_lin, cl_lin, mix(1.0, grad_t, vertical_gradient_mix));
+		base_surface = pow(mix_lin, vec3(1.0 / 2.2)) * vec3(0.74, 0.69, 1.06);
+	}
 
 	ALBEDO = base_surface;
 	ROUGHNESS = roughness;
@@ -153,6 +160,10 @@ void light() {
 	// Razão cromática entre color_shadow e color_light para que ALBEDO * diffuse_light
 	// exiba fielmente color_shadow no lado sombreado e color_light no lado iluminado.
 	vec3 shadow_ratio = clamp(color_shadow.rgb / max(color_light.rgb, vec3(0.02)), vec3(0.08), vec3(1.2));
+	if (OUTPUT_IS_SRGB) {
+		shadow_ratio = pow(shadow_ratio, vec3(1.25));
+		light_norm *= 0.86;
+	}
 	vec3 diffuse_light = mix(shadow_ratio * light_norm, light_norm, toon_ramp);
 	DIFFUSE_LIGHT += diffuse_light * ATTENUATION;
 

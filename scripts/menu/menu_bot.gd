@@ -67,9 +67,12 @@ func _ready() -> void:
 	base_position = position
 	if blade_spinner != null:
 		_initial_blade_pos = blade_spinner.position
+		var is_compat: bool = RenderingServer.get_current_rendering_method() == "gl_compatibility" or OS.has_feature("web")
 		for child: Node in blade_spinner.get_children():
 			if child is GeometryInstance3D:
 				(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			if is_compat and child is MeshInstance3D and child.name.begins_with("blade_tier"):
+				_apply_compat_blade_tint(child as MeshInstance3D)
 		_setup_blade_slash()
 	if robot_body != null:
 		_initial_body_pos = robot_body.position
@@ -83,6 +86,19 @@ func _ready() -> void:
 
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
+
+func _apply_compat_blade_tint(mi: MeshInstance3D) -> void:
+	if mi == null or mi.mesh == null:
+		return
+	var sc: int = mi.mesh.get_surface_count()
+	for s_idx: int in range(sc):
+		var mat: Material = mi.get_active_material(s_idx)
+		if mat is StandardMaterial3D:
+			var std: StandardMaterial3D = (mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+			var col: Color = std.albedo_color
+			std.albedo_color = Color(col.r * 0.72, col.g * 0.72, col.b * 0.72, col.a)
+			mi.set_surface_override_material(s_idx, std)
+
 
 func _setup_eyes() -> void:
 	if robot_eyes == null:

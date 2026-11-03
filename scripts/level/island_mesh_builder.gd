@@ -35,13 +35,26 @@ static var _island_material: StandardMaterial3D = null
 static var _foam_material: ShaderMaterial = null
 
 
+static func _is_compatibility_renderer() -> bool:
+	return RenderingServer.get_current_rendering_method() == "gl_compatibility" or OS.has_feature("web")
+
+
 static func get_final_ground_color() -> Color:
-	return Color(
+	var c: Color = Color(
 		ground_base_color.r * ground_brightness,
 		ground_base_color.g * ground_brightness,
 		ground_base_color.b * ground_brightness,
 		1.0
 	)
+	if _is_compatibility_renderer():
+		return Color(c.r * 0.8460, c.g * 0.6830, c.b * 0.7660, 1.0)
+	return c
+
+
+static func get_final_cliff_color() -> Color:
+	if _is_compatibility_renderer():
+		return Color(CLIFF_COLOR.r * 0.6850, CLIFF_COLOR.g * 0.6780, CLIFF_COLOR.b * 0.7360, 1.0)
+	return CLIFF_COLOR
 
 
 static func set_ground_parameters(base_color: Color, brightness: float = 0.80, use_toon: bool = true) -> void:
@@ -95,6 +108,7 @@ static func build_island_mesh(
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var final_ground_color: Color = get_final_ground_color()
+	var final_cliff_color: Color = get_final_cliff_color()
 
 	for poly: PackedVector2Array in polygons:
 		if poly.size() < 3:
@@ -205,7 +219,7 @@ static func build_island_mesh(
 			st.add_vertex(bev_a)
 
 			# Triângulos da Parede da Falésia (bev_a / bev_b até bot_a / bot_b)
-			st.set_color(CLIFF_COLOR)
+			st.set_color(final_cliff_color)
 			# Triângulo 1: bev_a, bev_b, bot_b
 			st.set_normal(wall_norm)
 			st.set_uv(UV_CLIFF_WALL)

@@ -40,6 +40,9 @@ void fragment() {
 	vec3 base_col = mix(lawn_color.rgb, d_sample.rgb * 0.75, 0.45);
 	// Onde foi cortado, ganha o tom mais claro de gramado aparado
 	vec3 final_rgb = mix(base_col, mowed_color.rgb, cut_trail * 0.70);
+	if (OUTPUT_IS_SRGB) {
+		final_rgb *= vec3(0.92, 0.67, 0.79);
+	}
 	float final_alpha = shape_alpha * mix(lawn_color.a, mowed_color.a, cut_trail);
 
 	ALBEDO = final_rgb;
