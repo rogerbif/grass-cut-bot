@@ -142,7 +142,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_top")
 [node name="VBox" type="VBoxContainer" parent="TopBar"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="HBox" type="HBoxContainer" parent="TopBar/VBox"]
 layout_mode = 2
@@ -244,7 +244,7 @@ stretch_mode = 5
 layout_mode = 2
 mouse_filter = 2
 alignment = 0
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="PauseModal" type="ColorRect" parent="."]
 visible = false

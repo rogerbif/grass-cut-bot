@@ -5,6 +5,8 @@ const ICON_WHEAT: Texture2D = preload("res://assets/icons/icon_wheat.svg")
 const ICON_FLOWER: Texture2D = preload("res://assets/icons/icon_flower.svg")
 const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
 const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
+const BADGE_GOAL_BG: Texture2D = preload("res://assets/ui/topbar/badge_goal_bg.svg")
+const BADGE_GOAL_DONE_BG: Texture2D = preload("res://assets/ui/topbar/badge_goal_done_bg.svg")
 
 @onready var top_bar: PanelContainer = $TopBar
 @onready var timer_label: Label = $TopBar.find_child("TimerLabel", true, false) as Label
@@ -142,25 +144,33 @@ func _on_goal_updated(plant_type: String, remaining: int, target: int) -> void:
 	tween.tween_property(card["container"], "scale", Vector2.ONE, 0.05)
 
 func _create_goal_card(plant_type: String, target: int) -> void:
-	var card_panel = PanelContainer.new()
-	card_panel.custom_minimum_size = Vector2(70, 70)
-	card_panel.pivot_offset = Vector2(35, 35)
+	var card_panel: PanelContainer = PanelContainer.new()
+	card_panel.custom_minimum_size = Vector2(72, 68)
+	card_panel.pivot_offset = Vector2(36, 34)
+	card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# Estilo arredondado fosco
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.16, 0.2, 0.85)
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12
-	style.corner_radius_bottom_right = 12
-	style.content_margin_left = 6
-	style.content_margin_right = 6
-	style.content_margin_top = 4
-	style.content_margin_bottom = 4
-	card_panel.add_theme_stylebox_override("panel", style)
+	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
+	card_panel.add_theme_stylebox_override("panel", empty_style)
 
-	var vbox = VBoxContainer.new()
+	var bg_rect: TextureRect = TextureRect.new()
+	bg_rect.texture = BADGE_GOAL_BG
+	bg_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg_rect.stretch_mode = TextureRect.STRETCH_SCALE
+	bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card_panel.add_child(bg_rect)
+
+	var margin: MarginContainer = MarginContainer.new()
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override("margin_left", 6)
+	margin.add_theme_constant_override("margin_right", 6)
+	margin.add_theme_constant_override("margin_top", 6)
+	margin.add_theme_constant_override("margin_bottom", 4)
+	card_panel.add_child(margin)
+
+	var vbox: VBoxContainer = VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_theme_constant_override("separation", 2)
 
 	var icon_rect: TextureRect = TextureRect.new()
 	icon_rect.custom_minimum_size = Vector2(26, 26)
@@ -168,6 +178,7 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	match plant_type:
 		"grass", "grass_green":
@@ -220,29 +231,35 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 		_:
 			icon_rect.texture = ICON_LEAF
 
-	var count_lbl = Label.new()
+	var count_lbl: Label = Label.new()
 	count_lbl.text = str(target)
 	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	count_lbl.add_theme_font_size_override("font_size", 18)
+	count_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.4))
+	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
 
 	vbox.add_child(icon_rect)
 	vbox.add_child(count_lbl)
-	card_panel.add_child(vbox)
+	margin.add_child(vbox)
 	goals_container.add_child(card_panel)
 
 	goal_cards[plant_type] = {
 		"container": card_panel,
 		"count_label": count_lbl,
 		"icon_rect": icon_rect,
-		"style": style
+		"bg_rect": bg_rect
 	}
 
 func _on_goal_completed(plant_type: String) -> void:
 	if goal_cards.has(plant_type):
-		var card = goal_cards[plant_type]
-		card["count_label"].text = "OK"
-		card["count_label"].modulate = Color(0.3, 1.0, 0.4)
-		card["style"].bg_color = Color(0.1, 0.4, 0.2, 0.9)
+		var card: Dictionary = goal_cards[plant_type] as Dictionary
+		var lbl: Label = card["count_label"] as Label
+		lbl.text = "OK"
+		lbl.modulate = Color(0.22, 1.0, 0.48)
+		var bg: TextureRect = card.get("bg_rect") as TextureRect
+		if bg != null:
+			bg.texture = BADGE_GOAL_DONE_BG
 
 func _on_coins_changed(new_amount: int) -> void:
 	if coins_label != null:

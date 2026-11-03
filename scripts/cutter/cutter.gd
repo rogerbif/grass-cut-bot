@@ -921,32 +921,17 @@ func _process_cutting() -> void:
 		if fully_cut:
 			_overlapping_vegetation.remove_at(i)
 
-## Calcula o deslocamento local 3D estritamente ao lado do corpo do robô (Esquerda, Centro ou Direita)
-## garantindo que os números flutuantes brotem sempre próximos ao chassi mecânico.
+## Calcula o deslocamento local 3D estritamente nas laterais do robô (somente Esquerda ou Direita da tela)
+## sem spawn central sobre o chassi.
 func get_body_side_local_offset(cut_pos: Vector3) -> Vector3:
-	var yaw: float = robot_body.rotation.y if robot_body != null else rotation.y
-	var forward: Vector3 = Vector3(sin(yaw), 0.0, cos(yaw))
-	var right: Vector3 = Vector3(cos(yaw), 0.0, -sin(yaw))
-
 	var to_cut: Vector3 = cut_pos - global_position
-	to_cut.y = 0.0
-	var lateral_dot: float = to_cut.dot(right)
+	var side_sign: float = -1.0 if to_cut.x < 0.0 else 1.0
+	if absf(to_cut.x) < 0.04:
+		side_sign = -1.0 if randf() < 0.5 else 1.0
 
-	# Posiciona estritamente ao lado do corpo do robô (chassi/paralamas)
-	var sector_offset: Vector3 = Vector3.ZERO
-	if lateral_dot < -0.16:
-		# Setor Esquerda: imediatamente à esquerda do corpo
-		sector_offset = forward * 0.14 - right * 0.42
-	elif lateral_dot > 0.16:
-		# Setor Direita: imediatamente à direita do corpo
-		sector_offset = forward * 0.14 + right * 0.42
-	else:
-		# Setor Centro: frente ao bico do chassi
-		sector_offset = forward * 0.44
-
-	var jitter_x: float = randf_range(-0.025, 0.025)
-	var jitter_z: float = randf_range(-0.025, 0.025)
-	return sector_offset + Vector3(jitter_x, 0.45, jitter_z)
+	var lateral_x: float = side_sign * randf_range(0.46, 0.58)
+	var jitter_z: float = randf_range(-0.10, 0.08)
+	return Vector3(lateral_x, 0.48, jitter_z)
 
 
 ## Calcula a coordenada 3D global imediatamente ao lado do corpo do robô.

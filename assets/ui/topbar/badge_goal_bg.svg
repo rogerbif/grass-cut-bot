@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="76" height="72" viewBox="0 0 76 72">
+  <defs>
+    <!-- Mesmo gradiente cyber profundo da TopBar -->
+    <linearGradient id="goal_bg_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0a1d30" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#050e18" stop-opacity="0.98" />
+    </linearGradient>
+    <linearGradient id="goal_border_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2bd9fe" />
+      <stop offset="50%" stop-color="#1480b0" />
+      <stop offset="100%" stop-color="#0e5676" />
+    </linearGradient>
+  </defs>
+
+  <!-- Placa chanfrada assimétrica (chanfro top-left e bottom-right) idêntica aos badges superiores -->
+  <path d="M 12 2 
+           L 72 2 
+           Q 74 2 74 4 
+           L 74 58 
+           L 62 70 
+           L 4 70 
+           Q 2 70 2 68 
+           L 2 14 
+           L 12 2 Z" 
+        fill="url(#goal_bg_grad)" 
+        stroke="url(#goal_border_grad)" 
+        stroke-width="2.5" 
+        stroke-linejoin="round" />
+
+  <!-- Linha de reflexo ciano superior -->
+  <path d="M 16 4 L 68 4" stroke="#8bf0ff" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.6" />
+</svg>

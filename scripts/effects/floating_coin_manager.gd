@@ -6,7 +6,8 @@ extends Node3D
 ## para impedir qualquer flash fantasma no centro da fase ou rastro escuro distante.
 
 const POOL_SIZE: int = 64
-const MAX_LOCAL_RADIUS_XZ: float = 0.48
+const MAX_LOCAL_RADIUS_XZ: float = 0.68
+const MIN_LATERAL_X: float = 0.42
 
 const COLOR_GRASS: Color = Color(1.0, 1.0, 1.0, 1.0)
 const COLOR_WHEAT: Color = Color(1.0, 0.90, 0.20, 1.0)
@@ -100,6 +101,13 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	else:
 		local_offset = Vector3(0.0, 0.45, 0.44)
 
+	# Garante que nunca nasça no centro: força distância mínima lateral na esquerda ou direita
+	if absf(local_offset.x) < MIN_LATERAL_X:
+		var side: float = -1.0 if local_offset.x < 0.0 else 1.0
+		if absf(local_offset.x) < 0.01:
+			side = -1.0 if randf() < 0.5 else 1.0
+		local_offset.x = side * MIN_LATERAL_X
+
 	# Trava matemática de segurança: jamais permite offset horizontal maior que MAX_LOCAL_RADIUS_XZ
 	var horiz: Vector2 = Vector2(local_offset.x, local_offset.z)
 	if horiz.length() > MAX_LOCAL_RADIUS_XZ:
@@ -126,7 +134,7 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	label.text = "+" + str(amount)
 	label.modulate = Color(base_color.r, base_color.g, base_color.b, 0.0)
 	label.outline_modulate = Color(0.0, 0.0, 0.0, 0.0)
-	label.scale = Vector3(0.35, 0.35, 0.35)
+	label.scale = Vector3(0.15, 0.15, 0.15)
 	label.position = local_offset
 	label.reset_physics_interpolation()
 	label.visible = true
@@ -134,26 +142,29 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 	var tween: Tween = create_tween().set_parallel(true)
 	_tweens[idx] = tween
 
-	# 1. Subida vertical contínua em espaço local (+0.42m durante toda a vida útil de 0.26s)
-	var target_local_y: float = local_offset.y + 0.42
-	tween.tween_property(label, "position:y", target_local_y, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 1. Subida vertical mais alta e fluida em espaço local (+1.65m durante 0.65s) com leve abertura lateral
+	var target_local_y: float = local_offset.y + 1.65
+	var drift_x: float = local_offset.x + signf(local_offset.x) * 0.14
+	tween.tween_property(label, "position:y", target_local_y, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:x", drift_x, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 2. Fade-in simultâneo do preenchimento e do contorno preto (0.0 -> 1.0 em 0.03s)
-	tween.tween_property(label, "modulate:a", 1.0, 0.03).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "outline_modulate:a", 1.0, 0.03).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 2. Fade-in rápido no surgimento (0.0 -> 1.0 em 0.05s)
+	tween.tween_property(label, "modulate:a", 1.0, 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "outline_modulate:a", 1.0, 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 3. Pop elástico de escala (0.35 -> 1.25 em 0.05s, depois 1.25 -> 1.0 em 0.04s)
-	tween.tween_property(label, "scale", Vector3(1.25, 1.25, 1.25), 0.05).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "scale", Vector3(1.0, 1.0, 1.0), 0.04).set_delay(0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	# 3. Efeito POP elástico pronunciado ao aparecer (0.15 -> 1.55 em 0.11s, depois acomoda em 1.05 em 0.09s)
+	tween.tween_property(label, "scale", Vector3(1.55, 1.55, 1.55), 0.11).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "scale", Vector3(1.05, 1.05, 1.05), 0.09).set_delay(0.11).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-	# 4. Fade-out simultâneo do preenchimento E do contorno preto (inicia em 0.16s, dura 0.10s)
-	tween.tween_property(label, "modulate:a", 0.0, 0.10).set_delay(0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(label, "outline_modulate:a", 0.0, 0.10).set_delay(0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# 4. Fade-out suave enquanto atinge o topo (inicia em 0.35s, dura 0.30s)
+	tween.tween_property(label, "modulate:a", 0.0, 0.30).set_delay(0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(label, "outline_modulate:a", 0.0, 0.30).set_delay(0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(label, "scale", Vector3(0.75, 0.75, 0.75), 0.30).set_delay(0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
-	# 5. Oculta e reseta ao finalizar em 0.26s
+	# 5. Oculta e reseta ao finalizar em 0.65s
 	tween.tween_callback(func() -> void:
 		label.visible = false
 		label.modulate.a = 0.0
 		label.outline_modulate.a = 0.0
 		label.position = Vector3(0.0, 0.45, 0.0)
-	).set_delay(0.26)
+	).set_delay(0.65)
