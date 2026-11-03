@@ -50,6 +50,7 @@ func _init_pool() -> void:
 	_tweens.clear()
 	for i in range(POOL_SIZE):
 		var label: Label3D = Label3D.new()
+		label.set_as_top_level(true)
 		label.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		label.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -62,7 +63,7 @@ func _init_pool() -> void:
 		label.outline_modulate = Color(0.0, 0.0, 0.0, 0.0)
 		label.shaded = false
 		label.double_sided = true
-		label.position = Vector3(0.0, 0.45, 0.0)
+		label.position = Vector3(0.0, -50.0, 0.0)
 		label.visible = false
 		add_child(label)
 		_pool.append(label)
@@ -131,40 +132,42 @@ func _on_coin_popup_requested(world_pos: Vector3, amount: int, plant_type: Strin
 		_:
 			base_color = COLOR_GRASS
 
+	var spawn_world_pos: Vector3 = cutter.global_position + local_offset
+
 	label.text = "+" + str(amount)
 	label.modulate = Color(base_color.r, base_color.g, base_color.b, 0.0)
 	label.outline_modulate = Color(0.0, 0.0, 0.0, 0.0)
 	label.scale = Vector3(0.15, 0.15, 0.15)
-	label.position = local_offset
+	label.position = spawn_world_pos
 	label.reset_physics_interpolation()
 	label.visible = true
 
 	var tween: Tween = create_tween().set_parallel(true)
 	_tweens[idx] = tween
 
-	# 1. Subida vertical mais alta e fluida em espaço local (+1.65m durante 0.65s) com leve abertura lateral
-	var target_local_y: float = local_offset.y + 1.65
-	var drift_x: float = local_offset.x + signf(local_offset.x) * 0.14
-	tween.tween_property(label, "position:y", target_local_y, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "position:x", drift_x, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# 1. Subida vertical desacoplada no espaço global onde foi instanciado (+1.32m, -20% de 1.65m, durante 0.65s)
+	var target_world_y: float = spawn_world_pos.y + 1.32
+	var drift_world_x: float = spawn_world_pos.x + signf(local_offset.x) * 0.11
+	tween.tween_property(label, "position:y", target_world_y, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:x", drift_world_x, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	# 2. Fade-in rápido no surgimento (0.0 -> 1.0 em 0.05s)
 	tween.tween_property(label, "modulate:a", 1.0, 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(label, "outline_modulate:a", 1.0, 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 3. Efeito POP elástico pronunciado ao aparecer (0.15 -> 1.55 em 0.11s, depois acomoda em 1.05 em 0.09s)
+	# 3. Efeito POP elástico pronunciado ao aparecer (0.15 -> 1.55 em 0.11s, acomoda em 1.05 até 0.20s)
 	tween.tween_property(label, "scale", Vector3(1.55, 1.55, 1.55), 0.11).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(label, "scale", Vector3(1.05, 1.05, 1.05), 0.09).set_delay(0.11).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-	# 4. Fade-out suave enquanto atinge o topo (inicia em 0.35s, dura 0.30s)
-	tween.tween_property(label, "modulate:a", 0.0, 0.30).set_delay(0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(label, "outline_modulate:a", 0.0, 0.30).set_delay(0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(label, "scale", Vector3(0.75, 0.75, 0.75), 0.30).set_delay(0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# 4. Fade-out começa imediatamente assim que finaliza o POP (em 0.20s) e dura 0.45s até o topo da altura (0.65s)
+	tween.tween_property(label, "modulate:a", 0.0, 0.45).set_delay(0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(label, "outline_modulate:a", 0.0, 0.45).set_delay(0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(label, "scale", Vector3(0.75, 0.75, 0.75), 0.45).set_delay(0.20).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
-	# 5. Oculta e reseta ao finalizar em 0.65s
+	# 5. Oculta e reseta ao finalizar exatamente no topo da subida (0.65s)
 	tween.tween_callback(func() -> void:
 		label.visible = false
 		label.modulate.a = 0.0
 		label.outline_modulate.a = 0.0
-		label.position = Vector3(0.0, 0.45, 0.0)
+		label.position = Vector3(0.0, -50.0, 0.0)
 	).set_delay(0.65)
