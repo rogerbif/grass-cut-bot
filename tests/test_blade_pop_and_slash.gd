@@ -129,11 +129,11 @@ func _ready() -> void:
 		push_error("Slash intensity should be higher at full speed than at idle!")
 		get_tree().quit(1)
 		return
-	if abs(idle_intensity - 0.08) > 0.01 or abs(full_intensity - 0.12) > 0.01:
-		push_error("Expected idle ~0.08 and cut ~0.12, got: idle=%f, cut=%f" % [idle_intensity, full_intensity])
+	if abs(idle_intensity - 0.45) > 0.01 or abs(full_intensity - 0.85) > 0.01:
+		push_error("Expected idle ~0.45 and cut ~0.85, got: idle=%f, cut=%f" % [idle_intensity, full_intensity])
 		get_tree().quit(1)
 		return
-	print("✔ PASSOU: Modulação dinâmica calibrada (0.08 em idle e 0.12 ao cortar/andar)")
+	print("✔ PASSOU: Modulação dinâmica calibrada (0.45 em idle e 0.85 ao cortar/andar)")
 
 	print("--- TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! ---")
 	cutter.queue_free()

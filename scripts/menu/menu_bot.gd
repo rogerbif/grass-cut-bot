@@ -61,6 +61,8 @@ var _initial_body_pos: Vector3 = Vector3(0.0, 0.72, 0.0)
 @onready var blade_tier_3: MeshInstance3D = get_node_or_null("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_3") as MeshInstance3D
 @onready var blade_tier_4: MeshInstance3D = get_node_or_null("VisualPivot/GrassBot/Robot/BladeSpinner/blade_tier_4") as MeshInstance3D
 
+var blade_slash_mesh: MeshInstance3D = null
+
 func _ready() -> void:
 	base_position = position
 	if blade_spinner != null:
@@ -68,6 +70,7 @@ func _ready() -> void:
 		for child: Node in blade_spinner.get_children():
 			if child is GeometryInstance3D:
 				(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_setup_blade_slash()
 	if robot_body != null:
 		_initial_body_pos = robot_body.position
 		robot_body.rotation.y = 0.0 # Rosto e serra voltados para a câmera do menu
@@ -256,6 +259,34 @@ func update_blade_tier() -> void:
 	if blade_tier_4 != null:
 		blade_tier_4.visible = (active_tier == 4)
 
+	if blade_slash_mesh != null and blade_slash_mesh.material_override is ShaderMaterial:
+		var mat: ShaderMaterial = blade_slash_mesh.material_override as ShaderMaterial
+		var points: int = 3
+		match active_tier:
+			1: points = 3
+			2: points = 4
+			3: points = 5
+			4: points = 6
+			_: points = 3
+		mat.set_shader_parameter("blade_points", points)
+
+func _setup_blade_slash() -> void:
+	if blade_spinner == null:
+		return
+	blade_slash_mesh = MeshInstance3D.new()
+	blade_slash_mesh.name = "BladeSlash"
+	var slash_plane: PlaneMesh = PlaneMesh.new()
+	slash_plane.size = Vector2(4.2, 4.2)
+	blade_slash_mesh.mesh = slash_plane
+	blade_slash_mesh.position = Vector3(0.0, -0.012, 0.0)
+	blade_slash_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var slash_mat_res: ShaderMaterial = load("res://shaders/blade_slash_material.tres")
+	if slash_mat_res != null:
+		var dup_mat: ShaderMaterial = slash_mat_res.duplicate() as ShaderMaterial
+		dup_mat.set_shader_parameter("slash_intensity", 0.65)
+		blade_slash_mesh.material_override = dup_mat
+	blade_spinner.add_child(blade_slash_mesh)
+
 func _on_upgrade_purchased(_upgrade_name: String, _new_level: int) -> void:
 	update_blade_tier()
 
@@ -277,6 +308,8 @@ func _set_teleport_world_y(y: float) -> void:
 
 func _collect_mesh_instances(node: Node) -> Array[MeshInstance3D]:
 	var list: Array[MeshInstance3D] = []
+	if node == blade_slash_mesh:
+		return list
 	if node is MeshInstance3D:
 		list.append(node as MeshInstance3D)
 	for child: Node in node.get_children():

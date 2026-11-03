@@ -24,9 +24,9 @@ const UV_CLIFF_WALL: Vector2 = Vector2(0.189990, 0.169986)
 const PALETTE_TEXTURE_PATH: String = "res://assets/models/tiles/tile_island_center_Image_0.png"
 const FOAM_SHADER_PATH: String = "res://shaders/coastal_foam.gdshader"
 
-# Parâmetros Canônicos do Solo da Ilha e Falésias (Calibrados Opção 3)
-static var ground_base_color: Color = Color(0.408, 0.698, 0.173, 1.0)
-static var ground_brightness: float = 0.95
+# Parâmetros Canônicos do Solo da Ilha e Falésias (Verde Esmeralda #3DC151 da Referência)
+static var ground_base_color: Color = Color(0.15, 0.59, 0.22, 1.0)
+static var ground_brightness: float = 0.85
 static var ground_diffuse_toon: bool = true
 const CLIFF_COLOR: Color = Color(0.745, 0.427, 0.25, 1.0)
 const DIRT_COLOR: Color = Color(0.538, 0.364, 0.231, 1.0)

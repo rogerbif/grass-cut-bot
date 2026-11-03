@@ -184,7 +184,7 @@ static func _get_vector_material(v_type: String) -> StandardMaterial3D:
 		"flower":
 			mat.albedo_color = Color(0.95, 0.35, 0.65, 1.0)
 		_:
-			mat.albedo_color = Color(0.3876, 0.6631, 0.1643, 1.0) # grass_green
+			mat.albedo_color = Color(0.1275, 0.5015, 0.187, 1.0) # grass_green (#3DC151 lit)
 
 	_vector_materials[v_type] = mat
 	return mat

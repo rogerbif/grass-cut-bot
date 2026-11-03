@@ -380,7 +380,7 @@ func _setup_blade_slash_and_shockwave() -> void:
 		var slash_plane: PlaneMesh = PlaneMesh.new()
 		slash_plane.size = Vector2(4.2, 4.2)
 		blade_slash_mesh.mesh = slash_plane
-		blade_slash_mesh.position = Vector3(0.0, 0.015, 0.0)
+		blade_slash_mesh.position = Vector3(0.0, -0.012, 0.0)
 		blade_slash_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		var slash_mat_res: ShaderMaterial = load("res://shaders/blade_slash_material.tres")
 		if slash_mat_res != null:
@@ -445,8 +445,8 @@ func _update_blade_slash_intensity() -> void:
 	if mat == null:
 		return
 	var speed_ratio: float = clampf((current_blade_speed - idle_rotation_speed) / maxf(rotation_speed - idle_rotation_speed, 1.0), 0.0, 1.0)
-	# Opacidade calibrada: 0.12 ao andar/cortar (antigo idle) e 0.08 em idle (33% mais transparente)
-	var base_intensity: float = lerpf(0.08, 0.12, speed_ratio)
+	# Intensidade calibrada para exibir nitidamente as 3 faixas concêntricas verde-lima sob a lâmina
+	var base_intensity: float = lerpf(0.45, 0.85, speed_ratio)
 	mat.set_shader_parameter("slash_intensity", base_intensity * _slash_flash_boost)
 
 func update_upgrades() -> void:
