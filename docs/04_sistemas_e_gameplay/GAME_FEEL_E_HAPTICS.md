@@ -93,21 +93,22 @@ As expressões digitais do robô complementam o *Game Feel* adicionando carisma,
 
 ---
 
-## 6. Números Flutuantes Cartoon 3D e Rastro de Colheita 💥🪙
+## 6. Números Flutuantes Cartoon 3D Desacoplados no Mundo 💥🪙
 
-Para proporcionar gratificação imediata estilo *arcade casual*, o jogo conta com um sistema de números 3D flutuantes cel-shaded disparados no ponto exato do corte:
-1. **Tipografia Arcade e Contorno de Alto Contraste:**
+Para proporcionar gratificação imediata estilo *arcade casual* sem poluição visual, o jogo conta com um sistema de números 3D flutuantes cel-shaded gerenciado pelo `FloatingCoinManager` (`scripts/ui/floating_coin_manager.gd`):
+1. **Tipografia Arcade, Agrupamento 6:1 na Grama e Contorno de Alto Contraste:**
    - Formato puro sem ícones obstrutivos: `+1`, `+3`, `+5`;
+   - Na grama (`grass_*`), cada **6 tufos visuais ceifados** emitem 1 único número `+1` (`GRASS_TUFTS_PER_UNIT = 6`), evitando empilhamento excessivo; trigo e flores emitem 1 número por planta cortada;
    - Contorno preto sólido de 14px (`outline_size = 14`, `outline_modulate = Color(0, 0, 0, 1)`) sobre preenchimento cel-shaded;
    - Cores dinâmicas por espécie: Branco (`#FFFFFF`) para grama comum, Dourado (`#FFE633`) para trigo e Magenta (`#FF4090`) para flores silvestres;
    - Reflete o valor real multiplicado pela oficina (`+2`, `+6`, `+10`).
-2. **Ancoragem no Círculo Interno da Lâmina em 3 Setores:**
-   - Em vez de surgirem no solo, os números surgem diretamente no anel interno da serra do robô ($R \approx 0.40\text{m} \dots 0.48\text{m}$, $Y = 0.28\text{m}$);
-   - A posição é classificada dinamicamente entre **Esquerda**, **Centro** e **Direita** conforme a projeção lateral do corte relativo à frente do robô.
-3. **Coreografia em Fases (*Number Trail*):**
-   - **Aparecer em fase:** Fade-in de opacidade (`0.0 -> 1.0` em 0.08s);
-   - **Crescer depois diminuir:** Expansão de escala (`0.35 -> 1.30` em 0.10s) e retração de assentamento (`1.30 -> 1.0` em 0.08s);
-   - **Subir e desaparecer em fase:** Elevação vertical de $+0.70\text{m}$ em 0.60s com fade-out suave (`1.0 -> 0.0` em 0.28s).
+2. **Emissão Lateral (Somente Esquerda ou Direita) e Desacoplamento no Espaço Global (`top_level`):**
+   - Os números são instanciados com `label.set_as_top_level(true)` na coordenada global exata do momento do corte (`cutter.global_position + local_offset`), **permanecendo estacionários no mundo enquanto sobem** (não acompanham o robô quando ele se move);
+   - O spawn central foi removido para nunca cobrir o chassi/cabeça do robô: os números surgem exclusivamente nas laterais **Esquerda** ou **Direita** da serra ($R \approx 0.44\text{m} \dots 0.56\text{m}$, $Y = 0.28\text{m}$), escolhidas conforme o lado do corte relativo ao robô.
+3. **Coreografia com Efeito POP e Fade-Out Imediato:**
+   - **Efeito POP na Aparição:** Surge com escala inicial `0.15x`, expande com overshoot elástico (`TRANS_BACK`, `EASE_OUT`) até `1.65x` em `0.12s` e assenta em `1.0x` nos `0.08s` seguintes (total do POP = `0.20s`);
+   - **Subida Vertical no Ponto de Emissão:** Sobe `+1.32m` no eixo $Y$ global ao longo de `0.65s` (`TRANS_CUBIC`, `EASE_OUT`);
+   - **Fade-Out Imediato Pós-POP:** Assim que o efeito POP termina (`delay = 0.20s`), inicia imediatamente o fade-out de opacidade (`1.0 -> 0.0` ao longo dos `0.45s` restantes), tornando-se totalmente invisível ao atingir o topo da subida (`0.65s`).
 4. **Pool Estático de 32 Nós:**
    - Pré-alocação no `FloatingCoinManager` garantindo 0 coletas de lixo (GC) e 60 FPS cravados no mobile.
 

@@ -8,13 +8,13 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 
 | Variedade | Cena / Material | Saúde Base | Regra de Lote & Moedas | Partículas | Comportamento e Papel no Jogo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Grama Verde Clássica** | `grass_green` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Verde esmeralda | Vegetação fundamental presente em todos os estágios. Ceifada instantaneamente. |
-| **Grama Amarela Solar** | `grass_yellow` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Dourado solar | Variação estética cosmética (1x HP / 1 moeda). |
-| **Grama Azul Celeste** | `grass_blue` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Azul ciano | Vegetação cosmética litorânea (Fases 06+). |
-| **Grama Roxa Mística** | `grass_purple` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Roxo neon | Vegetação cosmética noturna / labiríntica (Fases 10+). |
-| **Grama Branca Algodão** | `grass_white` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Branco puro | Variação cosmética de alto contraste. |
-| **Grama Vermelha Rubi** | `grass_red` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Vermelho rubi | Variação cosmética para áreas intensas. |
-| **Grama Preta Vulcânica** | `grass_black` | 1 golpe | 10 físicos = 1 meta = 1 🪙 | Grafite carvão | Variação cosmética dramática. |
+| **Grama Verde Clássica** | `grass_green` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Verde esmeralda | Vegetação fundamental presente em todos os estágios. Ceifada instantaneamente (`GRASS_TUFTS_PER_UNIT = 6`). |
+| **Grama Amarela Solar** | `grass_yellow` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Dourado solar | Variação estética cosmética (1x HP / 1 moeda a cada 6 tufos visuais). |
+| **Grama Azul Celeste** | `grass_blue` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Azul ciano | Vegetação cosmética litorânea (Fases 04+). |
+| **Grama Roxa Mística** | `grass_purple` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Roxo neon | Vegetação cosmética noturna / labiríntica (Fases 06+). |
+| **Grama Branca Algodão** | `grass_white` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Branco puro | Variação cosmética de alto contraste (Fases 09+). |
+| **Grama Vermelha Rubi** | `grass_red` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Vermelho rubi | Variação cosmética para áreas intensas (Fases 12+). |
+| **Grama Preta Vulcânica** | `grass_black` | 1 golpe | 6 visuais = 1 meta = 1 🪙 | Grafite carvão | Variação cosmética dramática (Fases 15+). |
 | **Trigo Dourado (Meta 2x)** | `wheat` | 2 golpes | 1 físico = 1 meta = 3 🪙 | Dourado ouro | Cultura de tile (Camada 2). Exige 2 golpes ou upgrade de potência $\ge 2$. Meta direta 1:1 e 3 moedas. |
 | **Flor Silvestre Nobre** | `flower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta | Modelo em 3 partes (`Flower_Stem`, `Flower_Leaves`, `Flower_Petals`). No Hit 1, 2 pétalas + 1 folha se desprendem (`FlowerDetachPiece`): sobem a 4~5 m/s, caem, encolhem em 0,4 s e somem (Melhorias 138/139). Despetalação em 2 levas (Hit 1 e 2). |
 | **Rosa Encantada** | `flower_rose` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas carmim rubi | Modelo em 3 partes com gradiente escuro→claro. No Hit 1 ejeta 2 pétalas externas e 1 folha no ar. Despetalação externa (Hit 1) e interna (Hit 2). |
@@ -39,9 +39,10 @@ Durante as fases de gameplay (e nas ilhas do Menu Inicial), toda a vegetação e
 - **GPU Instancing (`MultiMeshInstance3D`):**
   - Os tufos de vegetação são agrupados em até 9 `MultiMeshInstance3D` (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`, `wheat` e `flower`) com `cast_shadow = SHADOW_CASTING_SETTING_OFF`.
   - Micro-tufos densos com 39 lâminas e volume foliar farto garantem visual exuberante e orgânico mantendo alta performance mobile via GPU Instancing.
-- **Grade Espacial Lógica e Corte Circular Preciso:**
+- **Grade Espacial Lógica, Agrupamento 6:1 (`GRASS_TUFTS_PER_UNIT = 6`) e Corte Circular Preciso:**
   - O corte ocorre por proximidade radial de micro-tufo sob o raio da lâmina da serra, conferindo uma borda de corte perfeitamente circular.
-  - A contagem de colheita e premiação econômica é consolidada por célula lógica de $0.40\text{m}$, garantindo que nunca restem tufos órfãos visíveis sem contabilização da vitória.
+  - Para todas as 7 variantes de grama (`grass_*`), **cada 6 tufos visuais ceifados contabilizam 1 unidade de meta e disparam 1 número flutuante (`+1`)** (`GRASS_TUFTS_PER_UNIT = 6` em `VegetationGrid` e `LevelEditorUI`), reduzindo em 83% a poluição visual de números na tela enquanto preserva a densidade visual do tapete de grama. Caso restem menos de 6 tufos de uma cor no final da fase e ainda haja meta pendente, os últimos tufos completam a unidade final sem deixar metas órfãs.
+  - Trigo (`wheat`) e todas as 8 espécies de flores (`flower*`) mantêm proporção direta `1:1` (cada unidade física cortada = 1 meta e 1 número flutuante).
 - **Formato JSON v3:** As fases armazenam `grass_vectors` (lista de polígonos fechados e furos), com retrocompatibilidade automática com os formatos legados v2 (`vegetation.rows`) e v1 (`objects`).
 
 ---

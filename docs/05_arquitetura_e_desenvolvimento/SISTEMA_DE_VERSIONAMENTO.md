@@ -20,7 +20,7 @@ Exemplos práticos:
 - `v0.9.0-alpha` (Sistema de áudio e sonoplastia completo com 20 SFX e trilhas Dyalla)
 - `v0.10.0-alpha` (Calibração háptica Android precisa e suíte de ícones oficiais)
 - `v0.11.0-alpha` (Celebração de vitória 3 ⭐, derrota expressiva, teleporte 3D e moedas cartoon)
-- `v0.12.68-alpha` (**Versão Atual:** Leitura dinâmica direta de `ProjectSettings` no `GameVersion` e `SettingsModal`, calibração da mastigação contínua da lâmina em 0.28s, remoção de knockback em vegetação e suíte de 8 espécies florais)
+- `v0.12.106-alpha` (**Versão Atual:** TopBar Cyber de gameplay com cards chanfrados simétricos, Tela de Vitória flutuante sem card opaco, números flutuantes 3D desacoplados no mundo com POP e agrupamento 6:1 na grama, aba Coleção com cards horizontais cyber ordenados por fase e painéis com cantos retos chanfrados a 45°)
 - `v0.13.0-beta` (*Feature Complete:* Abas Loja/Coleção integradas a moedas e balanceamento final)
 - `v1.0.0-rc.1` (*Feature Freeze:* Testes finais de empacotamento APK/AAB no Android)
 - `v1.0.0` (Lançamento Oficial Comercial na Google Play Store)
@@ -99,14 +99,14 @@ Parametrizado nativamente sob a seção `[application]`:
 ```ini
 [application]
 config/name="Grass Cut Bot"
-config/version="0.12.31-alpha"
+config/version="0.12.106-alpha"
 ```
 
 ### 4.3. Presets de Exportação Android (`export_presets.cfg`)
 Configurado para exportação móvel consistente:
 ```ini
-version/code=1231
-version/name="0.12.31-alpha"
+version/code=1306
+version/name="0.12.106-alpha"
 ```
 
 ---

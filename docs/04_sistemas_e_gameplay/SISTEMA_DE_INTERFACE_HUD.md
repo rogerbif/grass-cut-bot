@@ -6,37 +6,33 @@ Este documento especifica a interface de usuário (HUD), os componentes visuais 
 
 ## 1. Top HUD Durante a Partida
 
-O Top HUD é posicionado na parte superior da tela e utiliza estilo *flat matte* com cantos arredondados:
+O Top HUD de gameplay utiliza estilo **Cyber-Mecha chanfrado a 45° sem overlay de fundo**, mantendo o mar e a ilha 100% visíveis no topo da tela e respeitando a zona segura mobile (`offset_top = 34`):
 
 ```
-TopBar (PanelContainer)
-├── TimerContainer (PanelContainer) -> TimerLabel ("1:30")
-├── CoinsContainer (PanelContainer) -> Ícone Moeda + CoinsLabel ("0")
-├── GoalsContainer (HBoxContainer)  -> Cards Dinâmicos de Metas (🌿 60, 🌾 15, 🌸 8)
-└── PauseButton (Button)            -> Ícone "⏸"
+TopBar (Control - sem fundo opaco)
+├── TopHBox (HBoxContainer, offset_top = 34)
+│   ├── LeftCluster (VBoxContainer, separation = 10)
+│   │   ├── TopStatsRow (HBoxContainer, separation = 10)
+│   │   │   ├── TimerContainer (TextureRect: badge_coin_bg.svg) -> Ícone Relógio + TimerLabel ("1:30")
+│   │   │   └── CoinsContainer (TextureRect: badge_coin_bg.svg) -> Ícone Moeda + CoinsLabel ("0")
+│   │   └── GoalsContainer (HBoxContainer, separation = 10) -> Cards Chanfrados de Metas (badge_goal_card.svg)
+│   ├── Spacer (Control, expand_fill)
+│   └── PauseButton (TextureButton: btn_pause_cyber.svg / btn_pause_cyber_pressed.svg)
 ```
 
 ### Componentes em Destaque:
-1. **Cronômetro Regressivo:**
-   - Exibe o tempo restante no formato Minutos e Segundos (`M:SS`).
-   - Alerta Crítico: Quando o tempo restante é menor ou igual a 15 segundos, o texto muda dinamicamente para vermelho vivo (`Color(1.0, 0.3, 0.3)`), sinalizando urgência.
-2. **Cards Dinâmicos de Metas:**
-   - Criados sob demanda pelo `HUD` conforme as espécies exigidas no nível atual.
-   - Cada card possui o emoji da planta e a quantidade pendente:
-     - `🌿` Grama Clássica e variantes cosméticas (`grass`)
-     - `🌾` Trigo Maduro (`wheat`)
-     - `🌸` Flor Silvestre (`flower`)
-     - `🌹` Rosa Nobre (`flower_rose`)
-     - `🌼` Margarida do Campo (`flower_daisy`)
-     - `🌻` Girassol Solar (`flower_sunflower`)
-     - `🔔` Flor Sino / Campânula (`flower_bell`)
-     - `🏵️` Cravo Corola (`flower_corolla`)
-     - `🌷` Tulipa Imperial (`flower_tulip`)
-     - `🪻` Canteiro Florido (`flower_bed`)
-   - **Efeito Visual de Pop:** A cada tufo ceifado, o card correspondente sofre uma rápida animação de escala (`1.15x` -> `1.0x` em 0.1s).
-   - **Meta Batida:** Ao zerar o contador, o número é substituído por um check verde (`✔`) e o fundo do card ganha tonalidade verde esmeralda.
-3. **Contador de Moedas:**
-   - Reflete o total de moedas acumuladas pelo jogador na sessão, atualizado em tempo real via sinal `UpgradeManager.coins_changed`.
+1. **Cronômetro Regressivo (`TimerContainer`) e Contador de Moedas (`CoinsContainer`):**
+   - Utilizam a mesma plaqueta chanfrada cyber (`badge_coin_bg.svg`, `105x42` px) da TopBar da Home, alinhados lado a lado com espaçamento simétrico de `10px`.
+   - Quando o tempo restante é menor ou igual a 15 segundos, o texto muda dinamicamente para vermelho vivo (`Color(1.0, 0.3, 0.3)`), sinalizando urgência.
+   - O contador de moedas reflete o total acumulado na sessão via sinal `UpgradeManager.coins_changed`.
+2. **Cards Dinâmicos de Metas (`GoalsContainer`):**
+   - Posicionados logo abaixo de Tempo e Moedas (`LeftCluster`) com espaçamento simétrico de `10px` vertical e horizontal.
+   - Utilizam moldura chanfrada cyber (`assets/ui/topbar/badge_goal_card.svg`, `54x62` px) e `badge_goal_card_done.svg` quando concluídos, compartilhando a mesma identidade visual (fundo `#060d18` e borda `#00d2ff` chanfrada a 45°) dos badges superiores.
+   - Cada card exibe o ícone vetorial SVG da espécie (`assets/icons/icon_*.svg`) e a quantidade pendente (com agrupamento de **6 tufos visuais = 1 unidade de meta** para gramas, e 1:1 para trigo e flores).
+   - **Efeito Visual de Pop:** A cada unidade contabilizada, o card correspondente sofre uma rápida animação de escala (`1.15x` -> `1.0x` em 0.1s).
+   - **Meta Batida:** Ao zerar o contador, o número é substituído por um check verde (`✔`) e a textura da moldura alterna para `badge_goal_card_done.svg`.
+3. **Botão de Pausa (`PauseButton`):**
+   - `TextureButton` estilizado como chip chanfrado (`btn_pause_cyber.svg` / `btn_pause_cyber_pressed.svg`, `54x48` px) no canto superior direito.
 
 ---
 
@@ -53,14 +49,17 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
   - `Oficina ⚙`: Abre a oficina para compra de melhorias imediatas.
   - `Menu Inicial 🏠`: Retorna ao Hub Principal preservando as moedas obtidas.
 
-### 2.2 Celebração de Vitória e Interface Desobstruída (`VictoryModal`)
-- **Timer de Antecipação (1.0s):** Ao cortar a última planta exigida, o cronômetro para e o jogo concede 1.0s para o jogador acompanhar a finalização.
-- **Enquadramento Heroico:** A câmera isométrica aproxima-se frontalmente do Cutter Bit em *glide zoom* (`offset = (0, 2.4, 3.8)`), enquanto o robô rotaciona para olhar de frente para a câmera e comemora com saltos em *squash & stretch*, confetes coloridos e fogos de artifício 3D.
-- **Estrelas em Arco e Métricas Flutuantes:** Em vez de uma caixa modal obstrusiva no centro, as 3 estrelas são projetadas em arco parabólico no topo da tela com pop-in sequencial e som `star_pop`, acompanhadas de uma pílula translúcida com `⏱️ Tempo` e `🪙 +Moedas`.
-- **Barra de Ações Inferior (Bottom Bar):** Desliza na base da tela mantendo 100% da ilha visível:
-  - `Próxima Fase ➔`: Avança dinamicamente para o estágio seguinte (`GameManager.next_level()`). Na Fase 20, o botão se transforma em `"Ciclo Mestre (Fase 1) 👑"` e o título celebra `"🏆 Campeão do Jardim! 🏆"`.
-  - `Repetir Fase 🔄`: Permite rejogar o nível atual para farmar moedas adicionais.
-  - `Menu Inicial 🏠`: Retorna ao Hub Principal com visualização da ilha desbloqueada no mapa.
+### 2.2 Celebração de Vitória e Interface Flutuante Cyber (`VictoryModal`)
+- **Persistência Atômica Imediata:** No exato instante em que a vitória da fase é disparada, `GameManager` grava sincronamente a conquista, moedas, estrelas e desbloqueia a próxima fase via `SaveManager.record_level_victory()`, garantindo que o progresso nunca seja perdido mesmo se o jogador voltar ao Menu imediatamente.
+- **Ocultação de HUD de Jogo:** A `TopBar` e a `BladeProgressBar3D` são ocultadas automaticamente ao iniciar a celebração.
+- **Enquadramento Heroico:** A câmera isométrica aproxima-se frontalmente do Cutter Bit em *glide zoom*, enquanto o robô olha de frente para a câmera com olhos de estrela/coração (`★ ♥`) e comemora com saltos em *squash & stretch*, confetes coloridos e fogos de artifício 3D.
+- **Cabeçalho Flutuante Sem Card Opaco (`TopBanner`):** Posicionado na faixa superior (`offset_top = 132`, `offset_bottom = 412`), sem qualquer painel de fundo que obstrua o cenário:
+  - Título `"FASE XX CONCLUÍDA!"` com ícone vetorial de troféu neon ciano (`icon_trophy.svg`) e divisor luminoso (`header_cyber_divider.svg`).
+  - Placa holográfica chanfrada (`stars_cyber_backplate.svg`, `390x92` px) com 3 estrelas douradas 3D (`star_3d_gold.svg`) animadas em arco com pop-in sequencial (`star_pop`).
+  - Cápsulas largas chanfradas (`badge_stat_pill.svg` e `badge_stat_pill_right.svg`, `288x68` px cada) com abas superiores listradas, exibindo `⏱️ Tempo` (`icon_stopwatch_cyber.svg`) e `+ XXX MOEDAS`.
+- **Barra de Ações Inferior Simétrica (`BottomBar`):** Desliza na base da tela (`560px` de largura centralizada, espaçamento vertical e horizontal unificado de `24px`):
+  - Linha superior (`SecondaryRow`, `separation = 24`): botões `MENU` (`btn_menu_secondary.svg`, `268x66` px, azul-marinho com borda ciano) e `REPETIR` (`btn_repeat_secondary.svg`, `268x66` px, azul-violeta com borda roxa), alinhados exatamente com a largura total do botão inferior (`268 + 24 + 268 = 560px`).
+  - Linha inferior: botão heroico verde-esmeralda neon `PRÓXIMA FASE ▶` (`btn_next_level.svg`, `560x96` px) com colchetes tecnológicos externos e texto em azul-petróleo escuro.
 
 ### 2.3 Reação Expressiva de Derrota (`GameOverModal`)
 - Disparado caso o cronômetro atinja `0:00` antes de bater as cotas.
@@ -128,13 +127,16 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
   - Rochas na miniatura (`MiniRocksMMI`) situadas no setor frontal têm suas instâncias escaladas para zero e reposicionadas fora de cena via `_set_rocks_in_front_hidden(true)`.
   - Ao alternar para o modo mapa (`MAP_VIEW`), todos os elementos e rochas da ilha retornam normalmente ao estado original.
 
-### 3.4 Barra de Navegação de 4 Abas (`BottomNavBar`)
-  - Altura expandida para $104\text{px}$ com cantos arredondados ($r=22\text{px}$) e fundo translúcido escuro.
-  - **Ícones Grandes em Destaque:** Emojis ampliados com `font_size = 28` centralizados em nós dedicados `IconLabel`.
-  - **Legendas Rebaixadas:** Textos com `font_size = 13` rebaixados com espaçamento vertical confortável (`separation = 4`).
-  - **Abas:**
-    - `Garage` 🔧: Acesso direto à Oficina de Upgrades do `UpgradeManager` (Evolução Unificada da Lâmina até o Nível 5 com Moedas).
+### 3.4 Barra de Navegação de 4 Abas (`BottomNavBar`) e Painéis Cyber com Cantos Retos Chanfrados
+  - **Encaixe Rentíssimo à Base (Sem Fresta Inferior):** O `BottomNavBar` (`scenes/menu/bottom_nav_bar.tscn`) e seu chassi vetorial (`assets/ui/navbar/nav_bar_chassis.svg`) estendem-se até a coordenada exata da borda inferior da viewport (`y = 92` no SVG e `offset_bottom = 2.0`), eliminando qualquer fresta de luz ou cenário na base da tela.
+  - **Painéis Principais e Sub-elementos com Cantos Retos (45°):** Todas as abas (`TabCollection`, `TabGarage` e `TabStore`) utilizam molduras nine-patch com chanfros retos de 45° (`panel_cyber_main.svg`), chips de estatísticas chanfrados (`chip_stat_cyber.svg`), molduras de avatares (`icon_frame_cyber.svg` / `icon_frame_cyber_locked.svg`) e botões chanfrados (`badge_milestone_cyber.svg`, `btn_claim_cyber.svg`), erradicando bordas arredondadas (`corner_radius = 0`) em prol de uma estética cyber-mecha coesa.
+  - **Abas (`CyberNavButton` em Atomic Design):**
     - `Home` 🏠: Tela principal com o botão arcade/cyber heroico `"JOGAR - Fase X ▶"` (`CyberPlayButton`), alternância de câmera (`MAP` / `BOT`) e visão isométrica da ilha tropical.
+    - `Garage` 🔧: Acesso direto à Oficina de Upgrades do `UpgradeManager` (Evolução Unificada da Lâmina até o Nível 5 com Moedas).
+    - `Collection` 🌿 (`TabCollection` - Herbário da Ilha & Itens):
+      - **Cards Horizontais Completos:** Exibe cards horizontais de largura total (`card_herbarium_horizontal.svg` / `card_herbarium_horizontal_locked.svg`) contendo: moldura chanfrada à esquerda com ilustração botânica vetorial multicamadas (`illus_grass_base.svg` + `illus_grass_blades.svg`, `illus_wheat_bundle.svg`, `illus_flower_stems.svg` + `illus_flower_petals.svg`, ou cadeado neon `illus_locked_plant.svg`), badge angular de status (`✓ DESCOBERTA` ou `BLOQUEADO`), indicador `Fase X+`, nome da espécie, atributos (`Resistência • Recompensa`), descrição botânica, contador `Colhidos: X`, título de maestria (`Nv X/10: ...`) com barra de progresso chanfrada, e botão/badge lateral direito (`badge_milestone_cyber.svg` / `btn_claim_cyber.svg`) para resgate de moedas.
+      - **Ordenação Estrita por Fase (`origin_level`):** Sem barra de filtros por categoria; todas as 15 espécies são listadas em ordem crescente da fase em que aparecem pela primeira vez (`origin_level` em `PlantDatabase.get_all_species()`).
+    - `Store` 🏪: Loja de pacotes de moedas e resgate de recompensas diárias em painéis chanfrados.
 
 ### 3.5 Botões Heroicos da Home: Banners Arcade/Cyber (`CyberPlayButton` & `CyberToggleButton`)
 - **Estética Visual Exclusiva:** Inspirado nos botões heroicos de jogos mobile arcade/cyberpunk, a barra de ações inferior combina dois botões estilizados que compartilham a mesma identidade visual e física:
@@ -166,12 +168,9 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
 
 ## 4. Barra Flutuante 3D de Evolução da Lâmina (`BladeProgressBar3D`)
 
-Instanciada dinamicamente no topo do cortador (`scenes/cutter/blade_progress_bar.tscn`), a barra flutua sobre a cabeça do robô fornecendo telemetria em tempo real da evolução da serra:
+Instanciada no cortador (`scenes/cutter/blade_progress_bar.tscn`), a barra posiciona-se **abaixo do robô na visão da câmera isométrica** (`position = Vector3(0.0, 0.12, 1.38)` em `scenes/cutter/cutter.tscn`, desacoplada do giro do chassi via `top_level = true`) fornecendo telemetria limpa e desobstruída da evolução da serra:
 
-- **Renderização e Projeção:** Desenvolvida em `SubViewport` (140x24 pixels) renderizado em um `Sprite3D` unshaded com `billboard = BILLBOARD_ENABLED` e sem culling de sombras, garantindo 60 FPS estáveis no mobile.
-- **Tipografia Interna:** Texto `Lv. 1` a `Lv. 5` ou `MAX` centralizado **dentro da própria barra**, com fonte branca e contorno preto fino (`outline_size = 2`), garantindo legibilidade perfeita tanto sobre o fundo escuro quanto sobre o preenchimento verde-lima/dourado.
-- **Reações Visuais e Game Feel:**
-  - **Level Up:** Pulso elástico na escala da barra (`1.0` ➔ `1.35` ➔ `1.0`).
-  - **Impacto em Rocha (Penalidade):** Piscar vermelho vivo (`#ff4747`) e *shake* horizontal rápido sincronizado ao recuo físico do bot.
-  - **Nível 6 ("MAX"):** Barra 100% preenchida com gradiente dourado radiante e o texto "MAX" em destaque.
+- **Renderização e Projeção:** Desenvolvida em `SubViewport` (`512x116` pixels) renderizado em um `Sprite3D` unshaded (`pixel_size = 0.0036`) com `billboard = BILLBOARD_ENABLED` e sem culling de sombras, garantindo 60 FPS estáveis no mobile.
+- **Moldura Cyber e Estado NÍVEL MAX:** Utiliza frame chanfrado com degrau e risquinhos neon externos (`bar_frame_cyber.svg`, preenchimento `bar_fill_cyber.svg`), alternando automaticamente no Nível 6 para o banner dourado chanfrado `bar_max_cyber.svg` com estrelas e rótulo `"NÍVEL MAX"`.
+- **Ocultação na Vitória:** Ocultada automaticamente quando a fase entra em celebração de vitória (`GameState.VICTORY`), mantendo o enquadramento heroico do robô 100% limpo.
 
