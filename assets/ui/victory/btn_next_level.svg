@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 112" width="620" height="112">
   <defs>
-    <!-- Gradiente Neon Esmeralda / Verde-Menta Elétrico (fiel à referência) -->
+    <!-- Gradiente Neon Esmeralda / Verde-Menta Elétrico -->
     <linearGradient id="next_face" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#38ff7a"/>
       <stop offset="50%" stop-color="#14e864"/>
@@ -20,17 +20,17 @@
       <stop offset="100%" stop-color="#00f5d4"/>
     </linearGradient>
 
-    <filter id="neon_btn_glow" x="-12%" y="-15%" width="124%" height="130%">
-      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#00f59b" flood-opacity="0.35"/>
+    <filter id="neon_btn_glow" x="-6%" y="-15%" width="112%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#00f59b" flood-opacity="0.35"/>
     </filter>
   </defs>
 
-  <!-- ================= 1. MOLDURA E TRAÇOS CYBER EXTERNOS ================= -->
+  <!-- ================= 1. MOLDURA E TRAÇOS CYBER EXTERNOS (ALINHADOS X=6 a X=614) ================= -->
   <!-- Aba Superior Central Verde-Limão -->
   <polygon points="340,14 348,6 410,6 418,14" fill="#38ff7a"/>
 
   <!-- Colchete Neon Direito -->
-  <polyline points="546,12 586,12 608,48 584,96 470,96"
+  <polyline points="552,12 594,12 616,48 594,96 476,96"
             fill="none"
             stroke="#00f5d4"
             stroke-width="3"
@@ -38,11 +38,11 @@
             stroke-linejoin="round"
             opacity="0.9"/>
   <!-- Traço Diagonal Externo Direito -->
-  <line x1="600" y1="68" x2="588" y2="92" stroke="#00f5d4" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="612" y1="68" x2="600" y2="92" stroke="#00f5d4" stroke-width="3.5" stroke-linecap="round"/>
 
   <!-- Traços Diagonais Externos Esquerdos -->
-  <line x1="22" y1="44" x2="10" y2="70" stroke="#38ff7a" stroke-width="4" stroke-linecap="round"/>
-  <polyline points="18,76 34,98 92,98"
+  <line x1="14" y1="44" x2="4" y2="68" stroke="#38ff7a" stroke-width="4" stroke-linecap="round"/>
+  <polyline points="10,76 26,98 86,98"
             fill="none"
             stroke="#00f5d4"
             stroke-width="2.8"
@@ -50,24 +50,24 @@
             stroke-linejoin="round"
             opacity="0.85"/>
 
-  <!-- ================= 2. CORPO 3D E FACE PRINCIPAL ================= -->
+  <!-- ================= 2. CORPO 3D E FACE PRINCIPAL (BORDAS ALINHADAS EM X=6 e X=614) ================= -->
   <g filter="url(#neon_btn_glow)">
     <!-- Base 3D Inferior -->
-    <polygon points="44,26 574,26 596,58 574,92 44,92 22,58"
+    <polygon points="28,26 592,26 614,58 592,92 28,92 6,58"
              fill="url(#next_base)"
              stroke="#00f5d4"
              stroke-width="1.8"
              stroke-linejoin="round"/>
 
     <!-- Face Principal Luminosa -->
-    <polygon points="44,18 574,18 594,50 574,82 44,82 24,50"
+    <polygon points="28,18 592,18 614,50 592,82 28,82 6,50"
              fill="url(#next_face)"
              stroke="url(#next_rim)"
              stroke-width="3"
              stroke-linejoin="round"/>
 
     <!-- Reflexo Superior Glassy -->
-    <polygon points="48,22 570,22 584,44 34,44"
+    <polygon points="32,22 588,22 602,44 18,44"
              fill="#ffffff"
              opacity="0.22"/>
   </g>

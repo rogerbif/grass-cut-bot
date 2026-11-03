@@ -315,9 +315,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -335.0
-offset_top = 48.0
+offset_top = 128.0
 offset_right = 335.0
-offset_bottom = 390.0
+offset_bottom = 445.0
 grow_horizontal = 2
 theme_override_constants/separation = 8
 alignment = 1
@@ -447,10 +447,10 @@ stretch_mode = 5
 [node name="StatsHBox" type="HBoxContainer" parent="VictoryModal/VictoryHeader"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 18
+theme_override_constants/separation = 24
 
 [node name="TimePill" type="PanelContainer" parent="VictoryModal/VictoryHeader/StatsHBox"]
-custom_minimum_size = Vector2(288, 68)
+custom_minimum_size = Vector2(312, 70)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
 
@@ -459,12 +459,12 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("13_stat_pill")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="VictoryModal/VictoryHeader/StatsHBox/TimePill"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 24
+theme_override_constants/margin_left = 26
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 20
 
@@ -493,7 +493,7 @@ text = "0:24"
 vertical_alignment = 1
 
 [node name="CoinsPill" type="PanelContainer" parent="VictoryModal/VictoryHeader/StatsHBox"]
-custom_minimum_size = Vector2(288, 68)
+custom_minimum_size = Vector2(312, 70)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
 
@@ -502,7 +502,7 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("23_stat_pill_r")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="VictoryModal/VictoryHeader/StatsHBox/CoinsPill"]
 layout_mode = 2
@@ -547,23 +547,23 @@ offset_right = -36.0
 offset_bottom = -34.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 14
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="SecondaryHBox" type="HBoxContainer" parent="VictoryModal/BottomBar"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 24
 alignment = 1
 
 [node name="MenuBtn" type="TextureButton" parent="VictoryModal/BottomBar/SecondaryHBox"]
-custom_minimum_size = Vector2(288, 76)
+custom_minimum_size = Vector2(312, 84)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 texture_normal = ExtResource("14_btn_menu")
 texture_pressed = ExtResource("15_btn_menu_pressed")
 ignore_texture_size = true
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="MenuLabelBox" type="HBoxContainer" parent="VictoryModal/BottomBar/SecondaryHBox/MenuBtn"]
 layout_mode = 1
@@ -597,14 +597,14 @@ text = "MENU"
 vertical_alignment = 1
 
 [node name="RestartBtn" type="TextureButton" parent="VictoryModal/BottomBar/SecondaryHBox"]
-custom_minimum_size = Vector2(288, 76)
+custom_minimum_size = Vector2(312, 84)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 texture_normal = ExtResource("16_btn_repeat")
 texture_pressed = ExtResource("17_btn_repeat_pressed")
 ignore_texture_size = true
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="RepeatLabelBox" type="HBoxContainer" parent="VictoryModal/BottomBar/SecondaryHBox/RestartBtn"]
 layout_mode = 1
@@ -638,13 +638,13 @@ text = "REPETIR"
 vertical_alignment = 1
 
 [node name="NextBtn" type="TextureButton" parent="VictoryModal/BottomBar"]
-custom_minimum_size = Vector2(0, 102)
+custom_minimum_size = Vector2(648, 108)
 layout_mode = 2
 focus_mode = 0
 texture_normal = ExtResource("18_btn_next")
 texture_pressed = ExtResource("19_btn_next_pressed")
 ignore_texture_size = true
-stretch_mode = 5
+stretch_mode = 0
 
 [node name="NextLabelBox" type="HBoxContainer" parent="VictoryModal/BottomBar/NextBtn"]
 layout_mode = 1

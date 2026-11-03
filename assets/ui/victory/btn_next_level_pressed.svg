@@ -12,7 +12,7 @@
 
   <polygon points="340,18 348,10 410,10 418,18" fill="#14e864"/>
 
-  <polyline points="546,16 586,16 608,52 584,96 470,96"
+  <polyline points="552,16 594,16 616,52 594,96 476,96"
             fill="none"
             stroke="#00f5d4"
             stroke-width="3"
@@ -20,7 +20,7 @@
             stroke-linejoin="round"
             opacity="0.75"/>
 
-  <polygon points="44,24 574,24 594,56 574,88 44,88 24,56"
+  <polygon points="28,24 592,24 614,56 592,88 28,88 6,56"
            fill="url(#next_face_p)"
            stroke="url(#next_rim_p)"
            stroke-width="3"
