@@ -168,7 +168,7 @@ static func _get_vector_material(v_type: String) -> StandardMaterial3D:
 
 	match v_type:
 		"grass_yellow":
-			mat.albedo_color = Color(0.9412, 0.8510, 0.1843, 1.0)
+			mat.albedo_color = Color(0.88, 0.80, 0.32, 1.0)
 		"grass_blue":
 			mat.albedo_color = Color(0.34, 0.62, 0.90, 1.0)
 		"grass_purple":
@@ -180,11 +180,11 @@ static func _get_vector_material(v_type: String) -> StandardMaterial3D:
 		"grass_black":
 			mat.albedo_color = Color(0.18, 0.18, 0.22, 1.0)
 		"wheat":
-			mat.albedo_color = Color(0.9412, 0.8510, 0.1843, 1.0)
+			mat.albedo_color = Color(0.88, 0.80, 0.32, 1.0)
 		"flower":
 			mat.albedo_color = Color(0.95, 0.35, 0.65, 1.0)
 		_:
-			mat.albedo_color = Color(0.600, 0.9176, 0.2471, 1.0) # grass_green (Opção 3)
+			mat.albedo_color = Color(0.3876, 0.6631, 0.1643, 1.0) # grass_green
 
 	_vector_materials[v_type] = mat
 	return mat

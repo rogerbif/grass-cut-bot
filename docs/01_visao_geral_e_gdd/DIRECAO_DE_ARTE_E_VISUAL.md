@@ -26,16 +26,16 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 
 | Elemento | Código HEX / Cor | Amostra | Função no Jogo |
 | :--- | :--- | :--- | :--- |
-| **Grama Verde Esmeralda** | `#99EA3F` / `#327016` | 🟢 Verde Campo Vibrante (Opção 3 Canônica) | Vegetação comum fundamental presente em todos os estágios; tom alegre e harmonioso. |
-| **Grama Amarela Solar** | `#F0D92F` / `#A67326` | 🟡 Dourado Solar Maduro (Opção 3 Canônica) | Variação estética cosmética (1 golpe). |
+| **Grama Verde Esmeralda** | `#4DB352` / `#2E6B35` | 🟢 Verde Suave Pastel | Vegetação comum fundamental presente em todos os estágios; tom calmo para contraste com as flores. |
+| **Grama Amarela Solar** | `#FFB83D` / `#A67326` | 🟡 Dourado Solar Pastel | Variação estética cosmética (1 golpe). |
 | **Grama Azul Celeste** | `#3D9CF2` / `#24599E` | 🔵 Azul Ciano Pastel | Grama de bioma costeiro/aquático. |
 | **Grama Roxa Mística** | `#9E47EB` / `#59268C` | 🟣 Roxo Místico Pastel | Grama de bioma noturno e labirintos avançados. |
 | **Grama Branca Algodão** | `#F7FAFF` / `#B3BAC7` | ⚪ Branco Fosco Suave | Grama especial de contraste e destaque. |
 | **Grama Vermelha Rubi** | `#F25459` / `#85262B` | 🔴 Vermelho Pastel Suave | Variação calma para zonas quentes. |
 | **Grama Preta Vulcânica** | `#1C1C21` / `#0D0D10` | ⚫ Grafite Escuro | Grama estilizada para cenários dramáticos. |
-| **Piso Aparado (Cortado)** | `#99EA3F` / `#1B5E20` | 🟩 Verde Campo Canônico | Revelado após a passagem da serra (sensação de gramado limpo). |
-| **Trigo Maduro (Meta 2x)** | `#F0D92F` / `#B38515` | 🌾 Dourado Ouro Maduro (Opção 3 Canônica) | Vegetação resistente de 2 golpes com maior valor e cota. |
-| **Falésia e Borda da Ilha** | `#F1AB65` / `#B56832` | 🏖️ Terracota / Areia Quente (Opção 3) | Delimitação da ilha com contraste acolhedor contra o mar. |
+| **Piso Aparado (Cortado)** | `#2E6930` / `#1B5E20` | 🟩 Verde Profundo | Revelado após a passagem da serra (sensação de gramado limpo). |
+| **Trigo Maduro (Meta 2x)** | `#FFA000` / `#FFB300` | 🌾 Dourado Ouro | Vegetação resistente de 2 golpes com maior valor e cota. |
+| **Falésia e Borda da Ilha** | `#BE6D40` / `#773E1E` | 🏖️ Terracota Quente | Delimitação da ilha com contraste acolhedor contra o mar. |
 | **Flores do Campo (Nobre)** | `#E91E63` / `#C2185B` | 🌸 Magenta Vibrante | Vegetação nobre de alto valor econômico (5 moedas). |
 | **Carcaça do Robô** | `#F5A623` / `#F7A81B` | 🟨 Amarelo Industrial | Carcaça externa em ABS/Policarbonato (cabeça, paralamas, deck). |
 | **Blindagem e Estrutura** | `#E8ECEF` / `#F0F3F6` | ⚪ Branco Metal | Placas protetoras superiores parafusadas e estrutura central. |
