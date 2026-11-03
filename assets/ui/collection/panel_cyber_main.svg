@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="panelBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#091324" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#050B16" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="panelStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.78"/>
+      <stop offset="50%" stop-color="#2268A8" stop-opacity="0.62"/>
+      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.78"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer Chamfered Cyber Frame (Straight 45-degree corners) -->
+  <polygon points="22,2 234,2 254,22 254,234 234,254 22,254 2,234 2,22"
+           fill="url(#panelBg)"
+           stroke="url(#panelStroke)"
+           stroke-width="2.5"/>
+  <!-- Subtle Inner Chamfered Line -->
+  <polygon points="25,7 231,7 249,25 249,231 231,249 25,249 7,231 7,25"
+           fill="none"
+           stroke="#48C8FF"
+           stroke-opacity="0.16"
+           stroke-width="1"/>
+  <!-- Corner Tech Accents -->
+  <polyline points="2,34 2,22 22,2 34,2" fill="none" stroke="#00F5FF" stroke-width="3" stroke-opacity="0.9"/>
+  <polyline points="222,2 234,2 254,22 254,34" fill="none" stroke="#00F5FF" stroke-width="3" stroke-opacity="0.9"/>
+  <polyline points="2,222 2,234 22,254 34,254" fill="none" stroke="#00F5FF" stroke-width="3" stroke-opacity="0.9"/>
+  <polyline points="222,254 234,254 254,234 254,222" fill="none" stroke="#00F5FF" stroke-width="3" stroke-opacity="0.9"/>
+</svg>

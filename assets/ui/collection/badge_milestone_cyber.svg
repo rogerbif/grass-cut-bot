@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="104" height="58" viewBox="0 0 104 58">
+  <defs>
+    <linearGradient id="mBadgeBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0D1A30" stop-opacity="0.94"/>
+      <stop offset="100%" stop-color="#081120" stop-opacity="0.94"/>
+    </linearGradient>
+  </defs>
+  <!-- Straight Chamfered Milestone Badge -->
+  <polygon points="10,2 94,2 102,10 102,48 94,56 10,56 2,48 2,10"
+           fill="url(#mBadgeBg)"
+           stroke="#2E78B8"
+           stroke-opacity="0.72"
+           stroke-width="1.8"/>
+  <polyline points="2,18 2,10 10,2 18,2" fill="none" stroke="#00E8FF" stroke-width="2" stroke-opacity="0.8"/>
+  <polyline points="86,56 94,56 102,48 102,40" fill="none" stroke="#00E8FF" stroke-width="2" stroke-opacity="0.8"/>
+</svg>

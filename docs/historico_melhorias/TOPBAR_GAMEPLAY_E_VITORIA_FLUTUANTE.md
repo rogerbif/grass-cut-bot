@@ -1,6 +1,6 @@
 # Registro de Melhoria: TopBar Moderna de Gameplay e Tela de Sucesso Flutuante com Persistência Imediata 🏆✨
 
-- **Versão:** `v0.12.105-alpha`
+- **Versão:** `v0.12.106-alpha`
 - **Data:** 03/11/2026
 - **Status:** Concluído e Validado
 - **Domínios:** Interface & HUD, Game Feel, Persistência & Gameplay

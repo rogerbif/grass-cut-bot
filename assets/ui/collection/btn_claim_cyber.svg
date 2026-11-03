@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="56" viewBox="0 0 128 56">
+  <defs>
+    <linearGradient id="claimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22C55E"/>
+      <stop offset="100%" stop-color="#12803C"/>
+    </linearGradient>
+  </defs>
+  <!-- Straight Chamfered Emerald Claim Button -->
+  <polygon points="10,2 118,2 126,10 126,46 118,54 10,54 2,46 2,10"
+           fill="url(#claimGrad)"
+           stroke="#6EFFA8"
+           stroke-width="2"/>
+  <polygon points="12,6 116,6 122,12 122,44 116,50 12,50 6,44 6,12"
+           fill="none"
+           stroke="#FFFFFF"
+           stroke-opacity="0.25"
+           stroke-width="1"/>
+</svg>

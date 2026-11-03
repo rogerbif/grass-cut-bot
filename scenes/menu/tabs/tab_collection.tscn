@@ -1,55 +1,41 @@
-[gd_scene load_steps=8 format=3 uid="uid://tab_collection_scene_01"]
+[gd_scene load_steps=11 format=3 uid="uid://tab_collection_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_collection.gd" id="1_collection"]
 [ext_resource type="Texture2D" uid="uid://de1kigwhd8acf" path="res://assets/icons/icon_leaf.svg" id="2_leaf"]
 [ext_resource type="Texture2D" uid="uid://1478kv18uocv" path="res://assets/ui/collection/collection_prog_track.svg" id="3_track"]
 [ext_resource type="Texture2D" uid="uid://cytinwx5c0xl6" path="res://assets/ui/collection/collection_prog_fill.svg" id="4_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/collection/panel_cyber_main.svg" id="5_panel_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/collection/chip_stat_cyber.svg" id="6_chip_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/collection/btn_claim_cyber.svg" id="7_btn_claim"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0.06, 0.09, 0.15, 0.96)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.18, 0.48, 0.72, 0.45)
-corner_radius_top_left = 22
-corner_radius_top_right = 22
-corner_radius_bottom_right = 22
-corner_radius_bottom_left = 22
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
+texture = ExtResource("5_panel_bg")
+texture_margin_left = 26.0
+texture_margin_top = 26.0
+texture_margin_right = 26.0
+texture_margin_bottom = 26.0
 content_margin_left = 14.0
 content_margin_top = 14.0
 content_margin_right = 14.0
 content_margin_bottom = 14.0
-shadow_color = Color(0, 0, 0, 0.45)
-shadow_size = 14
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_claim_all"]
-bg_color = Color(0.16, 0.68, 0.38, 0.96)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.35, 0.98, 0.62, 0.85)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_claim_all"]
+texture = ExtResource("7_btn_claim")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
 content_margin_left = 12.0
 content_margin_top = 6.0
 content_margin_right = 12.0
 content_margin_bottom = 6.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip"]
-bg_color = Color(0.09, 0.14, 0.24, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.22, 0.55, 0.82, 0.45)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_chip"]
+texture = ExtResource("6_chip_bg")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
 content_margin_left = 10.0
 content_margin_top = 5.0
 content_margin_right = 10.0
@@ -72,10 +58,10 @@ anchor_bottom = 1.0
 offset_left = 14.0
 offset_top = 96.0
 offset_right = -14.0
-offset_bottom = -106.0
+offset_bottom = -104.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+theme_override_styles/panel = SubResource("StyleBoxTexture_bg")
 
 [node name="MainVBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
@@ -157,9 +143,9 @@ custom_minimum_size = Vector2(138, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_claim_all")
-theme_override_styles/hover = SubResource("StyleBoxFlat_claim_all")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_claim_all")
+theme_override_styles/normal = SubResource("StyleBoxTexture_claim_all")
+theme_override_styles/hover = SubResource("StyleBoxTexture_claim_all")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_claim_all")
 text = "Coletar Tudo ✨"
 
 [node name="ChipsHBox" type="HBoxContainer" parent="Panel/MainVBox/HeaderVBox"]
@@ -169,7 +155,7 @@ theme_override_constants/separation = 10
 [node name="ChipHarvest" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
+theme_override_styles/panel = SubResource("StyleBoxTexture_chip")
 
 [node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipHarvest"]
 layout_mode = 2
@@ -181,7 +167,7 @@ horizontal_alignment = 1
 [node name="ChipMilestones" type="PanelContainer" parent="Panel/MainVBox/HeaderVBox/ChipsHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_chip")
+theme_override_styles/panel = SubResource("StyleBoxTexture_chip")
 
 [node name="Label" type="Label" parent="Panel/MainVBox/HeaderVBox/ChipsHBox/ChipMilestones"]
 layout_mode = 2

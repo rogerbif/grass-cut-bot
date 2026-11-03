@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <!-- Straight Chamfered Showcase Box for Botanical Illustration -->
+  <polygon points="12,2 84,2 94,12 94,84 84,94 12,94 2,84 2,12"
+           fill="#070E1C"
+           fill-opacity="0.88"
+           stroke="#FFFFFF"
+           stroke-opacity="0.85"
+           stroke-width="2"/>
+  <polygon points="14,6 82,6 90,14 90,82 82,90 14,90 6,82 6,14"
+           fill="none"
+           stroke="#FFFFFF"
+           stroke-opacity="0.22"
+           stroke-width="1"/>
+</svg>

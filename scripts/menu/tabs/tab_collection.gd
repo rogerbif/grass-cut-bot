@@ -10,6 +10,9 @@ const PlantDatabaseScript = preload("res://scripts/plants/plant_database.gd")
 const TEX_CARD_BG: Texture2D = preload("res://assets/ui/collection/card_species_bg.svg")
 const TEX_BADGE_DISC: Texture2D = preload("res://assets/ui/collection/badge_discovered.svg")
 const TEX_BADGE_LOCK: Texture2D = preload("res://assets/ui/collection/badge_locked.svg")
+const TEX_ICON_FRAME: Texture2D = preload("res://assets/ui/collection/icon_frame_cyber.svg")
+const TEX_BADGE_MILESTONE: Texture2D = preload("res://assets/ui/collection/badge_milestone_cyber.svg")
+const TEX_BTN_CLAIM: Texture2D = preload("res://assets/ui/collection/btn_claim_cyber.svg")
 
 const TEX_ILLUS_GRASS_BASE: Texture2D = preload("res://assets/ui/collection/illus_grass_base.svg")
 const TEX_ILLUS_GRASS_BLADES: Texture2D = preload("res://assets/ui/collection/illus_grass_blades.svg")
@@ -204,23 +207,19 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	hbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.add_child(hbox)
 
-	# --- 1. Vitrine de Ilustração Botânica 3D (Esquerda) ---
+	# --- 1. Vitrine de Ilustração Botânica 3D (Esquerda - Cantos Retos Chanfrados) ---
 	var icon_panel: PanelContainer = PanelContainer.new()
 	icon_panel.custom_minimum_size = Vector2(96, 96)
 	icon_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	icon_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 
-	var icon_sb: StyleBoxFlat = StyleBoxFlat.new()
-	icon_sb.bg_color = Color(0.05, 0.10, 0.20, 0.85) if is_disc else Color(0.06, 0.08, 0.14, 0.80)
-	icon_sb.corner_radius_top_left = 14
-	icon_sb.corner_radius_top_right = 14
-	icon_sb.corner_radius_bottom_right = 14
-	icon_sb.corner_radius_bottom_left = 14
-	icon_sb.border_width_left = 2
-	icon_sb.border_width_top = 2
-	icon_sb.border_width_right = 2
-	icon_sb.border_width_bottom = 2
-	icon_sb.border_color = Color(theme_col.r, theme_col.g, theme_col.b, 0.65) if is_disc else Color(0.22, 0.30, 0.42, 0.45)
+	var icon_sb: StyleBoxTexture = StyleBoxTexture.new()
+	icon_sb.texture = TEX_ICON_FRAME
+	icon_sb.texture_margin_left = 14.0
+	icon_sb.texture_margin_top = 14.0
+	icon_sb.texture_margin_right = 14.0
+	icon_sb.texture_margin_bottom = 14.0
+	icon_sb.modulate_color = Color(theme_col.r, theme_col.g, theme_col.b, 0.90) if is_disc else Color(0.28, 0.38, 0.52, 0.70)
 	icon_panel.add_theme_stylebox_override("panel", icon_sb)
 
 	var illus_layer: Control = Control.new()
@@ -393,18 +392,15 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 		var m_bg: StyleBoxFlat = StyleBoxFlat.new()
 		m_bg.bg_color = Color(0.06, 0.10, 0.18, 1.0)
-		m_bg.corner_radius_top_left = 4
-		m_bg.corner_radius_top_right = 4
-		m_bg.corner_radius_bottom_right = 4
-		m_bg.corner_radius_bottom_left = 4
+		m_bg.border_width_left = 1
+		m_bg.border_width_top = 1
+		m_bg.border_width_right = 1
+		m_bg.border_width_bottom = 1
+		m_bg.border_color = Color(0.18, 0.38, 0.58, 0.65)
 		m_bar.add_theme_stylebox_override("background", m_bg)
 
 		var m_fg: StyleBoxFlat = StyleBoxFlat.new()
 		m_fg.bg_color = theme_col
-		m_fg.corner_radius_top_left = 4
-		m_fg.corner_radius_top_right = 4
-		m_fg.corner_radius_bottom_right = 4
-		m_fg.corner_radius_bottom_left = 4
 		m_bar.add_theme_stylebox_override("fill", m_fg)
 		info_vbox.add_child(m_bar)
 
@@ -458,17 +454,12 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			claim_btn.add_theme_font_size_override("font_size", 12)
 			claim_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 
-			var btn_sb: StyleBoxFlat = StyleBoxFlat.new()
-			btn_sb.bg_color = Color(0.16, 0.72, 0.38, 0.98)
-			btn_sb.border_width_left = 1
-			btn_sb.border_width_top = 1
-			btn_sb.border_width_right = 1
-			btn_sb.border_width_bottom = 2
-			btn_sb.border_color = Color(0.42, 1.0, 0.65, 0.9)
-			btn_sb.corner_radius_top_left = 10
-			btn_sb.corner_radius_top_right = 10
-			btn_sb.corner_radius_bottom_right = 10
-			btn_sb.corner_radius_bottom_left = 10
+			var btn_sb: StyleBoxTexture = StyleBoxTexture.new()
+			btn_sb.texture = TEX_BTN_CLAIM
+			btn_sb.texture_margin_left = 12.0
+			btn_sb.texture_margin_top = 12.0
+			btn_sb.texture_margin_right = 12.0
+			btn_sb.texture_margin_bottom = 12.0
 			btn_sb.content_margin_top = 8.0
 			btn_sb.content_margin_bottom = 8.0
 			claim_btn.add_theme_stylebox_override("normal", btn_sb)
@@ -482,19 +473,14 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		else:
 			var badge_panel: PanelContainer = PanelContainer.new()
 			badge_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-			var b_sb: StyleBoxFlat = StyleBoxFlat.new()
-			b_sb.bg_color = Color(0.08, 0.13, 0.22, 0.85)
-			b_sb.border_width_left = 1
-			b_sb.border_width_top = 1
-			b_sb.border_width_right = 1
-			b_sb.border_width_bottom = 1
-			b_sb.border_color = Color(0.22, 0.45, 0.68, 0.45)
-			b_sb.corner_radius_top_left = 10
-			b_sb.corner_radius_top_right = 10
-			b_sb.corner_radius_bottom_right = 10
-			b_sb.corner_radius_bottom_left = 10
-			b_sb.content_margin_left = 8.0
-			b_sb.content_margin_right = 8.0
+			var b_sb: StyleBoxTexture = StyleBoxTexture.new()
+			b_sb.texture = TEX_BADGE_MILESTONE
+			b_sb.texture_margin_left = 12.0
+			b_sb.texture_margin_top = 12.0
+			b_sb.texture_margin_right = 12.0
+			b_sb.texture_margin_bottom = 12.0
+			b_sb.content_margin_left = 10.0
+			b_sb.content_margin_right = 10.0
 			b_sb.content_margin_top = 8.0
 			b_sb.content_margin_bottom = 8.0
 			badge_panel.add_theme_stylebox_override("panel", b_sb)
