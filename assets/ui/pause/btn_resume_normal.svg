@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="64" viewBox="0 0 380 64">
+  <defs>
+    <linearGradient id="btn_bg_green" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c2a26" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#061917" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="btn_border_green" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f576"/>
+      <stop offset="50%" stop-color="#26ff8c"/>
+      <stop offset="100%" stop-color="#00d663"/>
+    </linearGradient>
+  </defs>
+  <!-- Formato chanfrado nos 4 cantos -->
+  <path d="M 16 3 L 364 3 L 377 16 L 377 48 L 364 61 L 16 61 L 3 48 L 3 16 Z"
+        fill="url(#btn_bg_green)" stroke="url(#btn_border_green)" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Reflexo superior suave -->
+  <path d="M 20 8 L 360 8" stroke="#7affb8" stroke-width="1.2" stroke-opacity="0.45" stroke-linecap="round"/>
+</svg>

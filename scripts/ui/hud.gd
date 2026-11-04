@@ -77,11 +77,16 @@ func _ready() -> void:
 
 	# Conecta botões com suporte robusto a clique e touch
 	_connect_button(pause_button, _on_pause_pressed)
-	_connect_button($PauseModal/Panel/VBox/ResumeBtn, _on_resume_pressed)
-	_connect_button($PauseModal/Panel/VBox/RestartBtn, _on_restart_pressed)
-	_connect_button($PauseModal/Panel/VBox/WorkshopBtn, _on_open_workshop_pressed)
-	if $PauseModal/Panel/VBox.has_node("MenuBtn"):
-		_connect_button($PauseModal/Panel/VBox/MenuBtn, _on_menu_pressed)
+	if pause_modal is PauseModal:
+		var pm: PauseModal = pause_modal as PauseModal
+		pm.resume_requested.connect(_on_resume_pressed)
+		pm.restart_requested.connect(_on_restart_pressed)
+		pm.menu_requested.connect(_on_menu_pressed)
+	elif pause_modal != null and pause_modal.has_node("Panel/VBox"):
+		_connect_button(pause_modal.get_node_or_null("Panel/VBox/ResumeBtn") as BaseButton, _on_resume_pressed)
+		_connect_button(pause_modal.get_node_or_null("Panel/VBox/RestartBtn") as BaseButton, _on_restart_pressed)
+		_connect_button(pause_modal.get_node_or_null("Panel/VBox/WorkshopBtn") as BaseButton, _on_open_workshop_pressed)
+		_connect_button(pause_modal.get_node_or_null("Panel/VBox/MenuBtn") as BaseButton, _on_menu_pressed)
 
 	var next_btn: BaseButton = $VictoryModal.find_child("NextBtn", true, false) as BaseButton
 	if next_btn:
@@ -227,7 +232,14 @@ func _on_pause_pressed() -> void:
 	GameManager.toggle_pause()
 
 func _on_game_paused(is_paused: bool) -> void:
-	pause_modal.visible = is_paused
+	if pause_modal != null:
+		if pause_modal is PauseModal:
+			if is_paused:
+				(pause_modal as PauseModal).open()
+			else:
+				(pause_modal as PauseModal).close()
+		else:
+			pause_modal.visible = is_paused
 
 func _on_resume_pressed() -> void:
 	GameManager.toggle_pause()

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="28" viewBox="0 0 60 28">
+  <defs>
+    <linearGradient id="pill_track_off" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0a121c"/>
+      <stop offset="100%" stop-color="#050a10"/>
+    </linearGradient>
+    <linearGradient id="pill_knob_off" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4e6278"/>
+      <stop offset="100%" stop-color="#2d3a48"/>
+    </linearGradient>
+  </defs>
+  <!-- Trilha da pílula apagada -->
+  <rect x="2" y="2" width="56" height="24" rx="12" fill="url(#pill_track_off)" stroke="#223040" stroke-width="1.8"/>
+  <!-- Botão deslizante cinza à esquerda -->
+  <circle cx="16" cy="14" r="9" fill="url(#pill_knob_off)" stroke="#586f87" stroke-width="1.2"/>
+</svg>

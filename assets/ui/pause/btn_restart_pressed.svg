@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="64" viewBox="0 0 380 64">
+  <defs>
+    <linearGradient id="btn_bg_cyan_p" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#051424" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#020a12" stop-opacity="1.0"/>
+    </linearGradient>
+    <linearGradient id="btn_border_cyan_p" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1990cc"/>
+      <stop offset="100%" stop-color="#106a99"/>
+    </linearGradient>
+  </defs>
+  <path d="M 16 3 L 364 3 L 377 16 L 377 48 L 364 61 L 16 61 L 3 48 L 3 16 Z"
+        fill="url(#btn_bg_cyan_p)" stroke="url(#btn_border_cyan_p)" stroke-width="2.5" stroke-linejoin="round"/>
+</svg>

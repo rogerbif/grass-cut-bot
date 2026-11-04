@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="140" viewBox="0 0 116 140">
+  <defs>
+    <linearGradient id="toggle_card_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0a2038" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#051222" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="toggle_card_border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2bd9fe" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#1a8ec4" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#7a5ae0" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <path d="M 14 3 L 102 3 L 113 14 L 113 126 L 102 137 L 14 137 L 3 126 L 3 14 Z"
+        fill="url(#toggle_card_bg)" stroke="url(#toggle_card_border)" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Reflexo superior -->
+  <path d="M 16 7 L 100 7" stroke="#8bf0ff" stroke-width="1.0" stroke-opacity="0.35" stroke-linecap="round"/>
+</svg>

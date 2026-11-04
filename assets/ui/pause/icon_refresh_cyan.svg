@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="cyan_ref" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#70e4ff"/>
+      <stop offset="100%" stop-color="#00a8e8"/>
+    </linearGradient>
+  </defs>
+  <!-- Seta circular de refresh em arco aberto -->
+  <path d="M 16 6 A 10 10 0 1 1 7.2 21.2" fill="none" stroke="url(#cyan_ref)" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="17,1 17,11 25,6" fill="url(#cyan_ref)"/>
+</svg>
