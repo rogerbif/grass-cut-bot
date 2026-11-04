@@ -135,7 +135,7 @@ func _on_time_updated(time_left: float) -> void:
 		timer_label.text = "%d:%02d" % [minutes, seconds]
 		
 		# Alerta visual se o tempo estiver acabando (< 15 segundos)
-		if time_left <= 15.0:
+		if time_left <= 10.0:
 			timer_label.modulate = Color(1.0, 0.3, 0.3)
 			if AudioManager != null:
 				AudioManager.play_countdown_alert()
@@ -270,6 +270,8 @@ func _on_next_level_pressed() -> void:
 	GameManager.next_level()
 
 func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
+	if AudioManager != null:
+		AudioManager.stop_countdown_alert()
 	if top_bar != null:
 		top_bar.visible = false
 	if victory_coins_label != null:

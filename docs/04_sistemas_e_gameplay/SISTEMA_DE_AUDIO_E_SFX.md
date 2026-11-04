@@ -48,7 +48,7 @@ O design de áudio do **Grass Cut Bot** segue os pilares de **relaxamento tátil
    - `Star_pop.wav`: Revelação progressiva de cada estrela (1, 2, 3) no modal de vitória.
    - `MachinePowerOff.ogg`: Desligamento mecânico do robô quando o tempo esgota.
    - `goal_completed.wav`: Chime comemorativo quando uma meta específica de planta atinge 100%.
-   - `Timer_Countdown.wav`: Alerta auditivo de urgência nos últimos 15 segundos da fase.
+   - `Timer_Countdown.wav`: Alerta auditivo de urgência nos últimos 10 segundos da fase (interrompido imediatamente em caso de vitória/derrota).
 6. **Interface e Modais:**
    - `Confirm.wav`: Clique padrão de navegação e abas.
    - `Close.wav`: Fechar janelas e modais.

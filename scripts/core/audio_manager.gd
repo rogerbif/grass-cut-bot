@@ -248,6 +248,10 @@ func play_countdown_alert() -> void:
 	if not _countdown_player.playing:
 		_countdown_player.play()
 
+func stop_countdown_alert() -> void:
+	if _countdown_player != null and _countdown_player.playing:
+		_countdown_player.stop()
+
 # ---------------------------------------------------------
 # Motor Elétrico Contínuo (Engine Loop)
 # ---------------------------------------------------------

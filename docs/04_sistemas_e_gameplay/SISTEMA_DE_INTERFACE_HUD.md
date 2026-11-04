@@ -23,7 +23,7 @@ TopBar (Control - sem fundo opaco)
 ### Componentes em Destaque:
 1. **Cronômetro Regressivo (`TimerContainer`) e Contador de Moedas (`CoinsContainer`):**
    - Utilizam a mesma plaqueta chanfrada cyber (`badge_coin_bg.svg`, `105x42` px) da TopBar da Home, alinhados lado a lado com espaçamento simétrico de `10px`.
-   - Quando o tempo restante é menor ou igual a 15 segundos, o texto muda dinamicamente para vermelho vivo (`Color(1.0, 0.3, 0.3)`), sinalizando urgência.
+   - Quando o tempo restante é menor ou igual a 10 segundos, o texto muda dinamicamente para vermelho vivo (`Color(1.0, 0.3, 0.3)`) e ativa o áudio regressivo de urgência (`AudioManager.play_countdown_alert()`), que é interrompido imediatamente em caso de vitória ou derrota.
    - O contador de moedas reflete o total acumulado na sessão via sinal `UpgradeManager.coins_changed`.
 2. **Cards Dinâmicos de Metas (`GoalsContainer`):**
    - Posicionados logo abaixo de Tempo e Moedas (`LeftCluster`) com espaçamento simétrico de `10px` vertical e horizontal.
