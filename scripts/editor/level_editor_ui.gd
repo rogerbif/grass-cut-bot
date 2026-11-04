@@ -282,7 +282,7 @@ func _build_top_bar() -> void:
 	var le_time: LineEdit = spin_time.get_line_edit()
 	le_time.text_changed.connect(func(new_text: String) -> void:
 		if new_text.is_valid_float():
-			var val: float = float(new_text)
+			var val: float = clampf(float(new_text), float(spin_time.min_value), float(spin_time.max_value))
 			time_limit_changed.emit(val)
 	)
 	le_time.text_submitted.connect(func(_new_text: String) -> void:

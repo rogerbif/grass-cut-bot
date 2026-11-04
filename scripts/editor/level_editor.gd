@@ -386,19 +386,20 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				return
 
-			if not is_playtesting and not ui.has_text_focus():
+			if not is_playtesting:
 				if ke.ctrl_pressed and ke.keycode == KEY_S:
 					save_current_level_json()
 					get_viewport().set_input_as_handled()
 					return
-				if ke.ctrl_pressed and ke.keycode == KEY_Z:
-					perform_undo()
-					get_viewport().set_input_as_handled()
-					return
-				if ke.ctrl_pressed and ke.keycode == KEY_Y:
-					perform_redo()
-					get_viewport().set_input_as_handled()
-					return
+				if not ui.has_text_focus():
+					if ke.ctrl_pressed and ke.keycode == KEY_Z:
+						perform_undo()
+						get_viewport().set_input_as_handled()
+						return
+					if ke.ctrl_pressed and ke.keycode == KEY_Y:
+						perform_redo()
+						get_viewport().set_input_as_handled()
+						return
 
 				match ke.keycode:
 					KEY_1, KEY_B:
