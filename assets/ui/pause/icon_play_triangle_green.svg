@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="green_play" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4aff8f"/>
+      <stop offset="50%" stop-color="#00f576"/>
+      <stop offset="100%" stop-color="#00bd59"/>
+    </linearGradient>
+  </defs>
+  <!-- Mesma geometria do icon_play_triangle oficial do botão de início de fase -->
+  <path d="M 7 4 Q 5 2.5 5 5.5 L 5 26.5 Q 5 29.5 7 28 L 27 17.5 Q 29 16 27 14.5 Z" fill="url(#green_play)" />
+</svg>

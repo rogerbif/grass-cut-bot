@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+  <defs>
+    <linearGradient id="close_x_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#70e4ff"/>
+      <stop offset="100%" stop-color="#2bd9fe"/>
+    </linearGradient>
+  </defs>
+  <!-- Cruz 'X' minimalista e limpa em ciano brilhante -->
+  <path d="M 9 9 L 27 27 M 27 9 L 9 27" stroke="url(#close_x_grad)" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

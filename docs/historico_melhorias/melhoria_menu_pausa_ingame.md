@@ -1,6 +1,6 @@
-# Relatório de Melhoria: Novo Menu de Pausa Ingame (Cyberpunk Neon) ⏸️🤖
+# Relatório de Melhoria: Novo Menu de Pausa Ingame (Cyberpunk Neon & Refinamentos) ⏸️🤖
 
-**Versão:** `v0.12.116-alpha`  
+**Versão:** `v0.12.117-alpha`  
 **Data:** 04/11/2026  
 **Status:** Concluído com Sucesso
 
@@ -12,31 +12,34 @@
    - Criada a cena modular [`scenes/ui/pause_modal.tscn`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/scenes/ui/pause_modal.tscn) controlada por [`scripts/ui/pause_modal.gd`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/scripts/ui/pause_modal.gd), substituindo o painel genérico cinza em [`scenes/ui/hud.tscn`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/scenes/ui/hud.tscn).
    - Configuração estrita de `process_mode = PROCESS_MODE_ALWAYS` (Node 3) para permitir interatividade completa com a árvore pausada (`get_tree().paused = true`), em total conformidade com o **Guardrail 9**.
 
-2. **Design Visual Cyberpunk Neon Fiel à Referência:**
+2. **Design Visual Cyberpunk Neon & Novos Ícones Canônicos:**
    - **Placa Principal:** Fundo escuro azul-noite profundo com chanfros nos 4 cantos, contorno com gradiente neon ciano para roxo (`assets/ui/pause/card_pause_bg.svg`) e as 3 ranhuras diagonais decorativas (`///`) no topo direito.
-   - **Cabeçalho:** Ícone duplo `||` em ciano neon vibrante (`assets/ui/pause/icon_pause_cyan.svg`) e tipografia de alto impacto `"Jogo Pausado"`.
-   - **Botão Continuar:** Moldura chanfrada com borda neon verde limão (`assets/ui/pause/btn_resume_normal.svg`), ícone de play verde e texto `"Continuar"`.
-   - **Botão Reiniciar Fase:** Moldura chanfrada com borda cyber azul/ciano (`assets/ui/pause/btn_restart_normal.svg`), ícone circular de refresh (`↺`) e texto `"Reiniciar Fase"`.
-   - **Botão Menu Inicial:** Moldura chanfrada com borda cyber roxa/magenta (`assets/ui/pause/btn_menu_normal.svg`), ícone da casinha clássica e texto `"Menu Inicial"`.
+   - **Cabeçalho:** Ícone duplo `||` em ciano neon vibrante, tipografia `"Jogo Pausado"` e **botão de fechar `[X]`** em ciano neon no canto superior direito (`assets/ui/pause/btn_close_x.svg`).
+   - **Botão Continuar:** Moldura verde neon com o **triângulo de play oficial** do botão de início de fase em verde neon (`assets/ui/pause/icon_play_triangle_green.svg`).
+   - **Botão Reiniciar Fase:** Moldura ciano/azul com a **nova seta circular de refresh** no mesmo padrão geométrico e limpo (`assets/ui/pause/icon_restart_cyber.svg`).
+   - **Botão Menu Inicial:** Moldura roxo/magenta com o **ícone oficial da casinha da barra de navegação inferior** (`assets/icons/navbar/nav_icon_home.svg`).
 
-3. **Trio de Mini-Cards Inferiores de Configurações Rápidas (Toggles):**
+3. **Alinhamento e Proximidade de Ícones:**
+   - Ícone e texto centralizados juntos no miolo de cada botão com distância justa de `12px`, eliminando o espaçamento vazio excessivo.
+
+4. **Interação com Backdrop e Animações Dinâmicas:**
+   - **Toque Fora:** Clicar ou tocar no backdrop semi-transparente fora do card fecha o menu e retoma o gameplay instantaneamente.
+   - **Grow + Fade In:** Ao abrir, escala de `0.85 -> 1.0` com curva elástica `TRANS_BACK` e fade de opacidade.
+   - **Shrink + Fade Out:** Ao fechar, escala de `1.0 -> 0.85` com curva `TRANS_CUBIC` e fade out de opacidade.
+   - Ambos os tweens utilizam `TWEEN_PAUSE_PROCESS` para fluidez com a árvore de nós pausada.
+
+5. **Padding Inferior Compacto:**
+   - Altura do card calibrada para 470px (`content_margin_bottom = 14.0`), eliminando a sobra de fundo azul e equilibrando a distância da base com as margens laterais.
+
+6. **Trio de Mini-Cards Inferiores (Toggles Rápidos):**
    - Mini-cards chanfrados verticais para **FX**, **Música** e **Vibrar**.
-   - Chave switch tipo pílula interativa com estados visualmente distintos:
-     - **Ligado:** Trilha escura, botão deslizante ciano à direita (`assets/ui/pause/toggle_pill_on.svg`) e texto de status verde (`#00f576`).
-     - **Desligado:** Trilha escura, botão cinza à esquerda (`assets/ui/pause/toggle_pill_off.svg`) e texto de status cinza (`#7a8e9e`).
-   - Sincronização em tempo real e bidirecional com os barramentos de áudio (`AudioManager.set_sfx_enabled`, `AudioManager.set_music_enabled`) e persistência no [`SaveManager`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/scripts/core/save_manager.gd).
-   - Suporte a feedback háptico (`Input.vibrate_handheld(25)`) ao alternar vibração.
-
-4. **Transições e Atalhos:**
-   - Animação suave de entrada e saída por fade alfa com `Tween` processável durante a pausa (`TWEEN_PAUSE_PROCESS`).
-   - Suporte nativo ao teclado e botões físicos: pressionar `Esc` ou `UiCancel` fecha o pause e retoma o gameplay.
+   - Switches tipo pílula ciano neon (ON à direita / OFF à esquerda) sincronizados com [`AudioManager`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/scripts/core/audio_manager.gd), [`SaveManager`](file:///c:/Users/User/OneDrive/Documentos/grass-cut-bot/scripts/core/save_manager.gd) e retorno tátil (`Input.vibrate_handheld(25)`).
 
 ---
 
 ## 📂 Arquivos Modificados e Criados
 
-- `assets/ui/pause/`: Criação de 15 assets vetoriais SVG (placa de fundo, botões com gradientes, cards de toggle, pílulas switch e ícones temáticos).
-- `scenes/ui/pause_modal.tscn` & `scripts/ui/pause_modal.gd`: Nova cena e classe controladora do modal de pausa.
-- `scenes/ui/hud.tscn` & `scripts/ui/hud.gd`: Instanciação do novo modal e conexão reativa com o ciclo do jogo.
-- `project.godot` e `scripts/core/game_version.gd`: Incremento de versão para `0.12.116-alpha`.
-- `docs/historico_melhorias/INDICE_MELHORIAS.md`: Indexação no catálogo canônico.
+- `assets/ui/pause/`: Criação de novos assets vetoriais (`icon_play_triangle_green.svg`, `icon_restart_cyber.svg`, `btn_close_x.svg`, placas e botões neon).
+- `scripts/ui/pause_modal.gd`: Implementação do botão [X], alinhamento agrupado ícone+label, animações Grow/Shrink e fechamento por toque no backdrop.
+- `project.godot` e `scripts/core/game_version.gd`: Incremento de versão para `0.12.117-alpha`.
+- `docs/historico_melhorias/INDICE_MELHORIAS.md`: Atualização no índice canônico.
