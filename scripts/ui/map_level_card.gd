@@ -196,13 +196,13 @@ func _build_ui() -> void:
 	# exatamente interceptando/tangenciando a linha inferior recortada da moldura.
 	var frame_wrapper: Control = Control.new()
 	frame_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame_wrapper.custom_minimum_size = Vector2(0.0, 96.0)
+	frame_wrapper.custom_minimum_size = Vector2(0.0, 102.0)
 	root_vbox.add_child(frame_wrapper)
 
 	var frame: PanelContainer = PanelContainer.new()
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
-	frame.add_theme_stylebox_override("panel", _make_texture_style(TEX_FRAME_OBJ, 24.0, 16.0, 6.0, 16.0, 12.0))
+	frame.add_theme_stylebox_override("panel", _make_texture_style(TEX_FRAME_OBJ, 24.0, 16.0, 6.0, 16.0, 16.0))
 	frame_wrapper.add_child(frame)
 
 	_goals_box = HBoxContainer.new()
@@ -212,14 +212,14 @@ func _build_ui() -> void:
 	_goals_box.custom_minimum_size = Vector2(0.0, GOAL_CARD_HEIGHT)
 	frame.add_child(_goals_box)
 
-	var obj_caption: Label = _make_label("Objetivos da Fase", 18, COL_WHITE)
+	var obj_caption: Label = _make_label("Objetivos da Fase", 16, COL_SUB)
 	obj_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	obj_caption.anchor_top = 1.0
 	obj_caption.anchor_bottom = 1.0
 	obj_caption.anchor_left = 0.0
 	obj_caption.anchor_right = 1.0
-	obj_caption.offset_top = -18.0
-	obj_caption.offset_bottom = 4.0
+	obj_caption.offset_top = -14.0
+	obj_caption.offset_bottom = 6.0
 	obj_caption.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	frame_wrapper.add_child(obj_caption)
 
