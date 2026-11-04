@@ -1,12 +1,18 @@
 extends Control
 
-const ICON_LEAF: Texture2D = preload("res://assets/icons/icon_leaf.svg")
-const ICON_WHEAT: Texture2D = preload("res://assets/icons/icon_wheat.svg")
-const ICON_FLOWER: Texture2D = preload("res://assets/icons/icon_flower.svg")
+const PlantDatabaseScript = preload("res://scripts/plants/plant_database.gd")
+
 const ICON_PAUSE: Texture2D = preload("res://assets/icons/icon_pause.svg")
 const ICON_COIN: Texture2D = preload("res://assets/icons/icon_coin.svg")
 const BADGE_GOAL_BG: Texture2D = preload("res://assets/ui/topbar/badge_goal_bg.svg")
 const BADGE_GOAL_DONE_BG: Texture2D = preload("res://assets/ui/topbar/badge_goal_done_bg.svg")
+
+# Ilustrações Botânicas Canônicas da Coleção
+const TEX_ILLUS_GRASS_BASE: Texture2D = preload("res://assets/ui/collection/illus_grass_base.svg")
+const TEX_ILLUS_GRASS_BLADES: Texture2D = preload("res://assets/ui/collection/illus_grass_blades.svg")
+const TEX_ILLUS_WHEAT: Texture2D = preload("res://assets/ui/collection/illus_wheat_bundle.svg")
+const TEX_ILLUS_FLOWER_STEMS: Texture2D = preload("res://assets/ui/collection/illus_flower_stems.svg")
+const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/illus_flower_petals.svg")
 
 @onready var top_bar: PanelContainer = $TopBar
 @onready var timer_label: Label = $TopBar.find_child("TimerLabel", true, false) as Label
@@ -145,8 +151,9 @@ func _on_goal_updated(plant_type: String, remaining: int, target: int) -> void:
 
 func _create_goal_card(plant_type: String, target: int) -> void:
 	var card_panel: PanelContainer = PanelContainer.new()
-	card_panel.custom_minimum_size = Vector2(72, 68)
-	card_panel.pivot_offset = Vector2(36, 34)
+	# Simetria exata de altura 52px com os badges superiores
+	card_panel.custom_minimum_size = Vector2(88, 52)
+	card_panel.pivot_offset = Vector2(44, 26)
 	card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
@@ -161,93 +168,109 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 
 	var margin: MarginContainer = MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_left", 6)
-	margin.add_theme_constant_override("margin_right", 6)
-	margin.add_theme_constant_override("margin_top", 6)
+	margin.add_theme_constant_override("margin_left", 8)
+	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_top", 4)
 	margin.add_theme_constant_override("margin_bottom", 4)
 	card_panel.add_child(margin)
 
-	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 2)
+	var hbox: HBoxContainer = HBoxContainer.new()
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_theme_constant_override("separation", 6)
 
-	var icon_rect: TextureRect = TextureRect.new()
-	icon_rect.custom_minimum_size = Vector2(26, 26)
-	icon_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Container de ilustração botânica (34x34)
+	var illus_container: Control = Control.new()
+	illus_container.custom_minimum_size = Vector2(34, 34)
+	illus_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	illus_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	illus_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	match plant_type:
-		"grass", "grass_green":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(0.35, 0.95, 0.40)
-		"grass_yellow":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(0.98, 0.88, 0.25)
-		"grass_blue":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(0.35, 0.75, 1.0)
-		"grass_purple":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(0.85, 0.45, 1.0)
-		"grass_white":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(0.95, 0.95, 0.95)
-		"grass_red":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(1.0, 0.35, 0.35)
-		"grass_black":
-			icon_rect.texture = ICON_LEAF
-			icon_rect.modulate = Color(0.40, 0.40, 0.45)
-		"wheat":
-			icon_rect.texture = ICON_WHEAT
-		"flower":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(1.0, 0.18, 0.65)
-		"flower_rose":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(1.0, 0.08, 0.35)
-		"flower_daisy":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(1.0, 1.0, 1.0)
-		"flower_sunflower":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(1.0, 0.88, 0.0)
-		"flower_bell":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(0.12, 0.65, 1.0)
-		"flower_corolla":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(1.0, 0.50, 0.05)
-		"flower_tulip":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(1.0, 0.08, 0.24)
-		"flower_bed":
-			icon_rect.texture = ICON_FLOWER
-			icon_rect.modulate = Color(0.88, 0.30, 1.0)
-		_:
-			icon_rect.texture = ICON_LEAF
+	# Busca metadados da espécie no banco botânico canônico
+	var sp_data: Dictionary = PlantDatabaseScript.get_species(plant_type)
+	var cat: String = String(sp_data.get("category", ""))
+	var theme_col: Color = sp_data.get("color", Color.WHITE) as Color
+
+	# Caso de fallback se a chave for "grass" ou "flower" genérica
+	if cat.is_empty():
+		if plant_type.begins_with("flower"):
+			cat = "flower"
+			theme_col = Color(1.0, 0.18, 0.65)
+		elif plant_type == "wheat":
+			cat = "crop"
+			theme_col = Color(0.91, 0.77, 0.42)
+		else:
+			cat = "grass"
+			theme_col = Color(0.28, 0.81, 0.10)
+
+	if cat == "crop" or plant_type == "wheat":
+		var wheat_rect: TextureRect = TextureRect.new()
+		wheat_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		wheat_rect.texture = TEX_ILLUS_WHEAT
+		wheat_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		wheat_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		wheat_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		illus_container.add_child(wheat_rect)
+	elif cat == "flower":
+		var stems_rect: TextureRect = TextureRect.new()
+		stems_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		stems_rect.texture = TEX_ILLUS_FLOWER_STEMS
+		stems_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		stems_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		stems_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		illus_container.add_child(stems_rect)
+
+		var petals_rect: TextureRect = TextureRect.new()
+		petals_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		petals_rect.texture = TEX_ILLUS_FLOWER_PETALS
+		petals_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		petals_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		petals_rect.modulate = theme_col
+		petals_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		illus_container.add_child(petals_rect)
+	else:
+		# Gramas: Base de solo + tufos de lâminas com a cor canônica
+		var base_rect: TextureRect = TextureRect.new()
+		base_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		base_rect.texture = TEX_ILLUS_GRASS_BASE
+		base_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		base_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		base_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		illus_container.add_child(base_rect)
+
+		var blades_rect: TextureRect = TextureRect.new()
+		blades_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		blades_rect.texture = TEX_ILLUS_GRASS_BLADES
+		blades_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		blades_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		blades_rect.modulate = theme_col
+		blades_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		illus_container.add_child(blades_rect)
 
 	var count_lbl: Label = Label.new()
 	count_lbl.text = str(target)
 	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	count_lbl.add_theme_font_size_override("font_size", 18)
+	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# Fonte 23px idêntica aos badges da Home
+	count_lbl.add_theme_font_size_override("font_size", 23)
 	count_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.4))
 	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
 
-	vbox.add_child(icon_rect)
-	vbox.add_child(count_lbl)
-	margin.add_child(vbox)
+	var sys_font: SystemFont = SystemFont.new()
+	sys_font.font_names = PackedStringArray(["Segoe UI", "Arial Black", "Montserrat", "sans-serif"])
+	sys_font.font_weight = 900
+	count_lbl.add_theme_font_override("font", sys_font)
+
+	hbox.add_child(illus_container)
+	hbox.add_child(count_lbl)
+	margin.add_child(hbox)
 	goals_container.add_child(card_panel)
 
 	goal_cards[plant_type] = {
 		"container": card_panel,
 		"count_label": count_lbl,
-		"icon_rect": icon_rect,
+		"illus_container": illus_container,
 		"bg_rect": bg_rect
 	}
 

@@ -32,7 +32,7 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
 bg_color = Color(0.08, 0.1, 0.14, 0)
 content_margin_left = 16.0
-content_margin_top = 48.0
+content_margin_top = 16.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
 
@@ -150,7 +150,7 @@ mouse_filter = 2
 theme_override_constants/separation = 10
 
 [node name="TimerContainer" type="PanelContainer" parent="TopBar/VBox/HBox"]
-custom_minimum_size = Vector2(104, 50)
+custom_minimum_size = Vector2(110, 52)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -169,7 +169,7 @@ alignment = 1
 theme_override_constants/separation = 6
 
 [node name="ClockIcon" type="TextureRect" parent="TopBar/VBox/HBox/TimerContainer/HBoxTimer"]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -182,13 +182,14 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
 theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 18
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 23
 text = "1:30"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="CoinsContainer" type="PanelContainer" parent="TopBar/VBox/HBox"]
-custom_minimum_size = Vector2(104, 50)
+custom_minimum_size = Vector2(110, 52)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -221,7 +222,8 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
 theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 18
+theme_override_fonts/font = SubResource("SystemFont_bold")
+theme_override_font_sizes/font_size = 23
 text = "0"
 vertical_alignment = 1
 
