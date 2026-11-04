@@ -18,9 +18,9 @@ const COL_WHITE: Color = Color(1.0, 1.0, 1.0, 1.0)
 const COL_SUB: Color = Color(0.50, 0.65, 0.80, 1.0)
 const COL_LOCKED: Color = Color(0.62, 0.68, 0.80, 1.0)
 
-const CARD_WIDTH: float = 660.0
-const GOAL_INNER_WIDTH: float = 580.0
-const GOAL_CARD_HEIGHT: float = 72.0
+const CARD_WIDTH: float = 606.0
+const GOAL_INNER_WIDTH: float = 540.0
+const GOAL_CARD_HEIGHT: float = 70.0
 const GOAL_GAP: float = 6.0
 
 const GOAL_ORDER: Array[String] = [
@@ -74,22 +74,23 @@ func _make_icon(tex: Texture2D, icon_size: Vector2) -> TextureRect:
 	return rect
 
 
-func _make_texture_style(tex: Texture2D, tex_margin: float, pad_h: float, pad_v: float) -> StyleBoxTexture:
+func _make_texture_style(tex: Texture2D, tex_margin: float, pad_l: float, pad_t: float, pad_r: float, pad_b: float) -> StyleBoxTexture:
 	var sb: StyleBoxTexture = StyleBoxTexture.new()
 	sb.texture = tex
 	sb.texture_margin_left = tex_margin
 	sb.texture_margin_right = tex_margin
 	sb.texture_margin_top = tex_margin
 	sb.texture_margin_bottom = tex_margin
-	sb.content_margin_left = pad_h
-	sb.content_margin_right = pad_h
-	sb.content_margin_top = pad_v
-	sb.content_margin_bottom = pad_v
+	sb.content_margin_left = pad_l
+	sb.content_margin_right = pad_r
+	sb.content_margin_top = pad_t
+	sb.content_margin_bottom = pad_b
 	return sb
 
 
 func _build_ui() -> void:
-	add_theme_stylebox_override("panel", _make_texture_style(TEX_CARD_BG, 26.0, 20.0, 12.0))
+	# Redução de 50% no padding inferior e uniformização elegante (10px superior/laterais, 6px inferior)
+	add_theme_stylebox_override("panel", _make_texture_style(TEX_CARD_BG, 26.0, 10.0, 10.0, 10.0, 6.0))
 
 	var root_vbox: VBoxContainer = VBoxContainer.new()
 	root_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -97,100 +98,118 @@ func _build_ui() -> void:
 	add_child(root_vbox)
 
 	# --- Linha superior: Fase/Bioma | Estrelas | Tempo ---
+	# Todos com alinhamento vertical estrito (linha guia)
 	var top_row: HBoxContainer = HBoxContainer.new()
 	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_row.add_theme_constant_override("separation", 8)
 	root_vbox.add_child(top_row)
 
-	var left_cell: Control = Control.new()
-	left_cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_row.add_child(left_cell)
-
+	# 1. Bloco Esquerda (Fase XX / Ilha Tropical)
 	var left_vbox: VBoxContainer = VBoxContainer.new()
 	left_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left_vbox.add_theme_constant_override("separation", 0)
-	left_vbox.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	left_cell.add_child(left_vbox)
-	left_cell.custom_minimum_size = Vector2(0.0, 64.0)
+	left_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	left_vbox.add_theme_constant_override("separation", 2)
+	top_row.add_child(left_vbox)
 
 	var title_row: HBoxContainer = HBoxContainer.new()
 	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	title_row.add_theme_constant_override("separation", 8)
+	title_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	title_row.add_theme_constant_override("separation", 6)
+	title_row.custom_minimum_size = Vector2(0.0, 36.0)
 	left_vbox.add_child(title_row)
-	_title_icon = _make_icon(TEX_ISLAND, Vector2(36.0, 36.0))
+
+	_title_icon = _make_icon(TEX_ISLAND, Vector2(30.0, 30.0))
 	title_row.add_child(_title_icon)
-	_title_lbl = _make_label("Fase 01", 26, COL_WHITE)
+	_title_lbl = _make_label("Fase 01", 24, COL_WHITE)
 	title_row.add_child(_title_lbl)
-	_biome_lbl = _make_label(LevelCardData.BIOME_NAME, 18, COL_SUB)
+
+	_biome_lbl = _make_label(LevelCardData.BIOME_NAME, 16, COL_SUB)
+	_biome_lbl.custom_minimum_size = Vector2(0.0, 20.0)
 	left_vbox.add_child(_biome_lbl)
 
+	# 2. Bloco Central (Trio de Estrelas / Estrelas)
 	var center_vbox: VBoxContainer = VBoxContainer.new()
 	center_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	center_vbox.add_theme_constant_override("separation", 0)
+	center_vbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	center_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	center_vbox.add_theme_constant_override("separation", 2)
 	top_row.add_child(center_vbox)
 
 	var stars_row: HBoxContainer = HBoxContainer.new()
 	stars_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	stars_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	stars_row.add_theme_constant_override("separation", 4)
-	stars_row.custom_minimum_size = Vector2(0.0, 46.0)
+	stars_row.custom_minimum_size = Vector2(0.0, 36.0)
 	center_vbox.add_child(stars_row)
-	var star_sizes: Array[float] = [36.0, 46.0, 36.0]
+
+	var star_sizes: Array[float] = [30.0, 38.0, 30.0]
 	for s_size: float in star_sizes:
 		var star_rect: TextureRect = _make_icon(TEX_STAR_EMPTY, Vector2(s_size, s_size))
-		star_rect.size_flags_vertical = Control.SIZE_SHRINK_END if s_size < 40.0 else Control.SIZE_SHRINK_CENTER
+		star_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		stars_row.add_child(star_rect)
 		_star_rects.append(star_rect)
-	_stars_caption = _make_label("Estrelas", 17, COL_SUB)
+
+	_stars_caption = _make_label("Estrelas", 16, COL_SUB)
 	_stars_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_stars_caption.custom_minimum_size = Vector2(0.0, 20.0)
 	center_vbox.add_child(_stars_caption)
 
-	var right_cell: Control = Control.new()
-	right_cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	right_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	right_cell.custom_minimum_size = Vector2(0.0, 64.0)
-	top_row.add_child(right_cell)
-
+	# 3. Bloco Direita (Relógio / 1:40 / Tempo)
 	var right_vbox: VBoxContainer = VBoxContainer.new()
 	right_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	right_vbox.add_theme_constant_override("separation", 0)
-	right_vbox.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	right_vbox.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	right_cell.add_child(right_vbox)
+	right_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	right_vbox.add_theme_constant_override("separation", 2)
+	top_row.add_child(right_vbox)
 
 	var time_row: HBoxContainer = HBoxContainer.new()
 	time_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	time_row.add_theme_constant_override("separation", 8)
+	time_row.alignment = BoxContainer.ALIGNMENT_END
+	time_row.add_theme_constant_override("separation", 6)
+	time_row.custom_minimum_size = Vector2(0.0, 36.0)
 	right_vbox.add_child(time_row)
-	time_row.add_child(_make_icon(TEX_CLOCK, Vector2(34.0, 34.0)))
-	_time_lbl = _make_label("1:30", 28, COL_WHITE)
+
+	time_row.add_child(_make_icon(TEX_CLOCK, Vector2(28.0, 28.0)))
+	_time_lbl = _make_label("1:30", 25, COL_WHITE)
 	time_row.add_child(_time_lbl)
-	var time_caption: Label = _make_label("Tempo", 17, COL_SUB)
-	time_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	var time_caption: Label = _make_label("Tempo", 16, COL_SUB)
+	time_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	time_caption.custom_minimum_size = Vector2(0.0, 20.0)
 	right_vbox.add_child(time_caption)
 
 	# --- Faixa de objetivos ---
+	# A moldura envolve os mini-cards e o texto "Objetivos da Fase" se posiciona
+	# exatamente interceptando/tangenciando a linha inferior recortada da moldura.
+	var frame_wrapper: Control = Control.new()
+	frame_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame_wrapper.custom_minimum_size = Vector2(0.0, 102.0)
+	root_vbox.add_child(frame_wrapper)
+
 	var frame: PanelContainer = PanelContainer.new()
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame.add_theme_stylebox_override("panel", _make_texture_style(TEX_FRAME_OBJ, 24.0, 20.0, 8.0))
-	root_vbox.add_child(frame)
-
-	var frame_vbox: VBoxContainer = VBoxContainer.new()
-	frame_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame_vbox.add_theme_constant_override("separation", 4)
-	frame.add_child(frame_vbox)
+	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+	frame.add_theme_stylebox_override("panel", _make_texture_style(TEX_FRAME_OBJ, 24.0, 16.0, 6.0, 16.0, 14.0))
+	frame_wrapper.add_child(frame)
 
 	_goals_box = HBoxContainer.new()
 	_goals_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_goals_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	_goals_box.add_theme_constant_override("separation", int(GOAL_GAP))
 	_goals_box.custom_minimum_size = Vector2(0.0, GOAL_CARD_HEIGHT)
-	frame_vbox.add_child(_goals_box)
+	frame.add_child(_goals_box)
 
-	var obj_caption: Label = _make_label("Objetivos da Fase", 19, COL_WHITE)
+	var obj_caption: Label = _make_label("Objetivos da Fase", 18, COL_WHITE)
 	obj_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	frame_vbox.add_child(obj_caption)
+	obj_caption.anchor_top = 1.0
+	obj_caption.anchor_bottom = 1.0
+	obj_caption.anchor_left = 0.0
+	obj_caption.anchor_right = 1.0
+	obj_caption.offset_top = -14.0
+	obj_caption.offset_bottom = 8.0
+	obj_caption.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	frame_wrapper.add_child(obj_caption)
 
 	if _current_level > 0:
 		var lvl: int = _current_level
@@ -274,7 +293,7 @@ func _make_goal_card(plant_type: String, amount: int, card_w: float) -> Control:
 	var card: PanelContainer = PanelContainer.new()
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.custom_minimum_size = Vector2(card_w, GOAL_CARD_HEIGHT)
-	card.add_theme_stylebox_override("panel", _make_texture_style(TEX_GOAL_BG, 12.0, 4.0, 4.0))
+	card.add_theme_stylebox_override("panel", _make_texture_style(TEX_GOAL_BG, 12.0, 4.0, 4.0, 4.0, 4.0))
 
 	var vbox: VBoxContainer = VBoxContainer.new()
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE

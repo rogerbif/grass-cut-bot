@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120" viewBox="0 0 300 120">
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="110" viewBox="0 0 300 110">
   <defs>
     <linearGradient id="obj_fill" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#081c34" stop-opacity="0.85"/>
@@ -10,7 +10,14 @@
       <stop offset="100%" stop-color="#7a5ae0"/>
     </linearGradient>
   </defs>
-  <!-- Moldura hexagonal alongada (pontas chanfradas à esquerda e direita) -->
-  <path d="M 24 3 L 276 3 L 297 24 L 297 96 L 276 117 L 24 117 L 3 96 L 3 24 Z"
-        fill="url(#obj_fill)" stroke="url(#obj_line)" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Fundo escuro chanfrado -->
+  <path d="M 24 3 L 276 3 L 297 24 L 297 86 L 276 107 L 24 107 L 3 86 L 3 24 Z"
+        fill="url(#obj_fill)"/>
+  <!-- Traçado superior e laterais que descem até a base com chanfros, deixando a fresta central onde repousa o texto -->
+  <!-- Linha Esquerda: topo central (X=30) -> topo esquerdo -> lateral -> chanfro inferior -> segmento de base até X=65 -->
+  <path d="M 276 3 L 24 3 L 3 24 L 3 86 L 24 107 L 62 107"
+        fill="none" stroke="url(#obj_line)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Linha Direita: topo direito -> lateral -> chanfro inferior -> segmento de base de X=238 até chanfro -->
+  <path d="M 24 3 L 276 3 L 297 24 L 297 86 L 276 107 L 238 107"
+        fill="none" stroke="url(#obj_line)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
 </svg>
