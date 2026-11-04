@@ -1,4 +1,5 @@
 {
+	"card_goals": {"grass_green":66,"grass_yellow":30,"wheat":8},
 	"grass_vectors": [
 		{
 			"holes": [],

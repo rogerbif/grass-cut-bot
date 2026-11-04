@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://tab_home_scene_01"]
+[gd_scene load_steps=13 format=3 uid="uid://tab_home_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/tabs/tab_home.gd" id="1_home"]
 [ext_resource type="Script" path="res://scripts/ui/cyber_play_button.gd" id="2_cyber_btn"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/ui/cyber_toggle_button.gd" id="7_cyber_toggle"]
 [ext_resource type="Texture2D" path="res://assets/ui/btn_map_banner.svg" id="8_map_normal"]
 [ext_resource type="Texture2D" path="res://assets/ui/btn_map_banner_pressed.svg" id="9_map_pressed"]
+[ext_resource type="PackedScene" uid="uid://map_level_card_01" path="res://scenes/ui/map_level_card.tscn" id="10_level_card"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
 
@@ -39,6 +40,20 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_home")
+
+[node name="MapLevelCard" parent="." instance=ExtResource("10_level_card")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -330.0
+offset_top = -500.0
+offset_right = 330.0
+offset_bottom = -262.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="BottomAction" type="Control" parent="."]
 layout_mode = 1

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="empty_fill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2a3b55"/>
+      <stop offset="100%" stop-color="#1a2638"/>
+    </linearGradient>
+  </defs>
+  <!-- Estrela apagada (não conquistada) -->
+  <polygon points="64,8 80,44 120,48 90,74 98,114 64,93 30,114 38,74 8,48 48,44"
+           fill="url(#empty_fill)" stroke="#3d5373" stroke-width="3.5" stroke-linejoin="round"/>
+  <polyline points="49,44 64,13 79,44" fill="none" stroke="#5b7597" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+</svg>

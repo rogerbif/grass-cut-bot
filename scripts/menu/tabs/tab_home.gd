@@ -8,6 +8,7 @@ signal toggle_view_requested
 @onready var toggle_btn: Button = $BottomAction/HBox/ToggleViewBtn
 @onready var toggle_label: Label = $BottomAction/HBox/ToggleViewBtn/HBoxToggle/ToggleLabel
 @onready var toggle_icon: TextureRect = $BottomAction/HBox/ToggleViewBtn/HBoxToggle/ToggleIcon
+@onready var level_card: MapLevelCard = $MapLevelCard as MapLevelCard
 
 const ICON_PLAY: Texture2D = preload("res://assets/icons/icon_play.svg")
 const ICON_MAP: Texture2D = preload("res://assets/icons/icon_map_banner.svg")
@@ -28,6 +29,19 @@ func update_level_display(lvl: int) -> void:
 		play_btn.call("set_level_number", current_level_selected)
 	elif play_label != null:
 		play_label.text = "JOGAR - Fase %d" % current_level_selected
+	preview_level(lvl)
+
+## Atualiza apenas o Card de Fase (usado também durante a rolagem do mapa).
+func preview_level(lvl: int) -> void:
+	if level_card == null:
+		return
+	var unlocked: bool = true
+	if SaveManager != null:
+		unlocked = SaveManager.is_level_unlocked(lvl)
+	level_card.show_level(lvl, unlocked)
+
+func refresh_ui() -> void:
+	preview_level(current_level_selected)
 
 func set_view_mode(map_view: bool) -> void:
 	is_map_mode = map_view

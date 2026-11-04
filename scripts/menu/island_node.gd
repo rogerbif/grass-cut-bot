@@ -38,18 +38,11 @@ static var _rock_mesh: Mesh = null
 @onready var bot_anchor: Marker3D = $BotAnchor
 @onready var fallback_mesh: Node3D = $FallbackMesh
 @onready var miniature_container: Node3D = $MiniatureContainer
-@onready var plaque_root: Node3D = $Plaque
-@onready var plaque_board: MeshInstance3D = $Plaque/BoardMesh
-@onready var plaque_post: MeshInstance3D = $Plaque/PostMesh
-@onready var level_label: Label3D = $Plaque/LevelLabel
-@onready var stars_label: Label3D = $Plaque/StarsLabel
 @onready var click_area: Area3D = $ClickArea
 
 var is_map_mode: bool = true
 var is_active_island: bool = false
 var island_dimensions: Vector2 = Vector2(12.0, 10.0)
-var map_plaque_pos: Vector3 = Vector3(4.5, 0.25, 3.5)
-var plaque_tween: Tween = null
 var grass_mesh_records: Array[Dictionary] = []
 var is_built: bool = false
 
@@ -68,16 +61,11 @@ var _rocks_mmi: MultiMeshInstance3D = null
 var veg_transforms_by_type: Dictionary = {}
 
 
-func _ready() -> void:
-	update_visuals()
-
-
 func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 	level_number = lvl
 	is_unlocked = unlocked
 	stars_earned = stars
 	read_island_metadata(lvl)
-	update_visuals()
 	set_view_mode(is_map_mode, is_active_island, false)
 
 
@@ -98,9 +86,6 @@ func read_island_metadata(lvl: int) -> void:
 		var height: int = int(grid_info.get("height", 8))
 		var cell_size: float = float(grid_info.get("cell_size", 0.8))
 		island_dimensions = Vector2(float(width) * cell_size, float(height) * cell_size)
-		var half_w: float = island_dimensions.x / 2.0
-		var half_h: float = island_dimensions.y / 2.0
-		map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 		if data.has("spawn") and data["spawn"] is Dictionary:
 			var sp_dict: Dictionary = data["spawn"] as Dictionary
 			var sp_x: int = int(sp_dict.get("gx", int(float(width) / 2.0)))
@@ -321,11 +306,6 @@ func build_miniature_from_json(lvl: int) -> void:
 	# Escala real 1.0x (idêntica ao gameplay)
 	miniature_container.scale = Vector3(1.0, 1.0, 1.0)
 	island_dimensions = Vector2(float(width) * cell_size, float(height) * cell_size)
-
-	var half_w: float = island_dimensions.x / 2.0
-	var half_h: float = island_dimensions.y / 2.0
-	# Posiciona a placa no canto inferior direito da ilha (escala real 1.0x)
-	map_plaque_pos = Vector3(half_w - 1.35, 0.25, half_h - 0.85)
 
 	if data.has("spawn") and data["spawn"] is Dictionary:
 		var sp_dict: Dictionary = data["spawn"] as Dictionary
@@ -734,78 +714,10 @@ func set_active_in_tree(is_active: bool) -> void:
 	process_mode = Node.PROCESS_MODE_INHERIT if is_active else Node.PROCESS_MODE_DISABLED
 
 
-func update_visuals() -> void:
-	if level_label == null or stars_label == null:
-		return
-
-	if is_unlocked:
-		level_label.text = str(level_number)
-		if stars_earned > 0:
-			stars_label.text = "%d / 3" % stars_earned
-			stars_label.visible = true
-		else:
-			stars_label.text = "ATUAL"
-			stars_label.visible = true
-	else:
-		level_label.text = str(level_number)
-		stars_label.text = "BLOQ"
-		stars_label.visible = true
-
-	# Ajusta o material da placa (madeira/pedra fosca com status)
-	if plaque_board != null:
-		var mat: StandardMaterial3D = plaque_board.get_active_material(0) as StandardMaterial3D
-		if mat != null:
-			var new_mat: StandardMaterial3D = mat.duplicate() as StandardMaterial3D
-			if is_unlocked:
-				new_mat.albedo_color = Color(0.22, 0.48, 0.76, 1.0) # Azul náutico acolhedor
-			else:
-				new_mat.albedo_color = Color(0.35, 0.38, 0.42, 1.0) # Cinza fosco bloqueado
-			plaque_board.material_override = new_mat
-
-
-func set_view_mode(map_view: bool, active_island: bool, animated: bool = true) -> void:
+func set_view_mode(map_view: bool, active_island: bool, _animated: bool = true) -> void:
 	is_map_mode = map_view
 	is_active_island = active_island
-
 	_apply_mode_visibility()
-
-	if plaque_root == null:
-		return
-
-	var target_pos: Vector3 = Vector3.ZERO
-	var target_rot: Vector3 = Vector3.ZERO
-	var target_vis: bool = true
-
-	if is_map_mode:
-		# Na visão do mapa: repousa no canto inferior direito sobre o chão voltada para cima (-58° para a câmera)
-		target_pos = map_plaque_pos
-		target_rot = Vector3(-58.0, 0.0, 0.0)
-		target_vis = true
-		if plaque_post != null:
-			plaque_post.visible = false # Oculta a estaca para virar um marco no chão
-	else:
-		# Na visão do bot: placa oculta para foco total no robô cortador
-		target_pos = map_plaque_pos
-		target_rot = Vector3(-58.0, 0.0, 0.0)
-		target_vis = false
-		if plaque_post != null:
-			plaque_post.visible = false
-
-	if animated:
-		if plaque_tween != null and plaque_tween.is_valid():
-			plaque_tween.kill()
-		plaque_tween = create_tween()
-		plaque_tween.set_parallel(true)
-		plaque_tween.tween_property(plaque_root, "position", target_pos, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		plaque_tween.tween_property(plaque_root, "rotation_degrees", target_rot, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		if not target_vis:
-			plaque_tween.chain().tween_callback(func() -> void: plaque_root.visible = false)
-		else:
-			plaque_root.visible = true
-	else:
-		plaque_root.position = target_pos
-		plaque_root.rotation_degrees = target_rot
-		plaque_root.visible = target_vis
 
 
 func get_island_dimensions() -> Vector2:

@@ -179,73 +179,8 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hbox.add_theme_constant_override("separation", 6)
 
-	# Container de ilustração botânica (34x34)
-	var illus_container: Control = Control.new()
-	illus_container.custom_minimum_size = Vector2(34, 34)
-	illus_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	illus_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	illus_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	# Busca metadados da espécie no banco botânico canônico
-	var sp_data: Dictionary = PlantDatabaseScript.get_species(plant_type)
-	var cat: String = String(sp_data.get("category", ""))
-	var theme_col: Color = sp_data.get("color", Color.WHITE) as Color
-
-	# Caso de fallback se a chave for "grass" ou "flower" genérica
-	if cat.is_empty():
-		if plant_type.begins_with("flower"):
-			cat = "flower"
-			theme_col = Color(1.0, 0.18, 0.65)
-		elif plant_type == "wheat":
-			cat = "crop"
-			theme_col = Color(0.91, 0.77, 0.42)
-		else:
-			cat = "grass"
-			theme_col = Color(0.28, 0.81, 0.10)
-
-	if cat == "crop" or plant_type == "wheat":
-		var wheat_rect: TextureRect = TextureRect.new()
-		wheat_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		wheat_rect.texture = TEX_ILLUS_WHEAT
-		wheat_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		wheat_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		wheat_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		illus_container.add_child(wheat_rect)
-	elif cat == "flower":
-		var stems_rect: TextureRect = TextureRect.new()
-		stems_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		stems_rect.texture = TEX_ILLUS_FLOWER_STEMS
-		stems_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		stems_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		stems_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		illus_container.add_child(stems_rect)
-
-		var petals_rect: TextureRect = TextureRect.new()
-		petals_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		petals_rect.texture = TEX_ILLUS_FLOWER_PETALS
-		petals_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		petals_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		petals_rect.modulate = theme_col
-		petals_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		illus_container.add_child(petals_rect)
-	else:
-		# Gramas: Base de solo + tufos de lâminas com a cor canônica
-		var base_rect: TextureRect = TextureRect.new()
-		base_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		base_rect.texture = TEX_ILLUS_GRASS_BASE
-		base_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		base_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		base_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		illus_container.add_child(base_rect)
-
-		var blades_rect: TextureRect = TextureRect.new()
-		blades_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		blades_rect.texture = TEX_ILLUS_GRASS_BLADES
-		blades_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		blades_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		blades_rect.modulate = theme_col
-		blades_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		illus_container.add_child(blades_rect)
+	# Ilustração botânica canônica da Coleção (34x34)
+	var illus_container: Control = GoalIconFactory.build_goal_icon(plant_type, 34.0)
 
 	var count_lbl: Label = Label.new()
 	count_lbl.text = str(target)

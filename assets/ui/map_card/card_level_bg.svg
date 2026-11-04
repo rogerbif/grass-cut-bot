@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+  <defs>
+    <linearGradient id="card_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d2745" stop-opacity="0.96"/>
+      <stop offset="100%" stop-color="#06142a" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="card_border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2bd9fe"/>
+      <stop offset="55%" stop-color="#1a7fb5"/>
+      <stop offset="100%" stop-color="#6b4fd6"/>
+    </linearGradient>
+  </defs>
+  <!-- Placa chanfrada nos 4 cantos (linguagem cyber dos badges/modais) -->
+  <path d="M 22 3 L 298 3 L 317 22 L 317 178 L 298 197 L 22 197 L 3 178 L 3 22 Z"
+        fill="url(#card_bg)" stroke="url(#card_border)" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Linha interna de reflexo -->
+  <path d="M 28 9 L 292 9" stroke="#8bf0ff" stroke-width="1.5" stroke-opacity="0.45" stroke-linecap="round"/>
+</svg>

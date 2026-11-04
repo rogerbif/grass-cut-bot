@@ -272,6 +272,8 @@ func _on_camera_island_snapped(snapped_lvl: int) -> void:
 func _on_camera_scroll_focus_changed(focused_lvl: int) -> void:
 	if menu_camera != null and menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
 		_update_islands_visibility(true, focused_lvl)
+		if tab_home != null and tab_home.has_method("preview_level"):
+			tab_home.call("preview_level", focused_lvl)
 
 func _on_toggle_view_requested() -> void:
 	if menu_camera != null:

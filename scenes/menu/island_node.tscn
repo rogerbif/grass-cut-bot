@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://island_node_scene_01"]
+[gd_scene load_steps=10 format=3 uid="uid://island_node_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/island_node.gd" id="1_island"]
 
@@ -37,24 +37,6 @@ size = Vector3(1.8, 0.02, 1.4)
 [sub_resource type="BoxShape3D" id="BoxShape3D_click"]
 size = Vector3(14.0, 2.0, 12.0)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_post"]
-roughness = 0.9
-albedo_color = Color(0.32, 0.2, 0.12, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_post"]
-material = SubResource("StandardMaterial3D_post")
-top_radius = 0.05
-bottom_radius = 0.05
-height = 0.9
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_board"]
-roughness = 0.88
-albedo_color = Color(0.22, 0.48, 0.76, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_board"]
-material = SubResource("StandardMaterial3D_board")
-size = Vector3(2.0, 1.1, 0.12)
-
 [node name="IslandNode" type="Node3D"]
 script = ExtResource("1_island")
 
@@ -85,31 +67,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.052, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ClickArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_click")
-
-[node name="Plaque" type="Node3D" parent="."]
-visible = false
-transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, 0, 0.25, 0.5)
-
-[node name="PostMesh" type="MeshInstance3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
-mesh = SubResource("CylinderMesh_post")
-
-[node name="BoardMesh" type="MeshInstance3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
-mesh = SubResource("BoxMesh_board")
-
-[node name="LevelLabel" type="Label3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0.08)
-double_sided = false
-text = "1"
-font_size = 64
-outline_size = 14
-
-[node name="StarsLabel" type="Label3D" parent="Plaque"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0.08)
-double_sided = false
-text = "0 / 3"
-font_size = 34
-outline_size = 8
 
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]

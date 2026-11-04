@@ -2,6 +2,7 @@ extends RefCounted
 
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 const IslandMeshBuilder = preload("res://scripts/level/island_mesh_builder.gd")
+const LevelCardDataScript = preload("res://scripts/level/level_card_data.gd")
 
 const LEVELS_JSON_DIR: String = "res://data/levels"
 const LEVELS_TSCN_DIR: String = "res://scenes/levels"
@@ -123,6 +124,10 @@ static func save_level_json(
 			"res": 0.20,
 			"rows": veg_field.call("to_rows")
 		}
+
+	# Grava as metas finais (idênticas ao gameplay) para o Card de Fase do menu (Home/Mapa)
+	payload["card_goals"] = LevelCardDataScript.compute_goals(payload)
+	LevelCardDataScript.clear_cache()
 
 	var json_str: String = JSON.stringify(payload, "\t")
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)

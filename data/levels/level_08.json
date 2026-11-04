@@ -1,4 +1,5 @@
 {
+	"card_goals": {"flower_bell":1,"flower_daisy":1,"grass_green":45,"grass_purple":20,"grass_red":20},
 	"grass_vectors": [
 		{
 			"holes": [],
