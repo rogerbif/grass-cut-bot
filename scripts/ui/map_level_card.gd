@@ -89,8 +89,8 @@ func _make_texture_style(tex: Texture2D, tex_margin: float, pad_l: float, pad_t:
 
 
 func _build_ui() -> void:
-	# Redução de 50% no padding inferior e uniformização elegante (10px superior/laterais, 6px inferior)
-	add_theme_stylebox_override("panel", _make_texture_style(TEX_CARD_BG, 26.0, 10.0, 10.0, 10.0, 6.0))
+	# Laterais e superior com o mesmo tamanho (14px), inferior ultra-compacto (2px)
+	add_theme_stylebox_override("panel", _make_texture_style(TEX_CARD_BG, 26.0, 14.0, 14.0, 14.0, 2.0))
 
 	var root_vbox: VBoxContainer = VBoxContainer.new()
 	root_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -105,12 +105,18 @@ func _build_ui() -> void:
 	root_vbox.add_child(top_row)
 
 	# 1. Bloco Esquerda (Fase XX / Ilha Tropical)
+	# MarginContainer interno para recuar para a direita (alinhado com o chanfro da moldura)
+	var left_margin: MarginContainer = MarginContainer.new()
+	left_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	left_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left_margin.add_theme_constant_override("margin_left", 14)
+	top_row.add_child(left_margin)
+
 	var left_vbox: VBoxContainer = VBoxContainer.new()
 	left_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	left_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	left_vbox.add_theme_constant_override("separation", 2)
-	top_row.add_child(left_vbox)
+	left_margin.add_child(left_vbox)
 
 	var title_row: HBoxContainer = HBoxContainer.new()
 	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -156,12 +162,18 @@ func _build_ui() -> void:
 	center_vbox.add_child(_stars_caption)
 
 	# 3. Bloco Direita (Relógio / 1:40 / Tempo)
+	# MarginContainer interno para recuar da borda direita (alinhado com o chanfro da moldura)
+	var right_margin: MarginContainer = MarginContainer.new()
+	right_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	right_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right_margin.add_theme_constant_override("margin_right", 14)
+	top_row.add_child(right_margin)
+
 	var right_vbox: VBoxContainer = VBoxContainer.new()
 	right_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	right_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	right_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	right_vbox.add_theme_constant_override("separation", 2)
-	top_row.add_child(right_vbox)
+	right_margin.add_child(right_vbox)
 
 	var time_row: HBoxContainer = HBoxContainer.new()
 	time_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -184,13 +196,13 @@ func _build_ui() -> void:
 	# exatamente interceptando/tangenciando a linha inferior recortada da moldura.
 	var frame_wrapper: Control = Control.new()
 	frame_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame_wrapper.custom_minimum_size = Vector2(0.0, 102.0)
+	frame_wrapper.custom_minimum_size = Vector2(0.0, 96.0)
 	root_vbox.add_child(frame_wrapper)
 
 	var frame: PanelContainer = PanelContainer.new()
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
-	frame.add_theme_stylebox_override("panel", _make_texture_style(TEX_FRAME_OBJ, 24.0, 16.0, 6.0, 16.0, 14.0))
+	frame.add_theme_stylebox_override("panel", _make_texture_style(TEX_FRAME_OBJ, 24.0, 16.0, 6.0, 16.0, 12.0))
 	frame_wrapper.add_child(frame)
 
 	_goals_box = HBoxContainer.new()
@@ -206,8 +218,8 @@ func _build_ui() -> void:
 	obj_caption.anchor_bottom = 1.0
 	obj_caption.anchor_left = 0.0
 	obj_caption.anchor_right = 1.0
-	obj_caption.offset_top = -14.0
-	obj_caption.offset_bottom = 8.0
+	obj_caption.offset_top = -18.0
+	obj_caption.offset_bottom = 4.0
 	obj_caption.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	frame_wrapper.add_child(obj_caption)
 

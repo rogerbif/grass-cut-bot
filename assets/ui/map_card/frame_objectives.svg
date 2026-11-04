@@ -1,23 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="110" viewBox="0 0 300 110">
   <defs>
+    <!-- Preenchimento de fundo com opacidade sutil -->
     <linearGradient id="obj_fill" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#081c34" stop-opacity="0.85"/>
       <stop offset="100%" stop-color="#050f20" stop-opacity="0.9"/>
     </linearGradient>
-    <linearGradient id="obj_line" x1="0%" y1="0%" x2="100%" y2="0%">
+
+    <!-- Gradiente da linha superior e lateral esquerda (ciano puro para transição) -->
+    <linearGradient id="stroke_top_left" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#2bd9fe"/>
       <stop offset="50%" stop-color="#1a6c9a"/>
       <stop offset="100%" stop-color="#7a5ae0"/>
     </linearGradient>
+
+    <!-- Gradiente da linha inferior esquerda: desvanece de ciano/azul nas quinas para transparente no centro -->
+    <linearGradient id="stroke_bottom_left" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2bd9fe" stop-opacity="0.0"/>
+      <stop offset="25%" stop-color="#2bd9fe" stop-opacity="1.0"/>
+      <stop offset="75%" stop-color="#1a8ec4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#1a8ec4" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <!-- Gradiente da linha inferior direita: desvanece de roxo/azul para transparente no centro -->
+    <linearGradient id="stroke_bottom_right" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7a5ae0" stop-opacity="0.0"/>
+      <stop offset="30%" stop-color="#7a5ae0" stop-opacity="0.85"/>
+      <stop offset="75%" stop-color="#7a5ae0" stop-opacity="1.0"/>
+      <stop offset="100%" stop-color="#2bd9fe" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <!-- Gradiente das laterais com fade para as pontas -->
+    <linearGradient id="stroke_left" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2bd9fe" stop-opacity="0.2"/>
+      <stop offset="20%" stop-color="#2bd9fe" stop-opacity="1.0"/>
+      <stop offset="80%" stop-color="#2bd9fe" stop-opacity="1.0"/>
+      <stop offset="100%" stop-color="#2bd9fe" stop-opacity="0.2"/>
+    </linearGradient>
+
+    <linearGradient id="stroke_right" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7a5ae0" stop-opacity="0.2"/>
+      <stop offset="20%" stop-color="#7a5ae0" stop-opacity="1.0"/>
+      <stop offset="80%" stop-color="#7a5ae0" stop-opacity="1.0"/>
+      <stop offset="100%" stop-color="#7a5ae0" stop-opacity="0.2"/>
+    </linearGradient>
   </defs>
+
   <!-- Fundo escuro chanfrado -->
   <path d="M 24 3 L 276 3 L 297 24 L 297 86 L 276 107 L 24 107 L 3 86 L 3 24 Z"
         fill="url(#obj_fill)"/>
-  <!-- Traçado superior e laterais que descem até a base com chanfros, deixando a fresta central onde repousa o texto -->
-  <!-- Linha Esquerda: topo central (X=30) -> topo esquerdo -> lateral -> chanfro inferior -> segmento de base até X=65 -->
-  <path d="M 276 3 L 24 3 L 3 24 L 3 86 L 24 107 L 62 107"
-        fill="none" stroke="url(#obj_line)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-  <!-- Linha Direita: topo direito -> lateral -> chanfro inferior -> segmento de base de X=238 até chanfro -->
-  <path d="M 24 3 L 276 3 L 297 24 L 297 86 L 276 107 L 238 107"
-        fill="none" stroke="url(#obj_line)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Linha Superior Contínua -->
+  <path d="M 24 3 L 276 3"
+        fill="none" stroke="url(#stroke_top_left)" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Quina e Lateral Esquerda -->
+  <path d="M 24 3 L 3 24 L 3 86 L 24 107"
+        fill="none" stroke="url(#stroke_left)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Quina e Lateral Direita -->
+  <path d="M 276 3 L 297 24 L 297 86 L 276 107"
+        fill="none" stroke="url(#stroke_right)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Segmento Inferior Esquerdo (com gradiente para transparência no início X=24 e no fim X=75 ao lado do texto) -->
+  <path d="M 24 107 L 76 107"
+        fill="none" stroke="url(#stroke_bottom_left)" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Segmento Inferior Direito (com gradiente para transparência no início X=224 ao lado do texto e fim X=276) -->
+  <path d="M 224 107 L 276 107"
+        fill="none" stroke="url(#stroke_bottom_right)" stroke-width="2.5" stroke-linecap="round"/>
 </svg>
