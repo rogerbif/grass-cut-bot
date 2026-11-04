@@ -89,8 +89,8 @@ func _make_texture_style(tex: Texture2D, tex_margin: float, pad_l: float, pad_t:
 
 
 func _build_ui() -> void:
-	# Laterais e superior com o mesmo tamanho (14px), inferior ultra-compacto (2px)
-	add_theme_stylebox_override("panel", _make_texture_style(TEX_CARD_BG, 26.0, 14.0, 14.0, 14.0, 2.0))
+	# Laterais, superior e inferior com o mesmo tamanho uniforme (14px)
+	add_theme_stylebox_override("panel", _make_texture_style(TEX_CARD_BG, 26.0, 14.0, 14.0, 14.0, 14.0))
 
 	var root_vbox: VBoxContainer = VBoxContainer.new()
 	root_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
