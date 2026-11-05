@@ -21,6 +21,7 @@ var time_limit: float = 90.0
 var time_left: float = 90.0
 var level_coins: int = 0
 var _is_victory_pending: bool = false
+var _extra_time_used: bool = false
 
 # Estrutura de metas: { "grass": {"target": 60, "current": 0}, "flower": ... }
 var goals: Dictionary = {}
@@ -99,6 +100,7 @@ func _process(delta: float) -> void:
 func start_level(level_index: int, level_goals: Dictionary, duration_seconds: float) -> void:
 	current_level = level_index
 	_is_victory_pending = false
+	_extra_time_used = false
 	if SaveManager != null:
 		SaveManager.set_last_played_level(current_level)
 
@@ -219,6 +221,44 @@ func _trigger_victory_celebration() -> void:
 		AudioManager.play_sfx("level_completed")
 
 	level_won.emit(level_coins, stars)
+	state_changed.emit(current_state)
+
+## Retorna o progresso total das metas (0.0 a 1.0): soma dos cortes atuais sobre soma dos alvos.
+func get_progress_ratio() -> float:
+	var total_target: int = 0
+	var total_current: int = 0
+	for plant_type: Variant in goals.keys():
+		var g: Dictionary = goals[plant_type] as Dictionary
+		var tgt: int = int(g.get("target", 0))
+		total_target += tgt
+		total_current += mini(int(g.get("current", 0)), tgt)
+	if total_target <= 0:
+		return 0.0
+	return clampf(float(total_current) / float(total_target), 0.0, 1.0)
+
+## Retorna as metas ainda incompletas: { plant_type: restante }.
+func get_remaining_goals() -> Dictionary:
+	var result: Dictionary = {}
+	for plant_type: Variant in goals.keys():
+		var g: Dictionary = goals[plant_type] as Dictionary
+		var rem: int = maxi(0, int(g.get("target", 0)) - int(g.get("current", 0)))
+		if rem > 0:
+			result[String(plant_type)] = rem
+	return result
+
+## Permite usar o "Pegar Mais Tempo" apenas uma vez por tentativa e somente em derrota por tempo.
+func can_grant_extra_time() -> bool:
+	return current_state == GameState.GAME_OVER and not _extra_time_used
+
+## Concede tempo extra e retoma a fase (ponto de integração futuro para anúncio recompensado).
+func grant_extra_time(seconds: float) -> void:
+	if not can_grant_extra_time():
+		return
+	_extra_time_used = true
+	time_left = seconds
+	current_state = GameState.PLAYING
+	get_tree().paused = false
+	time_updated.emit(time_left)
 	state_changed.emit(current_state)
 
 func _check_game_over(reason: String) -> void:

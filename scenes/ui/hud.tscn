@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://hud_scene_01"]
+[gd_scene load_steps=35 format=3 uid="uid://hud_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
@@ -29,6 +29,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/victory/header_cyber_divider.svg" id="27_header_div"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_play_triangle.svg" id="28_play_tri"]
 [ext_resource type="PackedScene" uid="uid://pause_modal_cyber_01" path="res://scenes/ui/pause_modal.tscn" id="29_pause_modal"]
+[ext_resource type="PackedScene" uid="uid://defeat_modal_cyber_01" path="res://scenes/ui/defeat_modal.tscn" id="30_defeat_modal"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top"]
 bg_color = Color(0.08, 0.1, 0.14, 0)
@@ -629,69 +630,9 @@ texture = ExtResource("28_play_tri")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="GameOverModal" type="ColorRect" parent="."]
+[node name="DefeatModal" parent="." instance=ExtResource("30_defeat_modal")]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.7)
-
-[node name="Panel" type="PanelContainer" parent="GameOverModal"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -145.0
-offset_right = 160.0
-offset_bottom = 145.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
-
-[node name="VBox" type="VBoxContainer" parent="GameOverModal/Panel"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Title" type="Label" parent="GameOverModal/Panel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.25, 0.25, 1)
-theme_override_font_sizes/font_size = 32
-text = "Tempo Esgotado!"
-horizontal_alignment = 1
-
-[node name="ReasonLabel" type="Label" parent="GameOverModal/Panel/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Não deu tempo de colher tudo."
-horizontal_alignment = 1
-
-[node name="RetryBtn" type="Button" parent="GameOverModal/Panel/VBox"]
-custom_minimum_size = Vector2(0, 52)
-layout_mode = 2
-focus_mode = 0
-theme_override_constants/icon_max_width = 22
-theme_override_font_sizes/font_size = 20
-text = "Repetir Fase"
-icon = ExtResource("6_refresh")
-
-[node name="MenuBtn" type="Button" parent="GameOverModal/Panel/VBox"]
-custom_minimum_size = Vector2(0, 46)
-layout_mode = 2
-focus_mode = 0
-theme_override_constants/icon_max_width = 22
-theme_override_font_sizes/font_size = 18
-text = "Menu Inicial"
-icon = ExtResource("5_home")
-layout_mode = 2
-focus_mode = 0
-theme_override_font_sizes/font_size = 20
-text = "Repetir Fase"
 
 [node name="WorkshopModal" type="ColorRect" parent="."]
 visible = false

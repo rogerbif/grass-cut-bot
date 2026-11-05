@@ -61,15 +61,14 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
   - Linha superior (`SecondaryRow`, `separation = 24`): botões `MENU` (`btn_menu_secondary.svg`, `268x66` px, azul-marinho com borda ciano) e `REPETIR` (`btn_repeat_secondary.svg`, `268x66` px, azul-violeta com borda roxa), alinhados exatamente com a largura total do botão inferior (`268 + 24 + 268 = 560px`).
   - Linha inferior: botão heroico verde-esmeralda neon `PRÓXIMA FASE ▶` (`btn_next_level.svg`, `560x96` px) com colchetes tecnológicos externos e texto em azul-petróleo escuro.
 
-### 2.3 Reação Expressiva de Derrota (`GameOverModal`)
-- Disparado caso o cronômetro atinja `0:00` antes de bater as cotas.
-- O robô assume postura cabisbaixa (inclinação de $10^\circ$, cabeça baixa a $18^\circ$), olhos em `EyeExpression.SAD`, baforadas cartoon de fumaça cinza saindo do motor e desaceleração suave da lâmina por inércia.
-- Após delay suave de 0.65s, surge a tela de derrota:
-  - `Tentar Novamente 🔄`: Reinicia a fase imediatamente.
-  - `Menu Inicial 🏠`: Retorna ao Hub Principal.
+### 2.3 Modal de Derrota Cyberpunk Neon (`DefeatModal`)
+- Componente modular `scenes/ui/defeat_modal.tscn` + `scripts/ui/defeat_modal.gd` (`process_mode = ALWAYS`, UI construída programaticamente, SVGs em `assets/ui/defeat/`), instanciado no `hud.tscn` e aberto por `HUD._on_level_lost()` após o delay de 0.65s (o robô mantém a reação expressiva de derrota: postura cabisbaixa, olhos `SAD`, fumaça e inércia da lâmina).
+- Card chanfrado com borda vermelha/roxa neon, pulso sutil de brilho e animação **Grow + Fade In / Shrink + Fade Out**. O toque no backdrop **não fecha** (derrota exige decisão).
+- Conteúdo dinâmico: título `Tempo Esgotado!` com cronômetro vermelho e alerta; subtítulo `Faltou pouco para concluir a fase!` (progresso ≥ 70%) ou `Continue tentando, você consegue!`; painel **Progresso do Corte** (% via `GameManager.get_progress_ratio()`, barra gradiente rosa→amarelo) e metas restantes com ícones da Coleção (`GameManager.get_remaining_goals()` + `GoalIconFactory`).
+- Ações: `Repetir Fase` (reinicia), `Pegar Mais Tempo` (placeholder de anúncio recompensado: `GameManager.grant_extra_time(15.0)` retoma a fase com +15s, **1 uso por tentativa** via `can_grant_extra_time()`; oculto após usado) e `Menu Inicial`.
+- Háptico curto (`Input.vibrate_handheld(40)`) ao abrir, respeitando `vib_enabled`.
 
 ---
-
 ## 3. Menu Inicial / Hub Principal (`res://scenes/menu/main_menu.tscn`)
 
 Inspirado nos títulos de maior sucesso do mercado mobile casual (*Archero*, *Royal Match*), o Hub Principal é construído em formato vertical portrait ($720 \times 1280$) com iluminação tropical suave e duas perspectivas de câmera integradas:

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="580" viewBox="0 0 440 580">
+  <defs>
+    <linearGradient id="card_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14203a" stop-opacity="0.97"/>
+      <stop offset="50%" stop-color="#0b1630" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#070d1f" stop-opacity="0.99"/>
+    </linearGradient>
+    <linearGradient id="card_border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d5e"/>
+      <stop offset="45%" stop-color="#ff3b4e"/>
+      <stop offset="75%" stop-color="#6a4be0"/>
+      <stop offset="100%" stop-color="#8a5cf0"/>
+    </linearGradient>
+    <linearGradient id="slashes_grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff5a6a"/>
+      <stop offset="100%" stop-color="#ff2f45"/>
+    </linearGradient>
+  </defs>
+  <path d="M 36 4 L 300 4 L 320 20 L 416 20 L 436 40 L 436 544 L 408 576 L 32 576 L 4 548 L 4 36 Z"
+        fill="url(#card_bg)" stroke="url(#card_border)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 40 12 L 296 12" stroke="#ff9aa5" stroke-width="1.5" stroke-opacity="0.4" stroke-linecap="round"/>
+  <polygon points="334,16 348,6 358,6 344,16" fill="url(#slashes_grad)"/>
+  <polygon points="364,16 378,6 388,6 374,16" fill="url(#slashes_grad)" fill-opacity="0.7"/>
+  <polygon points="394,16 408,6 418,6 404,16" fill="url(#slashes_grad)" fill-opacity="0.4"/>
+</svg>

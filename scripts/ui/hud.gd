@@ -22,7 +22,7 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 
 @onready var pause_modal: Control = $PauseModal
 @onready var victory_modal: Control = $VictoryModal
-@onready var game_over_modal: Control = $GameOverModal
+@onready var defeat_modal: Control = $DefeatModal
 @onready var workshop_modal: Control = $WorkshopModal
 
 # Elementos da comemoração de vitória e modais
@@ -34,7 +34,6 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 @onready var victory_coins_label: Label = $VictoryModal.find_child("CoinsEarnedLabel", true, false) as Label
 @onready var victory_bottom_bar: Control = $VictoryModal.find_child("BottomBar", true, false) as Control
 @onready var victory_next_label: Label = $VictoryModal.find_child("NextLabel", true, false) as Label
-@onready var game_over_reason_label: Label = $GameOverModal/Panel/VBox/ReasonLabel
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
 var goal_cards: Dictionary = {}
@@ -49,7 +48,7 @@ func _ready() -> void:
 		(pause_button as Button).text = ""
 	pause_modal.visible = false
 	victory_modal.visible = false
-	game_over_modal.visible = false
+	defeat_modal.visible = false
 	workshop_modal.visible = false
 
 	# Conecta sinais do GameManager
@@ -98,10 +97,10 @@ func _ready() -> void:
 	if menu_btn:
 		_connect_button(menu_btn, _on_menu_pressed)
 
-	if $GameOverModal/Panel/VBox.has_node("RetryBtn"):
-		_connect_button($GameOverModal/Panel/VBox/RetryBtn, _on_restart_pressed)
-	if $GameOverModal/Panel/VBox.has_node("MenuBtn"):
-		_connect_button($GameOverModal/Panel/VBox/MenuBtn, _on_menu_pressed)
+	if defeat_modal != null:
+		defeat_modal.connect("retry_requested", _on_restart_pressed)
+		defeat_modal.connect("extra_time_requested", _on_extra_time_requested)
+		defeat_modal.connect("menu_requested", _on_menu_pressed)
 
 	_connect_button($WorkshopModal/Panel/VBox/CloseBtn, _on_close_workshop_pressed)
 
@@ -119,6 +118,8 @@ func _connect_button(btn: BaseButton, callback: Callable) -> void:
 	if btn == null:
 		return
 	btn.pressed.connect(callback)
+
+const DEFEAT_EXTRA_TIME_SECONDS: float = 15.0
 
 var _is_restarting: bool = false
 var _last_displayed_total_seconds: int = -1
@@ -337,10 +338,20 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 func _on_level_lost(reason: String) -> void:
 	if top_bar != null:
 		top_bar.visible = false
-	game_over_reason_label.text = reason
 	get_tree().create_timer(0.65, true, false, true).timeout.connect(func() -> void:
-		game_over_modal.visible = true
+		if GameManager.current_state != GameManager.GameState.GAME_OVER:
+			return
+		defeat_modal.call("open", GameManager.get_progress_ratio(), GameManager.get_remaining_goals(), GameManager.can_grant_extra_time())
 	)
+
+## Placeholder de anúncio recompensado: concede tempo extra e retoma a fase (1 uso por tentativa).
+func _on_extra_time_requested() -> void:
+	if not GameManager.can_grant_extra_time():
+		return
+	if top_bar != null:
+		top_bar.visible = true
+	_last_displayed_total_seconds = -1
+	GameManager.grant_extra_time(DEFEAT_EXTRA_TIME_SECONDS)
 
 func _on_open_workshop_pressed() -> void:
 	if AudioManager != null:
