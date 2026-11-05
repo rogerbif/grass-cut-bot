@@ -153,3 +153,13 @@ Conectamos a geometria única ao shader espacial `interactive_grass.gdshader`:
 2. **Sincronização em Tempo Real:** O script `cutter.gd` atualiza continuamente `cutter_pos` e `cutter_interact_radius` em todos os materiais de grama, fazendo com que os tufos 3D se curvem suavemente e se comprimam para baixo com a aproximação da serra antes do corte.
 3. **Performance Otimizada:** Cada tufo possui apenas 1 nó de malha ativo, eliminando 75% dos nós invisíveis na árvore de cena e permitindo arraste e duplicação direta no Viewport 3D da Godot.
 
+### E. Material Canônico de Caule com Gradiente Vertical (`interactive_flower_stem_material.tres`)
+Para destacar a silhueta botânica e impedir que as flores se mimetizem com o tapete de grama, o nó `Flower_Stem` de todas as 8 espécies de flores utiliza o material dedicado `interactive_flower_stem_material.tres`:
+1. **Shader Base:** Baseado em `interactive_flower.gdshader`, compartilhando a mesma simulação de balanço com o vento (`wind_speed = 1.8`, `wind_strength = 0.08`) e curvatura elástica ao contato com o cortador (`interact_power = 0.22`).
+2. **Gradiente Vertical Escuro $\rightarrow$ Claro:**
+   - **Base no Solo ($Z \approx 0.0\text{m}$):** Verde floresta profundo (`Color(0.06, 0.22, 0.08, 1.0)` / `#0F3814`), proporcionando separação visual nítida e alto contraste contra o verde-limão vibrante do terreno.
+   - **Ápice Vegetal ($Z \approx 0.9\text{m}$):** Verde vegetal viçoso (`Color(0.18, 0.48, 0.22, 1.0)` / `#2E8533`), conectando suavemente com as folhas e o cálice da flor.
+   - **Interpolação via `COLOR.a`:** A cor de vértice das malhas de haste possui canal Alfa contínuo assado no Blender que mapeia a elevação física real ($0.0 \dots 1.0$), interpolando as cores organicamente na GPU.
+3. **Imunidade aos Golpes 1 e 2:** O caule mantém `COLOR.r = 0.0` e `COLOR.b = 0.0`, permanecendo erguido e intacto durante a despetalação externa (Hit 1) e interna (Hit 2), sendo ceifado exclusivamente no Hit 3 fatal.
+
+
