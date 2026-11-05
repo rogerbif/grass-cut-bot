@@ -22,6 +22,44 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "flower_bed", "name": "🪻 Canteiro Florido", "color": Color(0.88, 0.30, 1.0), "unit": "canteiros" }
 ]
 
+class FlowerColorSwatch extends Control:
+	var inner_color: Color = Color.WHITE
+	var petal_color: Color = Color.WHITE
+	var center_color: Color = Color.YELLOW
+
+	func _init(p_inner: Color = Color.WHITE, p_petal: Color = Color.WHITE, p_center: Color = Color.YELLOW) -> void:
+		inner_color = p_inner
+		petal_color = p_petal
+		center_color = p_center
+		custom_minimum_size = Vector2(28, 28)
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var center: Vector2 = size * 0.5
+		var radius: float = minf(size.x, size.y) * 0.46
+		var petal_count: int = 8
+		var petal_w: float = radius * 0.42
+
+		for i: int in range(petal_count):
+			var angle: float = (float(i) / float(petal_count)) * TAU
+			var dir: Vector2 = Vector2(cos(angle), sin(angle))
+			var perp: Vector2 = Vector2(-dir.y, dir.x) * (petal_w * 0.45)
+			var p_base: Vector2 = center + dir * (radius * 0.18)
+			var p_mid_1: Vector2 = center + dir * (radius * 0.58) + perp
+			var p_tip: Vector2 = center + dir * radius
+			var p_mid_2: Vector2 = center + dir * (radius * 0.58) - perp
+
+			var poly: PackedVector2Array = [p_base, p_mid_1, p_tip, p_mid_2]
+			var mid_col: Color = inner_color.lerp(petal_color, 0.6)
+			var cols: PackedColorArray = [inner_color, mid_col, petal_color, mid_col]
+			draw_polygon(poly, cols)
+
+		# Miolo central (amarelo/dourado) com contorno sutil
+		var center_r: float = radius * 0.32
+		draw_circle(center, center_r, center_color)
+		draw_arc(center, center_r, 0.0, TAU, 16, center_color.darkened(0.35), 1.0, true)
+
+
 signal level_load_requested(level_id: int)
 signal grid_resize_requested(new_width: int, new_height: int)
 signal time_limit_changed(new_time: float)
@@ -99,6 +137,12 @@ var toast_container: VBoxContainer
 
 var _interactive_panels: Array[Control] = []
 
+var panel_variations_dock: PanelContainer
+var variations_container: HBoxContainer
+var variation_buttons: Dictionary = {}
+var lbl_variations_title: Label
+var _current_variation_base_id: String = ""
+
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -131,6 +175,7 @@ func _build_ui() -> void:
 	_build_left_panel()
 	_build_right_panel()
 	_build_bottom_bar()
+	_build_variations_dock()
 	_build_playtest_bar()
 	_build_toast_container()
 
@@ -825,6 +870,175 @@ func _build_bottom_bar() -> void:
 	lbl_status.add_theme_color_override("font_color", Color(0.85, 0.92, 0.98))
 	bot_panel.add_child(lbl_status)
 
+func _build_variations_dock() -> void:
+	panel_variations_dock = PanelContainer.new()
+	panel_variations_dock.name = "PanelVariationsDock"
+	panel_variations_dock.visible = false
+	panel_variations_dock.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	panel_variations_dock.offset_left = 304
+	panel_variations_dock.offset_top = -142
+	panel_variations_dock.offset_right = -388
+	panel_variations_dock.offset_bottom = -50
+	panel_variations_dock.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel_variations_dock.add_theme_stylebox_override(
+		"panel",
+		_make_panel_style(Color(0.08, 0.11, 0.15, 0.94), Color(0.25, 0.65, 0.85, 0.75), 10)
+	)
+	editor_panels_root.add_child(panel_variations_dock)
+	_interactive_panels.append(panel_variations_dock)
+
+	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 4)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel_variations_dock.add_child(vbox)
+
+	lbl_variations_title = Label.new()
+	lbl_variations_title.text = "🎨 VARIAÇÕES DE COR:"
+	lbl_variations_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_variations_title.add_theme_font_size_override("font_size", 11)
+	lbl_variations_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
+	vbox.add_child(lbl_variations_title)
+
+	variations_container = HBoxContainer.new()
+	variations_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	variations_container.add_theme_constant_override("separation", 6)
+	variations_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	variations_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(variations_container)
+
+func _create_variation_card(v_data: Dictionary) -> Button:
+	var btn: Button = Button.new()
+	var v_id: String = String(v_data.get("id", ""))
+	btn.custom_minimum_size = Vector2(88, 56)
+	btn.focus_mode = Control.FOCUS_NONE
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.clip_text = true
+
+	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 2)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(vbox)
+
+	var swatch: FlowerColorSwatch = FlowerColorSwatch.new(
+		v_data.get("inner_color", Color.WHITE) as Color,
+		v_data.get("petal_color", Color.WHITE) as Color,
+		v_data.get("center_color", Color.YELLOW) as Color
+	)
+	swatch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(swatch)
+
+	var lbl: Label = Label.new()
+	lbl.text = String(v_data.get("name", ""))
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 10)
+	lbl.add_theme_color_override("font_color", Color(0.90, 0.94, 0.98))
+	lbl.clip_text = true
+	vbox.add_child(lbl)
+	btn.set_meta("label", lbl)
+
+	var v_col: Color = v_data.get("color", Color.WHITE) as Color
+	var norm_sb: StyleBoxFlat = _make_panel_style(Color(0.10, 0.14, 0.18, 0.92), v_col.darkened(0.50), 6)
+	norm_sb.border_width_left = 1
+	norm_sb.border_width_top = 1
+	norm_sb.border_width_right = 1
+	norm_sb.border_width_bottom = 1
+
+	var hov_sb: StyleBoxFlat = _make_panel_style(Color(0.14, 0.20, 0.26, 0.96), v_col, 6)
+	hov_sb.border_width_left = 2
+	hov_sb.border_width_top = 2
+	hov_sb.border_width_right = 2
+	hov_sb.border_width_bottom = 2
+
+	btn.add_theme_stylebox_override("normal", norm_sb)
+	btn.add_theme_stylebox_override("hover", hov_sb)
+	btn.add_theme_stylebox_override("pressed", hov_sb)
+
+	btn.pressed.connect(func() -> void:
+		object_item_selected.emit(v_id)
+	)
+
+	return btn
+
+func _set_variation_card_selected(btn: Button, selected: bool, v_data: Dictionary) -> void:
+	if btn == null:
+		return
+	var v_col: Color = v_data.get("color", Color.WHITE) as Color
+	var petal_col: Color = v_data.get("petal_color", v_col) as Color
+	var lbl: Label = btn.get_meta("label", null) as Label
+
+	if selected:
+		var sel_sb: StyleBoxFlat = _make_panel_style(Color(0.16, 0.24, 0.32, 0.98), petal_col, 6)
+		sel_sb.border_width_left = 2
+		sel_sb.border_width_top = 2
+		sel_sb.border_width_right = 2
+		sel_sb.border_width_bottom = 2
+		btn.add_theme_stylebox_override("normal", sel_sb)
+		if lbl != null:
+			lbl.add_theme_color_override("font_color", petal_col)
+	else:
+		var norm_sb: StyleBoxFlat = _make_panel_style(Color(0.10, 0.14, 0.18, 0.92), v_col.darkened(0.50), 6)
+		norm_sb.border_width_left = 1
+		norm_sb.border_width_top = 1
+		norm_sb.border_width_right = 1
+		norm_sb.border_width_bottom = 1
+		btn.add_theme_stylebox_override("normal", norm_sb)
+		if lbl != null:
+			lbl.add_theme_color_override("font_color", Color(0.85, 0.90, 0.96))
+
+func _update_variations_dock(active_layer: int, active_object_id: String) -> void:
+	if panel_variations_dock == null:
+		return
+	if active_layer != 2:
+		panel_variations_dock.visible = false
+		return
+
+	var base_id: String = TilePaletteDB.get_base_id_for_variant(active_object_id)
+	if base_id.is_empty():
+		if TilePaletteDB.has_variations(active_object_id):
+			base_id = active_object_id
+		else:
+			panel_variations_dock.visible = false
+			return
+
+	if not TilePaletteDB.has_variations(base_id):
+		panel_variations_dock.visible = false
+		return
+
+	panel_variations_dock.visible = true
+
+	if lbl_variations_title != null:
+		var base_item: Dictionary = TilePaletteDB.get_item_by_id(base_id)
+		var base_name: String = String(base_item.get("name", "FLOR"))
+		lbl_variations_title.text = "🎨 VARIAÇÕES DE COR (%s):" % base_name.to_upper()
+
+	if _current_variation_base_id != base_id:
+		_current_variation_base_id = base_id
+		for c: Node in variations_container.get_children():
+			variations_container.remove_child(c)
+			c.queue_free()
+		variation_buttons.clear()
+
+		var vars_list: Array = TilePaletteDB.get_variations(base_id)
+		for v_entry: Variant in vars_list:
+			var v_data: Dictionary = v_entry as Dictionary
+			var card_btn: Button = _create_variation_card(v_data)
+			variations_container.add_child(card_btn)
+			variation_buttons[String(v_data.get("id", ""))] = card_btn
+
+	var vars_list: Array = TilePaletteDB.get_variations(base_id)
+	for v_entry: Variant in vars_list:
+		var v_data: Dictionary = v_entry as Dictionary
+		var v_id: String = String(v_data.get("id", ""))
+		if variation_buttons.has(v_id):
+			var b: Button = variation_buttons[v_id] as Button
+			var is_sel: bool = (v_id == active_object_id)
+			_set_variation_card_selected(b, is_sel, v_data)
+
 func _build_playtest_bar() -> void:
 	playtest_bar = PanelContainer.new()
 	playtest_bar.visible = false
@@ -955,7 +1169,15 @@ func sync_state(
 	for item in TilePaletteDB.OBJECT_ITEMS:
 		var oid_str: String = String(item["id"])
 		if object_buttons.has(oid_str):
-			_set_button_selected(object_buttons[oid_str] as Button, active_layer == 2 and active_object_id == oid_str, item["color"] as Color)
+			var is_sel: bool = false
+			if active_layer == 2:
+				if active_object_id == oid_str:
+					is_sel = true
+				elif TilePaletteDB.has_variations(oid_str) and TilePaletteDB.get_base_id_for_variant(active_object_id) == oid_str:
+					is_sel = true
+			_set_button_selected(object_buttons[oid_str] as Button, is_sel, item["color"] as Color)
+
+	_update_variations_dock(active_layer, active_object_id)
 
 	if lbl_brush_size != null:
 		lbl_brush_size.text = "Escala [S]: %d" % brush_size

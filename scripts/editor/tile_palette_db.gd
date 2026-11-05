@@ -134,7 +134,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"id": "flower",
 		"name": "Flor Silvestre",
 		"icon": "🌸",
-		"color": Color(1.0, 0.18, 0.65),
+		"color": Color(1.0, 0.58, 0.80),
 		"goal_key": "flower",
 		"category": "plant"
 	},
@@ -212,6 +212,94 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 	}
 ]
 
+# Variações cromáticas por item da paleta (exibidas no Dock inferior quando o item está selecionado)
+const ITEM_VARIATIONS: Dictionary = {
+	"flower": [
+		{
+			"id": "flower",
+			"name": "Rosa",
+			"full_name": "Rosa Silvestre",
+			"icon": "🌸",
+			"inner_color": Color(0.88, 0.10, 0.48, 1.0),
+			"petal_color": Color(1.0, 0.58, 0.80, 1.0),
+			"center_color": Color(1.0, 0.88, 0.05, 1.0),
+			"material_path": "res://shaders/interactive_flower_material.tres"
+		},
+		{
+			"id": "flower_blue",
+			"name": "Azul",
+			"full_name": "Azul Celeste",
+			"icon": "💠",
+			"inner_color": Color(0.12, 0.28, 0.72, 1.0),
+			"petal_color": Color(0.40, 0.90, 0.98, 1.0),
+			"center_color": Color(0.98, 0.82, 0.08, 1.0),
+			"material_path": "res://shaders/interactive_flower_blue_material.tres"
+		},
+		{
+			"id": "flower_sunset",
+			"name": "Pôr do Sol",
+			"full_name": "Pôr do Sol",
+			"icon": "🌅",
+			"inner_color": Color(0.78, 0.08, 0.24, 1.0),
+			"petal_color": Color(0.99, 0.72, 0.42, 1.0),
+			"center_color": Color(0.92, 0.72, 0.03, 1.0),
+			"material_path": "res://shaders/interactive_flower_sunset_material.tres"
+		},
+		{
+			"id": "flower_purple",
+			"name": "Lilás",
+			"full_name": "Lilás Encantado",
+			"icon": "🔮",
+			"inner_color": Color(0.38, 0.12, 0.56, 1.0),
+			"petal_color": Color(0.85, 0.70, 1.00, 1.0),
+			"center_color": Color(0.96, 0.97, 0.99, 1.0),
+			"material_path": "res://shaders/interactive_flower_purple_material.tres"
+		},
+		{
+			"id": "flower_white",
+			"name": "Branca",
+			"full_name": "Branca Suave",
+			"icon": "🤍",
+			"inner_color": Color(1.00, 0.92, 0.50, 1.0),
+			"petal_color": Color(1.00, 1.00, 1.00, 1.0),
+			"center_color": Color(0.92, 0.70, 0.03, 1.0),
+			"material_path": "res://shaders/interactive_flower_white_material.tres"
+		},
+		{
+			"id": "flower_turquoise",
+			"name": "Turquesa",
+			"full_name": "Turquesa Mística",
+			"icon": "💎",
+			"inner_color": Color(0.06, 0.48, 0.44, 1.0),
+			"petal_color": Color(0.38, 0.94, 0.84, 1.0),
+			"center_color": Color(0.96, 0.65, 0.04, 1.0),
+			"material_path": "res://shaders/interactive_flower_turquoise_material.tres"
+		}
+	]
+}
+
+static func get_variations(base_id: String) -> Array:
+	return ITEM_VARIATIONS.get(base_id, [])
+
+static func has_variations(base_id: String) -> bool:
+	return ITEM_VARIATIONS.has(base_id) and not (ITEM_VARIATIONS[base_id] as Array).is_empty()
+
+static func get_base_id_for_variant(variant_id: String) -> String:
+	for base_id: String in ITEM_VARIATIONS.keys():
+		var var_list: Array = ITEM_VARIATIONS[base_id] as Array
+		for v_var in var_list:
+			if v_var is Dictionary and String(v_var.get("id", "")) == variant_id:
+				return base_id
+	return variant_id
+
+static func get_variation_data(variant_id: String) -> Dictionary:
+	for base_id: String in ITEM_VARIATIONS.keys():
+		var var_list: Array = ITEM_VARIATIONS[base_id] as Array
+		for v_var in var_list:
+			if v_var is Dictionary and String(v_var.get("id", "")) == variant_id:
+				return v_var as Dictionary
+	return {}
+
 static func get_item_by_id(id_str: String) -> Dictionary:
 	for item in GRASS_ITEMS:
 		if String(item["id"]) == id_str:
@@ -222,6 +310,16 @@ static func get_item_by_id(id_str: String) -> Dictionary:
 	for item in OBJECT_ITEMS:
 		if String(item["id"]) == id_str:
 			return item
+	var v_data: Dictionary = get_variation_data(id_str)
+	if not v_data.is_empty():
+		return {
+			"id": v_data["id"],
+			"name": v_data["full_name"],
+			"icon": v_data["icon"],
+			"color": v_data["petal_color"],
+			"goal_key": "flower",
+			"category": "plant"
+		}
 	return {}
 
 static func get_terrain_info(tile_id: String) -> Dictionary:

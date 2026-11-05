@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ci71q8yay209v"]
+
+[ext_resource type="Script" path="res://tests/test_flower_variations_editor.gd" id="1_test"]
+
+[node name="TestFlowerVariationsEditor" type="Node"]
+script = ExtResource("1_test")

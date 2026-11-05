@@ -92,7 +92,11 @@ const DETACH_UP_SPEED_MAX: float = 5.0
 @export var max_health: int = 1
 @export var coin_reward: int = 1
 @export var plant_key: String = "grass" # Usado para sincronizar com as metas do HUD
-@export var custom_material: Material
+@export var custom_material: Material:
+	set(val):
+		custom_material = val
+		if is_inside_tree() and visual_mesh != null:
+			_apply_visual_material(visual_mesh)
 @export var particle_color: Color = Color(0.25, 0.75, 0.3, 1.0)
 @export var randomize_rotation: bool = true
 
@@ -174,6 +178,21 @@ static func get_flower_colors(flower_type: String) -> Dictionary:
 	var petal_col: Color = Color(1.0, 0.58, 0.80, 1.0)
 	var center_col: Color = Color(1.0, 0.88, 0.05, 1.0)
 	match flower_type:
+		"flower_blue":
+			petal_col = Color(0.40, 0.90, 0.98, 1.0)
+			center_col = Color(0.98, 0.82, 0.08, 1.0)
+		"flower_sunset":
+			petal_col = Color(0.99, 0.72, 0.42, 1.0)
+			center_col = Color(0.92, 0.72, 0.03, 1.0)
+		"flower_purple":
+			petal_col = Color(0.85, 0.70, 1.00, 1.0)
+			center_col = Color(0.96, 0.97, 0.99, 1.0)
+		"flower_white":
+			petal_col = Color(1.00, 1.00, 1.00, 1.0)
+			center_col = Color(0.92, 0.70, 0.03, 1.0)
+		"flower_turquoise":
+			petal_col = Color(0.38, 0.94, 0.84, 1.0)
+			center_col = Color(0.96, 0.65, 0.04, 1.0)
 		"flower_rose":
 			petal_col = Color(1.0, 0.08, 0.35, 1.0)
 			center_col = Color(0.80, 0.02, 0.18, 1.0)
@@ -381,11 +400,14 @@ static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flowe
 
 ## Carrega (sob demanda e com cache) as malhas das peças desprendíveis por espécie de flor
 static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
-	if _detach_meshes_by_type.has(flower_type):
-		return _detach_meshes_by_type[flower_type] as Dictionary
-	if not DETACH_CONFIG_BY_TYPE.has(flower_type):
+	var cfg_type: String = flower_type
+	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) and cfg_type.begins_with("flower_"):
+		cfg_type = "flower"
+	if _detach_meshes_by_type.has(cfg_type):
+		return _detach_meshes_by_type[cfg_type] as Dictionary
+	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
 		return {}
-	var cfg: Dictionary = DETACH_CONFIG_BY_TYPE[flower_type] as Dictionary
+	var cfg: Dictionary = DETACH_CONFIG_BY_TYPE[cfg_type] as Dictionary
 	var model_path: String = cfg.get("model", "") as String
 	var offsets: Dictionary = cfg.get("offsets", {}) as Dictionary
 	var packed: PackedScene = load(model_path) as PackedScene
@@ -402,11 +424,14 @@ static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
 
 ## Hit 1 de Flores: 2 pétalas + 1 folha da respectiva espécie saem para cima, caem, encolhem e somem
 static func spawn_flower_detach_pieces(scene_root: Node, flower_xform: Transform3D, flower_type: String) -> void:
-	if not DETACH_CONFIG_BY_TYPE.has(flower_type) or scene_root == null or not scene_root.is_inside_tree():
+	var cfg_type: String = flower_type
+	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) and cfg_type.begins_with("flower_"):
+		cfg_type = "flower"
+	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) or scene_root == null or not scene_root.is_inside_tree():
 		return
 	_ensure_particle_meshes()
-	var meshes: Dictionary = _ensure_detach_meshes(flower_type)
-	var cfg: Dictionary = DETACH_CONFIG_BY_TYPE[flower_type] as Dictionary
+	var meshes: Dictionary = _ensure_detach_meshes(cfg_type)
+	var cfg: Dictionary = DETACH_CONFIG_BY_TYPE[cfg_type] as Dictionary
 	var offsets: Dictionary = cfg.get("offsets", {}) as Dictionary
 	var cols: Dictionary = get_flower_colors(flower_type)
 	for piece_name: String in offsets.keys():

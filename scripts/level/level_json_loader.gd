@@ -13,6 +13,15 @@ const TILE_SCENES: Dictionary = {
 	"island_dirt": preload("res://scenes/editor/tiles/tile_island_dirt.tscn")
 }
 
+const FLOWER_VARIATION_MATERIALS: Dictionary = {
+	"flower": preload("res://shaders/interactive_flower_material.tres"),
+	"flower_blue": preload("res://shaders/interactive_flower_blue_material.tres"),
+	"flower_sunset": preload("res://shaders/interactive_flower_sunset_material.tres"),
+	"flower_purple": preload("res://shaders/interactive_flower_purple_material.tres"),
+	"flower_white": preload("res://shaders/interactive_flower_white_material.tres"),
+	"flower_turquoise": preload("res://shaders/interactive_flower_turquoise_material.tres")
+}
+
 const OBJECT_SCENES: Dictionary = {
 	"grass_green": preload("res://scenes/plants/grass_tuft.tscn"),
 	"grass_yellow": preload("res://scenes/plants/grass_yellow.tscn"),
@@ -23,6 +32,11 @@ const OBJECT_SCENES: Dictionary = {
 	"grass_black": preload("res://scenes/plants/grass_black.tscn"),
 	"wheat": preload("res://scenes/plants/wheat_tuft.tscn"),
 	"flower": preload("res://scenes/plants/flower_tuft.tscn"),
+	"flower_blue": preload("res://scenes/plants/flower_tuft.tscn"),
+	"flower_sunset": preload("res://scenes/plants/flower_tuft.tscn"),
+	"flower_purple": preload("res://scenes/plants/flower_tuft.tscn"),
+	"flower_white": preload("res://scenes/plants/flower_tuft.tscn"),
+	"flower_turquoise": preload("res://scenes/plants/flower_tuft.tscn"),
 	"flower_rose": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_daisy": preload("res://scenes/plants/flower_daisy.tscn"),
 	"flower_sunflower": preload("res://scenes/plants/flower_sunflower.tscn"),
@@ -112,8 +126,11 @@ static func instantiate_object_node(obj_type: String, rot_deg: int = 0) -> Node3
 	if packed == null:
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
-	if node != null and rot_deg != 0:
-		node.rotation_degrees.y = float(rot_deg)
+	if node != null:
+		if rot_deg != 0:
+			node.rotation_degrees.y = float(rot_deg)
+		if FLOWER_VARIATION_MATERIALS.has(obj_type):
+			node.set("custom_material", FLOWER_VARIATION_MATERIALS[obj_type])
 	return node
 
 static func build_coastal_colliders_and_foam(

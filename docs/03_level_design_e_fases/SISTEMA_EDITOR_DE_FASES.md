@@ -65,6 +65,11 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
     - **`cutter_spawn` (Spawn do Robô 🤖):** Marcador de início do robô cortador (único por fase).
   - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra, flor ou trigo em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar itens instantaneamente!
 
+- **Dock Inferior Contextual de Variações de Cores (`PanelVariationsDock`):**
+  - **Exibição Dinâmica por Espécie:** Ao selecionar na Camada de Objetos uma flor que possui variações cromáticas cadastradas em `TilePaletteDB.ITEM_VARIATIONS` (ex: Flor Silvestre `flower`), o editor projeta automaticamente um dock inferior centralizado (`offset_left = 304`, `offset_right = -388`, `offset_top = -142`, `offset_bottom = -50`) sem sobrepor o painel esquerdo, o painel direito ou a barra de status.
+  - **Cards com Ícones Vetoriais (`FlowerColorSwatch`):** Cada card de variação desenha proceduralmente 8 pétalas radiais com gradiente suave (`petal_inner_color` na base interna até `petal_color` na ponta) e miolo amarelo/dourado central com contorno nítido.
+  - **Seleção Padrão & Sincronização:** A flor vem com uma cor padrão selecionada (ex: Rosa Silvestre `flower`). Clicar em qualquer card de cor altera a variante ativa (`flower_blue`, `flower_sunset`, `flower_purple`, `flower_white`, `flower_turquoise`), mantendo o botão mestre "Flor Silvestre" da paleta direita selecionado. Ao selecionar um item sem variações (rochas, trigo, spawn) ou alternar para outra camada, o dock fecha automaticamente.
+
 - **Persistência Híbrida JSON v3 e Blindagem de Bake (`LevelSerializer`):**
   - O formato JSON v3 salva os polígonos contínuos em `"grass_vectors": [ { "id": 1, "type": "grass_green", "polygon": [...], "holes": [...] } ]` e os objetos de tile discretos em `"objects": [ { "gx": ..., "gz": ..., "type": "rock"|"flower"|"wheat", "rot": ... } ]`.
   - **Blindagem Defensiva contra Sobrescrita:** A rotina de exportação `bake_to_tscn` recebe e repassa `vector_field` obrigatoriamente; caso `vector_field` seja nulo mas o arquivo existente em disco já contenha `"grass_vectors"`, o serializador preserva os dados existentes sem reverter para `version: 2` vazia.

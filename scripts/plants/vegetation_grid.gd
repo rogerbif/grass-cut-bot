@@ -31,6 +31,11 @@ const GRASS_MATERIALS: Dictionary = {
 
 const FLOWER_MATERIALS: Dictionary = {
 	"flower": preload("res://shaders/interactive_flower_material.tres"),
+	"flower_blue": preload("res://shaders/interactive_flower_blue_material.tres"),
+	"flower_sunset": preload("res://shaders/interactive_flower_sunset_material.tres"),
+	"flower_purple": preload("res://shaders/interactive_flower_purple_material.tres"),
+	"flower_white": preload("res://shaders/interactive_flower_white_material.tres"),
+	"flower_turquoise": preload("res://shaders/interactive_flower_turquoise_material.tres"),
 	"flower_rose": preload("res://shaders/flower_rose_material.tres"),
 	"flower_daisy": preload("res://shaders/flower_daisy_material.tres"),
 	"flower_sunflower": preload("res://shaders/flower_sunflower_material.tres"),
@@ -61,6 +66,11 @@ const VEG_TYPES: Array[String] = [
 	"grass_black",
 	"wheat",
 	"flower",
+	"flower_blue",
+	"flower_sunset",
+	"flower_purple",
+	"flower_white",
+	"flower_turquoise",
 	"flower_rose",
 	"flower_daisy",
 	"flower_sunflower",
@@ -83,6 +93,7 @@ const FIXED_ISLAND_AABB: AABB = AABB(Vector3(-35.0, -5.0, -35.0), Vector3(70.0, 
 static var _grass_mesh: Mesh = null
 static var _wheat_mesh: ArrayMesh = null
 static var _flower_mesh: ArrayMesh = null
+static var _flower_variation_meshes: Dictionary = {}
 static var _flower_rose_mesh: ArrayMesh = null
 static var _flower_daisy_mesh: ArrayMesh = null
 static var _flower_sunflower_mesh: ArrayMesh = null
@@ -172,6 +183,11 @@ static func _ensure_static_meshes() -> void:
 
 	if _flower_mesh == null:
 		_flower_mesh = _build_flower_combined_mesh("flower", FLOWER_SCENE)
+		_flower_variation_meshes["flower"] = _flower_mesh
+
+	for f_var_key in ["flower_blue", "flower_sunset", "flower_purple", "flower_white", "flower_turquoise"]:
+		if not _flower_variation_meshes.has(f_var_key):
+			_flower_variation_meshes[f_var_key] = _build_flower_combined_mesh(f_var_key, FLOWER_SCENE)
 
 	if _flower_rose_mesh == null:
 		_flower_rose_mesh = _build_flower_combined_mesh("flower_rose", FLOWER_ROSE_SCENE)
@@ -533,6 +549,16 @@ static func _resolve_clipping_color(v_type: String) -> Color:
 			return Color(0.64, 0.46, 0.10, 1.0)
 		"flower":
 			return Color(0.85, 0.22, 0.55, 1.0)
+		"flower_blue":
+			return Color(0.20, 0.60, 0.85, 1.0)
+		"flower_sunset":
+			return Color(0.88, 0.45, 0.15, 1.0)
+		"flower_purple":
+			return Color(0.65, 0.35, 0.80, 1.0)
+		"flower_white":
+			return Color(0.88, 0.88, 0.90, 1.0)
+		"flower_turquoise":
+			return Color(0.15, 0.70, 0.65, 1.0)
 		"flower_rose":
 			return Color(0.72, 0.12, 0.25, 1.0)
 		"flower_daisy":
