@@ -21,8 +21,8 @@ func _ready() -> void:
 	print("  [OK] TilePaletteDB tem 6 variações registradas para 'flower'")
 
 	var vars_rose: Array = TilePaletteDB.get_variations("flower_rose")
-	assert(vars_rose.size() == 6, "flower_rose deve conter 6 variações")
-	print("  [OK] TilePaletteDB tem 6 variações registradas para 'flower_rose'")
+	assert(vars_rose.size() == 7, "flower_rose deve conter 7 variações")
+	print("  [OK] TilePaletteDB tem 7 variações registradas para 'flower_rose'")
 
 	assert(TilePaletteDB.get_base_id_for_variant("flower") == "flower")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_blue") == "flower")
@@ -30,6 +30,7 @@ func _ready() -> void:
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_white") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_yellow") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_blue") == "flower_rose")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_wine") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_black") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_peach") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("rock") == "rock")
@@ -61,11 +62,12 @@ func _ready() -> void:
 	assert(lbl_title != null and lbl_title.text.contains("ROSA NOBRE"), "Título do dock deve indicar ROSA NOBRE")
 
 	var var_buttons: Dictionary = ui.get("variation_buttons") as Dictionary
-	assert(var_buttons.size() == 6, "variation_buttons deve conter 6 botões de variação da rosa")
+	assert(var_buttons.size() == 7, "variation_buttons deve conter 7 botões de variação da rosa")
 	assert(var_buttons.has("flower_rose"), "deve conter botão para 'flower_rose'")
 	assert(var_buttons.has("flower_rose_white"), "deve conter botão para 'flower_rose_white'")
 	assert(var_buttons.has("flower_rose_blue"), "deve conter botão para 'flower_rose_blue'")
-	print("  [OK] Dock de variações da Rosa visível e populado com 6 cards dedicados")
+	assert(var_buttons.has("flower_rose_wine"), "deve conter botão para 'flower_rose_wine'")
+	print("  [OK] Dock de variações da Rosa visível e populado com 7 cards dedicados")
 
 	# Testa seleção do card 'flower_rose_white'
 	var received_obj: Array[String] = []
@@ -119,7 +121,7 @@ func _ready() -> void:
 		assert(custom_mat is ShaderMaterial, "custom_material de %s deve ser ShaderMaterial" % vid)
 		node.free()
 
-	print("  [OK] LevelJsonLoader instancia corretamente todas as 6 variações da rosa com ShaderMaterial")
+	print("  [OK] LevelJsonLoader instancia corretamente todas as 7 variações da rosa com ShaderMaterial")
 
 	# 4. Validação do VegetationGridScript para as rosas
 	for v_item: Variant in vars_rose:
@@ -128,7 +130,7 @@ func _ready() -> void:
 		assert(VegetationGridScript.FLOWER_MATERIALS.has(vid), "VegetationGrid deve ter material para %s" % vid)
 		assert(VegetationGridScript.VEG_TYPES.has(vid), "VegetationGrid deve ter tipo registrado para %s" % vid)
 
-	print("  [OK] VegetationGrid possui materiais e tipos GPU instanciados para todas as 6 variações da rosa")
+	print("  [OK] VegetationGrid possui materiais e tipos GPU instanciados para todas as 7 variações da rosa")
 
 	ui.queue_free()
 	print("==========================================")

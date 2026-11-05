@@ -24,6 +24,7 @@ const FLOWER_VARIATION_MATERIALS: Dictionary = {
 	"flower_rose_white": preload("res://shaders/flower_rose_white_material.tres"),
 	"flower_rose_yellow": preload("res://shaders/flower_rose_yellow_material.tres"),
 	"flower_rose_blue": preload("res://shaders/flower_rose_blue_material.tres"),
+	"flower_rose_wine": preload("res://shaders/flower_rose_wine_material.tres"),
 	"flower_rose_black": preload("res://shaders/flower_rose_black_material.tres"),
 	"flower_rose_peach": preload("res://shaders/flower_rose_peach_material.tres")
 }
@@ -47,6 +48,7 @@ const OBJECT_SCENES: Dictionary = {
 	"flower_rose_white": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_rose_yellow": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_rose_blue": preload("res://scenes/plants/flower_rose.tscn"),
+	"flower_rose_wine": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_rose_black": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_rose_peach": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_daisy": preload("res://scenes/plants/flower_daisy.tscn"),

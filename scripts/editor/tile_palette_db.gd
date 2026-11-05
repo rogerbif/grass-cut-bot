@@ -282,9 +282,9 @@ const ITEM_VARIATIONS: Dictionary = {
 			"name": "Vermelha",
 			"full_name": "Rosa Nobre",
 			"icon": "🌹",
-			"inner_color": Color(0.43, 0.02, 0.11, 1.0),
-			"petal_color": Color(1.0, 0.13, 0.32, 1.0),
-			"center_color": Color(0.55, 0.0, 0.13, 1.0),
+			"inner_color": Color(0.28, 0.01, 0.05, 1.0),
+			"petal_color": Color(1.0, 0.15, 0.32, 1.0),
+			"center_color": Color(0.35, 0.01, 0.06, 1.0),
 			"material_path": "res://shaders/flower_rose_material.tres"
 		},
 		{
@@ -292,9 +292,9 @@ const ITEM_VARIATIONS: Dictionary = {
 			"name": "Branca",
 			"full_name": "Rosa Branca Imperial",
 			"icon": "🤍",
-			"inner_color": Color(0.85, 0.79, 0.68, 1.0),
+			"inner_color": Color(0.70, 0.58, 0.42, 1.0),
 			"petal_color": Color(1.0, 1.0, 1.0, 1.0),
-			"center_color": Color(0.92, 0.84, 0.56, 1.0),
+			"center_color": Color(0.85, 0.68, 0.25, 1.0),
 			"material_path": "res://shaders/flower_rose_white_material.tres"
 		},
 		{
@@ -302,9 +302,9 @@ const ITEM_VARIATIONS: Dictionary = {
 			"name": "Amarela",
 			"full_name": "Rosa Amarela Dourada",
 			"icon": "💛",
-			"inner_color": Color(0.85, 0.35, 0.0, 1.0),
-			"petal_color": Color(1.0, 0.87, 0.0, 1.0),
-			"center_color": Color(1.0, 0.72, 0.0, 1.0),
+			"inner_color": Color(0.78, 0.20, 0.0, 1.0),
+			"petal_color": Color(1.0, 0.95, 0.15, 1.0),
+			"center_color": Color(0.85, 0.25, 0.0, 1.0),
 			"material_path": "res://shaders/flower_rose_yellow_material.tres"
 		},
 		{
@@ -312,19 +312,29 @@ const ITEM_VARIATIONS: Dictionary = {
 			"name": "Azul",
 			"full_name": "Rosa Azul Mística",
 			"icon": "💙",
-			"inner_color": Color(0.06, 0.16, 0.43, 1.0),
-			"petal_color": Color(0.28, 0.69, 1.0, 1.0),
-			"center_color": Color(0.10, 0.23, 0.55, 1.0),
+			"inner_color": Color(0.03, 0.08, 0.35, 1.0),
+			"petal_color": Color(0.38, 0.80, 1.0, 1.0),
+			"center_color": Color(0.04, 0.10, 0.40, 1.0),
 			"material_path": "res://shaders/flower_rose_blue_material.tres"
+		},
+		{
+			"id": "flower_rose_wine",
+			"name": "Vinho",
+			"full_name": "Rosa Vinho Nobre",
+			"icon": "🍷",
+			"inner_color": Color(0.10, 0.02, 0.06, 1.0),
+			"petal_color": Color(0.40, 0.08, 0.22, 1.0),
+			"center_color": Color(0.16, 0.03, 0.10, 1.0),
+			"material_path": "res://shaders/flower_rose_wine_material.tres"
 		},
 		{
 			"id": "flower_rose_black",
 			"name": "Negra",
 			"full_name": "Rosa Negra Veludo",
 			"icon": "🖤",
-			"inner_color": Color(0.09, 0.03, 0.07, 1.0),
-			"petal_color": Color(0.36, 0.09, 0.21, 1.0),
-			"center_color": Color(0.14, 0.13, 0.16, 1.0),
+			"inner_color": Color(0.04, 0.015, 0.035, 1.0),
+			"petal_color": Color(0.20, 0.05, 0.12, 1.0),
+			"center_color": Color(0.07, 0.06, 0.08, 1.0),
 			"material_path": "res://shaders/flower_rose_black_material.tres"
 		},
 		{

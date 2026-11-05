@@ -40,6 +40,7 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_rose_white": preload("res://shaders/flower_rose_white_material.tres"),
 	"flower_rose_yellow": preload("res://shaders/flower_rose_yellow_material.tres"),
 	"flower_rose_blue": preload("res://shaders/flower_rose_blue_material.tres"),
+	"flower_rose_wine": preload("res://shaders/flower_rose_wine_material.tres"),
 	"flower_rose_black": preload("res://shaders/flower_rose_black_material.tres"),
 	"flower_rose_peach": preload("res://shaders/flower_rose_peach_material.tres"),
 	"flower_daisy": preload("res://shaders/flower_daisy_material.tres"),
@@ -80,6 +81,7 @@ const VEG_TYPES: Array[String] = [
 	"flower_rose_white",
 	"flower_rose_yellow",
 	"flower_rose_blue",
+	"flower_rose_wine",
 	"flower_rose_black",
 	"flower_rose_peach",
 	"flower_daisy",
@@ -203,7 +205,7 @@ static func _ensure_static_meshes() -> void:
 		_flower_rose_mesh = _build_flower_combined_mesh("flower_rose", FLOWER_ROSE_SCENE)
 		_flower_variation_meshes["flower_rose"] = _flower_rose_mesh
 
-	for r_var_key in ["flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_black", "flower_rose_peach"]:
+	for r_var_key in ["flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_wine", "flower_rose_black", "flower_rose_peach"]:
 		if not _flower_variation_meshes.has(r_var_key):
 			_flower_variation_meshes[r_var_key] = _build_flower_combined_mesh(r_var_key, FLOWER_ROSE_SCENE)
 
@@ -576,6 +578,18 @@ static func _resolve_clipping_color(v_type: String) -> Color:
 			return Color(0.15, 0.70, 0.65, 1.0)
 		"flower_rose":
 			return Color(0.72, 0.12, 0.25, 1.0)
+		"flower_rose_white":
+			return Color(0.92, 0.90, 0.85, 1.0)
+		"flower_rose_yellow":
+			return Color(0.90, 0.75, 0.10, 1.0)
+		"flower_rose_blue":
+			return Color(0.25, 0.60, 0.90, 1.0)
+		"flower_rose_wine":
+			return Color(0.38, 0.08, 0.20, 1.0)
+		"flower_rose_black":
+			return Color(0.12, 0.05, 0.08, 1.0)
+		"flower_rose_peach":
+			return Color(0.90, 0.55, 0.40, 1.0)
 		"flower_daisy":
 			return Color(0.85, 0.85, 0.88, 1.0)
 		"flower_sunflower":
@@ -1345,8 +1359,9 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 				return col_variant as Color
 	if v_type == "wheat":
 		return Color(0.98, 0.78, 0.14, 1.0)
-	if v_type == "flower_rose":
-		return Color(1.0, 0.08, 0.35, 1.0)
+	if v_type.begins_with("flower_rose"):
+		var r_cols: Dictionary = PlantScript.get_flower_colors(v_type)
+		return r_cols.get("petal", Color(1.0, 0.08, 0.35, 1.0))
 	if v_type == "flower_daisy":
 		return Color(1.0, 1.0, 1.0, 1.0)
 	if v_type == "flower_sunflower":
