@@ -181,7 +181,7 @@ static func get_all_species() -> Array[Dictionary]:
 		{
 			"key": "flower_rose",
 			"category": "flower",
-			"name": "Rosa Rubra Encantada",
+			"name": "Rosa",
 			"icon": "🌹",
 			"color": Color(0.90, 0.15, 0.28, 1.0),
 			"origin_level": 5,

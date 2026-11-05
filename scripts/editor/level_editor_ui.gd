@@ -19,8 +19,8 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "flower_purple", "name": "🔮 Flor Lilás", "color": Color(0.85, 0.70, 1.00), "unit": "flores" },
 	{ "key": "flower_white", "name": "🤍 Flor Branca", "color": Color(1.00, 1.00, 1.00), "unit": "flores" },
 	{ "key": "flower_turquoise", "name": "💎 Flor Turquesa", "color": Color(0.38, 0.94, 0.84), "unit": "flores" },
-	# --- Rosas Nobres (7 Variações) ---
-	{ "key": "flower_rose", "name": "🌹 Rosa Nobre", "color": Color(1.0, 0.15, 0.32), "unit": "rosas" },
+	# --- Rosas (7 Variações) ---
+	{ "key": "flower_rose", "name": "🌹 Rosa Vermelha", "color": Color(1.0, 0.15, 0.32), "unit": "rosas" },
 	{ "key": "flower_rose_white", "name": "🤍 Rosa Branca", "color": Color(1.0, 1.0, 1.0), "unit": "rosas" },
 	{ "key": "flower_rose_yellow", "name": "💛 Rosa Amarela", "color": Color(1.0, 0.95, 0.15), "unit": "rosas" },
 	{ "key": "flower_rose_blue", "name": "💙 Rosa Azul", "color": Color(0.38, 0.80, 1.0), "unit": "rosas" },

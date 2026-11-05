@@ -140,7 +140,7 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 	},
 	{
 		"id": "flower_rose",
-		"name": "Rosa Nobre",
+		"name": "Rosa",
 		"icon": "🌹",
 		"color": Color(1.0, 0.08, 0.35),
 		"goal_key": "flower_rose",
@@ -280,7 +280,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose",
 			"name": "Vermelha",
-			"full_name": "Rosa Nobre",
+			"full_name": "Rosa Vermelha",
 			"icon": "🌹",
 			"inner_color": Color(0.28, 0.01, 0.05, 1.0),
 			"petal_color": Color(1.0, 0.15, 0.32, 1.0),
@@ -290,7 +290,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose_white",
 			"name": "Branca",
-			"full_name": "Rosa Branca Imperial",
+			"full_name": "Rosa Branca",
 			"icon": "🤍",
 			"inner_color": Color(0.70, 0.58, 0.42, 1.0),
 			"petal_color": Color(1.0, 1.0, 1.0, 1.0),
@@ -300,7 +300,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose_yellow",
 			"name": "Amarela",
-			"full_name": "Rosa Amarela Dourada",
+			"full_name": "Rosa Amarela",
 			"icon": "💛",
 			"inner_color": Color(0.78, 0.20, 0.0, 1.0),
 			"petal_color": Color(1.0, 0.95, 0.15, 1.0),
@@ -310,7 +310,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose_blue",
 			"name": "Azul",
-			"full_name": "Rosa Azul Mística",
+			"full_name": "Rosa Azul",
 			"icon": "💙",
 			"inner_color": Color(0.03, 0.08, 0.35, 1.0),
 			"petal_color": Color(0.38, 0.80, 1.0, 1.0),
@@ -320,7 +320,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose_wine",
 			"name": "Vinho",
-			"full_name": "Rosa Vinho Nobre",
+			"full_name": "Rosa Vinho",
 			"icon": "🍷",
 			"inner_color": Color(0.10, 0.02, 0.06, 1.0),
 			"petal_color": Color(0.40, 0.08, 0.22, 1.0),
@@ -330,7 +330,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose_black",
 			"name": "Negra",
-			"full_name": "Rosa Negra Veludo",
+			"full_name": "Rosa Negra",
 			"icon": "🖤",
 			"inner_color": Color(0.04, 0.015, 0.035, 1.0),
 			"petal_color": Color(0.20, 0.05, 0.12, 1.0),
@@ -340,7 +340,7 @@ const ITEM_VARIATIONS: Dictionary = {
 		{
 			"id": "flower_rose_peach",
 			"name": "Pêssego",
-			"full_name": "Rosa Pêssego Salmão",
+			"full_name": "Rosa Pêssego",
 			"icon": "🧡",
 			"inner_color": Color(0.72, 0.25, 0.15, 1.0),
 			"petal_color": Color(1.0, 0.66, 0.52, 1.0),

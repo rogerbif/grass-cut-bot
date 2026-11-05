@@ -59,7 +59,7 @@ func _ready() -> void:
 	assert(dock.visible, "panel_variations_dock deve estar visível quando flower_rose está selecionada")
 
 	var lbl_title: Label = ui.get("lbl_variations_title") as Label
-	assert(lbl_title != null and lbl_title.text.contains("ROSA NOBRE"), "Título do dock deve indicar ROSA NOBRE")
+	assert(lbl_title != null and lbl_title.text.contains("ROSA"), "Título do dock deve indicar ROSA")
 
 	var var_buttons: Dictionary = ui.get("variation_buttons") as Dictionary
 	assert(var_buttons.size() == 7, "variation_buttons deve conter 7 botões de variação da rosa")
