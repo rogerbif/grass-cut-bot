@@ -171,8 +171,8 @@ static func _ensure_particle_meshes() -> void:
 		_circle_mesh = st.commit()
 
 static func get_flower_colors(flower_type: String) -> Dictionary:
-	var petal_col: Color = Color(1.0, 0.18, 0.65, 1.0)
-	var center_col: Color = Color(1.0, 0.85, 0.05, 1.0)
+	var petal_col: Color = Color(1.0, 0.58, 0.80, 1.0)
+	var center_col: Color = Color(1.0, 0.88, 0.05, 1.0)
 	match flower_type:
 		"flower_rose":
 			petal_col = Color(1.0, 0.08, 0.35, 1.0)

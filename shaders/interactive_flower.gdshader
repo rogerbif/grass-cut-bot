@@ -12,6 +12,7 @@ uniform float wind_strength : hint_range(0.0, 1.0) = 0.08;
 
 // Cores das pétalas e do miolo (Low Poly Matte)
 uniform vec4 petal_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 petal_inner_color : source_color = vec4(0.0, 0.0, 0.0, 0.0);
 uniform vec4 center_color : source_color = vec4(1.0, 0.85, 0.05, 1.0);
 uniform float roughness : hint_range(0.0, 1.0) = 0.85;
 uniform float specular : hint_range(0.0, 1.0) = 0.15;
@@ -75,11 +76,17 @@ void vertex() {
 }
 
 void fragment() {
-	// Gradiente de tom escuro na base para claro na ponta via COLOR.a
-	float shade = mix(0.55, 1.0, clamp(COLOR.a, 0.0, 1.0));
-	// Se for miolo (COLOR.g > 0.5 assado no Blender), aplica center_color; senão petal_color
-	vec3 base_col = (COLOR.g > 0.5) ? center_color.rgb : petal_color.rgb;
-	base_col *= shade;
+	vec3 pet_col;
+	if (petal_inner_color.a > 0.001) {
+		// Gradiente customizável entre a base interna da pétala (COLOR.a = 0) e as pontas (COLOR.a = 1)
+		pet_col = mix(petal_inner_color.rgb, petal_color.rgb, clamp(COLOR.a, 0.0, 1.0));
+	} else {
+		// Gradiente clássico com shade escurecendo a base
+		float shade = mix(0.55, 1.0, clamp(COLOR.a, 0.0, 1.0));
+		pet_col = petal_color.rgb * shade;
+	}
+	// Se for miolo (COLOR.g > 0.5 assado no Blender), aplica center_color puro; senão pet_col
+	vec3 base_col = (COLOR.g > 0.5) ? center_color.rgb : pet_col;
 	if (OUTPUT_IS_SRGB) {
 		base_col *= vec3(0.78, 0.78, 0.78);
 	}
