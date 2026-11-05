@@ -10,11 +10,12 @@ func _ready() -> void:
 	print("🧪 TESTES AUTOMATIZADOS: VARIAÇÕES DE FLORES (SILVESTRE & ROSA)")
 	print("==================================================")
 
-	# 1. Validação do TilePaletteDB para 'flower' e 'flower_rose'
+	# 1. Validação do TilePaletteDB para 'flower', 'flower_rose' e 'flower_daisy'
 	assert(TilePaletteDB.has_variations("flower"), "flower deve ter variações")
 	assert(TilePaletteDB.has_variations("flower_rose"), "flower_rose deve ter variações")
+	assert(TilePaletteDB.has_variations("flower_daisy"), "flower_daisy deve ter variações")
 	assert(not TilePaletteDB.has_variations("rock"), "rock não deve ter variações")
-	assert(not TilePaletteDB.has_variations("flower_daisy"), "flower_daisy não deve ter variações")
+	assert(not TilePaletteDB.has_variations("flower_bell"), "flower_bell não deve ter variações")
 
 	var vars_flower: Array = TilePaletteDB.get_variations("flower")
 	assert(vars_flower.size() == 6, "flower deve conter 6 variações")
@@ -23,6 +24,10 @@ func _ready() -> void:
 	var vars_rose: Array = TilePaletteDB.get_variations("flower_rose")
 	assert(vars_rose.size() == 7, "flower_rose deve conter 7 variações")
 	print("  [OK] TilePaletteDB tem 7 variações registradas para 'flower_rose'")
+
+	var vars_daisy: Array = TilePaletteDB.get_variations("flower_daisy")
+	assert(vars_daisy.size() == 7, "flower_daisy deve conter 7 variações")
+	print("  [OK] TilePaletteDB tem 7 variações registradas para 'flower_daisy'")
 
 	assert(TilePaletteDB.get_base_id_for_variant("flower") == "flower")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_blue") == "flower")
@@ -33,6 +38,13 @@ func _ready() -> void:
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_wine") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_black") == "flower_rose")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_rose_peach") == "flower_rose")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy") == "flower_daisy")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy_blue") == "flower_daisy")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy_orange") == "flower_daisy")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy_yellow") == "flower_daisy")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy_red") == "flower_daisy")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy_pink") == "flower_daisy")
+	assert(TilePaletteDB.get_base_id_for_variant("flower_daisy_bicolor") == "flower_daisy")
 	assert(TilePaletteDB.get_base_id_for_variant("rock") == "rock")
 	print("  [OK] get_base_id_for_variant mapeia corretamente todas as variações para suas espécies")
 

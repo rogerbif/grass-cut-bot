@@ -44,6 +44,12 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_rose_black": preload("res://shaders/flower_rose_black_material.tres"),
 	"flower_rose_peach": preload("res://shaders/flower_rose_peach_material.tres"),
 	"flower_daisy": preload("res://shaders/flower_daisy_material.tres"),
+	"flower_daisy_blue": preload("res://shaders/flower_daisy_blue_material.tres"),
+	"flower_daisy_orange": preload("res://shaders/flower_daisy_orange_material.tres"),
+	"flower_daisy_yellow": preload("res://shaders/flower_daisy_yellow_material.tres"),
+	"flower_daisy_red": preload("res://shaders/flower_daisy_red_material.tres"),
+	"flower_daisy_pink": preload("res://shaders/flower_daisy_pink_material.tres"),
+	"flower_daisy_bicolor": preload("res://shaders/flower_daisy_bicolor_material.tres"),
 	"flower_sunflower": preload("res://shaders/flower_sunflower_material.tres"),
 	"flower_bell": preload("res://shaders/flower_bell_material.tres"),
 	"flower_corolla": preload("res://shaders/flower_corolla_material.tres"),
@@ -85,6 +91,12 @@ const VEG_TYPES: Array[String] = [
 	"flower_rose_black",
 	"flower_rose_peach",
 	"flower_daisy",
+	"flower_daisy_blue",
+	"flower_daisy_orange",
+	"flower_daisy_yellow",
+	"flower_daisy_red",
+	"flower_daisy_pink",
+	"flower_daisy_bicolor",
 	"flower_sunflower",
 	"flower_bell",
 	"flower_corolla",
@@ -211,6 +223,11 @@ static func _ensure_static_meshes() -> void:
 
 	if _flower_daisy_mesh == null:
 		_flower_daisy_mesh = _build_flower_combined_mesh("flower_daisy", FLOWER_DAISY_SCENE)
+		_flower_variation_meshes["flower_daisy"] = _flower_daisy_mesh
+
+	for d_var_key in ["flower_daisy_blue", "flower_daisy_orange", "flower_daisy_yellow", "flower_daisy_red", "flower_daisy_pink", "flower_daisy_bicolor"]:
+		if not _flower_variation_meshes.has(d_var_key):
+			_flower_variation_meshes[d_var_key] = _build_flower_combined_mesh(d_var_key, FLOWER_DAISY_SCENE)
 
 	if _flower_sunflower_mesh == null:
 		_flower_sunflower_mesh = _build_flower_combined_mesh("flower_sunflower", FLOWER_SUNFLOWER_SCENE)
@@ -592,6 +609,18 @@ static func _resolve_clipping_color(v_type: String) -> Color:
 			return Color(0.90, 0.55, 0.40, 1.0)
 		"flower_daisy":
 			return Color(0.85, 0.85, 0.88, 1.0)
+		"flower_daisy_blue":
+			return Color(0.40, 0.62, 0.95, 1.0)
+		"flower_daisy_orange":
+			return Color(0.95, 0.45, 0.10, 1.0)
+		"flower_daisy_yellow":
+			return Color(0.95, 0.82, 0.15, 1.0)
+		"flower_daisy_red":
+			return Color(0.85, 0.15, 0.20, 1.0)
+		"flower_daisy_pink":
+			return Color(0.90, 0.40, 0.65, 1.0)
+		"flower_daisy_bicolor":
+			return Color(0.90, 0.85, 0.50, 1.0)
 		"flower_sunflower":
 			return Color(0.82, 0.65, 0.08, 1.0)
 		"flower_bell":
@@ -811,8 +840,8 @@ func _build_from_vector_field(
 			mm.use_custom_data = true
 			if v_type.begins_with("flower_rose"):
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_rose_mesh)
-			elif v_type == "flower_daisy":
-				mm.mesh = _flower_daisy_mesh
+			elif v_type.begins_with("flower_daisy"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
 			elif v_type == "flower_bell":
@@ -1139,8 +1168,8 @@ func _build_from_vegetation_field(
 			mm.use_custom_data = true
 			if v_type.begins_with("flower_rose"):
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_rose_mesh)
-			elif v_type == "flower_daisy":
-				mm.mesh = _flower_daisy_mesh
+			elif v_type.begins_with("flower_daisy"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
 			elif v_type == "flower_bell":
@@ -1362,8 +1391,9 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 	if v_type.begins_with("flower_rose"):
 		var r_cols: Dictionary = PlantScript.get_flower_colors(v_type)
 		return r_cols.get("petal", Color(1.0, 0.08, 0.35, 1.0))
-	if v_type == "flower_daisy":
-		return Color(1.0, 1.0, 1.0, 1.0)
+	if v_type.begins_with("flower_daisy"):
+		var d_cols: Dictionary = PlantScript.get_flower_colors(v_type)
+		return d_cols.get("petal", Color(1.0, 1.0, 1.0, 1.0))
 	if v_type == "flower_sunflower":
 		return Color(1.0, 0.88, 0.0, 1.0)
 	if v_type == "flower_bell":

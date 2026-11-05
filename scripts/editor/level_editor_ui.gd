@@ -27,8 +27,15 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "flower_rose_wine", "name": "🍷 Rosa Vinho", "color": Color(0.60, 0.12, 0.35), "unit": "rosas" },
 	{ "key": "flower_rose_black", "name": "🖤 Rosa Negra", "color": Color(0.35, 0.10, 0.22), "unit": "rosas" },
 	{ "key": "flower_rose_peach", "name": "🧡 Rosa Pêssego", "color": Color(1.0, 0.66, 0.52), "unit": "rosas" },
+	# --- Margaridas (7 Variações) ---
+	{ "key": "flower_daisy", "name": "🌼 Margarida Branca", "color": Color(1.0, 1.0, 1.0), "unit": "margaridas" },
+	{ "key": "flower_daisy_blue", "name": "💙 Margarida Azul", "color": Color(0.43, 0.66, 0.99), "unit": "margaridas" },
+	{ "key": "flower_daisy_orange", "name": "🧡 Margarida Laranja", "color": Color(1.0, 0.48, 0.10), "unit": "margaridas" },
+	{ "key": "flower_daisy_yellow", "name": "💛 Margarida Amarela", "color": Color(1.0, 0.88, 0.15), "unit": "margaridas" },
+	{ "key": "flower_daisy_red", "name": "❤️ Margarida Vermelha", "color": Color(0.90, 0.15, 0.22), "unit": "margaridas" },
+	{ "key": "flower_daisy_pink", "name": "🌸 Margarida Rosa", "color": Color(0.95, 0.42, 0.68), "unit": "margaridas" },
+	{ "key": "flower_daisy_bicolor", "name": "✨ Margarida Bicolor", "color": Color(1.0, 0.90, 0.50), "unit": "margaridas" },
 	# --- Demais Flores Nobres & Canteiros ---
-	{ "key": "flower_daisy", "name": "🌼 Margarida", "color": Color(1.0, 1.0, 1.0), "unit": "margaridas" },
 	{ "key": "flower_sunflower", "name": "🌻 Girassol", "color": Color(1.0, 0.88, 0.0), "unit": "girassóis" },
 	{ "key": "flower_bell", "name": "🔔 Flor Sino", "color": Color(0.12, 0.65, 1.0), "unit": "sinos" },
 	{ "key": "flower_corolla", "name": "🏵️ Cravo Corola", "color": Color(1.0, 0.50, 0.05), "unit": "cravos" },
@@ -102,8 +109,11 @@ class FlowerColorSwatch extends Control:
 				var p_mid_2: Vector2 = center + dir * (radius * 0.58) - perp
 
 				var poly: PackedVector2Array = [p_base, p_mid_1, p_tip, p_mid_2]
-				var mid_col: Color = inner_color.lerp(petal_color, 0.6)
-				var cols: PackedColorArray = [inner_color, mid_col, petal_color, mid_col]
+				var eff_inner: Color = inner_color
+				if eff_inner.a < 0.05:
+					eff_inner = petal_color.darkened(0.18)
+				var mid_col: Color = eff_inner.lerp(petal_color, 0.6)
+				var cols: PackedColorArray = [eff_inner, mid_col, petal_color, mid_col]
 				draw_polygon(poly, cols)
 
 			var center_r: float = radius * 0.32
@@ -1537,7 +1547,7 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 			icon = "🌾"
 		elif k_str.begins_with("flower_rose"):
 			icon = "🌹"
-		elif k_str == "flower_daisy":
+		elif k_str.begins_with("flower_daisy"):
 			icon = "🌼"
 		elif k_str == "flower_sunflower":
 			icon = "🌻"

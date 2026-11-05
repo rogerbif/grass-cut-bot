@@ -217,6 +217,24 @@ static func get_flower_colors(flower_type: String) -> Dictionary:
 		"flower_daisy":
 			petal_col = Color(1.0, 1.0, 1.0, 1.0)
 			center_col = Color(1.0, 0.85, 0.0, 1.0)
+		"flower_daisy_blue":
+			petal_col = Color(0.43, 0.66, 0.99, 1.0)
+			center_col = Color(1.0, 0.82, 0.0, 1.0)
+		"flower_daisy_orange":
+			petal_col = Color(1.0, 0.48, 0.10, 1.0)
+			center_col = Color(1.0, 0.75, 0.0, 1.0)
+		"flower_daisy_yellow":
+			petal_col = Color(1.0, 0.88, 0.15, 1.0)
+			center_col = Color(0.90, 0.55, 0.0, 1.0)
+		"flower_daisy_red":
+			petal_col = Color(0.90, 0.15, 0.22, 1.0)
+			center_col = Color(0.98, 0.78, 0.08, 1.0)
+		"flower_daisy_pink":
+			petal_col = Color(0.95, 0.42, 0.68, 1.0)
+			center_col = Color(1.0, 0.85, 0.10, 1.0)
+		"flower_daisy_bicolor":
+			petal_col = Color(1.0, 1.0, 1.0, 1.0)
+			center_col = Color(0.92, 0.60, 0.0, 1.0)
 		"flower_sunflower":
 			petal_col = Color(1.0, 0.88, 0.0, 1.0)
 			center_col = Color(0.48, 0.22, 0.05, 1.0)

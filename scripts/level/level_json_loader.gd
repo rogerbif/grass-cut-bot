@@ -26,7 +26,13 @@ const FLOWER_VARIATION_MATERIALS: Dictionary = {
 	"flower_rose_blue": preload("res://shaders/flower_rose_blue_material.tres"),
 	"flower_rose_wine": preload("res://shaders/flower_rose_wine_material.tres"),
 	"flower_rose_black": preload("res://shaders/flower_rose_black_material.tres"),
-	"flower_rose_peach": preload("res://shaders/flower_rose_peach_material.tres")
+	"flower_rose_peach": preload("res://shaders/flower_rose_peach_material.tres"),
+	"flower_daisy_blue": preload("res://shaders/flower_daisy_blue_material.tres"),
+	"flower_daisy_orange": preload("res://shaders/flower_daisy_orange_material.tres"),
+	"flower_daisy_yellow": preload("res://shaders/flower_daisy_yellow_material.tres"),
+	"flower_daisy_red": preload("res://shaders/flower_daisy_red_material.tres"),
+	"flower_daisy_pink": preload("res://shaders/flower_daisy_pink_material.tres"),
+	"flower_daisy_bicolor": preload("res://shaders/flower_daisy_bicolor_material.tres")
 }
 
 const OBJECT_SCENES: Dictionary = {
@@ -52,6 +58,12 @@ const OBJECT_SCENES: Dictionary = {
 	"flower_rose_black": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_rose_peach": preload("res://scenes/plants/flower_rose.tscn"),
 	"flower_daisy": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_daisy_blue": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_daisy_orange": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_daisy_yellow": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_daisy_red": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_daisy_pink": preload("res://scenes/plants/flower_daisy.tscn"),
+	"flower_daisy_bicolor": preload("res://scenes/plants/flower_daisy.tscn"),
 	"flower_sunflower": preload("res://scenes/plants/flower_sunflower.tscn"),
 	"flower_bell": preload("res://scenes/plants/flower_bell.tscn"),
 	"flower_corolla": preload("res://scenes/plants/flower_corolla.tscn"),

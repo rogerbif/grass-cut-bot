@@ -642,10 +642,10 @@ func _ensure_3d_veg_built() -> void:
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if v_type.begins_with("flower"):
 			mm.use_custom_data = true
-			if v_type == "flower_rose":
-				mm.mesh = VegetationGrid._flower_rose_mesh
-			elif v_type == "flower_daisy":
-				mm.mesh = VegetationGrid._flower_daisy_mesh
+			if v_type.begins_with("flower_rose"):
+				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_rose_mesh)
+			elif v_type.begins_with("flower_daisy"):
+				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = VegetationGrid._flower_sunflower_mesh
 			elif v_type == "flower_bell":

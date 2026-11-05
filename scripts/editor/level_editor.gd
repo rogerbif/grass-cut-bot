@@ -1084,7 +1084,7 @@ func _rebuild_3d_world() -> void:
 			var f_scene: PackedScene = FLOWER_SCENE
 			if o_type.begins_with("flower_rose"):
 				f_scene = FLOWER_ROSE_SCENE
-			elif o_type == "flower_daisy":
+			elif o_type.begins_with("flower_daisy"):
 				f_scene = FLOWER_DAISY_SCENE
 			elif o_type == "flower_sunflower":
 				f_scene = FLOWER_SUNFLOWER_SCENE

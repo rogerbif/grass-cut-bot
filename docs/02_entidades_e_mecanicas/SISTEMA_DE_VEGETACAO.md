@@ -162,4 +162,18 @@ Para destacar a silhueta botânica e impedir que as flores se mimetizem com o ta
    - **Interpolação via `COLOR.a`:** A cor de vértice das malhas de haste possui canal Alfa contínuo assado no Blender que mapeia a elevação física real ($0.0 \dots 1.0$), interpolando as cores organicamente na GPU.
 3. **Imunidade aos Golpes 1 e 2:** O caule mantém `COLOR.r = 0.0` e `COLOR.b = 0.0`, permanecendo erguido e intacto durante a despetalação externa (Hit 1) e interna (Hit 2), sendo ceifado exclusivamente no Hit 3 fatal.
 
+### F. Família de Margaridas (`flower_daisy`) e Variações Botânicas
+A flor de Margarida (`flower_03_daisy.glb`) conta com corola de 360° com 16 pétalas radiais e miolo central destacado. O modelo foi cirurgicamente corrigido para integrar todas as pétalas na malha `Flower_Petals` (eliminando anomalias de coloração verde na parte inferior da flor) e disponibiliza 7 variações colecionáveis com suporte no Editor de Fases e Metas do Nível:
+
+| Identificador (`key`) | Nome Exibido | Ícone | Pétalas (`petal_color`) | Miolo (`center_color`) | Inspiração Botânica |
+| :--- | :--- | :---: | :--- | :--- | :--- |
+| `flower_daisy` | Margarida Branca | 🌼 | Branco Puro (`#FFFFFF`) | Amarelo Solar (`#FFD700`) | *Bellis perennis* clássica |
+| `flower_daisy_blue` | Margarida Azul | 💙 | Azul Celeste (`#6EA8FE`) | Amarelo Ouro (`#FFD000`) | *Felicia amelloides* |
+| `flower_daisy_orange` | Margarida Laranja | 🧡 | Laranja Vivo (`#FF7A1A`) | Dourado Âmbar (`#FFAA00`) | Calêndula campestre |
+| `flower_daisy_yellow` | Margarida Amarela | 💛 | Amarelo Canário (`#FFE033`) | Ouro Escuro (`#E69500`) | Girassol anão / dente-de-leão |
+| `flower_daisy_red` | Margarida Vermelha | ❤️ | Vermelho Rubi (`#D92638`) | Amarelo Vivo (`#F5C518`) | *Tithonia* (margarida mexicana) |
+| `flower_daisy_pink` | Margarida Rosa | 🌸 | Rosa Silvestre (`#F065A0`) | Amarelo Quente (`#FFD700`) | Margarida campestre rosa |
+| `flower_daisy_bicolor` | Margarida Bicolor | ✨ | Branco Puro (`#FFFFFF`) / Base Amarela | Âmbar Ouro (`#E69500`) | *Glebionis coronaria* (Coroada) |
+
+
 

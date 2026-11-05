@@ -266,7 +266,7 @@ static func get_species(key: String) -> Dictionary:
 			"name": String(v_data.get("full_name", v_data.get("name", key))),
 			"icon": String(v_data.get("icon", "🌸")),
 			"color": v_data.get("petal_color", Color.WHITE) as Color,
-			"origin_level": 5 if key.begins_with("flower_rose") else 1,
+			"origin_level": 5 if key.begins_with("flower_rose") else (4 if key.begins_with("flower_daisy") else 1),
 			"hits": 3,
 			"reward_coins": 5,
 			"desc": String(v_data.get("full_name", key))

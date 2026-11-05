@@ -347,6 +347,78 @@ const ITEM_VARIATIONS: Dictionary = {
 			"center_color": Color(0.91, 0.51, 0.23, 1.0),
 			"material_path": "res://shaders/flower_rose_peach_material.tres"
 		}
+	],
+	"flower_daisy": [
+		{
+			"id": "flower_daisy",
+			"name": "Branca",
+			"full_name": "Margarida Branca",
+			"icon": "🌼",
+			"inner_color": Color(0.0, 0.0, 0.0, 0.0),
+			"petal_color": Color(1.0, 1.0, 1.0, 1.0),
+			"center_color": Color(1.0, 0.85, 0.0, 1.0),
+			"material_path": "res://shaders/flower_daisy_material.tres"
+		},
+		{
+			"id": "flower_daisy_blue",
+			"name": "Azul",
+			"full_name": "Margarida Azul Celeste",
+			"icon": "💙",
+			"inner_color": Color(0.25, 0.45, 0.85, 1.0),
+			"petal_color": Color(0.43, 0.66, 0.99, 1.0),
+			"center_color": Color(1.0, 0.82, 0.0, 1.0),
+			"material_path": "res://shaders/flower_daisy_blue_material.tres"
+		},
+		{
+			"id": "flower_daisy_orange",
+			"name": "Laranja",
+			"full_name": "Margarida Laranja",
+			"icon": "🧡",
+			"inner_color": Color(0.85, 0.28, 0.02, 1.0),
+			"petal_color": Color(1.0, 0.48, 0.10, 1.0),
+			"center_color": Color(1.0, 0.75, 0.0, 1.0),
+			"material_path": "res://shaders/flower_daisy_orange_material.tres"
+		},
+		{
+			"id": "flower_daisy_yellow",
+			"name": "Amarela",
+			"full_name": "Margarida Amarela Solar",
+			"icon": "💛",
+			"inner_color": Color(0.95, 0.65, 0.0, 1.0),
+			"petal_color": Color(1.0, 0.88, 0.15, 1.0),
+			"center_color": Color(0.90, 0.55, 0.0, 1.0),
+			"material_path": "res://shaders/flower_daisy_yellow_material.tres"
+		},
+		{
+			"id": "flower_daisy_red",
+			"name": "Vermelha",
+			"full_name": "Margarida Vermelha Carmesim",
+			"icon": "❤️",
+			"inner_color": Color(0.55, 0.04, 0.10, 1.0),
+			"petal_color": Color(0.90, 0.15, 0.22, 1.0),
+			"center_color": Color(0.98, 0.78, 0.08, 1.0),
+			"material_path": "res://shaders/flower_daisy_red_material.tres"
+		},
+		{
+			"id": "flower_daisy_pink",
+			"name": "Rosa",
+			"full_name": "Margarida Rosa Silvestre",
+			"icon": "🌸",
+			"inner_color": Color(0.70, 0.15, 0.45, 1.0),
+			"petal_color": Color(0.95, 0.42, 0.68, 1.0),
+			"center_color": Color(1.0, 0.85, 0.10, 1.0),
+			"material_path": "res://shaders/flower_daisy_pink_material.tres"
+		},
+		{
+			"id": "flower_daisy_bicolor",
+			"name": "Bicolor",
+			"full_name": "Margarida Coroada Bicolor",
+			"icon": "✨",
+			"inner_color": Color(1.0, 0.85, 0.0, 1.0),
+			"petal_color": Color(1.0, 1.0, 1.0, 1.0),
+			"center_color": Color(0.92, 0.60, 0.0, 1.0),
+			"material_path": "res://shaders/flower_daisy_bicolor_material.tres"
+		}
 	]
 }
 
