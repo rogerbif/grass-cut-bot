@@ -37,6 +37,11 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_white": preload("res://shaders/interactive_flower_white_material.tres"),
 	"flower_turquoise": preload("res://shaders/interactive_flower_turquoise_material.tres"),
 	"flower_rose": preload("res://shaders/flower_rose_material.tres"),
+	"flower_rose_white": preload("res://shaders/flower_rose_white_material.tres"),
+	"flower_rose_yellow": preload("res://shaders/flower_rose_yellow_material.tres"),
+	"flower_rose_blue": preload("res://shaders/flower_rose_blue_material.tres"),
+	"flower_rose_black": preload("res://shaders/flower_rose_black_material.tres"),
+	"flower_rose_peach": preload("res://shaders/flower_rose_peach_material.tres"),
 	"flower_daisy": preload("res://shaders/flower_daisy_material.tres"),
 	"flower_sunflower": preload("res://shaders/flower_sunflower_material.tres"),
 	"flower_bell": preload("res://shaders/flower_bell_material.tres"),
@@ -72,6 +77,11 @@ const VEG_TYPES: Array[String] = [
 	"flower_white",
 	"flower_turquoise",
 	"flower_rose",
+	"flower_rose_white",
+	"flower_rose_yellow",
+	"flower_rose_blue",
+	"flower_rose_black",
+	"flower_rose_peach",
 	"flower_daisy",
 	"flower_sunflower",
 	"flower_bell",
@@ -191,6 +201,11 @@ static func _ensure_static_meshes() -> void:
 
 	if _flower_rose_mesh == null:
 		_flower_rose_mesh = _build_flower_combined_mesh("flower_rose", FLOWER_ROSE_SCENE)
+		_flower_variation_meshes["flower_rose"] = _flower_rose_mesh
+
+	for r_var_key in ["flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_black", "flower_rose_peach"]:
+		if not _flower_variation_meshes.has(r_var_key):
+			_flower_variation_meshes[r_var_key] = _build_flower_combined_mesh(r_var_key, FLOWER_ROSE_SCENE)
 
 	if _flower_daisy_mesh == null:
 		_flower_daisy_mesh = _build_flower_combined_mesh("flower_daisy", FLOWER_DAISY_SCENE)
@@ -780,8 +795,8 @@ func _build_from_vector_field(
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if is_flower:
 			mm.use_custom_data = true
-			if v_type == "flower_rose":
-				mm.mesh = _flower_rose_mesh
+			if v_type.begins_with("flower_rose"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_rose_mesh)
 			elif v_type == "flower_daisy":
 				mm.mesh = _flower_daisy_mesh
 			elif v_type == "flower_sunflower":
@@ -1108,8 +1123,8 @@ func _build_from_vegetation_field(
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if is_flower:
 			mm.use_custom_data = true
-			if v_type == "flower_rose":
-				mm.mesh = _flower_rose_mesh
+			if v_type.begins_with("flower_rose"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_rose_mesh)
 			elif v_type == "flower_daisy":
 				mm.mesh = _flower_daisy_mesh
 			elif v_type == "flower_sunflower":

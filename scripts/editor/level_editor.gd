@@ -1082,7 +1082,7 @@ func _rebuild_3d_world() -> void:
 				obstacles_container.add_child(r_inst)
 		elif o_type.begins_with("flower"):
 			var f_scene: PackedScene = FLOWER_SCENE
-			if o_type == "flower_rose":
+			if o_type.begins_with("flower_rose"):
 				f_scene = FLOWER_ROSE_SCENE
 			elif o_type == "flower_daisy":
 				f_scene = FLOWER_DAISY_SCENE

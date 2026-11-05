@@ -401,8 +401,11 @@ static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flowe
 ## Carrega (sob demanda e com cache) as malhas das peças desprendíveis por espécie de flor
 static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
 	var cfg_type: String = flower_type
-	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) and cfg_type.begins_with("flower_"):
-		cfg_type = "flower"
+	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
+		if cfg_type.begins_with("flower_rose_"):
+			cfg_type = "flower_rose"
+		elif cfg_type.begins_with("flower_"):
+			cfg_type = "flower"
 	if _detach_meshes_by_type.has(cfg_type):
 		return _detach_meshes_by_type[cfg_type] as Dictionary
 	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
@@ -425,8 +428,11 @@ static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
 ## Hit 1 de Flores: 2 pétalas + 1 folha da respectiva espécie saem para cima, caem, encolhem e somem
 static func spawn_flower_detach_pieces(scene_root: Node, flower_xform: Transform3D, flower_type: String) -> void:
 	var cfg_type: String = flower_type
-	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) and cfg_type.begins_with("flower_"):
-		cfg_type = "flower"
+	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
+		if cfg_type.begins_with("flower_rose_"):
+			cfg_type = "flower_rose"
+		elif cfg_type.begins_with("flower_"):
+			cfg_type = "flower"
 	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) or scene_root == null or not scene_root.is_inside_tree():
 		return
 	_ensure_particle_meshes()

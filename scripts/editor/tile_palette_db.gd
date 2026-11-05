@@ -275,6 +275,68 @@ const ITEM_VARIATIONS: Dictionary = {
 			"center_color": Color(0.96, 0.65, 0.04, 1.0),
 			"material_path": "res://shaders/interactive_flower_turquoise_material.tres"
 		}
+	],
+	"flower_rose": [
+		{
+			"id": "flower_rose",
+			"name": "Vermelha",
+			"full_name": "Rosa Nobre",
+			"icon": "🌹",
+			"inner_color": Color(0.43, 0.02, 0.11, 1.0),
+			"petal_color": Color(1.0, 0.13, 0.32, 1.0),
+			"center_color": Color(0.55, 0.0, 0.13, 1.0),
+			"material_path": "res://shaders/flower_rose_material.tres"
+		},
+		{
+			"id": "flower_rose_white",
+			"name": "Branca",
+			"full_name": "Rosa Branca Imperial",
+			"icon": "🤍",
+			"inner_color": Color(0.85, 0.79, 0.68, 1.0),
+			"petal_color": Color(1.0, 1.0, 1.0, 1.0),
+			"center_color": Color(0.92, 0.84, 0.56, 1.0),
+			"material_path": "res://shaders/flower_rose_white_material.tres"
+		},
+		{
+			"id": "flower_rose_yellow",
+			"name": "Amarela",
+			"full_name": "Rosa Amarela Dourada",
+			"icon": "💛",
+			"inner_color": Color(0.85, 0.35, 0.0, 1.0),
+			"petal_color": Color(1.0, 0.87, 0.0, 1.0),
+			"center_color": Color(1.0, 0.72, 0.0, 1.0),
+			"material_path": "res://shaders/flower_rose_yellow_material.tres"
+		},
+		{
+			"id": "flower_rose_blue",
+			"name": "Azul",
+			"full_name": "Rosa Azul Mística",
+			"icon": "💙",
+			"inner_color": Color(0.06, 0.16, 0.43, 1.0),
+			"petal_color": Color(0.28, 0.69, 1.0, 1.0),
+			"center_color": Color(0.10, 0.23, 0.55, 1.0),
+			"material_path": "res://shaders/flower_rose_blue_material.tres"
+		},
+		{
+			"id": "flower_rose_black",
+			"name": "Negra",
+			"full_name": "Rosa Negra Veludo",
+			"icon": "🖤",
+			"inner_color": Color(0.09, 0.03, 0.07, 1.0),
+			"petal_color": Color(0.36, 0.09, 0.21, 1.0),
+			"center_color": Color(0.14, 0.13, 0.16, 1.0),
+			"material_path": "res://shaders/flower_rose_black_material.tres"
+		},
+		{
+			"id": "flower_rose_peach",
+			"name": "Pêssego",
+			"full_name": "Rosa Pêssego Salmão",
+			"icon": "🧡",
+			"inner_color": Color(0.72, 0.25, 0.15, 1.0),
+			"petal_color": Color(1.0, 0.66, 0.52, 1.0),
+			"center_color": Color(0.91, 0.51, 0.23, 1.0),
+			"material_path": "res://shaders/flower_rose_peach_material.tres"
+		}
 	]
 }
 
@@ -317,7 +379,7 @@ static func get_item_by_id(id_str: String) -> Dictionary:
 			"name": v_data["full_name"],
 			"icon": v_data["icon"],
 			"color": v_data["petal_color"],
-			"goal_key": "flower",
+			"goal_key": get_base_id_for_variant(id_str),
 			"category": "plant"
 		}
 	return {}

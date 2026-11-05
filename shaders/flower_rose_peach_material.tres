@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://flw_rose_mat_peach"]
+
+[ext_resource type="Shader" path="res://shaders/interactive_flower.gdshader" id="1_flower_shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_flower_shader")
+shader_parameter/interact_power = 0.22
+shader_parameter/wind_speed = 1.8
+shader_parameter/wind_strength = 0.08
+shader_parameter/petal_color = Color(1, 0.66, 0.52, 1)
+shader_parameter/petal_inner_color = Color(0.72, 0.25, 0.15, 1)
+shader_parameter/center_color = Color(0.91, 0.51, 0.23, 1)
+shader_parameter/roughness = 0.85
+shader_parameter/specular = 0.15

@@ -26,38 +26,75 @@ class FlowerColorSwatch extends Control:
 	var inner_color: Color = Color.WHITE
 	var petal_color: Color = Color.WHITE
 	var center_color: Color = Color.YELLOW
+	var is_rose: bool = false
 
-	func _init(p_inner: Color = Color.WHITE, p_petal: Color = Color.WHITE, p_center: Color = Color.YELLOW) -> void:
+	func _init(p_inner: Color = Color.WHITE, p_petal: Color = Color.WHITE, p_center: Color = Color.YELLOW, p_is_rose: bool = false) -> void:
 		inner_color = p_inner
 		petal_color = p_petal
 		center_color = p_center
+		is_rose = p_is_rose
 		custom_minimum_size = Vector2(28, 28)
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	func _draw() -> void:
 		var center: Vector2 = size * 0.5
 		var radius: float = minf(size.x, size.y) * 0.46
-		var petal_count: int = 8
-		var petal_w: float = radius * 0.42
 
-		for i: int in range(petal_count):
-			var angle: float = (float(i) / float(petal_count)) * TAU
-			var dir: Vector2 = Vector2(cos(angle), sin(angle))
-			var perp: Vector2 = Vector2(-dir.y, dir.x) * (petal_w * 0.45)
-			var p_base: Vector2 = center + dir * (radius * 0.18)
-			var p_mid_1: Vector2 = center + dir * (radius * 0.58) + perp
-			var p_tip: Vector2 = center + dir * radius
-			var p_mid_2: Vector2 = center + dir * (radius * 0.58) - perp
+		if is_rose:
+			var outer_petals: int = 6
+			var outer_w: float = radius * 0.55
+			for i: int in range(outer_petals):
+				var angle: float = (float(i) / float(outer_petals)) * TAU
+				var dir: Vector2 = Vector2(cos(angle), sin(angle))
+				var perp: Vector2 = Vector2(-dir.y, dir.x) * (outer_w * 0.5)
+				var p_base: Vector2 = center + dir * (radius * 0.25)
+				var p_mid_1: Vector2 = center + dir * (radius * 0.65) + perp
+				var p_tip: Vector2 = center + dir * radius
+				var p_mid_2: Vector2 = center + dir * (radius * 0.65) - perp
+				var poly: PackedVector2Array = [p_base, p_mid_1, p_tip, p_mid_2]
+				var mid_col: Color = inner_color.lerp(petal_color, 0.65)
+				draw_polygon(poly, [inner_color, mid_col, petal_color, mid_col])
 
-			var poly: PackedVector2Array = [p_base, p_mid_1, p_tip, p_mid_2]
-			var mid_col: Color = inner_color.lerp(petal_color, 0.6)
-			var cols: PackedColorArray = [inner_color, mid_col, petal_color, mid_col]
-			draw_polygon(poly, cols)
+			var inner_petals: int = 5
+			var inner_r: float = radius * 0.65
+			var inner_w: float = inner_r * 0.55
+			for i: int in range(inner_petals):
+				var angle: float = (float(i) / float(inner_petals)) * TAU + 0.35
+				var dir: Vector2 = Vector2(cos(angle), sin(angle))
+				var perp: Vector2 = Vector2(-dir.y, dir.x) * (inner_w * 0.5)
+				var p_base: Vector2 = center + dir * (inner_r * 0.20)
+				var p_mid_1: Vector2 = center + dir * (inner_r * 0.60) + perp
+				var p_tip: Vector2 = center + dir * inner_r
+				var p_mid_2: Vector2 = center + dir * (inner_r * 0.60) - perp
+				var poly: PackedVector2Array = [p_base, p_mid_1, p_tip, p_mid_2]
+				var mid_col: Color = inner_color.lerp(petal_color, 0.45)
+				draw_polygon(poly, [inner_color, mid_col, petal_color, mid_col])
 
-		# Miolo central (amarelo/dourado) com contorno sutil
-		var center_r: float = radius * 0.32
-		draw_circle(center, center_r, center_color)
-		draw_arc(center, center_r, 0.0, TAU, 16, center_color.darkened(0.35), 1.0, true)
+			var core_r: float = radius * 0.30
+			draw_circle(center, core_r, center_color)
+			draw_arc(center, core_r, 0.0, TAU, 16, inner_color, 1.2, true)
+			draw_arc(center + Vector2(1, -1), core_r * 0.55, 0.5, 4.5, 12, inner_color, 1.0, true)
+		else:
+			var petal_count: int = 8
+			var petal_w: float = radius * 0.42
+
+			for i: int in range(petal_count):
+				var angle: float = (float(i) / float(petal_count)) * TAU
+				var dir: Vector2 = Vector2(cos(angle), sin(angle))
+				var perp: Vector2 = Vector2(-dir.y, dir.x) * (petal_w * 0.45)
+				var p_base: Vector2 = center + dir * (radius * 0.18)
+				var p_mid_1: Vector2 = center + dir * (radius * 0.58) + perp
+				var p_tip: Vector2 = center + dir * radius
+				var p_mid_2: Vector2 = center + dir * (radius * 0.58) - perp
+
+				var poly: PackedVector2Array = [p_base, p_mid_1, p_tip, p_mid_2]
+				var mid_col: Color = inner_color.lerp(petal_color, 0.6)
+				var cols: PackedColorArray = [inner_color, mid_col, petal_color, mid_col]
+				draw_polygon(poly, cols)
+
+			var center_r: float = radius * 0.32
+			draw_circle(center, center_r, center_color)
+			draw_arc(center, center_r, 0.0, TAU, 16, center_color.darkened(0.35), 1.0, true)
 
 
 signal level_load_requested(level_id: int)
@@ -926,10 +963,12 @@ func _create_variation_card(v_data: Dictionary) -> Button:
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(vbox)
 
+	var is_rose: bool = v_id.begins_with("flower_rose")
 	var swatch: FlowerColorSwatch = FlowerColorSwatch.new(
 		v_data.get("inner_color", Color.WHITE) as Color,
 		v_data.get("petal_color", Color.WHITE) as Color,
-		v_data.get("center_color", Color.YELLOW) as Color
+		v_data.get("center_color", Color.YELLOW) as Color,
+		is_rose
 	)
 	swatch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vbox.add_child(swatch)
