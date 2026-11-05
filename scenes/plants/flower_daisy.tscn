@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/plants/plant.gd" id="1_flower"]
 [ext_resource type="PackedScene" path="res://assets/models/flower_03_daisy.glb" id="2_flower_model"]
-[ext_resource type="Material" uid="uid://interactive_grass_mat_01" path="res://shaders/interactive_grass_material.tres" id="3_stem_mat"]
+[ext_resource type="Material" uid="uid://flw_stem_mat_01" path="res://shaders/interactive_flower_stem_material.tres" id="3_stem_mat"]
 [ext_resource type="Material" uid="uid://flw_daisy_mat_01" path="res://shaders/flower_daisy_material.tres" id="4_daisy_mat"]
 
 [ext_resource type="Material" path="res://shaders/interactive_flower_leaves_material.tres" id="5_leaves_mat"]

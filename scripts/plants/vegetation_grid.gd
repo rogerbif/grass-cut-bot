@@ -51,7 +51,7 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_bed": preload("res://shaders/flower_bed_material.tres")
 }
 const FLOWER_LEAVES_MATERIAL: Material = preload("res://shaders/interactive_flower_leaves_material.tres")
-const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_grass_material.tres")
+const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_flower_stem_material.tres")
 
 const TILE_MODELS: Dictionary = {
 	"island_center": preload("res://assets/models/tiles/tile_island_center.glb"),
