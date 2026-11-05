@@ -25,8 +25,10 @@ const GOAL_GAP: float = 6.0
 
 const GOAL_ORDER: Array[String] = [
 	"grass", "grass_green", "grass_yellow", "grass_blue", "grass_purple", "grass_white",
-	"grass_red", "grass_black", "wheat", "flower", "flower_daisy", "flower_bell",
-	"flower_rose", "flower_sunflower", "flower_tulip", "flower_corolla", "flower_bed"
+	"grass_red", "grass_black", "wheat",
+	"flower", "flower_blue", "flower_sunset", "flower_purple", "flower_white", "flower_turquoise",
+	"flower_rose", "flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_wine", "flower_rose_black", "flower_rose_peach",
+	"flower_daisy", "flower_bell", "flower_sunflower", "flower_tulip", "flower_corolla", "flower_bed"
 ]
 
 var _font: SystemFont = null

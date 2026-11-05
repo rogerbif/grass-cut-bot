@@ -12,8 +12,22 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "grass_red", "name": "❤️ Grama Vermelha", "color": Color(0.95, 0.37, 0.38), "unit": "tufos" },
 	{ "key": "grass_black", "name": "🖤 Grama Preta", "color": Color(0.48, 0.48, 0.55), "unit": "tufos" },
 	{ "key": "wheat", "name": "🌾 Trigo Maduro", "color": Color(1.0, 0.82, 0.28), "unit": "trigos" },
+	# --- Flores Silvestres (6 Variações) ---
 	{ "key": "flower", "name": "🌸 Flor Silvestre", "color": Color(1.0, 0.45, 0.72), "unit": "flores" },
-	{ "key": "flower_rose", "name": "🌹 Rosa Nobre", "color": Color(1.0, 0.08, 0.35), "unit": "rosas" },
+	{ "key": "flower_blue", "name": "💠 Flor Azul Celeste", "color": Color(0.48, 0.78, 1.00), "unit": "flores" },
+	{ "key": "flower_sunset", "name": "🌅 Flor Pôr do Sol", "color": Color(0.99, 0.72, 0.42), "unit": "flores" },
+	{ "key": "flower_purple", "name": "🔮 Flor Lilás", "color": Color(0.85, 0.70, 1.00), "unit": "flores" },
+	{ "key": "flower_white", "name": "🤍 Flor Branca", "color": Color(1.00, 1.00, 1.00), "unit": "flores" },
+	{ "key": "flower_turquoise", "name": "💎 Flor Turquesa", "color": Color(0.38, 0.94, 0.84), "unit": "flores" },
+	# --- Rosas Nobres (7 Variações) ---
+	{ "key": "flower_rose", "name": "🌹 Rosa Nobre", "color": Color(1.0, 0.15, 0.32), "unit": "rosas" },
+	{ "key": "flower_rose_white", "name": "🤍 Rosa Branca", "color": Color(1.0, 1.0, 1.0), "unit": "rosas" },
+	{ "key": "flower_rose_yellow", "name": "💛 Rosa Amarela", "color": Color(1.0, 0.95, 0.15), "unit": "rosas" },
+	{ "key": "flower_rose_blue", "name": "💙 Rosa Azul", "color": Color(0.38, 0.80, 1.0), "unit": "rosas" },
+	{ "key": "flower_rose_wine", "name": "🍷 Rosa Vinho", "color": Color(0.60, 0.12, 0.35), "unit": "rosas" },
+	{ "key": "flower_rose_black", "name": "🖤 Rosa Negra", "color": Color(0.35, 0.10, 0.22), "unit": "rosas" },
+	{ "key": "flower_rose_peach", "name": "🧡 Rosa Pêssego", "color": Color(1.0, 0.66, 0.52), "unit": "rosas" },
+	# --- Demais Flores Nobres & Canteiros ---
 	{ "key": "flower_daisy", "name": "🌼 Margarida", "color": Color(1.0, 1.0, 1.0), "unit": "margaridas" },
 	{ "key": "flower_sunflower", "name": "🌻 Girassol", "color": Color(1.0, 0.88, 0.0), "unit": "girassóis" },
 	{ "key": "flower_bell", "name": "🔔 Flor Sino", "color": Color(0.12, 0.65, 1.0), "unit": "sinos" },
@@ -1336,7 +1350,11 @@ func update_goals_summary(
 				elif flower_by_type.has(t_type):
 					flower_by_type[t_type] = int(flower_by_type[t_type]) + 1
 				elif t_type.begins_with("flower"):
-					flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
+					var base_f: String = TilePaletteDB.get_base_id_for_variant(t_type)
+					if flower_by_type.has(base_f):
+						flower_by_type[base_f] = int(flower_by_type[base_f]) + 1
+					else:
+						flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
 				elif grass_by_type.has(t_type):
 					grass_by_type[t_type] = int(grass_by_type[t_type]) + 1
 				else:
@@ -1358,7 +1376,11 @@ func update_goals_summary(
 		if flower_by_type.has(t):
 			flower_by_type[t] = int(flower_by_type[t]) + 1
 		elif t.begins_with("flower"):
-			flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
+			var base_t: String = TilePaletteDB.get_base_id_for_variant(t)
+			if flower_by_type.has(base_t):
+				flower_by_type[base_t] = int(flower_by_type[base_t]) + 1
+			else:
+				flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
 		elif t == "wheat":
 			wheat_tufts += 1
 		elif t == "rock":
@@ -1508,9 +1530,12 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 		var rem: int = maxi(0, int(g.get("target", 0)) - int(g.get("current", 0)))
 		var k_str: String = String(k)
 		var icon: String = "🌿"
-		if k_str == "wheat":
+		var item_info: Dictionary = TilePaletteDB.get_item_by_id(k_str)
+		if not item_info.is_empty() and item_info.has("icon"):
+			icon = String(item_info["icon"])
+		elif k_str == "wheat":
 			icon = "🌾"
-		elif k_str == "flower_rose":
+		elif k_str.begins_with("flower_rose"):
 			icon = "🌹"
 		elif k_str == "flower_daisy":
 			icon = "🌼"

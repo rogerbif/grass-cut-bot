@@ -1,5 +1,7 @@
 extends Node
 
+const TilePaletteDB = preload("res://scripts/editor/tile_palette_db.gd")
+
 signal save_completed(success: bool)
 signal save_loaded
 signal save_reset
@@ -328,6 +330,13 @@ func record_plant_harvest(species_key: String, amount: int = 1) -> void:
 	col["discovered"][species_key] = true
 	var cur_count: int = int(col["harvest_counts"].get(species_key, 0)) + amount
 	col["harvest_counts"][species_key] = cur_count
+
+	# Se for uma variação, também alimenta o progresso da espécie base no Herbário
+	var base_key: String = TilePaletteDB.get_base_id_for_variant(species_key)
+	if base_key != species_key:
+		col["discovered"][base_key] = true
+		col["harvest_counts"][base_key] = int(col["harvest_counts"].get(base_key, 0)) + amount
+
 	save_data["collection"] = col
 	plant_harvested.emit(species_key, cur_count)
 

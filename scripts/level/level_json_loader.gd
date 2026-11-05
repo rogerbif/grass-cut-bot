@@ -144,6 +144,8 @@ static func instantiate_object_node(obj_type: String, rot_deg: int = 0) -> Node3
 			node.rotation_degrees.y = float(rot_deg)
 		if FLOWER_VARIATION_MATERIALS.has(obj_type):
 			node.set("custom_material", FLOWER_VARIATION_MATERIALS[obj_type])
+		if "plant_key" in node:
+			node.set("plant_key", obj_type)
 	return node
 
 static func build_coastal_colliders_and_foam(

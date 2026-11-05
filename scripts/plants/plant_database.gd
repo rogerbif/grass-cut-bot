@@ -4,6 +4,8 @@ extends RefCounted
 ## Catálogo Canônico das 15 Espécies Botânicas do Grass Cut Bot.
 ## Define metadados, categorias, cores temáticas, fase de origem e 10 níveis de marcos de maestria.
 
+const TilePaletteDBScript = preload("res://scripts/editor/tile_palette_db.gd")
+
 const GRASS_MILESTONES: Array[Dictionary] = [
 	{ "level": 1, "target": 50, "reward": 10, "title": "Brotamento" },
 	{ "level": 2, "target": 150, "reward": 20, "title": "Aparador Iniciante" },
@@ -254,4 +256,19 @@ static func get_all_species() -> Array[Dictionary]:
 static func get_species(key: String) -> Dictionary:
 	if _species_by_key.is_empty():
 		get_all_species()
-	return _species_by_key.get(key, {})
+	if _species_by_key.has(key):
+		return _species_by_key[key] as Dictionary
+	var v_data: Dictionary = TilePaletteDBScript.get_variation_data(key)
+	if not v_data.is_empty():
+		return {
+			"key": key,
+			"category": "flower",
+			"name": String(v_data.get("full_name", v_data.get("name", key))),
+			"icon": String(v_data.get("icon", "🌸")),
+			"color": v_data.get("petal_color", Color.WHITE) as Color,
+			"origin_level": 5 if key.begins_with("flower_rose") else 1,
+			"hits": 3,
+			"reward_coins": 5,
+			"desc": String(v_data.get("full_name", key))
+		}
+	return {}

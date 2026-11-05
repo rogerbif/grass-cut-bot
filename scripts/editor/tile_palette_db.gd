@@ -389,7 +389,7 @@ static func get_item_by_id(id_str: String) -> Dictionary:
 			"name": v_data["full_name"],
 			"icon": v_data["icon"],
 			"color": v_data["petal_color"],
-			"goal_key": get_base_id_for_variant(id_str),
+			"goal_key": id_str,
 			"category": "plant"
 		}
 	return {}

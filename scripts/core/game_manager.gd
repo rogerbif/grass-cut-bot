@@ -1,5 +1,7 @@
 extends Node
 
+const TilePaletteDB = preload("res://scripts/editor/tile_palette_db.gd")
+
 signal state_changed(new_state: int)
 signal time_updated(time_left: float)
 signal goal_updated(plant_type: String, remaining: int, target: int)
@@ -145,12 +147,16 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 	if AudioManager != null:
 		AudioManager.play_cut_sfx(false)
 
-	# Atualiza metas (suporta tanto espécie específica de flor quanto chave unificada "flower", e cores de grama vs "grass")
+	# Atualiza metas (suporta tanto espécie específica de flor quanto variações cromáticas, chave base e chave genérica)
 	var goal_key: String = plant_type
-	if not goals.has(goal_key) and plant_type.begins_with("flower") and goals.has("flower"):
-		goal_key = "flower"
-	elif not goals.has(goal_key) and plant_type.begins_with("grass") and goals.has("grass"):
-		goal_key = "grass"
+	if not goals.has(goal_key):
+		var base_id: String = TilePaletteDB.get_base_id_for_variant(plant_type)
+		if goals.has(base_id):
+			goal_key = base_id
+		elif plant_type.begins_with("flower") and goals.has("flower"):
+			goal_key = "flower"
+		elif plant_type.begins_with("grass") and goals.has("grass"):
+			goal_key = "grass"
 
 	if goals.has(goal_key):
 		var goal_info: Dictionary = goals[goal_key]
@@ -167,8 +173,17 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 
 ## Retorna a quantidade restante para bater a meta (target - current). Se não houver meta ou já concluída, retorna 0.
 func get_remaining_goal(plant_type: String) -> int:
-	if goals.has(plant_type):
-		var goal_info: Dictionary = goals[plant_type]
+	var goal_key: String = plant_type
+	if not goals.has(goal_key):
+		var base_id: String = TilePaletteDB.get_base_id_for_variant(plant_type)
+		if goals.has(base_id):
+			goal_key = base_id
+		elif plant_type.begins_with("flower") and goals.has("flower"):
+			goal_key = "flower"
+		elif plant_type.begins_with("grass") and goals.has("grass"):
+			goal_key = "grass"
+	if goals.has(goal_key):
+		var goal_info: Dictionary = goals[goal_key]
 		return maxi(0, int(goal_info.get("target", 0)) - int(goal_info.get("current", 0)))
 	return 0
 

@@ -1104,6 +1104,8 @@ func _rebuild_3d_world() -> void:
 				f_inst.rotation_degrees.y = float(entry.get("rot", 0))
 				if VegetationGridScript.FLOWER_MATERIALS.has(o_type):
 					f_inst.set("custom_material", VegetationGridScript.FLOWER_MATERIALS[o_type])
+				if "plant_key" in f_inst:
+					f_inst.set("plant_key", o_type)
 				var vm: Node3D = f_inst.get_node_or_null("VisualMesh") as Node3D
 				if vm != null:
 					vm.rotation.y = 0.0

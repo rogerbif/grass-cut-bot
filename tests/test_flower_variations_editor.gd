@@ -132,6 +132,38 @@ func _ready() -> void:
 
 	print("  [OK] VegetationGrid possui materiais e tipos GPU instanciados para todas as 7 variações da rosa")
 
+	# 5. Validação das Metas Separadas e Contagem no Editor (sem misturar com Flor Silvestre)
+	var test_object_grid: Dictionary = {
+		Vector2i(0, 0): { "type": "flower_rose", "rot": 0 },
+		Vector2i(1, 0): { "type": "flower_rose_white", "rot": 0 },
+		Vector2i(2, 0): { "type": "flower_rose_yellow", "rot": 0 },
+		Vector2i(3, 0): { "type": "flower_rose_blue", "rot": 0 },
+		Vector2i(4, 0): { "type": "flower_rose_wine", "rot": 0 },
+		Vector2i(5, 0): { "type": "flower_rose_black", "rot": 0 },
+		Vector2i(6, 0): { "type": "flower_rose_peach", "rot": 0 }
+	}
+	ui.update_goals_summary(100, test_object_grid, null, null)
+
+	var detected_counts: Dictionary = ui.get("_last_detected_counts") as Dictionary
+	assert(detected_counts.get("flower", 0) == 0, "Flor Silvestre NÃO deve ser contabilizada para rosas (deve ser 0)")
+	assert(detected_counts.get("flower_rose", 0) == 1, "flower_rose deve ter 1")
+	assert(detected_counts.get("flower_rose_white", 0) == 1, "flower_rose_white deve ter 1")
+	assert(detected_counts.get("flower_rose_yellow", 0) == 1, "flower_rose_yellow deve ter 1")
+	assert(detected_counts.get("flower_rose_blue", 0) == 1, "flower_rose_blue deve ter 1")
+	assert(detected_counts.get("flower_rose_wine", 0) == 1, "flower_rose_wine deve ter 1")
+	assert(detected_counts.get("flower_rose_black", 0) == 1, "flower_rose_black deve ter 1")
+	assert(detected_counts.get("flower_rose_peach", 0) == 1, "flower_rose_peach deve ter 1")
+
+	var goal_cards: Dictionary = ui.get("_goal_cards") as Dictionary
+	var flower_card: PanelContainer = goal_cards.get("flower") as PanelContainer
+	assert(flower_card != null and not flower_card.visible, "Card de Flor Silvestre deve estar oculto")
+
+	for r_id in ["flower_rose", "flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_wine", "flower_rose_black", "flower_rose_peach"]:
+		var r_card: PanelContainer = goal_cards.get(r_id) as PanelContainer
+		assert(r_card != null and r_card.visible, "Card de meta para %s deve estar visível" % r_id)
+
+	print("  [OK] Metas das 7 variações de rosa separadas com sucesso e 0 contagem indevida de Flor Silvestre!")
+
 	ui.queue_free()
 	print("==========================================")
 	print("✅ TODOS OS TESTES DE VARIAÇÃO DA ROSA PASSARAM COM SUCESSO! (0 falhas)")
