@@ -118,6 +118,7 @@ var btn_mirror: Button
 var lbl_status: Label
 
 var lbl_active_layer_banner: Label
+var _goal_cards: Dictionary = {}
 var _goal_checkboxes: Dictionary = {}
 var _goal_spinboxes: Dictionary = {}
 var _goal_total_labels: Dictionary = {}
@@ -763,6 +764,7 @@ func _build_goals_metric_section(parent_box: VBoxContainer) -> void:
 		card.add_theme_stylebox_override("panel", _make_panel_style(Color(0.10, 0.14, 0.18, 0.9), g_color.darkened(0.55), 6))
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		parent_box.add_child(card)
+		_goal_cards[g_key] = card
 
 		var hbox: HBoxContainer = HBoxContainer.new()
 		hbox.add_theme_constant_override("separation", 6)
@@ -1336,6 +1338,10 @@ func update_goals_summary(
 			total_count = int(flower_by_type.get(g_key, 0))
 
 		_last_detected_counts[g_key] = total_count
+
+		var card: PanelContainer = _goal_cards.get(g_key, null) as PanelContainer
+		if card != null:
+			card.visible = (total_count > 0)
 
 		if _goal_total_labels.has(g_key) and _goal_total_labels[g_key] != null:
 			var lbl: Label = _goal_total_labels[g_key] as Label
