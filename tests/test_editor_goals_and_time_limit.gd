@@ -60,7 +60,7 @@ func test_level_time_limits_from_json() -> void:
 	# Lê os JSONs das fases reais e verifica que cada uma tem seu tempo próprio registrado
 	var times: Dictionary = {
 		1: 60.0,
-		2: 80.0,
+		2: 50.0,
 		5: 135.0,
 		10: 150.0,
 		20: 190.0,

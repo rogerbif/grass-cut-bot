@@ -1292,8 +1292,8 @@ func _on_convert_yellow_to_wheat() -> void:
 
 func _on_grid_resize_requested(new_w: int, new_h: int) -> void:
 	_push_undo_snapshot()
-	grid_width = clampi(new_w, 4, 36)
-	grid_height = clampi(new_h, 4, 36)
+	grid_width = clampi(new_w, 4, 100)
+	grid_height = clampi(new_h, 4, 100)
 	if veg_field != null:
 		veg_field.call("resize_blocks", grid_width, grid_height)
 

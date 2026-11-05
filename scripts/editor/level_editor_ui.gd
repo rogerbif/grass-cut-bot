@@ -12,7 +12,7 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "grass_red", "name": "❤️ Grama Vermelha", "color": Color(0.95, 0.37, 0.38), "unit": "tufos" },
 	{ "key": "grass_black", "name": "🖤 Grama Preta", "color": Color(0.48, 0.48, 0.55), "unit": "tufos" },
 	{ "key": "wheat", "name": "🌾 Trigo Maduro", "color": Color(1.0, 0.82, 0.28), "unit": "trigos" },
-	{ "key": "flower", "name": "🌸 Flor Silvestre", "color": Color(1.0, 0.18, 0.65), "unit": "flores" },
+	{ "key": "flower", "name": "🌸 Flor Silvestre", "color": Color(1.0, 0.45, 0.72), "unit": "flores" },
 	{ "key": "flower_rose", "name": "🌹 Rosa Nobre", "color": Color(1.0, 0.08, 0.35), "unit": "rosas" },
 	{ "key": "flower_daisy", "name": "🌼 Margarida", "color": Color(1.0, 1.0, 1.0), "unit": "margaridas" },
 	{ "key": "flower_sunflower", "name": "🌻 Girassol", "color": Color(1.0, 0.88, 0.0), "unit": "girassóis" },

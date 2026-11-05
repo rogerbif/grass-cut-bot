@@ -1,9 +1,15 @@
 {
-	"card_goals": {"grass_green":82,"grass_yellow":10,"wheat":16},
+	"card_goals": {
+		"flower": 4,
+		"grass_green": 82,
+		"grass_yellow": 10,
+		"wheat": 36
+	},
 	"goals": {
+		"flower": 4,
 		"grass_green": 82,
 		"grass_yellow": 59,
-		"wheat": 16
+		"wheat": 36
 	},
 	"grass_vectors": [
 		{
@@ -676,98 +682,242 @@
 	"name": "Fase 03",
 	"objects": [
 		{
+			"gx": 2,
+			"gz": 15,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
 			"gx": 3,
-			"gz": 14,
+			"gz": 13,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 4,
+			"gz": 15,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
 			"gx": 5,
-			"gz": 14,
+			"gz": 13,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
+			"gx": 6,
+			"gz": 6,
+			"rot": 0,
+			"type": "flower"
+		},
+		{
+			"gx": 6,
+			"gz": 15,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 6,
+			"gz": 22,
+			"rot": 0,
+			"type": "flower"
+		},
+		{
 			"gx": 7,
-			"gz": 14,
+			"gz": 13,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 8,
+			"gz": 15,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
 			"gx": 9,
-			"gz": 14,
+			"gz": 13,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 10,
+			"gz": 15,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 13,
 			"gz": 3,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 13,
 			"gz": 5,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 13,
 			"gz": 7,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 13,
 			"gz": 9,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 13,
+			"gz": 18,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 13,
+			"gz": 20,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 13,
+			"gz": 22,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 13,
+			"gz": 24,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 13,
+			"gz": 26,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 15,
+			"gz": 2,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 15,
+			"gz": 4,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 15,
+			"gz": 6,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 15,
+			"gz": 8,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 15,
+			"gz": 10,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 15,
 			"gz": 19,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 15,
 			"gz": 21,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 15,
 			"gz": 23,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
-			"gx": 14,
+			"gx": 15,
 			"gz": 25,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
+			"gx": 18,
+			"gz": 15,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
 			"gx": 19,
-			"gz": 14,
+			"gz": 13,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 20,
+			"gz": 15,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
 			"gx": 21,
-			"gz": 14,
+			"gz": 13,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
+			"gx": 22,
+			"gz": 6,
+			"rot": 0,
+			"type": "flower"
+		},
+		{
+			"gx": 22,
+			"gz": 15,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 22,
+			"gz": 22,
+			"rot": 0,
+			"type": "flower"
+		},
+		{
 			"gx": 23,
-			"gz": 14,
+			"gz": 13,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 24,
+			"gz": 15,
 			"rot": 0,
 			"type": "wheat"
 		},
 		{
 			"gx": 25,
-			"gz": 14,
+			"gz": 13,
+			"rot": 0,
+			"type": "wheat"
+		},
+		{
+			"gx": 26,
+			"gz": 15,
 			"rot": 0,
 			"type": "wheat"
 		}
@@ -6666,6 +6816,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 105.0,
+	"time_limit": 50.0,
 	"version": 4
 }

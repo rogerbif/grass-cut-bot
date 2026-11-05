@@ -1,5 +1,8 @@
 {
-	"card_goals": {"grass_green":58,"grass_yellow":36},
+	"card_goals": {
+		"grass_green": 58,
+		"grass_yellow": 36
+	},
 	"goals": {
 		"grass_green": 58,
 		"grass_yellow": 36
@@ -5112,6 +5115,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 30.0,
+	"time_limit": 60.0,
 	"version": 4
 }

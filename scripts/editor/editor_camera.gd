@@ -4,7 +4,7 @@ extends Camera3D
 @export var drag_pan_sensitivity: float = 0.018
 @export var zoom_step: float = 1.4
 @export var min_distance: float = 5.5
-@export var max_distance: float = 28.0
+@export var max_distance: float = 75.0
 
 var focus_point: Vector3 = Vector3.ZERO
 var target_distance: float = 14.5
