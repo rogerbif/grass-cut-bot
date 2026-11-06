@@ -641,7 +641,8 @@ func generate_level(lvl: int) -> int:
 		object_grid,
 		null,
 		vector_field,
-		custom_goals
+		custom_goals,
+		CELL_SIZE
 	)
 
 	if not ok:

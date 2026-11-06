@@ -3,7 +3,7 @@
 **Data de Conclusão:** 06/11/2026  
 **Tipo:** Feature / Level Design / Arquitetura  
 **Escopo:** Mundo 1 (O Grande Arquipélago)  
-**Versão Alvo:** Game SemVer `v0.12.133-alpha` (Patch 133 - Calibração e Preservação da Escala Canônica)
+**Versão Alvo:** Game SemVer `v0.12.134-alpha` (Patch 134 - Correção de Cell Size 0.80m nas Fases 21 a 40)
 
 ---
 
@@ -11,8 +11,8 @@
 
 Com o objetivo de transformar o **Grass Cut Bot** em um jogo completo pronto para publicação na Google Play Store e estruturado em Mundos temáticos (Mundo 1: Ilhas Tropicais ➔ Mundos futuros: Deserto, Gelo, etc.), foi executada a expansão de 20 para **40 fases canônicas serializadas em JSON v4** (`data/levels/level_01.json` até `level_40.json`).
 
-> [!NOTE] Revisão e Preservação da Escala Canônica
-> Após feedback em playtest visual, as **20 fases originais (Fases 01 a 20)** foram integralmente preservadas em suas dimensões e escalas mundiais originais consagradas (Fase 1 com grid $25 \times 25$, 625 tiles, $10\text{m} \times 10\text{m}$ e 94 gramas). As **Fases 21 a 40** foram criadas como grandes ilhas e mega-ilhas em grids de $23 \times 23$ a $31 \times 31$ (221 a 689 tiles), garantindo transição imersiva e sem redução artificial de escala.
+> [!NOTE] Correção Canônica de Cell Size (0.80m) no Terreno
+> Identificou-se que a rotina `LevelSerializer.save_level_json` utilizava como fallback `CELL_SIZE = 0.40m`, fazendo com que os polígonos de solo das Fases 21 a 40 fossem computados na metade do tamanho real em relação aos vetores de grama e objetos ($0.80\text{m}$). Com a passagem explícita de `cell_size = 0.80` no gerador, o solo de todas as fases de 21 a 40 expandiu para a sua escala monumental correta ($15.2\text{m} \times 15.2\text{m}$ até $21.6\text{m} \times 21.6\text{m}$), superando organicamente a Fase 20 ($13.6\text{m} \times 13.6\text{m}$).
 
 ---
 
