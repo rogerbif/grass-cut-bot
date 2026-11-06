@@ -3,13 +3,16 @@
 **Data de Conclusão:** 06/11/2026  
 **Tipo:** Feature / Level Design / Arquitetura  
 **Escopo:** Mundo 1 (O Grande Arquipélago)  
-**Versão Alvo:** Game SemVer `v0.12.132-alpha`  
+**Versão Alvo:** Game SemVer `v0.12.133-alpha` (Patch 133 - Calibração e Preservação da Escala Canônica)
 
 ---
 
 ## 1. Visão Geral e Contexto
 
 Com o objetivo de transformar o **Grass Cut Bot** em um jogo completo pronto para publicação na Google Play Store e estruturado em Mundos temáticos (Mundo 1: Ilhas Tropicais ➔ Mundos futuros: Deserto, Gelo, etc.), foi executada a expansão de 20 para **40 fases canônicas serializadas em JSON v4** (`data/levels/level_01.json` até `level_40.json`).
+
+> [!NOTE] Revisão e Preservação da Escala Canônica
+> Após feedback em playtest visual, as **20 fases originais (Fases 01 a 20)** foram integralmente preservadas em suas dimensões e escalas mundiais originais consagradas (Fase 1 com grid $25 \times 25$, 625 tiles, $10\text{m} \times 10\text{m}$ e 94 gramas). As **Fases 21 a 40** foram criadas como grandes ilhas e mega-ilhas em grids de $23 \times 23$ a $31 \times 31$ (221 a 689 tiles), garantindo transição imersiva e sem redução artificial de escala.
 
 ---
 

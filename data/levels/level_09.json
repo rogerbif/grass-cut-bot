@@ -1,192 +1,231 @@
 {
-	"card_goals": {
-		"flower_corolla": 3,
-		"grass": 47,
-		"wheat": 2
-	},
-	"goals": {
-		"flower_corolla": 3,
-		"grass": 47,
-		"wheat": 2
-	},
+	"card_goals": {"flower_sunflower":2,"flower_tulip":2,"grass_green":51,"grass_yellow":20},
 	"grass_vectors": [
 		{
 			"holes": [],
-			"id": 1,
+			"id": 1.0,
 			"polygon": [
 				[
 					0.0,
-					-3.8
+					-4.3
 				],
 				[
-					-0.9,
-					-1.559
+					-1.113,
+					-4.153
 				],
 				[
-					-3.291,
-					-1.9
+					-2.15,
+					-3.724
 				],
 				[
-					-1.8,
+					-3.041,
+					-3.041
+				],
+				[
+					-3.724,
+					-2.15
+				],
+				[
+					-4.153,
+					-1.113
+				],
+				[
+					-4.3,
 					0.0
 				],
 				[
-					-3.291,
-					1.9
+					-4.153,
+					1.113
 				],
 				[
-					-0.9,
-					1.559
+					-3.724,
+					2.15
+				],
+				[
+					-3.041,
+					3.041
+				],
+				[
+					-2.15,
+					3.724
+				],
+				[
+					-1.113,
+					4.153
 				],
 				[
 					0.0,
-					3.8
+					4.3
 				],
 				[
 					0.0,
-					1.5
+					2.8
 				],
 				[
-					-0.388,
-					1.449
+					-0.725,
+					2.705
 				],
 				[
-					-0.75,
-					1.299
+					-1.4,
+					2.425
 				],
 				[
-					-1.061,
-					1.061
+					-1.98,
+					1.98
 				],
 				[
-					-1.299,
-					0.75
+					-2.425,
+					1.4
 				],
 				[
-					-1.449,
-					0.388
+					-2.705,
+					0.725
 				],
 				[
-					-1.5,
+					-2.8,
 					0.0
 				],
 				[
-					-1.449,
-					-0.388
+					-2.705,
+					-0.725
 				],
 				[
-					-1.299,
-					-0.75
+					-2.425,
+					-1.4
 				],
 				[
-					-1.061,
-					-1.061
+					-1.98,
+					-1.98
 				],
 				[
-					-0.75,
-					-1.299
+					-1.4,
+					-2.425
 				],
 				[
-					-0.388,
-					-1.449
+					-0.725,
+					-2.705
 				],
 				[
 					0.0,
-					-1.5
+					-2.8
 				]
 			],
-			"type": "grass_purple"
+			"type": "grass_green"
 		},
 		{
 			"holes": [],
-			"id": 2,
+			"id": 2.0,
 			"polygon": [
 				[
 					0.0,
-					-3.8
+					-4.3
 				],
 				[
 					0.0,
-					-1.5
+					-2.8
 				],
 				[
-					0.388,
-					-1.449
+					0.725,
+					-2.705
 				],
 				[
-					0.75,
-					-1.299
+					1.4,
+					-2.425
 				],
 				[
-					1.061,
-					-1.061
+					1.98,
+					-1.98
 				],
 				[
-					1.299,
-					-0.75
+					2.425,
+					-1.4
 				],
 				[
-					1.449,
-					-0.388
+					2.705,
+					-0.725
 				],
 				[
-					1.5,
+					2.8,
 					0.0
 				],
 				[
-					1.449,
-					0.388
+					2.705,
+					0.725
 				],
 				[
-					1.299,
-					0.75
+					2.425,
+					1.4
 				],
 				[
-					1.061,
-					1.061
+					1.98,
+					1.98
 				],
 				[
-					0.75,
-					1.299
+					1.4,
+					2.425
 				],
 				[
-					0.388,
-					1.449
-				],
-				[
-					0.0,
-					1.5
+					0.725,
+					2.705
 				],
 				[
 					0.0,
-					3.8
+					2.8
 				],
 				[
-					0.9,
-					1.559
+					0.0,
+					4.3
 				],
 				[
-					3.291,
-					1.9
+					1.113,
+					4.153
 				],
 				[
-					1.8,
+					2.15,
+					3.724
+				],
+				[
+					3.041,
+					3.041
+				],
+				[
+					3.724,
+					2.15
+				],
+				[
+					4.153,
+					1.113
+				],
+				[
+					4.3,
 					0.0
 				],
 				[
-					3.291,
-					-1.9
+					4.153,
+					-1.113
 				],
 				[
-					0.9,
-					-1.559
+					3.724,
+					-2.15
+				],
+				[
+					3.041,
+					-3.041
+				],
+				[
+					2.15,
+					-3.724
+				],
+				[
+					1.113,
+					-4.153
 				]
 			],
-			"type": "grass_purple"
+			"type": "grass_green"
 		},
 		{
 			"holes": [],
-			"id": 4,
+			"id": 4.0,
 			"polygon": [
 				[
 					0.0,
@@ -234,110 +273,110 @@
 				],
 				[
 					0.0,
-					1.5
+					2.8
 				],
 				[
-					-0.388,
-					1.449
+					-0.725,
+					2.705
 				],
 				[
-					-0.75,
-					1.299
+					-1.4,
+					2.425
 				],
 				[
-					-1.061,
-					1.061
+					-1.98,
+					1.98
 				],
 				[
-					-1.299,
-					0.75
+					-2.425,
+					1.4
 				],
 				[
-					-1.449,
-					0.388
+					-2.705,
+					0.725
 				],
 				[
-					-1.5,
+					-2.8,
 					0.0
 				],
 				[
-					-1.449,
-					-0.388
+					-2.705,
+					-0.725
 				],
 				[
-					-1.299,
-					-0.75
+					-2.425,
+					-1.4
 				],
 				[
-					-1.061,
-					-1.061
+					-1.98,
+					-1.98
 				],
 				[
-					-0.75,
-					-1.299
+					-1.4,
+					-2.425
 				],
 				[
-					-0.388,
-					-1.449
+					-0.725,
+					-2.705
 				],
 				[
 					0.0,
-					-1.5
+					-2.8
 				]
 			],
-			"type": "grass_white"
+			"type": "grass_yellow"
 		},
 		{
 			"holes": [],
-			"id": 5,
+			"id": 5.0,
 			"polygon": [
 				[
-					0.388,
-					-1.449
+					0.725,
+					-2.705
 				],
 				[
-					0.75,
-					-1.299
+					1.4,
+					-2.425
 				],
 				[
-					1.061,
-					-1.061
+					1.98,
+					-1.98
 				],
 				[
-					1.299,
-					-0.75
+					2.425,
+					-1.4
 				],
 				[
-					1.449,
-					-0.388
+					2.705,
+					-0.725
 				],
 				[
-					1.5,
+					2.8,
 					0.0
 				],
 				[
-					1.449,
-					0.388
+					2.705,
+					0.725
 				],
 				[
-					1.299,
-					0.75
+					2.425,
+					1.4
 				],
 				[
-					1.061,
-					1.061
+					1.98,
+					1.98
 				],
 				[
-					0.75,
-					1.299
+					1.4,
+					2.425
 				],
 				[
-					0.388,
-					1.449
+					0.725,
+					2.705
 				],
 				[
 					0.0,
-					1.5
+					2.8
 				],
 				[
 					0.0,
@@ -385,1163 +424,1499 @@
 				],
 				[
 					0.0,
-					-1.5
+					-2.8
 				]
 			],
-			"type": "grass_white"
+			"type": "grass_yellow"
 		}
 	],
 	"grid": {
-		"cell_size": 0.4,
-		"height": 17,
-		"width": 17
+		"cell_size": 0.8,
+		"height": 17.0,
+		"width": 17.0
 	},
 	"island_polygons": [
 		[
 			[
-				1.4,
-				-1.8
+				3.6,
+				-4.4
 			],
 			[
-				1.62,
-				-1.8
+				4.12,
+				-4.4
 			],
 			[
-				1.676,
-				-1.791
+				4.207,
+				-4.386
 			],
 			[
-				1.726,
-				-1.766
+				4.285,
+				-4.347
 			],
 			[
-				1.766,
-				-1.726
+				4.347,
+				-4.285
 			],
 			[
-				1.791,
-				-1.676
+				4.386,
+				-4.207
 			],
 			[
-				1.8,
-				-1.62
+				4.4,
+				-4.12
 			],
 			[
-				1.8,
-				-1.4
+				4.4,
+				-3.6
 			],
 			[
-				2.02,
-				-1.4
+				4.92,
+				-3.6
 			],
 			[
-				2.076,
-				-1.391
+				5.007,
+				-3.586
 			],
 			[
-				2.126,
-				-1.366
+				5.085,
+				-3.547
 			],
 			[
-				2.166,
-				-1.326
+				5.147,
+				-3.485
 			],
 			[
-				2.191,
-				-1.276
+				5.186,
+				-3.407
 			],
 			[
-				2.2,
-				-1.22
+				5.2,
+				-3.32
 			],
 			[
-				2.2,
-				1.22
+				5.2,
+				3.32
 			],
 			[
-				2.191,
-				1.276
+				5.186,
+				3.407
 			],
 			[
-				2.166,
-				1.326
+				5.147,
+				3.485
 			],
 			[
-				2.126,
-				1.366
+				5.085,
+				3.547
 			],
 			[
-				2.076,
-				1.391
+				5.007,
+				3.586
 			],
 			[
-				2.02,
-				1.4
+				4.92,
+				3.6
 			],
 			[
-				1.8,
-				1.4
+				4.4,
+				3.6
 			],
 			[
-				1.8,
-				1.62
+				4.4,
+				4.12
 			],
 			[
-				1.791,
-				1.676
+				4.386,
+				4.207
 			],
 			[
-				1.766,
-				1.726
+				4.347,
+				4.285
 			],
 			[
-				1.726,
-				1.766
+				4.285,
+				4.347
 			],
 			[
-				1.676,
-				1.791
+				4.207,
+				4.386
 			],
 			[
-				1.62,
-				1.8
+				4.12,
+				4.4
 			],
 			[
-				1.4,
-				1.8
+				3.6,
+				4.4
 			],
 			[
-				1.4,
-				2.02
+				3.6,
+				4.92
 			],
 			[
-				1.391,
-				2.076
+				3.586,
+				5.007
 			],
 			[
-				1.366,
-				2.126
+				3.547,
+				5.085
 			],
 			[
-				1.326,
-				2.166
+				3.485,
+				5.147
 			],
 			[
-				1.276,
-				2.191
+				3.407,
+				5.186
 			],
 			[
-				1.22,
-				2.2
+				3.32,
+				5.2
 			],
 			[
-				-1.22,
-				2.2
+				-3.32,
+				5.2
 			],
 			[
-				-1.276,
-				2.191
+				-3.407,
+				5.186
 			],
 			[
-				-1.326,
-				2.166
+				-3.485,
+				5.147
 			],
 			[
-				-1.366,
-				2.126
+				-3.547,
+				5.085
 			],
 			[
-				-1.391,
-				2.076
+				-3.586,
+				5.007
 			],
 			[
-				-1.4,
-				2.02
+				-3.6,
+				4.92
 			],
 			[
-				-1.4,
-				1.8
+				-3.6,
+				4.4
 			],
 			[
-				-1.62,
-				1.8
+				-4.12,
+				4.4
 			],
 			[
-				-1.676,
-				1.791
+				-4.207,
+				4.386
 			],
 			[
-				-1.726,
-				1.766
+				-4.285,
+				4.347
 			],
 			[
-				-1.766,
-				1.726
+				-4.347,
+				4.285
 			],
 			[
-				-1.791,
-				1.676
+				-4.386,
+				4.207
 			],
 			[
-				-1.8,
-				1.62
+				-4.4,
+				4.12
 			],
 			[
-				-1.8,
-				1.4
+				-4.4,
+				3.6
 			],
 			[
-				-2.02,
-				1.4
+				-4.92,
+				3.6
 			],
 			[
-				-2.076,
-				1.391
+				-5.007,
+				3.586
 			],
 			[
-				-2.126,
-				1.366
+				-5.085,
+				3.547
 			],
 			[
-				-2.166,
-				1.326
+				-5.147,
+				3.485
 			],
 			[
-				-2.191,
-				1.276
+				-5.186,
+				3.407
 			],
 			[
-				-2.2,
-				1.22
+				-5.2,
+				3.32
 			],
 			[
-				-2.2,
-				-1.22
+				-5.2,
+				-3.32
 			],
 			[
-				-2.191,
-				-1.276
+				-5.186,
+				-3.407
 			],
 			[
-				-2.166,
-				-1.326
+				-5.147,
+				-3.485
 			],
 			[
-				-2.126,
-				-1.366
+				-5.085,
+				-3.547
 			],
 			[
-				-2.076,
-				-1.391
+				-5.007,
+				-3.586
 			],
 			[
-				-2.02,
-				-1.4
+				-4.92,
+				-3.6
 			],
 			[
-				-1.8,
-				-1.4
+				-4.4,
+				-3.6
 			],
 			[
-				-1.8,
-				-1.62
+				-4.4,
+				-4.12
 			],
 			[
-				-1.791,
-				-1.676
+				-4.386,
+				-4.207
 			],
 			[
-				-1.766,
-				-1.726
+				-4.347,
+				-4.285
 			],
 			[
-				-1.726,
-				-1.766
+				-4.285,
+				-4.347
 			],
 			[
-				-1.676,
-				-1.791
+				-4.207,
+				-4.386
 			],
 			[
-				-1.62,
-				-1.8
+				-4.12,
+				-4.4
 			],
 			[
-				-1.4,
-				-1.8
+				-3.6,
+				-4.4
 			],
 			[
-				-1.4,
-				-2.02
+				-3.6,
+				-4.92
 			],
 			[
-				-1.391,
-				-2.076
+				-3.586,
+				-5.007
 			],
 			[
-				-1.366,
-				-2.126
+				-3.547,
+				-5.085
 			],
 			[
-				-1.326,
-				-2.166
+				-3.485,
+				-5.147
 			],
 			[
-				-1.276,
-				-2.191
+				-3.407,
+				-5.186
 			],
 			[
-				-1.22,
-				-2.2
+				-3.32,
+				-5.2
 			],
 			[
-				1.22,
-				-2.2
+				3.32,
+				-5.2
 			],
 			[
-				1.276,
-				-2.191
+				3.407,
+				-5.186
 			],
 			[
-				1.326,
-				-2.166
+				3.485,
+				-5.147
 			],
 			[
-				1.366,
-				-2.126
+				3.547,
+				-5.085
 			],
 			[
-				1.391,
-				-2.076
+				3.586,
+				-5.007
 			],
 			[
-				1.4,
-				-2.02
+				3.6,
+				-4.92
 			]
 		]
 	],
-	"level_id": 9,
-	"name": "Círculo das Corolas",
+	"level_id": 9.0,
+	"name": "Pomar Protegido",
 	"objects": [
 		{
-			"gx": 4,
-			"gz": 10,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 8.0,
+			"rot": 0.0,
+			"type": "flower_sunflower"
+		},
+		{
+			"gx": 5.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"type": "rock"
 		},
 		{
-			"gx": 5,
-			"gz": 5,
-			"rot": 0,
-			"type": "flower_corolla"
+			"gx": 8.0,
+			"gz": 3.0,
+			"rot": 0.0,
+			"type": "flower_tulip"
 		},
 		{
-			"gx": 8,
-			"gz": 4,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"type": "rock"
 		},
 		{
-			"gx": 8,
-			"gz": 5,
-			"rot": 0,
-			"type": "wheat"
-		},
-		{
-			"gx": 8,
-			"gz": 11,
-			"rot": 0,
-			"type": "wheat"
-		},
-		{
-			"gx": 8,
-			"gz": 12,
-			"rot": 0,
-			"type": "flower_corolla"
-		},
-		{
-			"gx": 11,
-			"gz": 5,
-			"rot": 0,
-			"type": "flower_corolla"
-		},
-		{
-			"gx": 11,
-			"gz": 11,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 11.0,
+			"rot": 0.0,
 			"type": "rock"
+		},
+		{
+			"gx": 8.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"type": "flower_tulip"
+		},
+		{
+			"gx": 11.0,
+			"gz": 8.0,
+			"rot": 0.0,
+			"type": "rock"
+		},
+		{
+			"gx": 13.0,
+			"gz": 8.0,
+			"rot": 0.0,
+			"type": "flower_sunflower"
 		}
 	],
 	"spawn": {
-		"gx": 8,
-		"gz": 8,
-		"rot": 0
+		"gx": 8.0,
+		"gz": 8.0,
+		"rot": 0.0
 	},
 	"terrain": [
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 5,
-			"rot": 90,
+			"gx": 2.0,
+			"gz": 4.0,
+			"rot": 90.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 6,
-			"rot": 90,
+			"gx": 2.0,
+			"gz": 5.0,
+			"rot": 90.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 7,
-			"rot": 90,
+			"gx": 2.0,
+			"gz": 6.0,
+			"rot": 90.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 8,
-			"rot": 90,
+			"gx": 2.0,
+			"gz": 7.0,
+			"rot": 90.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 9,
-			"rot": 90,
+			"gx": 2.0,
+			"gz": 8.0,
+			"rot": 90.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 10,
-			"rot": 90,
+			"gx": 2.0,
+			"gz": 9.0,
+			"rot": 90.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 3,
-			"gz": 11,
-			"rot": 180,
+			"gx": 2.0,
+			"gz": 10.0,
+			"rot": 90.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2.0,
+			"gz": 11.0,
+			"rot": 90.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 2.0,
+			"gz": 12.0,
+			"rot": 180.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 4,
-			"rot": 90,
+			"gx": 3.0,
+			"gz": 3.0,
+			"rot": 90.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 5,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 6,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 7,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 8,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 9,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 10,
-			"rot": 0,
+			"gx": 3.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 11,
-			"rot": 90,
+			"gx": 3.0,
+			"gz": 10.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 3.0,
+			"gz": 11.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 3.0,
+			"gz": 12.0,
+			"rot": 90.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 4,
-			"gz": 12,
-			"rot": 180,
+			"gx": 3.0,
+			"gz": 13.0,
+			"rot": 180.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 3,
-			"rot": 90,
+			"gx": 4.0,
+			"gz": 2.0,
+			"rot": 90.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 4,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 5,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 6,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 7,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 8,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 9,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 10,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 11,
-			"rot": 0,
+			"gx": 4.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 12,
-			"rot": 90,
+			"gx": 4.0,
+			"gz": 11.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 4.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 4.0,
+			"gz": 13.0,
+			"rot": 90.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 5,
-			"gz": 13,
-			"rot": 180,
+			"gx": 4.0,
+			"gz": 14.0,
+			"rot": 180.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 3,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 2.0,
+			"rot": 0.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 4,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 5,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 6,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 7,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 8,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 9,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 10,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 11,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 12,
-			"rot": 0,
+			"gx": 5.0,
+			"gz": 11.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 6,
-			"gz": 13,
-			"rot": 180,
+			"gx": 5.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 5.0,
+			"gz": 14.0,
+			"rot": 180.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 3,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 2.0,
+			"rot": 0.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 4,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 5,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 6,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 7,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 8,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 9,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 10,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 11,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 12,
-			"rot": 0,
+			"gx": 6.0,
+			"gz": 11.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 7,
-			"gz": 13,
-			"rot": 180,
+			"gx": 6.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 6.0,
+			"gz": 14.0,
+			"rot": 180.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 3,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 2.0,
+			"rot": 0.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 4,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 5,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 6,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 7,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 8,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 9,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 10,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 11,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 12,
-			"rot": 0,
+			"gx": 7.0,
+			"gz": 11.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 8,
-			"gz": 13,
-			"rot": 180,
+			"gx": 7.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 7.0,
+			"gz": 14.0,
+			"rot": 180.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 3,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 2.0,
+			"rot": 0.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 4,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 5,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 6,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 7,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 8,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 9,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 10,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 11,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 12,
-			"rot": 0,
+			"gx": 8.0,
+			"gz": 11.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 9,
-			"gz": 13,
-			"rot": 180,
+			"gx": 8.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 8.0,
+			"gz": 14.0,
+			"rot": 180.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 3,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 2.0,
+			"rot": 0.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 4,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 5,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 6,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 7,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 8,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 9,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 10,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 11,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 12,
-			"rot": 0,
+			"gx": 9.0,
+			"gz": 11.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 10,
-			"gz": 13,
-			"rot": 180,
+			"gx": 9.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 9.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 9.0,
+			"gz": 14.0,
+			"rot": 180.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 3,
-			"rot": 0,
+			"gx": 10.0,
+			"gz": 2.0,
+			"rot": 0.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 3.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 4.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 5.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 6.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 7.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 8.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 9.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 10.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 11.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 10.0,
+			"gz": 14.0,
+			"rot": 180.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 2.0,
+			"rot": 0.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 3.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 4.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 5.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 6.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 7.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 8.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 9.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 10.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 11.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 13.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 11.0,
+			"gz": 14.0,
+			"rot": 180.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 12.0,
+			"gz": 2.0,
+			"rot": 0.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 4,
-			"rot": 270,
+			"gx": 12.0,
+			"gz": 3.0,
+			"rot": 270.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 5,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 6,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 7,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 8,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 9,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 10,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 11,
-			"rot": 0,
+			"gx": 12.0,
+			"gz": 10.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 12,
-			"rot": 180,
+			"gx": 12.0,
+			"gz": 11.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 12.0,
+			"gz": 12.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 12.0,
+			"gz": 13.0,
+			"rot": 180.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 11,
-			"gz": 13,
-			"rot": 270,
+			"gx": 12.0,
+			"gz": 14.0,
+			"rot": 270.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 4,
-			"rot": 0,
+			"gx": 13.0,
+			"gz": 3.0,
+			"rot": 0.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 5,
-			"rot": 270,
+			"gx": 13.0,
+			"gz": 4.0,
+			"rot": 270.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 6,
-			"rot": 0,
+			"gx": 13.0,
+			"gz": 5.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 7,
-			"rot": 0,
+			"gx": 13.0,
+			"gz": 6.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 8,
-			"rot": 0,
+			"gx": 13.0,
+			"gz": 7.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 9,
-			"rot": 0,
+			"gx": 13.0,
+			"gz": 8.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 10,
-			"rot": 0,
+			"gx": 13.0,
+			"gz": 9.0,
+			"rot": 0.0,
 			"tile_id": "island_center"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 11,
-			"rot": 180,
+			"gx": 13.0,
+			"gz": 10.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 13.0,
+			"gz": 11.0,
+			"rot": 0.0,
+			"tile_id": "island_center"
+		},
+		{
+			"auto": true,
+			"gx": 13.0,
+			"gz": 12.0,
+			"rot": 180.0,
 			"tile_id": "island_corner_in"
 		},
 		{
 			"auto": true,
-			"gx": 12,
-			"gz": 12,
-			"rot": 270,
+			"gx": 13.0,
+			"gz": 13.0,
+			"rot": 270.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 5,
-			"rot": 0,
+			"gx": 14.0,
+			"gz": 4.0,
+			"rot": 0.0,
 			"tile_id": "island_corner_out"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 6,
-			"rot": 270,
+			"gx": 14.0,
+			"gz": 5.0,
+			"rot": 270.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 7,
-			"rot": 270,
+			"gx": 14.0,
+			"gz": 6.0,
+			"rot": 270.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 8,
-			"rot": 270,
+			"gx": 14.0,
+			"gz": 7.0,
+			"rot": 270.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 9,
-			"rot": 270,
+			"gx": 14.0,
+			"gz": 8.0,
+			"rot": 270.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 10,
-			"rot": 270,
+			"gx": 14.0,
+			"gz": 9.0,
+			"rot": 270.0,
 			"tile_id": "island_edge"
 		},
 		{
 			"auto": true,
-			"gx": 13,
-			"gz": 11,
-			"rot": 270,
+			"gx": 14.0,
+			"gz": 10.0,
+			"rot": 270.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 14.0,
+			"gz": 11.0,
+			"rot": 270.0,
+			"tile_id": "island_edge"
+		},
+		{
+			"auto": true,
+			"gx": 14.0,
+			"gz": 12.0,
+			"rot": 270.0,
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 100.0,
+	"time_limit": 120.0,
 	"version": 4
 }

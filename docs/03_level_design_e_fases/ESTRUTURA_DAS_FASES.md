@@ -29,46 +29,46 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 
 | Fase | Nome Temático | Silhueta da Ilha | Grid ($W \times H$) | Qtd. Rochas | Metas do HUD | Foco e Progressão de Design |
 | :---: | :--- | :--- | :---: | :---: | :--- | :--- |
-| **01** | *Primeiros Passos* | Quadrado suave $5 \times 5$ | $11 \times 11$ | 0 | 🌿 Grama | Tutorial inicial de condução e corte radial básico. |
-| **02** | *O Prado Dourado* | Quadrado chanfrado | $13 \times 13$ | 0 | 🌿 Grama | Faixas diagonais estéticas verde e amarela. |
-| **03** | *O Primeiro Trigal* | Cruz com canteiros | $13 \times 13$ | 0 | 🌿 Grama<br>🌾 4 Trigos | Estreia do Trigo Maduro rígido (2 hits). |
-| **04** | *O Canteiro de Margaridas* | Octógono suave | $13 \times 13$ | **1 Rocha** | 🌿 Grama<br>🌼 2 Margaridas | **Estreia da 1ª Rocha** e da Margarida (3 hits). |
-| **05** | *A Enseada dos Sinos* | Ferradura compacta | $15 \times 15$ | 2 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🔔 2 Sinos | Estreia da Flor Sino com navegação em U. |
-| **06** | *O Jardim das Rosas* | Retângulo alongado | $17 \times 11$ | 2 Rochas | 🌿 Grama<br>🌹 4 Rosas | Estreia da Rosa Nobre em canteiros laterais. |
-| **07** | *Colina dos Girassóis* | Octógono amplo | $15 \times 15$ | 3 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 3 Girassóis | Estreia do Girassol e rochas triangulares. |
-| **08** | *Brisa das Tulipas* | Duas ilhas com ponte | $19 \times 13$ | 3 Rochas | 🌿 Grama<br>🌷 2 Tulipas<br>🌼 2 Margaridas | Estreia da Tulipa Real sobre ponte de terra. |
-| **09** | *Círculo das Corolas* | Estrela de 6 pontas | $17 \times 17$ | 3 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 3 Corolas | Estreia da Corola Nobre com grama roxa. |
-| **10** | *O Parque de Canteiros* | Cruz arredondada | $17 \times 17$ | 4 Rochas | 🌿 Grama<br>🪻 4 Canteiros<br>🌹 2 Rosas | Estreia do Canteiro Floral (Hortênsia). |
-| **11** | *As Ilhas Gêmeas* | Istmo central duplo | $21 \times 15$ | 3 Rochas | 🌿 Grama<br>🌼 2 Margaridas<br>🔔 2 Sinos | Travessia marítima entre duas grandes baías. |
-| **12** | *Serpente de Trigo* | Sinuoso em "S" | $21 \times 15$ | 4 Rochas | 🌿 Grama<br>🌾 3 Trigos<br>🌹 2 Rosas | Slalom longo contornando paredes de rocha e trigo. |
-| **13** | *O Relógio de Granito* | 4 quadrantes cardeais | $19 \times 19$ | 4 Rochas | 🌿 Grama<br>🌻 2 Girassóis<br>🌷 2 Tulipas | Setorização cromática e rochas nas diagonais. |
-| **14** | *Baía da Ferradura* | Ferradura ampla | $21 \times 19$ | 4 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 2 Corolas | Manobras nas pontas da falésia sobre o mar. |
-| **15** | *Cruz dos Quatro Ventos* | Cruz monumental | $21 \times 21$ | 4 Rochas | 🌿 Grama<br>🪻 2 Canteiros<br>🔔 2 Sinos | Canteiros nobres nas extremidades dos 4 braços. |
-| **16** | *O Trevo Imperial* | Trevo de 4 folhas | $21 \times 21$ | 5 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 2 Rosas<br>🌷 2 Tulipas | Alta diversidade com 4 folhas floridas. |
-| **17** | *Canal das Margaridas* | Lagoa central vazada | $21 \times 17$ | 5 Rochas | 🌿 Grama<br>🌼 4 Margaridas<br>🪻 1 Canteiro | Navegação ao redor de canal de água interno. |
-| **18** | *Labirinto Solar* | Labirinto com anel | $21 \times 21$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 3 Girassóis | Paredes densas de granito e trigo dourado. |
-| **19** | *Península Vulcânica* | Octógono de ardósia | $21 \times 21$ | 6 Rochas | 🌿 Grama<br>🏵️ 2 Corolas<br>🌹 2 Rosas | Atmosfera dramática com grama preta e vermelha. |
-| **20** | *O Primeiro Grande Atol* | Anel oceânico fechado | $23 \times 23$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌷 2 Tulipas<br>🔔 1 Sino | Clímax do meio do jogo em circuito circular. |
-| **21** | *Três Marias* | 3 ilhas com pontes | $25 \times 15$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌼 1 Margarida<br>🔔 1 Sino | Deslocamento tático entre 3 ilhas consecutivas. |
-| **22** | *Boulevard de Outono* | Avenida central larga | $23 \times 19$ | 6 Rochas | 🌿 Grama<br>🌹 4 Rosas<br>🪻 2 Canteiros | Grande alameda floral de alta velocidade. |
-| **23** | *A Fortaleza de Trigo* | Bastilha fortificada | $23 \times 21$ | 7 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 2 Girassóis | Muralhas externas com núcleo de girassóis. |
-| **24** | *Ilha do Zigue-Zague* | Slalom diagonal | $23 \times 17$ | 7 Rochas | 🌿 Grama<br>🌷 3 Tulipas<br>🏵️ 1 Corola | Curvas rápidas exigindo controle fino do joystick. |
-| **25** | *O Vale das Quatro Flores*| Trevo de 4 espécies | $23 \times 23$ | 7 Rochas | 🌿 Grama<br>🌼 1 Marg.<br>🔔 1 Sino<br>🌹 1 Rosa<br>🌻 1 Gir. | 5 objetivos independentes nos 4 quadrantes. |
-| **26** | *O Grande Diamante* | Losango monumental | $23 \times 23$ | 7 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 2 Corolas<br>🪻 2 Canteiros | Desafio nas arestas pontiagudas do diamante. |
-| **27** | *Arquipélago do Sol* | Ilha solar + 4 satélites | $25 \times 25$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 2 Girassóis<br>🌷 2 Tulipas | Núcleo solar com satélites de vegetação. |
-| **28** | *Caminhos Cruzados* | Tabuleiro quadriculado | $23 \times 23$ | 8 Rochas | 🌿 Grama<br>🌹 2 Rosas<br>🔔 2 Sinos<br>🪻 2 Canteiros | Mosaico de trilhas de terra com rochas alternadas. |
-| **29** | *O Santuário Esmeralda* | Anéis concêntricos | $23 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌷 2 Tulipas<br>🏵️ 2 Corolas | Concentração de culturas nobres no centro. |
-| **30** | *A Cidadela Costeira* | Fortaleza com bastiões | $25 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 2 Rosas<br>🌻 2 Girassóis | Transição para as mega-ilhas com bastiões costeiros. |
-| **31** | *O Labirinto de Minos* | Labirinto de 94 tiles | $25 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌼 2 Margaridas<br>🪻 2 Canteiros | Extensa área exploratória com corredores amplos. |
-| **32** | *Arquipélago em H* | Duas ilhas monumentais | $25 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🔔 2 Sinos<br>🌷 2 Tulipas | Conexão por passadiço triplo de alta densidade. |
-| **33** | *O Grande Trevo Dourado*| Trevo de 96 tiles | $25 \times 25$ | 9 Rochas | 🌿 Grama<br>🌻 2 Girassóis<br>🌹 2 Rosas<br>🏵️ 2 Corolas | Pétalas monumentais com canteiros nobres. |
-| **34** | *O Dragão dos Mares* | Silhueta em "S" gigante | $25 \times 23$ | 9 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🪻 2 Canteiros<br>🌷 2 Tulipas | Extensão máxima com curva contínua sobre o mar. |
-| **35** | *O Tabuleiro dos Titãs* | Tabuleiro monumental | $25 \times 25$ | 9 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 2 Rosas<br>🌼 1 Marg.<br>🔔 1 Sino | Desafio tático com 5 metas simultâneas. |
-| **36** | *Oásis dos Cinco Reinos* | Estrela octogonal real | $25 \times 25$ | 10 Rochas | 🌿 Grama<br>🌹 1 Rosa<br>🌻 1 Gir.<br>🌷 1 Tul.<br>🏵️ 1 Cor. | Todas as espécies de flores nobres distribuídas. |
-| **37** | *O Grande Atol Imperial* | Lagoa oceânica gigante | $25 \times 25$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🪻 2 Canteiros<br>🔔 2 Sinos | Mega-circuito circular de alta velocidade. |
-| **38** | *Constelação de Pedra* | Octógono monumental | $25 \times 25$ | 10 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 2 Girassóis<br>🏵️ 2 Corolas | Campo de manobra entre 10 rochas e muito trigo. |
-| **39** | *A Península do Infinito*| Símbolo do infinito $\infty$ | $25 \times 23$ | 10 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 1 Rosa<br>🌷 1 Tulipa<br>🪻 2 Cant. | Travessia rápida em oito duplo sobre as águas. |
-| **40** | *A Grande Coroa Real* 👑| **100 tiles exatos** | $25 \times 23$ | 4 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 1 Rosa<br>🌻 1 Gir.<br>🌷 1 Tul.<br>🏵️ 1 Cor. | **Clímax supremo do Mundo 1:** As 6 metas canônicas e passagem triunfal para o Ciclo Mestre. |
+| **01** | *Fase 01* | Quadrado amplo $25 \times 25$ ($10\text{m} \times 10\text{m}$) | $25 \times 25$ | 0 | 🌿 94 Gramas | Tutorial inicial de condução e corte radial com mandala concêntrica verde e amarela. |
+| **02** | *Fase 02* | Quadrado amplo $25 \times 25$ ($10\text{m} \times 10\text{m}$) | $25 \times 25$ | 0 | 🌿 118 Gramas | Introdução da grama azul combinada com verde e amarela. |
+| **03** | *Fase 03* | Grande ilha agrícola | $29 \times 29$ | 0 | 🌿 124 Gramas<br>🌾 36 Trigos<br>🌸 4 Flores | Estreia do Trigo Maduro (2 hits) e primeiras flores. |
+| **04** | *Fase 04* | Grande prado floral | $31 \times 31$ | 0 | 🌿 58 Gramas<br>🌼 52 Margaridas | Estreia da Margarida em grande canteiro nobre. |
+| **05** | *Fase 05* | Mega-ilha floral | $47 \times 47$ | 8 Rochas | 🌿 141 Gramas<br>🌹 92 Rosas | Estreia da Rosa (preta e branca) e das primeiras rochas sólidas. |
+| **06** | *O Primeiro Rochedo* | Retângulo alongado | $19 \times 11$ | 2 Rochas | 🌿 64 Gramas | 2 rochas sólidas laterais com ampla área de manobra. |
+| **07** | *O Triângulo de Pedra* | Octógono | $17 \times 17$ | 3 Rochas | 🌿 73 Gramas | 3 rochas em formação triangular aberta. |
+| **08** | *Caminho Dividido* | Ferradura em U | $19 \times 17$ | 2 Rochas | 🌿 85 Gramas<br>🌼 1 Margarida<br>🔔 1 Sino | Estreia da Flor Sino com bifurcação em U. |
+| **09** | *Pomar Protegido* | Quadrado chanfrado | $17 \times 17$ | 4 Rochas | 🌿 71 Gramas<br>🌻 2 Girassóis<br>🌷 2 Tulipas | Estreia do Girassol e da Tulipa Real protegidos por pedras. |
+| **10** | *O Labirinto de Trigo e Granito* | Labirinto com cruz | $19 \times 19$ | 4 Rochas | 🌿 104 Gramas<br>🌾 16 Trigos | Labirinto de paredes de trigo e 4 rochas nos vértices. |
+| **11** | *Ilhotas Conectadas* | Duas ilhas com ponte | $21 \times 13$ | 3 Rochas | 🌿 77 Gramas<br>🔔 4 Sinos | Travessia entre ilhas conectadas por ponte de terra. |
+| **12** | *Vulcânica* | Octógono de ardósia | $17 \times 17$ | 4 Rochas | 🌿 72 Gramas<br>🏵️ 4 Corolas | Estreia da Corola Nobre com grama preta e vermelha. |
+| **13** | *O Relógio de Quatro Pilares* | Cruz em 4 quadrantes | $19 \times 19$ | 4 Rochas | 🌿 95 Gramas<br>🌹 4 Rosas | 4 quadrantes cardeais com 4 cores de grama e rosas. |
+| **14** | *Serpente de Trigo* | Retângulo longo | $21 \times 13$ | 3 Rochas | 🌿 103 Gramas<br>🌾 12 Trigos | Slalom sinuoso contornando a serpente de trigo. |
+| **15** | *O Parque Central de Canteiros* | Ilha orgânica chanfrada | $19 \times 17$ | 5 Rochas | 🌿 88 Gramas<br>🪻 6 Canteiros | Estreia do Canteiro Floral em disposição assimétrica. |
+| **16** | *O Anel Exterior de Obstáculos*| Anel octogonal | $19 \times 19$ | 6 Rochas | 🌿 83 Gramas<br>🌻 6 Girassóis | Anel perimetral com girassóis e rochas. |
+| **17** | *Alameda Imperial* | Ilha em H | $21 \times 17$ | 4 Rochas | 🌿 96 Gramas<br>🌾 8 Trigos<br>🌷 4 Tulipas | Alameda com boulevard central e colunas de trigo. |
+| **18** | *O Labirinto dos Quatro Diamantes*| Diamante amplo | $19 \times 19$ | 4 Rochas | 🌿 33 Gramas<br>🌾 4 Trigos<br>🪻 4 Canteiros | Losango concêntrico com canteiros nas pontas. |
+| **19** | *O Oásis Multicolorido* | Estrela de 8 pontas | $19 \times 19$ | 5 Rochas | 🌿 83 Gramas<br>🌸 5 Flores | Mandala estelar com 4 cores de grama e flores nobres. |
+| **20** | *Arquipélago da Maestria* | Trevo de 4 folhas | $21 \times 21$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 2 Corolas<br>🌷 2 Tulipas | Clímax da primeira metade com todas as famílias botânicas. |
+| **21** | *O Labirinto da Serpente Dourada*| Retângulo chanfrado (337 tiles)| $23 \times 23$ | 5 Rochas | 🌿 Grama<br>🌾 12 Trigos<br>🔔 6 Sinos | Início das grandes ilhas com listras diagonais e trigo sinuoso. |
+| **22** | *O Grande Atol Esmeralda* | Octógono grande (277 tiles) | $23 \times 23$ | 6 Rochas | 🌿 Grama<br>🌼 8 Margaridas<br>🌻 6 Girassóis | Circuito circular com anéis concêntricos. |
+| **23** | *As Ilhas Gêmeas de Safira* | Duas grandes ilhas (297 tiles) | $25 \times 21$ | 5 Rochas | 🌿 Grama<br>🌾 8 Trigos<br>🌷 8 Tulipas | Duas grandes massas conectadas por ponte de 5 tiles. |
+| **24** | *O Bosque dos Três Canteiros* | Cruz arredondada (301 tiles) | $25 \times 25$ | 6 Rochas | 🌿 Grama<br>🪻 8 Canteiros<br>🌹 6 Rosas | 4 grandes quadrantes floridos. |
+| **25** | *A Fortaleza de Granito* | Diamante gigante (221 tiles) | $25 \times 25$ | 7 Rochas | 🌿 Grama<br>🌾 12 Trigos<br>🏵️ 6 Corolas | Losangos concêntricos em degradê de ardósia. |
+| **26** | *O Vale das Tulipas Imperiais*| H monumental (343 tiles) | $25 \times 25$ | 6 Rochas | 🌿 Grama<br>🌷 10 Tulipas<br>🌼 6 Margaridas | Avenidas amplas com canteiros de tulipas e margaridas. |
+| **27** | *O Grande Lago Interior* | Ilha com lago central (456 tiles)| $27 \times 27$ | 6 Rochas | 🌿 Grama<br>🌾 16 Trigos<br>🌻 8 Girassóis | Anel de terra contornando grande lago de água nobre. |
+| **28** | *A Espiral da Colheita* | Octógono monumental (385 tiles)| $27 \times 27$ | 6 Rochas | 🌿 Grama<br>🌾 20 Trigos<br>🔔 8 Sinos | Espiral agrícola concêntrica com muralhas de trigo. |
+| **29** | *A Rosa dos Ventos* | Estrela de 8 pontas (397 tiles)| $27 \times 27$ | 6 Rochas | 🌿 Grama<br>🌹 8 Rosas<br>🏵️ 8 Corolas | Mandala monumental de 8 pontas em 4 tonalidades. |
+| **30** | *O Arquipélago das Quatro Lagoas*| Trevo gigante (465 tiles) | $27 \times 27$ | 7 Rochas | 🌿 Grama<br>🌾 12 Trigos<br>🪻 6 Canteiros<br>🌻 6 Girassóis | 4 lobos monumentais com flores e gramas vibrantes. |
+| **31** | *O Tridente Coralino* | 3 penínsulas ao norte (529 tiles)| $29 \times 29$ | 6 Rochas | 🌿 Grama<br>🔔 8 Sinos<br>🌷 8 Tulipas | Navegação em tridente com 3 longas avenidas marítimas. |
+| **32** | *O Jardim Suspenso da Falésia*| Quadrado chanfrado (585 tiles)| $29 \times 29$ | 7 Rochas | 🌿 Grama<br>🪻 10 Canteiros<br>🌼 8 Margaridas | Amplo platô com canteiros floridos e margaridas. |
+| **33** | *O Enclave dos Monólitos* | Octógono monumental (445 tiles)| $29 \times 29$ | 8 Rochas | 🌿 Grama<br>🌾 16 Trigos<br>🌹 8 Rosas | Círculo amplo de 8 monólitos e rosas nobres. |
+| **34** | *O Mosaico Imperial* | Cruz monumental (433 tiles) | $29 \times 29$ | 7 Rochas | 🌿 Grama<br>🏵️ 8 Corolas<br>🌷 8 Tulipas | Cruz monumental com anéis concêntricos. |
+| **35** | *A Encruzilhada das Quatro Estações*| 4 grandes ilhas (661 tiles) | $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 12 Trigos<br>🌻 6 Girassóis<br>🌹 6 Rosas<br>🌷 6 Tulipas | 4 quadrantes representando as 4 estações. |
+| **36** | *O Labirinto dos Guardiões* | Mega-ilha com muralhas (689 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 24 Trigos<br>🪻 8 Canteiros | Labirinto de grande escala com muralhas de trigo. |
+| **37** | *A Coroa de Ilhotas* | Ilha central + 4 satélites (461 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🔔 8 Sinos<br>🌼 8 Margaridas | Núcleo octogonal com 4 ilhotas conectadas por istmos. |
+| **38** | *O Grande Fiorde Selvagem* | Sinuoso em S longo (653 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 20 Trigos<br>🏵️ 10 Corolas | Fiorde oceânico largo com atmosfera vulcânica. |
+| **39** | *O Santuário Botânico* | Estrela monumental (509 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌹 6 Rosas<br>🌻 6 Girassóis<br>🌷 6 Tulipas<br>🪻 6 Canteiros | Santuário com as 4 principais famílias de flores nobres. |
+| **40** | *O Grande Arquipélago Mestre* 👑| Mega-arquipélago de 5 ilhas (513 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 16 Trigos<br>🌹 6 Rosas<br>🌷 6 Tulipas<br>🌻 6 Girassóis<br>🌼 6 Margaridas | **Clímax supremo do Mundo 1:** 5 grandes ilhas unidas por praças monumentais e as 6 metas canônicas. |
 
 ---
 
