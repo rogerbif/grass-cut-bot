@@ -53,7 +53,7 @@ func set_view_mode(map_view: bool) -> void:
 	if toggle_label != null and toggle_icon != null:
 		if is_map_mode:
 			toggle_icon.visible = false
-			toggle_label.text = "BOT"
+			toggle_label.text = tr("BTN_BOT_FOCUS")
 		else:
 			toggle_icon.visible = true
 			toggle_icon.texture = ICON_MAP

@@ -140,7 +140,7 @@ func _build_ui() -> void:
 	_title_lbl = _make_label("Fase 01", 24, COL_WHITE)
 	title_row.add_child(_title_lbl)
 
-	_biome_lbl = _make_label(LevelCardData.BIOME_NAME, 16, COL_SUB)
+	_biome_lbl = _make_label(tr("BIOME_TROPICAL_ISLAND"), 16, COL_SUB)
 	_biome_lbl.custom_minimum_size = Vector2(0.0, 20.0)
 	left_vbox.add_child(_biome_lbl)
 
@@ -261,7 +261,11 @@ func show_level(lvl: int, unlocked: bool) -> void:
 
 	var card_data: Dictionary = LevelCardData.get_level_card_data(lvl)
 	_title_lbl.text = tr("HUD_LEVEL_LABEL") % lvl
-	_biome_lbl.text = String(card_data.get("name", LevelCardData.BIOME_NAME))
+	var raw_biome: String = String(card_data.get("name", LevelCardData.BIOME_NAME))
+	if raw_biome == "Ilha Tropical" or raw_biome == LevelCardData.BIOME_NAME:
+		_biome_lbl.text = tr("BIOME_TROPICAL_ISLAND")
+	else:
+		_biome_lbl.text = tr(raw_biome)
 	_time_lbl.text = LevelCardData.format_time(float(card_data.get("time", 90.0)))
 	_title_icon.texture = TEX_ISLAND if unlocked else TEX_LOCK
 

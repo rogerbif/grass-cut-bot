@@ -68,13 +68,13 @@ func _notification(what: int) -> void:
 						SaveManager.set_setting("vib_enabled", true)
 					_update_toggle_visuals()
 					Input.vibrate_handheld(200, 1.0)
-					_show_toast("Retorno Tátil ativado! Vibração ON")
+					_show_toast(tr("TOAST_VIB_SYSTEM_ON"))
 				else:
 					vib_enabled = false
 					if SaveManager != null:
 						SaveManager.set_setting("vib_enabled", false)
 					_update_toggle_visuals()
-					_show_toast("Retorno Tátil permanece desligado no celular")
+					_show_toast(tr("TOAST_VIB_SYSTEM_OFF"))
 			else:
 				if not system_haptic_on and vib_enabled:
 					vib_enabled = false
@@ -195,16 +195,16 @@ func _on_graphics_toggled() -> void:
 	match graphics_quality:
 		"balanced":
 			graphics_quality = "eco"
-			_show_toast("Qualidade 3D: Econômica (70% FSR - Bateria)")
+			_show_toast(tr("TOAST_QUALITY_PERFORMANCE"))
 		"eco":
 			graphics_quality = "high"
-			_show_toast("Qualidade 3D: Alta (100% Nativa)")
+			_show_toast(tr("TOAST_QUALITY_HIGH"))
 		"high":
 			graphics_quality = "balanced"
-			_show_toast("Qualidade 3D: Balanceada (85% FSR)")
+			_show_toast(tr("TOAST_QUALITY_BALANCED"))
 		_:
 			graphics_quality = "balanced"
-			_show_toast("Qualidade 3D: Balanceada (85% FSR)")
+			_show_toast(tr("TOAST_QUALITY_BALANCED"))
 
 	if SaveManager != null:
 		SaveManager.set_setting("graphics_quality", graphics_quality)
@@ -219,7 +219,7 @@ func _on_music_toggled() -> void:
 		AudioManager.set_music_enabled(music_enabled)
 	if SaveManager != null:
 		SaveManager.set_setting("music_enabled", music_enabled)
-	_show_toast("Música " + ("Ativada" if music_enabled else "Desativada"))
+	_show_toast(tr("TOAST_MUSIC_ON") if music_enabled else tr("TOAST_MUSIC_OFF"))
 
 func _on_sfx_toggled() -> void:
 	sfx_enabled = not sfx_enabled
@@ -228,7 +228,7 @@ func _on_sfx_toggled() -> void:
 		AudioManager.set_sfx_enabled(sfx_enabled)
 	if SaveManager != null:
 		SaveManager.set_setting("sfx_enabled", sfx_enabled)
-	_show_toast("Som FX " + ("Ativado" if sfx_enabled else "Desativado"))
+	_show_toast(tr("TOAST_SFX_ON") if sfx_enabled else tr("TOAST_SFX_OFF"))
 
 func _on_vib_toggled() -> void:
 	if vib_enabled:
@@ -236,13 +236,13 @@ func _on_vib_toggled() -> void:
 		if SaveManager != null:
 			SaveManager.set_setting("vib_enabled", false)
 		_update_toggle_visuals()
-		_show_toast("Vibração Desativada")
+		_show_toast(tr("TOAST_VIB_OFF"))
 	else:
 		if OS.get_name() == "Android" or OS.has_feature("android"):
 			if not _is_android_haptic_feedback_enabled():
 				_waiting_for_android_haptic_toggle = true
 				_update_toggle_visuals()
-				_show_toast("Ative 'Retorno Tátil' nas configurações do celular!")
+				_show_toast(tr("TOAST_VIB_SYSTEM_HINT"))
 				_open_android_sound_settings()
 				return
 		vib_enabled = true
@@ -250,7 +250,7 @@ func _on_vib_toggled() -> void:
 			SaveManager.set_setting("vib_enabled", true)
 		_update_toggle_visuals()
 		Input.vibrate_handheld(200, 1.0)
-		_show_toast("Vibração Ativada!")
+		_show_toast(tr("TOAST_VIB_ON"))
 
 func _on_android_vib_hint_pressed() -> void:
 	_waiting_for_android_haptic_toggle = true
@@ -308,7 +308,7 @@ func _is_android_haptic_feedback_enabled() -> bool:
 
 func _open_android_sound_settings() -> void:
 	if not Engine.has_singleton("JavaClassWrapper") or not Engine.has_singleton("AndroidRuntime"):
-		_show_toast("Disponível apenas no dispositivo Android")
+		_show_toast(tr("TOAST_ANDROID_ONLY"))
 		return
 	var android_runtime: Object = Engine.get_singleton("AndroidRuntime")
 	var activity: Variant = android_runtime.call("getActivity")
@@ -327,7 +327,7 @@ func _on_save_local_pressed() -> void:
 		if ok:
 			_show_toast(tr("SETTINGS_TOAST_SAVED"))
 		else:
-			_show_toast("Erro ao gravar dados no armazenamento.")
+			_show_toast(tr("TOAST_SAVE_ERROR"))
 	else:
 		_show_toast(tr("SETTINGS_TOAST_SAVED"))
 
@@ -438,13 +438,13 @@ func _update_all_localized_texts() -> void:
 	_update_toggle_visuals()
 
 func _on_google_pressed() -> void:
-	_show_toast("Google Play Games: Em breve!")
+	_show_toast(tr("TOAST_COMING_SOON_GPLAY"))
 
 func _on_fb_pressed() -> void:
-	_show_toast("Facebook Connect: Em breve!")
+	_show_toast(tr("TOAST_COMING_SOON_FB"))
 
 func _on_support_pressed() -> void:
-	_show_toast("Abrindo suporte ao jogador...")
+	_show_toast(tr("TOAST_SUPPORT_OPENING"))
 
 func _on_version_gui_input(event: InputEvent) -> void:
 	var pressed: bool = false
@@ -462,7 +462,7 @@ func _on_version_gui_input(event: InputEvent) -> void:
 		get_tree().paused = false
 		get_tree().change_scene_to_file("res://scenes/tools/perf_test.tscn")
 	else:
-		_show_toast("Benchmark Fase 20: mais %d toque(s)..." % (3 - _version_tap_count))
+		_show_toast(tr("TOAST_BENCHMARK_TAPS") % (3 - _version_tap_count))
 
 func _show_toast(msg: String) -> void:
 	if toast_label == null:

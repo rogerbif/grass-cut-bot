@@ -34,6 +34,10 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 @onready var victory_coins_label: Label = $VictoryModal.find_child("CoinsEarnedLabel", true, false) as Label
 @onready var victory_bottom_bar: Control = $VictoryModal.find_child("BottomBar", true, false) as Control
 @onready var victory_next_label: Label = $VictoryModal.find_child("NextLabel", true, false) as Label
+@onready var victory_menu_label: Label = $VictoryModal.find_child("MenuLabel", true, false) as Label
+@onready var victory_repeat_label: Label = $VictoryModal.find_child("RepeatLabel", true, false) as Label
+@onready var workshop_title: Label = $WorkshopModal.find_child("Title", true, false) as Label
+@onready var workshop_close_btn: Button = $WorkshopModal.find_child("CloseBtn", true, false) as Button
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
 var goal_cards: Dictionary = {}
@@ -41,6 +45,7 @@ var goal_cards: Dictionary = {}
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_apply_safe_area()
+	_refresh_localized_ui()
 
 	# Oculta modais inicialmente e garante top_bar visível
 	if top_bar != null:
@@ -385,30 +390,47 @@ func _buy_upgrade(upgrade_name: String) -> void:
 		if UpgradeManager.buy_upgrade(upgrade_name):
 			_update_workshop_display()
 
+func _refresh_localized_ui() -> void:
+	if victory_menu_label != null:
+		victory_menu_label.text = tr("BTN_MENU")
+	if victory_repeat_label != null:
+		victory_repeat_label.text = tr("BTN_REPEAT")
+	if victory_next_label != null and not victory_modal.visible:
+		victory_next_label.text = tr("HUD_NEXT_LEVEL")
+	if workshop_title != null:
+		workshop_title.text = tr("WORKSHOP_TITLE")
+	if workshop_close_btn != null:
+		workshop_close_btn.text = tr("WORKSHOP_BACK_TO_GAME")
+	_update_workshop_display()
+
 func _update_workshop_display() -> void:
 	if UpgradeManager == null:
 		return
 	var blade_name: String = UpgradeManager.get_blade_tier_name() if UpgradeManager.has_method("get_blade_tier_name") else ""
-	if blade_name != "":
-		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d\nLâmina: %s" % [UpgradeManager.total_coins, blade_name]
-	else:
-		$WorkshopModal/Panel/VBox/CoinsBanner.text = "Suas Moedas: %d" % UpgradeManager.total_coins
+	var coins_banner: Label = $WorkshopModal/Panel/VBox/CoinsBanner as Label
+	if coins_banner != null:
+		if blade_name != "":
+			coins_banner.text = tr("WORKSHOP_COINS_BLADE_FMT") % [UpgradeManager.total_coins, blade_name]
+		else:
+			coins_banner.text = tr("WORKSHOP_COINS_FMT") % UpgradeManager.total_coins
 
-	_update_card("radius", $WorkshopModal/Panel/VBox/UpgradesList/RadiusCard, "Raio da Lâmina")
-	_update_card("power", $WorkshopModal/Panel/VBox/UpgradesList/PowerCard, "Potência e Fio")
-	_update_card("speed", $WorkshopModal/Panel/VBox/UpgradesList/SpeedCard, "Velocidade")
-	_update_card("multiplier", $WorkshopModal/Panel/VBox/UpgradesList/MultiplierCard, "Multiplicador de Moedas")
+	_update_card("radius", $WorkshopModal/Panel/VBox/UpgradesList/RadiusCard, tr("UPGRADE_BLADE_RADIUS"))
+	_update_card("power", $WorkshopModal/Panel/VBox/UpgradesList/PowerCard, tr("UPGRADE_BLADE_POWER"))
+	_update_card("speed", $WorkshopModal/Panel/VBox/UpgradesList/SpeedCard, tr("UPGRADE_BLADE_SPEED"))
+	_update_card("multiplier", $WorkshopModal/Panel/VBox/UpgradesList/MultiplierCard, tr("UPGRADE_COIN_MULTIPLIER"))
 
 func _update_card(key: String, card: Control, title: String) -> void:
 	var lvl = UpgradeManager.get_level(key)
 	var cost = UpgradeManager.get_upgrade_cost(key)
 	var lbl = card.get_node("Info/Title") as Label
 	var cost_btn = card.get_node("BuyBtn") as Button
-	lbl.text = "%s (Nv. %d)" % [title, lvl]
-	cost_btn.text = "%d" % cost
-	cost_btn.icon = ICON_COIN
-	cost_btn.add_theme_constant_override("icon_max_width", 18)
-	cost_btn.disabled = (UpgradeManager.total_coins < cost)
+	if lbl != null:
+		lbl.text = tr("UPGRADE_ITEM_LVL_FMT") % [title, lvl]
+	if cost_btn != null:
+		cost_btn.text = "%d" % cost
+		cost_btn.icon = ICON_COIN
+		cost_btn.add_theme_constant_override("icon_max_width", 18)
+		cost_btn.disabled = (UpgradeManager.total_coins < cost)
 
 # ==============================================================================
 # Suporte Mobile: Safe Area (Notch / Cutout) & Gesto/Botão "Voltar" (Play Store)
@@ -438,6 +460,8 @@ func _apply_safe_area() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_handle_back_request()
+	elif what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh_localized_ui()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):

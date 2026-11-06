@@ -87,13 +87,17 @@ func _on_blade_xp_changed(_current_xp: float, _max_xp: float, progress_ratio: fl
 func _on_blade_penalized(_new_level: int) -> void:
 	play_penalty_reaction()
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_update_visual_theme()
+
 func _update_visual_theme() -> void:
 	if progress_bar == null or level_label == null:
 		return
 
 	if _is_max:
 		progress_bar.texture_progress = TEXTURE_FILL_MAX
-		level_label.text = "NÍVEL MAX"
+		level_label.text = tr("BLADE_LEVEL_MAX")
 		level_label.add_theme_color_override("font_color", COLOR_LABEL_MAX)
 		level_label.add_theme_color_override("font_outline_color", COLOR_OUTLINE_MAX)
 		if crown_icon != null:
@@ -102,7 +106,7 @@ func _update_visual_theme() -> void:
 			star_icon.visible = true
 	else:
 		progress_bar.texture_progress = TEXTURE_FILL_NORMAL
-		level_label.text = "NÍVEL %d" % _current_level
+		level_label.text = tr("BLADE_LEVEL_FMT") % _current_level
 		level_label.add_theme_color_override("font_color", COLOR_LABEL_NORMAL)
 		level_label.add_theme_color_override("font_outline_color", COLOR_OUTLINE_NORMAL)
 		if crown_icon != null:

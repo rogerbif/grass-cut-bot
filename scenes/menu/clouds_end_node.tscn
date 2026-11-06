@@ -31,7 +31,23 @@ size = Vector3(4.2, 1.2, 0.2)
 [sub_resource type="GDScript" id="GDScript_clouds"]
 script/source = "extends Node3D
 
+@onready var title_label: Label3D = $SignBoard/TitleLabel
+@onready var sub_label: Label3D = $SignBoard/SubLabel
+
 var time_passed: float = 0.0
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_refresh_text()
+
+func _ready() -> void:
+	_refresh_text()
+
+func _refresh_text() -> void:
+	if title_label != null:
+		title_label.text = tr(\"MAP_COMING_SOON_TITLE\")
+	if sub_label != null:
+		sub_label.text = tr(\"MAP_COMING_SOON_SUB\")
 
 func _process(delta: float) -> void:
 	time_passed += delta

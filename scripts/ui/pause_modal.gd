@@ -45,6 +45,7 @@ var _font: SystemFont = null
 var _backdrop: ColorRect = null
 var _card_panel: PanelContainer = null
 var _close_x_btn: TextureButton = null
+var _title_lbl: Label = null
 
 var _resume_btn: Button = null
 var _restart_btn: Button = null
@@ -64,6 +65,10 @@ var _toggle_vib_status: Label = null
 
 var _fade_tween: Tween = null
 var _is_closing: bool = false
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_retranslate_ui()
 
 
 func _ready() -> void:
@@ -183,9 +188,9 @@ func _build_ui() -> void:
 	pause_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header_hbox.add_child(pause_icon)
 
-	var title_lbl: Label = _make_label(tr("HUD_PAUSE"), 28, COL_CYAN_TITLE)
-	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header_hbox.add_child(title_lbl)
+	_title_lbl = _make_label(tr("HUD_PAUSE"), 28, COL_CYAN_TITLE)
+	_title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_hbox.add_child(_title_lbl)
 
 	# Botão de fechar [X] no topo direito
 	_close_x_btn = TextureButton.new()
@@ -302,6 +307,7 @@ func _make_action_button(txt: String, icon_tex: Texture2D, icon_sz: Vector2, tex
 	var lbl: Label = _make_label(txt, 22, COL_WHITE)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hbox.add_child(lbl)
+	btn.set_meta("label", lbl)
 
 	return btn
 
@@ -359,6 +365,7 @@ func _build_toggle_card(card_title: String, icon_tex: Texture2D, register_cb: Ca
 	var name_lbl: Label = _make_label(card_title, 17, COL_LABEL_TITLE)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(name_lbl)
+	btn.set_meta("title_label", name_lbl)
 
 	# Status ("Ligado" / "Desligado")
 	var status_lbl: Label = _make_label("Ligado", 14, COL_GREEN_ON)
@@ -405,6 +412,23 @@ func _sync_toggles_state() -> void:
 		vib_on = bool(SaveManager.get_setting("vib_enabled", true))
 	_update_toggle_item(_toggle_vib_icon, _toggle_vib_status, vib_on)
 
+
+func _retranslate_ui() -> void:
+	if _title_lbl != null:
+		_title_lbl.text = tr("HUD_PAUSE")
+	if _resume_btn != null and _resume_btn.has_meta("label"):
+		(_resume_btn.get_meta("label") as Label).text = tr("HUD_RESUME")
+	if _restart_btn != null and _restart_btn.has_meta("label"):
+		(_restart_btn.get_meta("label") as Label).text = tr("HUD_RETRY")
+	if _menu_btn != null and _menu_btn.has_meta("label"):
+		(_menu_btn.get_meta("label") as Label).text = tr("HUD_MAIN_MENU")
+	if _toggle_sfx_btn != null and _toggle_sfx_btn.has_meta("title_label"):
+		(_toggle_sfx_btn.get_meta("title_label") as Label).text = tr("SETTINGS_SFX")
+	if _toggle_music_btn != null and _toggle_music_btn.has_meta("title_label"):
+		(_toggle_music_btn.get_meta("title_label") as Label).text = tr("SETTINGS_MUSIC")
+	if _toggle_vib_btn != null and _toggle_vib_btn.has_meta("title_label"):
+		(_toggle_vib_btn.get_meta("title_label") as Label).text = tr("SETTINGS_VIBRATION")
+	_sync_toggles_state()
 
 func _update_toggle_item(icon_rect: TextureRect, status_lbl: Label, is_on: bool) -> void:
 	if icon_rect != null:

@@ -21,6 +21,8 @@ const TEX_ILLUS_FLOWER_STEMS: Texture2D = preload("res://assets/ui/collection/il
 const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/illus_flower_petals.svg")
 const TEX_ILLUS_LOCKED: Texture2D = preload("res://assets/ui/collection/illus_locked_plant.svg")
 
+@onready var title_label: Label = $Panel/MainVBox/HeaderVBox/TitleHBox/Title
+@onready var subtitle_label: Label = $Panel/MainVBox/HeaderVBox/Subtitle
 @onready var prog_label: Label = $Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay/ProgLabel
 @onready var progress_bar: TextureProgressBar = $Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay/ProgressBar
 @onready var btn_claim_all: Button = $Panel/MainVBox/HeaderVBox/ProgBox/BtnClaimAll
@@ -131,23 +133,28 @@ func refresh_ui() -> void:
 		var k: String = String(sp.get("key", ""))
 		total_milestones_claimed += SaveManager.get_claimed_milestone_level(k)
 
+	if title_label != null:
+		title_label.text = tr("HERBARIUM_FULL_TITLE")
+	if subtitle_label != null:
+		subtitle_label.text = tr("HERBARIUM_SUBTITLE")
+
 	var pct: int = 0 if total_species == 0 else int((float(discovered_species) / float(total_species)) * 100.0)
 	if prog_label != null:
-		prog_label.text = "Descobertas: %d / %d (%d%%)" % [discovered_species, total_species, pct]
+		prog_label.text = tr("HERBARIUM_PROGRESS_FMT") % [discovered_species, total_species, pct]
 
 	if progress_bar != null:
 		progress_bar.max_value = float(total_species)
 		progress_bar.value = float(discovered_species)
 
 	if chip_harvest_label != null:
-		chip_harvest_label.text = "Ceifados: %s" % _format_number(total_harvest)
+		chip_harvest_label.text = tr("HERBARIUM_CHIP_HARVEST_FMT") % _format_number(total_harvest)
 	if chip_milestones_label != null:
-		chip_milestones_label.text = "Marcos: %d / %d" % [total_milestones_claimed, total_species * 10]
+		chip_milestones_label.text = tr("HERBARIUM_CHIP_MILESTONES_FMT") % [total_milestones_claimed, total_species * 10]
 
 	var claimable_count: int = _get_claimable_milestones_count(all_species)
 	if btn_claim_all != null:
 		btn_claim_all.visible = (claimable_count > 0)
-		btn_claim_all.text = "Coletar Tudo (%d)" % claimable_count
+		btn_claim_all.text = tr("HERBARIUM_CLAIM_ALL_FMT") % claimable_count
 
 	refresh_cards()
 
@@ -313,7 +320,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	var tag_lbl: Label = Label.new()
 	tag_lbl.set_anchors_preset(Control.PRESET_FULL_RECT)
-	tag_lbl.text = "✓ DESCOBERTA" if is_disc else "BLOQUEADO"
+	tag_lbl.text = tr("COLLECTION_TAG_DISC") if is_disc else tr("COLLECTION_TAG_LOCK")
 	tag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tag_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	tag_lbl.add_theme_font_size_override("font_size", 10)
@@ -327,7 +334,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	header_row.add_child(header_spacer)
 
 	var origin_badge: Label = Label.new()
-	origin_badge.text = "Fase %d+" % origin_lvl
+	origin_badge.text = tr("COLLECTION_ORIGIN_LVL") % origin_lvl
 	origin_badge.add_theme_font_size_override("font_size", 11)
 	origin_badge.add_theme_color_override("font_color", Color(0.45, 0.88, 1.0, 0.95) if is_disc else Color(0.60, 0.68, 0.78, 0.75))
 	origin_badge.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -345,13 +352,13 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	var attr_lbl: Label = Label.new()
 	attr_lbl.add_theme_font_size_override("font_size", 11)
 	if is_disc:
-		attr_lbl.text = "Resistência: %d %s • Recompensa: %d %s" % [
-			hits, "golpe" if hits == 1 else "golpes",
-			coins, "moeda" if coins == 1 else "moedas"
+		attr_lbl.text = tr("COLLECTION_ATTR_FMT") % [
+			hits, tr("COLLECTION_HITS_SINGULAR") if hits == 1 else tr("COLLECTION_HITS_PLURAL"),
+			coins, tr("COLLECTION_COINS_SINGULAR") if coins == 1 else tr("COLLECTION_COINS_PLURAL")
 		]
 		attr_lbl.add_theme_color_override("font_color", Color(0.68, 0.88, 1.0, 0.95))
 	else:
-		attr_lbl.text = "Resistência: ??? • Recompensa: ??? moedas • Bloqueado"
+		attr_lbl.text = tr("COLLECTION_ATTR_LOCKED")
 		attr_lbl.add_theme_color_override("font_color", Color(0.55, 0.62, 0.72, 0.80))
 	attr_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 	info_vbox.add_child(attr_lbl)
@@ -364,7 +371,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		desc_lbl.text = String(sp.get("desc", ""))
 		desc_lbl.add_theme_color_override("font_color", Color(0.76, 0.84, 0.92, 0.85))
 	else:
-		desc_lbl.text = "Espécie rara que habita a ilha a partir da Fase %d. Ceife-a para registrar no herbário!" % origin_lvl
+		desc_lbl.text = tr("COLLECTION_DESC_LOCKED") % origin_lvl
 		desc_lbl.add_theme_color_override("font_color", Color(0.52, 0.58, 0.68, 0.75))
 	desc_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 	info_vbox.add_child(desc_lbl)
@@ -377,7 +384,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		info_vbox.add_child(prog_hbox)
 
 		var count_lbl: Label = Label.new()
-		count_lbl.text = "Colhidos: %s" % _format_number(harvest_count)
+		count_lbl.text = tr("COLLECTION_HARVEST_COUNT_FMT") % _format_number(harvest_count)
 		count_lbl.add_theme_font_size_override("font_size", 11)
 		count_lbl.add_theme_color_override("font_color", Color(0.38, 0.95, 0.58, 1.0))
 		count_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -417,14 +424,14 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 				var prev_m: Dictionary = milestones[claimed_lvl - 1] as Dictionary
 				prev_target = int(prev_m.get("target", 0))
 
-			milestone_title_lbl.text = "Nv %d/10: %s (%d/%d)" % [claimed_lvl + 1, m_title, mini(harvest_count, target), target]
+			milestone_title_lbl.text = tr("COLLECTION_MILESTONE_PROG_FMT") % [claimed_lvl + 1, m_title, mini(harvest_count, target), target]
 			milestone_title_lbl.add_theme_color_override("font_color", Color(0.95, 0.88, 0.55, 0.95))
 
 			m_bar.min_value = float(prev_target)
 			m_bar.max_value = float(target)
 			m_bar.value = clampf(float(harvest_count), float(prev_target), float(target))
 		else:
-			milestone_title_lbl.text = "MESTRE MÁXIMO (10/10)"
+			milestone_title_lbl.text = tr("COLLECTION_MILESTONE_MAX")
 			milestone_title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.28, 1.0))
 			m_bar.min_value = 0.0
 			m_bar.max_value = 1.0
@@ -439,7 +446,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	if not is_disc:
 		var lock_lbl: Label = Label.new()
-		lock_lbl.text = "BLOQUEADO\nFase %d+" % origin_lvl
+		lock_lbl.text = "%s\n%s" % [tr("COLLECTION_TAG_LOCK"), tr("COLLECTION_ORIGIN_LVL") % origin_lvl]
 		lock_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lock_lbl.add_theme_font_size_override("font_size", 11)
 		lock_lbl.add_theme_color_override("font_color", Color(0.62, 0.68, 0.76, 0.75))
@@ -452,7 +459,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 		if harvest_count >= target_req:
 			var claim_btn: Button = Button.new()
-			claim_btn.text = "COLETAR\n+%d Moedas" % coin_rew
+			claim_btn.text = tr("COLLECTION_CLAIM_BTN_FMT") % coin_rew
 			claim_btn.custom_minimum_size = Vector2(94, 54)
 			claim_btn.mouse_filter = Control.MOUSE_FILTER_PASS
 			claim_btn.add_theme_font_size_override("font_size", 12)
@@ -490,7 +497,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			badge_panel.add_theme_stylebox_override("panel", b_sb)
 
 			var badge: Label = Label.new()
-			badge.text = "Lv %d/10\n+%d Moedas" % [claimed_lvl + 1, coin_rew]
+			badge.text = tr("COLLECTION_BADGE_LOCKED_FMT") % [claimed_lvl + 1, coin_rew]
 			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			badge.add_theme_font_size_override("font_size", 11)
 			badge.add_theme_color_override("font_color", Color(0.75, 0.86, 0.96, 0.85))
@@ -499,7 +506,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			action_vbox.add_child(badge_panel)
 	else:
 		var max_lbl: Label = Label.new()
-		max_lbl.text = "COMPLETO\nMAX"
+		max_lbl.text = tr("COLLECTION_ACTION_COMPLETE")
 		max_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		max_lbl.add_theme_font_size_override("font_size", 11)
 		max_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.25, 1.0))

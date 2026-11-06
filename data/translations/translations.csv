@@ -6,6 +6,9 @@ NAV_STORE,Loja,Store,Tienda
 BTN_PLAY,JOGAR,PLAY,JUGAR
 BTN_LEVELS,FASES,LEVELS,NIVELES
 BTN_EDITOR,EDITOR,EDITOR,EDITOR
+BTN_BOT_FOCUS,BOT,BOT,BOT
+BTN_MENU,MENU,MENU,MENÚ
+BTN_REPEAT,REPETIR,RETRY,REPETIR
 SETTINGS_TITLE,CONFIGURAÇÕES,SETTINGS,CONFIGURACIÓN
 SETTINGS_AUDIO_SECTION,ÁUDIO E PREFERÊNCIAS,AUDIO & PREFERENCES,AUDIO Y PREFERENCIAS
 SETTINGS_GRAPHICS,Gráficos,Graphics,Gráficos
@@ -54,9 +57,86 @@ EXIT_MODAL_QUIT,SAIR DO JOGO,EXIT GAME,SALIR DEL JUEGO
 CARD_STARS,Estrelas,Stars,Estrellas
 CARD_LOCKED,Bloqueada,Locked,Bloqueada
 CARD_OBJECTIVES,Objetivos:,Objectives:,Objetivos:
+BIOME_TROPICAL_ISLAND,Ilha Tropical,Tropical Island,Isla Tropical
+MAP_COMING_SOON_TITLE,EM BREVE MAIS FASES,MORE LEVELS COMING SOON,MÁS NIVELES PRÓXIMAMENTE
+MAP_COMING_SOON_SUB,Novas ilhas a caminho...,New islands on the way...,Nuevas islas en camino...
 HERBARIUM_TITLE,HERBÁRIO,HERBARIUM,HERBARIO
+HERBARIUM_FULL_TITLE,Herbário da Ilha & Itens,Island Herbarium & Items,Herbario de la Isla & Ítems
+HERBARIUM_SUBTITLE,Catálogo botânico das espécies nativas descobertas,Botanical catalog of discovered native species,Catálogo botánico de especies nativas descubiertas
+HERBARIUM_PROGRESS_FMT,"Descobertas: %d / %d (%d%%)","Discovered: %d / %d (%d%%)","Descubiertas: %d / %d (%d%%)"
+HERBARIUM_CHIP_HARVEST_FMT,Ceifados: %s,Mowed: %s,Cortados: %s
+HERBARIUM_CHIP_MILESTONES_FMT,Marcos: %d / %d,Milestones: %d / %d,Hitos: %d / %d
+HERBARIUM_CLAIM_ALL_FMT,Coletar Tudo (%d),Claim All (%d),Recoger Todo (%d)
 HERBARIUM_UNIDENTIFIED,Espécie Não Identificada,Unidentified Species,Especie No Identificada
+COLLECTION_TAG_DISC,✓ DESCOBERTA,✓ DISCOVERED,✓ DESCUBIERTO
+COLLECTION_TAG_LOCK,BLOQUEADO,LOCKED,BLOQUEADO
+COLLECTION_ORIGIN_LVL,Fase %d+,Level %d+,Nivel %d+
+COLLECTION_ATTR_FMT,"Resistência: %d %s • Recompensa: %d %s","Durability: %d %s • Reward: %d %s","Resistencia: %d %s • Recompensa: %d %s"
+COLLECTION_HITS_SINGULAR,golpe,hit,golpe
+COLLECTION_HITS_PLURAL,golpes,hits,golpes
+COLLECTION_COINS_SINGULAR,moeda,coin,moneda
+COLLECTION_COINS_PLURAL,moedas,coins,monedas
+COLLECTION_ATTR_LOCKED,Resistência: ??? • Recompensa: ??? moedas • Bloqueado,Durability: ??? • Reward: ??? coins • Locked,Resistencia: ??? • Recompensa: ??? monedas • Bloqueado
+COLLECTION_DESC_LOCKED,"Espécie rara que habita a ilha a partir da Fase %d. Ceife-a para registrar no herbário!","Rare species inhabiting the island from Level %d. Cut it to record in the herbarium!","¡Especie rara que habita la isla a partir del Nivel %d. Córtala para registrarla en el herbario!"
+COLLECTION_HARVEST_COUNT_FMT,Colhidos: %s,Harvested: %s,Cosechados: %s
+COLLECTION_MILESTONE_PROG_FMT,"Nv %d/10: %s (%d/%d)","Lv %d/10: %s (%d/%d)","Nv %d/10: %s (%d/%d)"
+COLLECTION_MILESTONE_MAX,MESTRE MÁXIMO (10/10),GRAND MASTER (10/10),GRAN MAESTRO (10/10)
+COLLECTION_CLAIM_BTN_FMT,"COLETAR\n+%d Moedas","CLAIM\n+%d Coins","RECOGER\n+%d Monedas"
+COLLECTION_BADGE_LOCKED_FMT,"Nv %d/10\n+%d Moedas","Lv %d/10\n+%d Coins","Nv %d/10\n+%d Monedas"
+COLLECTION_ACTION_COMPLETE,"COMPLETO\nMAX","COMPLETE\nMAX","COMPLETO\nMÁX"
 GARAGE_TITLE,OFICINA,WORKSHOP,TALLER
+GARAGE_TITLE_HEADER,Oficina do Bot,Bot Workshop,Taller del Bot
+GARAGE_BANNER_EQUIPPED,ROTOR DE CORTE EQUIPADO,EQUIPPED CUTTING ROTOR,ROTOR DE CORTE EQUIPADO
+GARAGE_TIER_FMT,"Lâmina Atual: %s (Tier %d)","Current Blade: %s (Tier %d)","Cuchilla Actual: %s (Tier %d)"
+GARAGE_TIER_MAX_FMT,"Lâmina Atual: %s (Tier %d - MAX)","Current Blade: %s (Tier %d - MÁX)","Cuchilla Actual: %s (Tier %d - MÁX)"
+BLADE_TIER_1,Lâmina Estelar Tripla,Triple Star Blade,Cuchilla Estelar Triple
+BLADE_TIER_2,Lâmina Estelar Quádrupla,Quad Star Blade,Cuchilla Estelar Cuádruple
+BLADE_TIER_3,Lâmina Estelar de Titânio,Titanium Star Blade,Cuchilla Estelar de Titanio
+BLADE_TIER_4,Lâmina Estelar Hexagonal,Hexagonal Star Blade,Cuchilla Estelar Hexagonal
+BLADE_TIER_DEFAULT,Lâmina Básica,Basic Blade,Cuchilla Básica
+GARAGE_COINS_FMT,%d Moedas,%d Coins,%d Monedas
+GARAGE_BLADE_UPGRADE_TITLE,Upgrade da Lâmina,Blade Upgrade,Mejora de Cuchilla
+GARAGE_STATS_NEXT_FMT,"Nível %d -> %d • Raio: %.2fm • Vel: %.2fm/s","Level %d -> %d • Radius: %.2fm • Spd: %.2fm/s","Nivel %d -> %d • Radio: %.2fm • Vel: %.2fm/s"
+GARAGE_STATS_INGAME_FMT,"Nível %d • Raio: %.2fm • Vel: %.2fm/s\n(Próximo nível somente por corte na partida)","Level %d • Radius: %.2fm • Spd: %.2fm/s\n(Next level only via in-match mowing)","Nivel %d • Radio: %.2fm • Vel: %.2fm/s\n(Siguiente nivel solo cortando en partida)"
+GARAGE_STATS_MAX_FMT,"Nível MAX (6) • Raio: %.2fm • Vel: %.2fm/s","MAX Level (6) • Radius: %.2fm • Spd: %.2fm/s","Nivel MÁX (6) • Radio: %.2fm • Vel: %.2fm/s"
+GARAGE_BTN_STORE_MAX,MÁX LOJA,SHOP MAX,MÁX TIENDA
+GARAGE_TIP,"Dica: A lâmina também sobe de nível durante a partida cortando vegetação (até o Nível 6 MAX). Bater em pedras reduz o nível!","Tip: The blade also levels up during the match by cutting plants (up to Level 6 MAX). Hitting rocks lowers its level!","Consejo: La cuchilla también sube de nivel durante la partida cortando vegetación (hasta Nivel 6 MÁX). ¡Chocar con rocas reduce el nivel!"
+STORE_TITLE,Loja do Arquipélago,Archipelago Shop,Tienda del Archipiélago
+STORE_WELCOME_HEADER,Pacote de Boas-Vindas Grátis!,Free Welcome Pack!,¡Paquete de Bienvenida Gratis!
+STORE_WELCOME_DESC,Colete 250 moedas para turbinar sua primeira lâmina na oficina!,Collect 250 coins to power up your first blade in the workshop!,¡Consigue 250 monedas para mejorar tu primera cuchilla en el taller!
+STORE_CLAIM_FREE,RESGATAR GRÁTIS,CLAIM FREE,CANJEAR GRATIS
+STORE_CLAIMED,COLETADO,CLAIMED,RECOGIDO
+STORE_COIN_PACKS_SECTION,Pacotes de Moedas Verdes,Green Coin Packs,Paquetes de Monedas Verdes
+STORE_PACK_BAG_TITLE,"Bolsa de Moedas (1.000 Moedas)","Coin Pouch (1,000 Coins)","Bolsa de Monedas (1.000 Monedas)"
+STORE_PACK_CHEST_TITLE,"Baú de Moedas (5.000 Moedas)","Coin Chest (5,000 Coins)","Cofre de Monedas (5.000 Monedas)"
+STORE_COMING_SOON,Em breve,Coming Soon,Próximamente
+BLADE_LEVEL_MAX,NÍVEL MÁXIMO,MAX LEVEL,NIVEL MÁXIMO
+BLADE_LEVEL_FMT,NÍVEL %d,LEVEL %d,NIVEL %d
+WORKSHOP_TITLE,Oficina de Upgrades,Upgrade Workshop,Taller de Mejoras
+WORKSHOP_COINS_FMT,Suas Moedas: %d,Your Coins: %d,Tus Monedas: %d
+WORKSHOP_COINS_BLADE_FMT,"Suas Moedas: %d\nLâmina: %s","Your Coins: %d\nBlade: %s","Tus Monedas: %d\nCuchilla: %s"
+WORKSHOP_BACK_TO_GAME,Voltar ao Jogo,Return to Game,Volver al Juego
+UPGRADE_BLADE_POWER,Potência e Fio,Power & Sharpness,Potencia y Filo
+UPGRADE_COIN_MULTIPLIER,Multiplicador de Moedas,Coin Multiplier,Multiplicador de Monedas
+UPGRADE_ITEM_LVL_FMT,%s (Nv. %d),%s (Lv. %d),%s (Nv. %d)
+TOAST_QUALITY_PERFORMANCE,Qualidade 3D: Econômica (70% FSR - Bateria),3D Quality: Performance (70% FSR - Battery),Calidad 3D: Rendimiento (70% FSR - Batería)
+TOAST_QUALITY_HIGH,Qualidade 3D: Alta (100% Nativa),3D Quality: High (100% Native),Calidad 3D: Alta (100% Nativa)
+TOAST_QUALITY_BALANCED,Qualidade 3D: Balanceada (85% FSR),3D Quality: Balanced (85% FSR),Calidad 3D: Equilibrada (85% FSR)
+TOAST_MUSIC_ON,Música Ativada,Music Enabled,Música Activada
+TOAST_MUSIC_OFF,Música Desativada,Music Disabled,Música Desactivada
+TOAST_SFX_ON,Som FX Ativado,Sound FX Enabled,Efectos FX Activados
+TOAST_SFX_OFF,Som FX Desativado,Sound FX Disabled,Efectos FX Desactivados
+TOAST_VIB_ON,Vibração Ativada!,Vibration Enabled!,¡Vibración Activada!
+TOAST_VIB_OFF,Vibração Desativada,Vibration Disabled,Vibración Desactivada
+TOAST_VIB_SYSTEM_HINT,Ative 'Retorno Tátil' nas configurações do celular!,Enable 'Haptic Feedback' in phone settings!,¡Activa 'Respuesta Háptica' en ajustes del teléfono!
+TOAST_VIB_SYSTEM_ON,Retorno Tátil ativado! Vibração ON,Haptic Feedback enabled! Vibration ON,¡Respuesta Háptica activada! Vibración ON
+TOAST_VIB_SYSTEM_OFF,Retorno Tátil permanece desligado no celular,Haptic Feedback remains off on device,La Respuesta Háptica sigue desactivada en el teléfono
+TOAST_ANDROID_ONLY,Disponível apenas no dispositivo Android,Available only on Android devices,Disponible solo en dispositivos Android
+TOAST_SAVE_ERROR,Erro ao gravar dados no armazenamento.,Error saving data to storage.,Error al guardar datos en el almacenamiento.
+TOAST_COMING_SOON_GPLAY,Google Play Games: Em breve!,Google Play Games: Coming soon!,¡Google Play Games: Próximamente!
+TOAST_COMING_SOON_FB,Facebook Connect: Em breve!,Facebook Connect: Coming soon!,¡Facebook Connect: Próximamente!
+TOAST_SUPPORT_OPENING,Abrindo suporte ao jogador...,Opening player support...,Abriendo soporte al jugador...
+TOAST_BENCHMARK_TAPS,"Benchmark Fase 20: mais %d toque(s)...","Benchmark Level 20: %d more tap(s)...","Benchmark Nivel 20: %d toque(s) más..."
 PLANT_GRASS_GREEN,Grama Verde Esmeralda,Emerald Green Grass,Césped Verde Esmeralda
 PLANT_GRASS_YELLOW,Grama Dourada Solar,Golden Sun Grass,Césped Dorado Solar
 PLANT_GRASS_RED,Grama Carmesim Vulcânica,Volcanic Crimson Grass,Césped Carmesí Volcánico

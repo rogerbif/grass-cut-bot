@@ -39,15 +39,23 @@ const CARD_H: float = 488.0
 var _font: SystemFont = null
 var _backdrop: ColorRect = null
 var _card_panel: PanelContainer = null
+var _title_lbl: Label = null
 var _subtitle_lbl: Label = null
+var _cut_prog_lbl: Label = null
 var _percent_lbl: Label = null
 var _progress_bar: TextureProgressBar = null
 var _goals_hbox: HBoxContainer = null
+var _retry_btn: Button = null
 var _extra_btn: Button = null
+var _menu_btn: Button = null
 
 var _fade_tween: Tween = null
 var _glow_tween: Tween = null
 var _is_closing: bool = false
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_retranslate_ui()
 
 
 func _ready() -> void:
@@ -173,9 +181,9 @@ func _build_ui() -> void:
 
 	header_hbox.add_child(_make_icon(TEX_ICON_STOPWATCH, Vector2(58.0, 58.0)))
 
-	var title_lbl: Label = _make_label(tr("HUD_DEFEAT_TITLE"), 28, COL_TITLE_RED)
-	title_lbl.add_theme_constant_override("line_spacing", -4)
-	header_hbox.add_child(title_lbl)
+	_title_lbl = _make_label(tr("HUD_DEFEAT_TITLE"), 28, COL_TITLE_RED)
+	_title_lbl.add_theme_constant_override("line_spacing", -4)
+	header_hbox.add_child(_title_lbl)
 
 	header_hbox.add_child(_make_icon(TEX_ICON_ALERT, Vector2(38.0, 38.0)))
 
@@ -209,7 +217,8 @@ func _build_ui() -> void:
 	prog_title_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	prog_title_hbox.add_theme_constant_override("separation", 6)
 	prog_vbox.add_child(prog_title_hbox)
-	prog_title_hbox.add_child(_make_label(tr("DEFEAT_CUT_PROGRESS"), 16, COL_WHITE))
+	_cut_prog_lbl = _make_label(tr("DEFEAT_CUT_PROGRESS"), 16, COL_WHITE)
+	prog_title_hbox.add_child(_cut_prog_lbl)
 	_percent_lbl = _make_label("0%", 17, COL_PERCENT)
 	prog_title_hbox.add_child(_percent_lbl)
 
@@ -223,17 +232,17 @@ func _build_ui() -> void:
 	prog_vbox.add_child(_goals_hbox)
 
 	# 4. Botões de ação
-	var retry_btn: Button = _make_action_button(tr("HUD_RETRY"), TEX_ICON_RETRY, TEX_BTN_RETRY_N, TEX_BTN_RETRY_P, 22)
-	retry_btn.pressed.connect(_on_retry_pressed)
-	main_vbox.add_child(retry_btn)
+	_retry_btn = _make_action_button(tr("HUD_RETRY"), TEX_ICON_RETRY, TEX_BTN_RETRY_N, TEX_BTN_RETRY_P, 22)
+	_retry_btn.pressed.connect(_on_retry_pressed)
+	main_vbox.add_child(_retry_btn)
 
 	_extra_btn = _make_action_button(tr("DEFEAT_BTN_EXTRA_TIME"), TEX_ICON_TV, TEX_BTN_EXTRA_N, TEX_BTN_EXTRA_P, 20)
 	_extra_btn.pressed.connect(_on_extra_pressed)
 	main_vbox.add_child(_extra_btn)
 
-	var menu_btn: Button = _make_action_button(tr("HUD_MAIN_MENU"), TEX_ICON_HOME, TEX_BTN_MENU_N, TEX_BTN_MENU_P, 22)
-	menu_btn.pressed.connect(_on_menu_pressed)
-	main_vbox.add_child(menu_btn)
+	_menu_btn = _make_action_button(tr("HUD_MAIN_MENU"), TEX_ICON_HOME, TEX_BTN_MENU_N, TEX_BTN_MENU_P, 22)
+	_menu_btn.pressed.connect(_on_menu_pressed)
+	main_vbox.add_child(_menu_btn)
 
 
 func _make_progress_bar() -> TextureProgressBar:
@@ -305,8 +314,24 @@ func _make_action_button(txt: String, icon_tex: Texture2D, tex_n: Texture2D, tex
 	var btn_icon: TextureRect = _make_icon(icon_tex, Vector2(26.0, 26.0))
 	btn_icon.modulate = icon_tint
 	hbox.add_child(btn_icon)
-	hbox.add_child(_make_label(txt, font_size, COL_WHITE))
+	var lbl: Label = _make_label(txt, font_size, COL_WHITE)
+	hbox.add_child(lbl)
+	btn.set_meta("label", lbl)
 	return btn
+
+func _retranslate_ui() -> void:
+	if _title_lbl != null:
+		_title_lbl.text = tr("HUD_DEFEAT_TITLE")
+	if _cut_prog_lbl != null:
+		_cut_prog_lbl.text = tr("DEFEAT_CUT_PROGRESS")
+	if _retry_btn != null and _retry_btn.has_meta("label"):
+		(_retry_btn.get_meta("label") as Label).text = tr("HUD_RETRY")
+	if _extra_btn != null and _extra_btn.has_meta("label"):
+		(_extra_btn.get_meta("label") as Label).text = tr("DEFEAT_BTN_EXTRA_TIME")
+	if _menu_btn != null and _menu_btn.has_meta("label"):
+		(_menu_btn.get_meta("label") as Label).text = tr("HUD_MAIN_MENU")
+	if _subtitle_lbl != null and visible:
+		_subtitle_lbl.text = tr("DEFEAT_SUBTITLE_CLOSE") if (_progress_bar != null and _progress_bar.value >= NEAR_WIN_THRESHOLD * 100.0) else tr("DEFEAT_SUBTITLE_TRY_AGAIN")
 
 
 func _make_btn_style(tex: Texture2D) -> StyleBoxTexture:

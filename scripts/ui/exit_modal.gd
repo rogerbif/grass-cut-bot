@@ -28,11 +28,17 @@ var _font: SystemFont = null
 var _backdrop: ColorRect = null
 var _card_panel: PanelContainer = null
 var _close_x_btn: TextureButton = null
+var _title_lbl: Label = null
+var _body_lbl: Label = null
 var _resume_btn: Button = null
 var _quit_btn: Button = null
 
 var _fade_tween: Tween = null
 var _is_closing: bool = false
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_retranslate_ui()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -161,9 +167,9 @@ func _build_ui() -> void:
 	alert_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header_hbox.add_child(alert_icon)
 
-	var title_lbl: Label = _make_label(tr("EXIT_MODAL_TITLE"), 26, COL_CYAN_TITLE)
-	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header_hbox.add_child(title_lbl)
+	_title_lbl = _make_label(tr("EXIT_MODAL_TITLE"), 26, COL_CYAN_TITLE)
+	_title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_hbox.add_child(_title_lbl)
 
 	_close_x_btn = TextureButton.new()
 	_close_x_btn.texture_normal = TEX_ICON_CLOSE_X
@@ -175,18 +181,18 @@ func _build_ui() -> void:
 	header_hbox.add_child(_close_x_btn)
 
 	# 2. Mensagem Explicativa de Progresso Salvo
-	var body_lbl: Label = Label.new()
-	body_lbl.text = tr("EXIT_MODAL_MSG")
-	body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	body_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body_lbl.add_theme_font_override("font", _font)
-	body_lbl.add_theme_font_size_override("font_size", 17)
-	body_lbl.add_theme_color_override("font_color", COL_SUBTITLE)
-	body_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
-	body_lbl.add_theme_constant_override("shadow_offset_y", 1)
-	main_vbox.add_child(body_lbl)
+	_body_lbl = Label.new()
+	_body_lbl.text = tr("EXIT_MODAL_MSG")
+	_body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_body_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_body_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_body_lbl.add_theme_font_override("font", _font)
+	_body_lbl.add_theme_font_size_override("font_size", 17)
+	_body_lbl.add_theme_color_override("font_color", COL_SUBTITLE)
+	_body_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
+	_body_lbl.add_theme_constant_override("shadow_offset_y", 1)
+	main_vbox.add_child(_body_lbl)
 
 	# Espaçador sutil
 	var spacer: Control = Control.new()
@@ -251,8 +257,19 @@ func _make_action_button(txt: String, icon_tex: Texture2D, icon_sz: Vector2, tex
 	var lbl: Label = _make_label(txt, 20, COL_WHITE)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hbox.add_child(lbl)
+	btn.set_meta("label", lbl)
 
 	return btn
+
+func _retranslate_ui() -> void:
+	if _title_lbl != null:
+		_title_lbl.text = tr("EXIT_MODAL_TITLE")
+	if _body_lbl != null:
+		_body_lbl.text = tr("EXIT_MODAL_MSG")
+	if _resume_btn != null and _resume_btn.has_meta("label"):
+		(_resume_btn.get_meta("label") as Label).text = tr("EXIT_MODAL_CONTINUE")
+	if _quit_btn != null and _quit_btn.has_meta("label"):
+		(_quit_btn.get_meta("label") as Label).text = tr("EXIT_MODAL_QUIT")
 
 func _make_label(txt: String, font_size: int, color: Color) -> Label:
 	var lbl: Label = Label.new()

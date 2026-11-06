@@ -165,7 +165,7 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
   - `[ PT ]`: Português do Brasil (`pt_BR`).
   - `[ EN ]`: Inglês (`en`).
   - `[ ES ]`: Espanhol (`es`).
-- **Reatividade Dinâmica:** Ao alternar de idioma, o `SaveManager` persiste a preferência e sincroniza o `TranslationServer`. A engine emite `NOTIFICATION_TRANSLATION_CHANGED`, atualizando instantaneamente sem reload todos os textos do modal, toasts, botões da navbar, cartões de fase, herbário e modais ingame.
+- **Reatividade Dinâmica:** Ao alternar de idioma, o `SaveManager` persiste a preferência e sincroniza o `TranslationServer`. A engine emite `NOTIFICATION_TRANSLATION_CHANGED`, atualizando instantaneamente sem reload todos os textos do menu principal (todas as 4 abas: Início, Oficina, Herbário e Loja), toasts, botões da navbar, cartões de fase, placa 3D de arquipélago, barra da serra (Nível Máximo), oficina in-game e modais de vitória, derrota, pausa e saída.
 - **Seção Save Progress & Reset:** Salvamento manual local, conectores para Google Play Games / Facebook e botão de confirmação com segurança de duplo toque para reset geral de progresso.
 
 ---

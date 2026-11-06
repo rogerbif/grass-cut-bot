@@ -163,11 +163,11 @@ func get_blade_tier() -> int:
 
 func get_blade_tier_name() -> String:
 	match get_blade_tier():
-		1: return "Lâmina Estelar Tripla"
-		2: return "Lâmina Estelar Quádrupla"
-		3: return "Lâmina Estelar de Titânio"
-		4: return "Lâmina Estelar Hexagonal"
-	return "Lâmina Básica"
+		1: return tr("BLADE_TIER_1")
+		2: return tr("BLADE_TIER_2")
+		3: return tr("BLADE_TIER_3")
+		4: return tr("BLADE_TIER_4")
+	return tr("BLADE_TIER_DEFAULT")
 
 # Loja / Garagem: Compra de Nível até Nível 5
 func get_blade_upgrade_cost() -> int:
