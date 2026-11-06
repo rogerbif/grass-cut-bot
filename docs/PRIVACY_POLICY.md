@@ -1,18 +1,18 @@
 # Política de Privacidade / Privacy Policy
 
 **Última atualização / Last updated:** 06 de Novembro de 2026 / November 06, 2026  
-**Aplicativo / Application:** Grass Cut Bot: Ilhas 3D (`com.bifgames.grasscutbot`)  
+**Aplicativo / Application:** Grass Cut Bot (`com.bifgames.grasscutbot`)  
 **Desenvolvedor / Developer:** Bif Games  
-**Contato / Contact:** contato@bifgames.com (ou suporte via repositório oficial no GitHub)
+**Contato / Contact:** rogerbif@gmail.com
 
 ---
 
 ## 🇧🇷 Versão em Português
 
-A sua privacidade é fundamental para nós. Esta Política de Privacidade descreve como o aplicativo **Grass Cut Bot: Ilhas 3D** lida com as suas informações ao utilizar o jogo em dispositivos móveis Android.
+A sua privacidade é fundamental para nós. Esta Política de Privacidade descreve como o aplicativo **Grass Cut Bot** lida com as suas informações ao utilizar o jogo em dispositivos móveis Android.
 
 ### 1. Coleta e Uso de Informações
-O jogo **Grass Cut Bot: Ilhas 3D** foi desenvolvido para ser jogado de forma autônoma e offline.
+O jogo **Grass Cut Bot** foi desenvolvido para ser jogado de forma autônoma e offline.
 * **Nenhum Dado Pessoal Coletado:** Nós **NÃO** coletamos, armazenamos, transmitimos, vendemos ou compartilhamos nenhum dado de identificação pessoal (como nome, endereço de e-mail, telefone, localização geográfica, fotos, contatos ou identificadores biométricos).
 * **Armazenamento Estritamente Local:** Todo o seu progresso no jogo (fases concluídas, moedas, melhorias da lâmina e registros do herbário de plantas) é armazenado **exclusivamente de forma local** na memória do seu próprio aparelho celular (`user://savegame.json`). Caso você desinstale o aplicativo ou limpe o armazenamento nas configurações do sistema, esses dados locais serão apagados pelo próprio sistema operacional Android.
 
@@ -26,7 +26,7 @@ O aplicativo solicita apenas os recursos estritamente necessários para o funcio
 * Os serviços da plataforma **Google Play Services** podem coletar relatórios de erros agregados e anônimos (crash reports) gerenciados diretamente pelo sistema operacional Android, conforme os próprios [Termos de Serviço da Google](https://policies.google.com/privacy).
 
 ### 4. Privacidade de Crianças (COPPA e LGPD)
-O **Grass Cut Bot: Ilhas 3D** é um jogo casual para todas as idades (Classificação Livre / Everyone). Não coletamos intencionalmente informações de crianças nem exigimos login ou fornecimento de idade para jogar.
+O **Grass Cut Bot** é um jogo casual para todas as idades (Classificação Livre / Everyone). Não coletamos intencionalmente informações de crianças nem exigimos login ou fornecimento de idade para jogar.
 
 ### 5. Alterações nesta Política
 Reservamo-nos o direito de atualizar esta Política de Privacidade caso novos recursos (como placares online ou salvamento em nuvem) sejam implementados em versões futuras. Qualquer modificação será comunicada por meio de notas de atualização do aplicativo e atualização deste documento.
@@ -35,10 +35,10 @@ Reservamo-nos o direito de atualizar esta Política de Privacidade caso novos re
 
 ## 🇺🇸 English Version
 
-Your privacy is paramount to us. This Privacy Policy outlines how **Grass Cut Bot: 3D Islands** handles your information when you use our mobile application on Android devices.
+Your privacy is paramount to us. This Privacy Policy outlines how **Grass Cut Bot** handles your information when you use our mobile application on Android devices.
 
 ### 1. Information Collection and Use
-**Grass Cut Bot: 3D Islands** is designed as a standalone, offline-friendly arcade game.
+**Grass Cut Bot** is designed as a standalone, offline-friendly arcade game.
 * **No Personal Data Collected:** We do **NOT** collect, store, transmit, sell, or share any personally identifiable information (such as your name, email address, phone number, location, photos, contacts, or biometric identifiers).
 * **Strictly Local Storage:** All game progression (unlocked levels, coins, blade upgrades, and herbarium collection data) is stored **strictly locally** on your device's internal storage (`user://savegame.json`). If you uninstall the app or clear app data via system settings, this local save file is removed by the Android operating system.
 
@@ -52,7 +52,7 @@ The game only requires device features essential for gameplay and tactile sensor
 * Standard anonymized system crash reports and download statistics may be handled directly by Google Play Console according to [Google's Privacy Policy](https://policies.google.com/privacy).
 
 ### 4. Children’s Privacy (COPPA & GDPR Compliance)
-**Grass Cut Bot: 3D Islands** is a family-friendly game suitable for all ages (Content Rating: Everyone). We do not knowingly solicit or collect personal information from children under the age of 13 (or under 16 in the European Union).
+**Grass Cut Bot** is a family-friendly game suitable for all ages (Content Rating: Everyone). We do not knowingly solicit or collect personal information from children under the age of 13 (or under 16 in the European Union).
 
 ### 5. Changes to This Privacy Policy
 We may update our Privacy Policy periodically if new features (such as cloud saves or online achievements) are added. Any changes will be posted on this page with an updated revision date.
@@ -60,6 +60,5 @@ We may update our Privacy Policy periodically if new features (such as cloud sav
 ---
 
 ### Contato / Contact
-Se você tiver qualquer dúvida sobre esta política, sinta-se à vontade para nos contatar / If you have questions regarding this policy, feel free to reach out:
-* **E-mail:** contato@bifgames.com
-* **GitHub Repository:** [https://github.com/rogerbif/grass-cut-bot](https://github.com/rogerbif/grass-cut-bot)
+Se você tiver qualquer dúvida sobre esta política, entre em contato através do e-mail / If you have questions regarding this policy, please contact us at:
+* **E-mail:** rogerbif@gmail.com

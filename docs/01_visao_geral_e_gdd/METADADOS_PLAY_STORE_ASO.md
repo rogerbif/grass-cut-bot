@@ -1,8 +1,9 @@
 # Metadados da Google Play Store & Otimização ASO (App Store Optimization)
 
-**Projeto:** Grass Cut Bot: Ilhas 3D  
+**Projeto:** Grass Cut Bot  
 **Identificador de Pacote (Package Name):** `com.bifgames.grasscutbot`  
 **Desenvolvedor:** Bif Games  
+**Contato:** rogerbif@gmail.com  
 **Categoria Principal:** Jogos > Casual / Arcade  
 **Público-Alvo e Conteúdo:** Classificação Livre (Everyone / IARC 3+)  
 **Modelo de Monetização:** Gratuito (Free-to-Play, sem anúncios invasivos, offline)
@@ -12,8 +13,8 @@
 ## 🇧🇷 Ficha da Loja: Português (Brasil)
 
 ### 1. Nome do Aplicativo (App Title)
-> **Grass Cut Bot: Ilhas 3D**  
-*(25 de 30 caracteres)*
+> **Grass Cut Bot**  
+*(14 de 30 caracteres)*
 
 ---
 
@@ -25,7 +26,7 @@
 
 ### 3. Descrição Completa (Full Description)
 ```text
-🌿🤖 BEM-VINDO AO GRASS CUT BOT: ILHAS 3D!
+🌿🤖 BEM-VINDO AO GRASS CUT BOT!
 
 Assuma o controle de um robô cortador ágil e encare uma jornada arcade relaxante e altamente satisfatória sobre arquipélagos flutuantes no meio do oceano! 
 
@@ -64,15 +65,15 @@ Sem necessidade de internet! Jogue em qualquer lugar, no transporte, em viagens 
 
 Ligue os motores da lâmina, explore cada canto do arquipélago e torne-se o mestre da ceifa em Grass Cut Bot!
 ```
-*(Aprox. 2.450 de 4.000 caracteres)*
+*(Aprox. 2.440 de 4.000 caracteres)*
 
 ---
 
 ## 🇺🇸 Store Listing: English (US / Global)
 
 ### 1. App Title
-> **Grass Cut Bot: 3D Islands**  
-*(25 of 30 characters)*
+> **Grass Cut Bot**  
+*(14 of 30 characters)*
 
 ---
 
@@ -84,7 +85,7 @@ Ligue os motores da lâmina, explore cada canto do arquipélago e torne-se o mes
 
 ### 3. Full Description
 ```text
-🌿🤖 WELCOME TO GRASS CUT BOT: 3D ISLANDS!
+🌿🤖 WELCOME TO GRASS CUT BOT!
 
 Take control of an agile cutter robot and embark on a relaxing, satisfying arcade harvesting journey across floating ocean archipelagos!
 
@@ -123,7 +124,7 @@ No Wi-Fi or internet connection required! Enjoy instant loading and smooth 60 FP
 
 Spin up your blade, explore the archipelago, and master the art of lawn mowing in Grass Cut Bot!
 ```
-*(Approx. 2.300 of 4.000 characters)*
+*(Approx. 2.290 of 4.000 characters)*
 
 ---
 
