@@ -41,7 +41,9 @@ Para prevenir perda ou corrupção de dados caso o jogo feche inesperadamente ou
   "settings": {
     "music_enabled": true,
     "sfx_enabled": true,
-    "vib_enabled": true
+    "vib_enabled": true,
+    "graphics_quality": "balanced",
+    "locale": "pt_BR"
   },
   "player": {
     "total_coins": 5970,
@@ -105,3 +107,13 @@ As estrelas conquistadas são salvas persistentemente e renderizadas nos pinos d
 
 O `SaveManager` expõe o método `reset_save()` que apaga os registros persistentes, restaura as preferências padrão e notifica todos os subsistemas (`save_reset.emit()`).
 Na interface de Configurações (`SettingsModal`), o reset exige dupla confirmação para prevenir apagamento acidental.
+
+---
+
+## 6. Gerenciamento e Detecção de Idioma (i18n)
+
+O `SaveManager` atua como fonte central da internacionalização do jogo:
+- `get_locale() -> String`: Retorna o locale salvo. Se for vazio (primeira execução), invoca `detect_default_locale()` e salva a preferência.
+- `detect_default_locale() -> String`: Detecta o idioma do sistema via `OS.get_locale_language()` mapeando `"pt"` para `"pt_BR"`, `"es"` para `"es"` e demais para `"en"` (fallback universal).
+- `set_locale(new_locale: String) -> void`: Grava a preferência em `settings.locale` e aplica instantaneamente via `TranslationServer.set_locale(new_locale)`.
+- `apply_saved_locale() -> void`: Executado no `_ready()` e ao carregar saves, garantindo paridade linguística desde o primeiro frame da engine.

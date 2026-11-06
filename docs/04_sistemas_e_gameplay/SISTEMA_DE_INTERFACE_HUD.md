@@ -158,10 +158,15 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
     - `Collection` 🌿: Herbário ilustrado com as espécies da ilha (Grama Verde, Amarela, Azul, Roxa, Trigo e Flores Nobres).
     - `Store` 🏪: Loja de pacotes de moedas e resgate de recompensas diárias.
 
-### 3.4 Modal de Configurações (`SettingsModal`)
-- Cobre ~85% da tela com fundo translúcido escuro.
-- Toggles independentes: Música, Som FX e Vibração Háptica.
-- Seção *Save Progress* e suporte ao jogador.
+### 3.4 Modal de Configurações (`SettingsModal`) & Sistema Multilinguagem
+- **Layout Responsivo Cyber:** Painel modal cobrindo ~85% da tela com fundo translúcido escuro, moldura chanfrada neon e fechamento tátil pelo botão [X] ou toque no backdrop.
+- **Preferências de Áudio e Feedback:** Toggles independentes para Música, Sons (FX) e Vibração Háptica (com detecção do sistema operacional para retorno tátil em dispositivos Android).
+- **Seletor Visual de Idiomas (i18n):** Linha de controle com ícone vetorial de globo (`icon_globe.svg`) e 3 botões segmentados Cyber:
+  - `[ PT ]`: Português do Brasil (`pt_BR`).
+  - `[ EN ]`: Inglês (`en`).
+  - `[ ES ]`: Espanhol (`es`).
+- **Reatividade Dinâmica:** Ao alternar de idioma, o `SaveManager` persiste a preferência e sincroniza o `TranslationServer`. A engine emite `NOTIFICATION_TRANSLATION_CHANGED`, atualizando instantaneamente sem reload todos os textos do modal, toasts, botões da navbar, cartões de fase, herbário e modais ingame.
+- **Seção Save Progress & Reset:** Salvamento manual local, conectores para Google Play Games / Facebook e botão de confirmação com segurança de duplo toque para reset geral de progresso.
 
 ---
 

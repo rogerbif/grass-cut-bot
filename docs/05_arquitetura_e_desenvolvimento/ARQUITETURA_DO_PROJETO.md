@@ -39,7 +39,8 @@ grass-cut-bot/
 │   ├── MELHORIAS_FUTURAS.md   # Roadmap de novidades e Bot Arquiteto Mobile
 │   └── PROJETO_GRASS_CUT_BOT.md # Hub mestre dos 5 Pilares
 ├── data/                      # Dados serializados do jogo
-│   └── levels/                # Fases em formato JSON v3 (level_01.json a level_20.json)
+│   ├── levels/                # Fases em formato JSON v3 (level_01.json a level_20.json)
+│   └── translations/          # Tabela canônica de i18n (translations.csv -> *.translation)
 ├── scenes/                    # Cenas montadas (.tscn)
 │   ├── cutter/                # Cortador robótico (cutter.tscn)
 │   ├── editor/                # Editor de Fases PC Fullscreen e kit de tiles 3D de ilha
@@ -94,7 +95,7 @@ Configuradas em `project.godot` sob `[layer_names]`:
 1. **`SaveManager` (`res://scripts/core/save_manager.gd`):**
    - Camada mestre de persistência em disco (`user://savegame.json`) com escrita atômica e backup (`savegame.bak`).
    - Gerenciamento de fases liberadas, histórico de recordes e avaliação de 1 a 3 estrelas (Star Rating).
-   - Persistência e restauração de moedas, níveis de melhoria e preferências de áudio/vibração.
+   - Persistência e restauração de moedas, níveis de melhoria, preferências de áudio/vibração e idioma ativo (i18n).
 2. **`GameManager` (`res://scripts/core/game_manager.gd`):**
    - Estado global da partida (`READY`, `PLAYING`, `PAUSED`, `VICTORY`, `GAME_OVER`).
    - Gerenciamento de tempo decrescente e contagem de metas.
