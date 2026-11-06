@@ -26,7 +26,17 @@ func _ready() -> void:
 	assert(save_mgr.get_setting("vib_enabled", true) == false, "Configuração de vibração deve persistir false")
 	save_mgr.set_setting("vib_enabled", true)
 	assert(save_mgr.get_setting("vib_enabled", false) == true, "Configuração de vibração deve persistir true")
-	print("✔ Teste 2: Configurações get/set validadas com sucesso.")
+	
+	# Teste de Locale / Idioma
+	var default_loc: String = save_mgr.get_locale()
+	assert(not default_loc.is_empty(), "Locale padrão não deve ser vazio")
+	save_mgr.set_locale("en")
+	assert(save_mgr.get_locale() == "en", "Locale deve persistir como 'en'")
+	assert(TranslationServer.get_locale() == "en", "TranslationServer deve sincronizar com 'en'")
+	save_mgr.set_locale("pt_BR")
+	assert(save_mgr.get_locale() == "pt_BR", "Locale deve persistir como 'pt_BR'")
+	assert(TranslationServer.get_locale() == "pt_BR", "TranslationServer deve sincronizar com 'pt_BR'")
+	print("✔ Teste 2: Configurações e Idioma get/set validados com sucesso.")
 
 	# 3. Teste de Cálculo de Estrelas e Registro de Vitória
 	# Cenário A: Conclusão com 55% do tempo restante -> 3 estrelas (>= 50%)

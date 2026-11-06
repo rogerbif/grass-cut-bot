@@ -352,6 +352,57 @@ text = "LIGADO"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="LanguageRow" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("21_icon_globe")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 21
+text = "Idioma"
+vertical_alignment = 1
+
+[node name="LangButtonsHBox" type="HBoxContainer" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow"]
+custom_minimum_size = Vector2(132, 42)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="BtnLangPT" type="Button" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow/LangButtonsHBox"]
+custom_minimum_size = Vector2(40, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 14
+text = "PT"
+
+[node name="BtnLangEN" type="Button" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow/LangButtonsHBox"]
+custom_minimum_size = Vector2(40, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 14
+text = "EN"
+
+[node name="BtnLangES" type="Button" parent="Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow/LangButtonsHBox"]
+custom_minimum_size = Vector2(40, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 14
+text = "ES"
+
 [node name="SaveSection" type="PanelContainer" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_section")

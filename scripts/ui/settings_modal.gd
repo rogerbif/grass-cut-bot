@@ -24,6 +24,23 @@ const TEX_TOGGLE_OFF: Texture2D = preload("res://assets/ui/settings/toggle_off.s
 @onready var close_btn: BaseButton = find_child("CloseBtn", true, false) as BaseButton
 @onready var toast_label: Label = find_child("ToastLabel", true, false) as Label
 
+@onready var btn_lang_pt: Button = find_child("BtnLangPT", true, false) as Button
+@onready var btn_lang_en: Button = find_child("BtnLangEN", true, false) as Button
+@onready var btn_lang_es: Button = find_child("BtnLangES", true, false) as Button
+
+# Nós para atualização dinâmica de tradução
+@onready var modal_title_label: Label = find_child("Title", true, false) as Label
+@onready var audio_section_label: Label = get_node_or_null("Panel/VBox/AudioSection/VBox/Label") as Label
+@onready var music_title_label: Label = get_node_or_null("Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/MusicRow/TitleLabel") as Label
+@onready var sfx_title_label: Label = get_node_or_null("Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/SfxRow/TitleLabel") as Label
+@onready var vib_title_label: Label = get_node_or_null("Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/VibRow/TitleLabel") as Label
+@onready var lang_title_label: Label = get_node_or_null("Panel/VBox/AudioSection/VBox/InnerCard/HBoxToggles/LanguageRow/TitleLabel") as Label
+@onready var save_section_label: Label = get_node_or_null("Panel/VBox/SaveSection/VBoxSave/Label") as Label
+@onready var save_local_label: Label = get_node_or_null("Panel/VBox/SaveSection/VBoxSave/SaveLocalBtn/HBox/Label") as Label
+@onready var google_label: Label = get_node_or_null("Panel/VBox/SaveSection/VBoxSave/GoogleBtn/HBox/Label") as Label
+@onready var fb_label: Label = get_node_or_null("Panel/VBox/SaveSection/VBoxSave/FacebookBtn/HBox/Label") as Label
+@onready var support_label: Label = get_node_or_null("Panel/VBox/SupportSection/SupportBtn/HBox/Label") as Label
+
 var graphics_quality: String = "balanced"
 var music_enabled: bool = true
 var sfx_enabled: bool = true
@@ -33,8 +50,13 @@ var _version_tap_count: int = 0
 var android_vib_hint_btn: Button = null
 var _waiting_for_android_haptic_toggle: bool = false
 var _is_closing: bool = false
+var _style_lang_active: StyleBoxFlat = null
+var _style_lang_inactive: StyleBoxFlat = null
 
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_update_all_localized_texts()
+		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
 		if OS.get_name() == "Android" or OS.has_feature("android"):
 			var system_haptic_on: bool = _is_android_haptic_feedback_enabled()
@@ -118,6 +140,18 @@ func _ready() -> void:
 		reset_btn.pressed.connect(_on_reset_pressed)
 	if support_btn != null:
 		support_btn.pressed.connect(_on_support_pressed)
+
+	if btn_lang_pt != null:
+		btn_lang_pt.pressed.connect(func() -> void: _set_language("pt_BR"))
+	if btn_lang_en != null:
+		btn_lang_en.pressed.connect(func() -> void: _set_language("en"))
+	if btn_lang_es != null:
+		btn_lang_es.pressed.connect(func() -> void: _set_language("es"))
+
+	_init_language_styles()
+	var current_loc: String = SaveManager.get_locale() if SaveManager != null else TranslationServer.get_locale()
+	_update_language_buttons(current_loc)
+	_update_all_localized_texts()
 
 func is_open() -> bool:
 	return visible and not _is_closing
@@ -228,7 +262,7 @@ func _apply_switch_state(btn: BaseButton, state_lbl: Label, is_on: bool) -> void
 		tb.texture_normal = TEX_TOGGLE_ON if is_on else TEX_TOGGLE_OFF
 		tb.texture_pressed = TEX_TOGGLE_ON if is_on else TEX_TOGGLE_OFF
 	if state_lbl != null:
-		state_lbl.text = "LIGADO" if is_on else "DESL."
+		state_lbl.text = tr("SETTINGS_ON") if is_on else tr("SETTINGS_OFF")
 		state_lbl.offset_left = 12.0 if is_on else 42.0
 		state_lbl.offset_right = -40.0 if is_on else -10.0
 		state_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0) if is_on else Color(0.62, 0.72, 0.85, 1.0))
@@ -291,32 +325,117 @@ func _on_save_local_pressed() -> void:
 	if SaveManager != null:
 		var ok: bool = SaveManager.save_game()
 		if ok:
-			_show_toast("Progresso salvo com sucesso no dispositivo!")
+			_show_toast(tr("SETTINGS_TOAST_SAVED"))
 		else:
 			_show_toast("Erro ao gravar dados no armazenamento.")
 	else:
-		_show_toast("Progresso salvo com sucesso no dispositivo!")
+		_show_toast(tr("SETTINGS_TOAST_SAVED"))
 
 func _on_reset_pressed() -> void:
 	if not _reset_confirmation_pending:
 		_reset_confirmation_pending = true
-		_show_toast("Clique novamente para confirmar o reset!")
+		_show_toast(tr("SETTINGS_RESET_CONFIRM"))
 		if reset_label != null:
-			reset_label.text = "Confirmar Reset Geral?"
+			reset_label.text = tr("SETTINGS_RESET_CONFIRM")
 		var tw: Tween = create_tween()
 		tw.tween_interval(4.0)
 		tw.tween_callback(func() -> void:
 			_reset_confirmation_pending = false
 			if reset_label != null:
-				reset_label.text = "Resetar Progresso"
+				reset_label.text = tr("SETTINGS_RESET")
 		)
 	else:
 		_reset_confirmation_pending = false
 		if reset_label != null:
-			reset_label.text = "Resetar Progresso"
+			reset_label.text = tr("SETTINGS_RESET")
 		if SaveManager != null:
 			SaveManager.reset_to_defaults()
-		_show_toast("Progresso reiniciado com sucesso!")
+		_show_toast(tr("SETTINGS_TOAST_RESET"))
+
+func _init_language_styles() -> void:
+	if _style_lang_active != null:
+		return
+	_style_lang_active = StyleBoxFlat.new()
+	_style_lang_active.bg_color = Color(0.08, 0.35, 0.28, 0.95)
+	_style_lang_active.border_color = Color(0.25, 0.95, 0.65, 1.0)
+	_style_lang_active.border_width_left = 2
+	_style_lang_active.border_width_top = 2
+	_style_lang_active.border_width_right = 2
+	_style_lang_active.border_width_bottom = 2
+	_style_lang_active.corner_radius_top_left = 6
+	_style_lang_active.corner_radius_top_right = 6
+	_style_lang_active.corner_radius_bottom_right = 6
+	_style_lang_active.corner_radius_bottom_left = 6
+
+	_style_lang_inactive = StyleBoxFlat.new()
+	_style_lang_inactive.bg_color = Color(0.06, 0.1, 0.16, 0.75)
+	_style_lang_inactive.border_color = Color(0.18, 0.26, 0.38, 0.8)
+	_style_lang_inactive.border_width_left = 1
+	_style_lang_inactive.border_width_top = 1
+	_style_lang_inactive.border_width_right = 1
+	_style_lang_inactive.border_width_bottom = 1
+	_style_lang_inactive.corner_radius_top_left = 6
+	_style_lang_inactive.corner_radius_top_right = 6
+	_style_lang_inactive.corner_radius_bottom_right = 6
+	_style_lang_inactive.corner_radius_bottom_left = 6
+
+func _apply_lang_button_style(btn: Button, is_active: bool) -> void:
+	if btn == null:
+		return
+	var style: StyleBoxFlat = _style_lang_active if is_active else _style_lang_inactive
+	btn.add_theme_stylebox_override("normal", style)
+	btn.add_theme_stylebox_override("hover", style)
+	btn.add_theme_stylebox_override("pressed", style)
+	btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0) if is_active else Color(0.55, 0.68, 0.82, 0.9))
+
+func _update_language_buttons(active_locale: String) -> void:
+	if _style_lang_active == null or _style_lang_inactive == null:
+		_init_language_styles()
+
+	var is_pt: bool = active_locale.begins_with("pt")
+	var is_es: bool = active_locale.begins_with("es")
+	var is_en: bool = not is_pt and not is_es
+
+	_apply_lang_button_style(btn_lang_pt, is_pt)
+	_apply_lang_button_style(btn_lang_en, is_en)
+	_apply_lang_button_style(btn_lang_es, is_es)
+
+func _set_language(new_locale: String) -> void:
+	if SaveManager != null:
+		SaveManager.set_locale(new_locale)
+	else:
+		TranslationServer.set_locale(new_locale)
+	_update_language_buttons(new_locale)
+	_update_all_localized_texts()
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
+
+func _update_all_localized_texts() -> void:
+	if modal_title_label != null:
+		modal_title_label.text = tr("SETTINGS_TITLE")
+	if audio_section_label != null:
+		audio_section_label.text = tr("SETTINGS_AUDIO_SECTION")
+	if music_title_label != null:
+		music_title_label.text = tr("SETTINGS_MUSIC")
+	if sfx_title_label != null:
+		sfx_title_label.text = tr("SETTINGS_SFX")
+	if vib_title_label != null:
+		vib_title_label.text = tr("SETTINGS_VIBRATION")
+	if lang_title_label != null:
+		lang_title_label.text = tr("SETTINGS_LANGUAGE")
+	if save_section_label != null:
+		save_section_label.text = tr("SETTINGS_SAVE_SECTION")
+	if save_local_label != null:
+		save_local_label.text = tr("SETTINGS_SAVE_LOCAL")
+	if google_label != null:
+		google_label.text = tr("SETTINGS_CONNECT_GOOGLE")
+	if fb_label != null:
+		fb_label.text = tr("SETTINGS_CONNECT_FB")
+	if reset_label != null and not _reset_confirmation_pending:
+		reset_label.text = tr("SETTINGS_RESET")
+	if support_label != null:
+		support_label.text = tr("SETTINGS_SUPPORT")
+	_update_toggle_visuals()
 
 func _on_google_pressed() -> void:
 	_show_toast("Google Play Games: Em breve!")
