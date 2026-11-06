@@ -141,11 +141,11 @@ Jogadores casuais de dispositivos móveis que buscam sessões rápidas de descom
 ## 6. Level Design e Progressão
 
 ### 6.1 Matriz de 40 Fases Canônicas (Mundo 1: Ilhas Tropicais)
-O jogo conta com **40 fases canônicas** serializadas em JSON v4 (`data/levels/level_XX.json`), escalonando desde ~25 tiles até a mega-ilha de 100 tiles exatos (Fase 40), organizadas em 4 Tiers de maestria:
-1. **Tier 1 (Fases 1 a 10) — O Despertar do Cortador (~25 a ~48 tiles):** Ilhas acolhedoras, introdução do joystick e tutorial botânico sequencial (trigo de 2 hits, margaridas, sinos, rosas, girassóis, tulipas, corolas e canteiros). Fases 1 a 3 sem rochas; estreia da 1ª rocha na Fase 4.
-2. **Tier 2 (Fases 11 a 20) — Istmos, Pontes e Navegação Tática (~50 a ~66 tiles):** Travessias marítimas, caminhos em "S", canais internos e baías de alta velocidade com obstáculos estratégicos.
-3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (~70 a ~85 tiles):** Grandes arquipélagos conectados, tabuleiros florais e fortalezas agrícolas densas.
-4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (~88 a 100 tiles):** Monumentos colossais explorados pela câmera suave, finalizando na *Grande Coroa Real* (Fase 40) com passagem triunfal para o Ciclo Mestre.
+O jogo conta com **40 fases canônicas** serializadas em JSON v4 (`data/levels/level_XX.json`), organizadas em 4 Tiers de maestria e progressão de escala contínua:
+1. **Tier 1 (Fases 1 a 10) — O Despertar do Cortador:** Ilhas didáticas e acolhedoras com tutorial botânico sequencial (Fase 1 com grid amplo $25 \times 25$, 625 tiles, $10\text{m} \times 10\text{m}$; trigo maduro de 2 hits, margaridas, sinos, rosas, girassóis, tulipas, corolas e canteiros). Fases 1 a 3 sem rochas; estreia da 1ª rocha sólida na Fase 4.
+2. **Tier 2 (Fases 11 a 20) — Istmos, Pontes e Navegação Tática (105 a 225 tiles):** Travessias marítimas, caminhos em "S", canais internos vazados e baías de alta velocidade com obstáculos estratégicos em grids de $17 \times 17$ a $21 \times 21$ ($13.6\text{m}$ a $16.8\text{m}$).
+3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (221 a 465 tiles):** Grandes arquipélagos conectados, tabuleiros florais e fortalezas agrícolas densas em grids de $23 \times 23$ a $27 \times 27$ ($15.2\text{m}$ a $18.4\text{m}$).
+4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (433 a 689 tiles):** Mega-ilhas monumentais exploradas pela câmera dinâmica suave em grids de $29 \times 29$ a $31 \times 31$ ($20.0\text{m}$ a $21.6\text{m}$), finalizando no *Grande Arquipélago Mestre* (Fase 40) com passagem triunfal para o Ciclo Mestre.
 
 ### 6.2 Cores de Grama Estéticas & Metas Unificadas
 O solo das ilhas apresenta desenhos artísticos em até 7 cores de grama, enquanto o Top HUD contabiliza todas as aparas ceifadas sob a meta unificada 🌿 `"grass"`. Isso mantém o HUD perfeitamente legível na vertical (1 a 4 objetivos usuais, máximo de 6 no clímax tardio).

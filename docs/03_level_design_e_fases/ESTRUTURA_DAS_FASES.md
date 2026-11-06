@@ -9,7 +9,7 @@ Este documento detalha o desenho dos estágios, a arquitetura de dados JSON v4, 
 1. **Sessões Rápidas e Dinâmicas (1 a 3 Minutos):**
    - Os estágios foram projetados para conclusão ágil durante pequenos intervalos diários no mobile (sessões *one-thumb*).
 2. **Escalonamento Geográfico Gradual:**
-   - As ilhas começam compactas e acolhedoras (~25 a 35 tiles nas primeiras fases) e escalonam de forma suave até mega-ilhas de até **100 tiles** nos estágios finais, aproveitando a câmera isométrica contínua com amortecimento suave.
+   - As ilhas mantêm a amplitude consagrada do jogo clássico (Fases 1 a 5 com grids de $25 \times 25$ a $47 \times 47$, 606 a 1.592 tiles; Fases 6 a 20 com 105 a 225 tiles) e escalonam de forma expansiva nas Fases 21 a 40 em grandes ilhas e mega-ilhas de **221 a 689 tiles** ($15.2\text{m} \times 15.2\text{m}$ até $21.6\text{m} \times 21.6\text{m}$), aproveitando a câmera isométrica contínua com amortecimento suave.
 3. **Cores de Grama Estéticas & Meta Unificada Limpa:**
    - O solo é enriquecido com mandalas, mosaicos, anéis e faixas em 7 cores estéticas (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`).
    - Todas as aparas de grama cortadas abatem uma **única meta unificada de grama 🌿 (`"grass"`)** no HUD.
@@ -74,16 +74,16 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 
 ## 3. Progressão de 4 Grandes Tiers do Mundo 1
 
-1. **Tier 1 (Fases 01 a 10) — O Despertar do Cortador (~25 a ~48 tiles):**
+1. **Tier 1 (Fases 01 a 10) — O Despertar do Cortador:**
    - Apresentação passo a passo do robô, joystick, trigo resistente (2 hits) e introdução individual de cada flor nobre.
-   - 0 rochas até a Fase 3; 1ª rocha introduzida na Fase 4.
-2. **Tier 2 (Fases 11 a 20) — Istmos, Pontes e Navegação Tática (~50 a ~66 tiles):**
-   - Ilhas em U, H e passadiços sobre o mar azul.
-   - Combinações ricas de 2 a 4 espécies botânicas e posicionamento tático de obstáculos.
-3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (~70 a ~85 tiles):**
-   - Áreas amplas de corte e labirintos agrícolas, tornando vantajosos os upgrades de Raio e Potência da lâmina na Oficina.
-4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (~88 a 100 tiles):**
-   - O ápice de escala do Mundo 1 com as maiores ilhas do jogo, terminando na monumental *Grande Coroa Real* (Fase 40).
+   - Escala original ampla (Fase 1 com 625 tiles, $10\text{m} \times 10\text{m}$). 0 rochas até a Fase 3; 1ª rocha introduzida na Fase 4.
+2. **Tier 2 (Fases 11 a 20) — Istmos, Pontes e Navegação Tática (105 a 225 tiles):**
+   - Ilhas em U, H e passadiços sobre o mar azul ($13.6\text{m}$ a $16.8\text{m}$).
+   - Combinações ricas de 2 a 4 espécies botânicas e posicionamento tático de obstáculos sólidos.
+3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (221 a 465 tiles):**
+   - Áreas amplas de corte e labirintos agrícolas ($15.2\text{m}$ a $18.4\text{m}$ com `cell_size = 0.80m`), tornando indispensáveis os upgrades de Raio e Potência da lâmina na Oficina.
+4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (433 a 689 tiles):**
+   - O ápice de escala do Mundo 1 com as maiores ilhas do jogo ($20.0\text{m}$ a $21.6\text{m}$), finalizando no monumental *Grande Arquipélago Mestre* (Fase 40).
 
 ---
 
