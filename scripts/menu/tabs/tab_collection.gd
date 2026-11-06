@@ -36,6 +36,10 @@ var _last_drag_pos: Vector2 = Vector2.ZERO
 var _last_drag_time: float = 0.0
 var _scroll_velocity_y: float = 0.0
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		refresh_ui()
+
 func _ready() -> void:
 	_connect_signals()
 	refresh_ui()
@@ -331,7 +335,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	# Linha 2: Nome da Espécie
 	var name_lbl: Label = Label.new()
-	name_lbl.text = String(sp.get("name", "Espécie Desconhecida")) if is_disc else "Espécie Não Identificada"
+	name_lbl.text = PlantDatabaseScript.get_species_name(sp) if is_disc else tr("HERBARIUM_UNIDENTIFIED")
 	name_lbl.add_theme_font_size_override("font_size", 16)
 	name_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0) if is_disc else Color(0.72, 0.78, 0.86, 0.92))
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_PASS

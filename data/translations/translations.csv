@@ -32,27 +32,46 @@ HUD_GOALS,METAS,GOALS,OBJETIVOS
 HUD_PAUSE,PAUSA,PAUSE,PAUSA
 HUD_RESUME,CONTINUAR,RESUME,CONTINUAR
 HUD_RETRY,REINICIAR,RETRY,REINTENTAR
+HUD_MAIN_MENU,MENU INICIAL,MAIN MENU,MENÚ INICIAL
 HUD_NEXT_LEVEL,PRÓXIMA FASE,NEXT LEVEL,SIGUIENTE NIVEL
 HUD_VICTORY_TITLE,VITÓRIA!,VICTORY!,¡VICTORIA!
 HUD_DEFEAT_TITLE,TEMPO ESGOTADO!,TIME'S UP!,¡TIEMPO AGOTADO!
 HUD_GOAL_COMPLETED,Meta Concluída!,Goal Completed!,¡Objetivo Completado!
 HUD_LEVEL_LABEL,Fase %d,Level %d,Nivel %d
 HUD_LEVEL_TITLE,FASE %d,LEVEL %d,NIVEL %d
-PLANT_GRASS_GREEN,Grama Comum,Common Grass,Césped Común
-PLANT_GRASS_YELLOW,Grama Seca,Dry Grass,Césped Seco
-PLANT_GRASS_RED,Grama Carmim,Crimson Grass,Césped Carmesí
-PLANT_GRASS_BLUE,Grama Celestial,Sky Grass,Césped Celeste
-PLANT_GRASS_PURPLE,Grama Mística,Mystic Grass,Césped Místico
-PLANT_GRASS_BLACK,Grama Sombria,Shadow Grass,Césped Sombrío
-PLANT_GRASS_WHITE,Grama Neviada,Snowy Grass,Césped Nevado
-PLANT_WHEAT,Trigo Dourado,Golden Wheat,Trigo Dorado
-PLANT_FLOWER_DAISY,Margarida Branca,White Daisy,Margarita Blanca
-PLANT_FLOWER_ROSE_RED,Rosa Nobre,Noble Rose,Rosa Noble
+HUD_LEVEL_CLEAR,FASE %02d CONCLUÍDA!,LEVEL %02d CLEARED!,¡NIVEL %02d COMPLETADO!
+HUD_CHAMPION_TITLE,CAMPEÃO DO JARDIM!,GARDEN CHAMPION!,¡CAMPEÓN DEL JARDÍN!
+HUD_MASTER_CYCLE,CICLO MESTRE (FASE 1),MASTER CYCLE (LEVEL 1),CICLO MAESTRO (NIVEL 1)
+HUD_COINS_EARNED,+ %d MOEDAS,+ %d COINS,+ %d MONEDAS
+DEFEAT_CUT_PROGRESS,Progresso do Corte:,Mowing Progress:,Progreso del Corte:
+DEFEAT_SUBTITLE_CLOSE,Faltou pouco para concluir a fase!,Almost cleared the level!,¡Faltó poco para completar el nivel!
+DEFEAT_SUBTITLE_TRY_AGAIN,Continue tentando você consegue!,Keep trying you can do it!,¡Sigue intentando tú puedes!
+DEFEAT_BTN_EXTRA_TIME,Pegar Mais Tempo,Get Extra Time,Obtener Más Tiempo
+EXIT_MODAL_TITLE,SAIR DO JOGO?,EXIT GAME?,¿SALIR DEL JUEGO?
+EXIT_MODAL_MSG,"Seu progresso e moedas estão salvos. Deseja realmente sair?","Your progress and coins are saved. Do you really want to exit?","Tu progreso y monedas están guardados. ¿Realmente deseas salir?"
+EXIT_MODAL_CONTINUE,CONTINUAR JOGANDO,CONTINUE PLAYING,CONTINUAR JUGANDO
+EXIT_MODAL_QUIT,SAIR DO JOGO,EXIT GAME,SALIR DEL JUEGO
+CARD_STARS,Estrelas,Stars,Estrellas
+CARD_LOCKED,Bloqueada,Locked,Bloqueada
+CARD_OBJECTIVES,Objetivos:,Objectives:,Objetivos:
+HERBARIUM_TITLE,HERBÁRIO,HERBARIUM,HERBARIO
+HERBARIUM_UNIDENTIFIED,Espécie Não Identificada,Unidentified Species,Especie No Identificada
+GARAGE_TITLE,OFICINA,WORKSHOP,TALLER
+PLANT_GRASS_GREEN,Grama Verde Esmeralda,Emerald Green Grass,Césped Verde Esmeralda
+PLANT_GRASS_YELLOW,Grama Dourada Solar,Golden Sun Grass,Césped Dorado Solar
+PLANT_GRASS_RED,Grama Carmesim Vulcânica,Volcanic Crimson Grass,Césped Carmesí Volcánico
+PLANT_GRASS_BLUE,Grama Azul Costeira,Coastal Blue Grass,Césped Azul Costero
+PLANT_GRASS_PURPLE,Grama Violeta Crepúsculo,Twilight Purple Grass,Césped Violeta Crepúsculo
+PLANT_GRASS_BLACK,Grama Negra Obsidiana,Obsidian Black Grass,Césped Negro Obsidiana
+PLANT_GRASS_WHITE,Grama Branca Cristalina,Crystal White Grass,Césped Blanco Cristalino
+PLANT_WHEAT,Trigo Dourado Enraizado,Golden Rooted Wheat,Trigo Dorado Enraizado
+PLANT_FLOWER_DAISY,Margarida Silvestre,Wild Daisy,Margarita Silvestre
+PLANT_FLOWER_ROSE_RED,Rosa Rubra Nobre,Noble Red Rose,Rosa Roja Noble
 PLANT_FLOWER_ROSE_PINK,Rosa Delicada,Delicate Rose,Rosa Delicada
 PLANT_FLOWER_ROSE_BLACK,Rosa Negra,Black Rose,Rosa Negra
-PLANT_FLOWER_TULIP,Tulipa,Tulip,Tulipán
-PLANT_FLOWER_BELL,Campainha,Bluebell,Campanilla
-PLANT_FLOWER_SUNFLOWER,Girassol,Sunflower,Girasol
+PLANT_FLOWER_TULIP,Tulipa Imperial,Imperial Tulip,Tulipán Imperial
+PLANT_FLOWER_BELL,Flor de Sino Cerúlea,Cerulean Bellflower,Flor de Campana Cerúlea
+PLANT_FLOWER_SUNFLOWER,Girassol Radiante,Radiant Sunflower,Girasol Radiante
 PLANT_FLOWER_TUFT,Flor Silvestre,Wildflower,Flor Silvestre
 UPGRADE_BLADE_RADIUS,Raio da Lâmina,Blade Radius,Radio de la Cuchilla
 UPGRADE_BLADE_SPEED,Velocidade da Lâmina,Blade Speed,Velocidad de Cuchilla

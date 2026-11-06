@@ -16,6 +16,11 @@ const ICON_MAP: Texture2D = preload("res://assets/icons/icon_map_banner.svg")
 var current_level_selected: int = 1
 var is_map_mode: bool = false
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		update_level_display(current_level_selected)
+		set_view_mode(is_map_mode)
+
 func _ready() -> void:
 	if play_btn != null:
 		play_btn.pressed.connect(_on_play_pressed)
@@ -28,7 +33,7 @@ func update_level_display(lvl: int) -> void:
 	if play_btn != null and play_btn.has_method("set_level_number"):
 		play_btn.call("set_level_number", current_level_selected)
 	elif play_label != null:
-		play_label.text = "JOGAR - Fase %d" % current_level_selected
+		play_label.text = "%s - %s" % [tr("BTN_PLAY"), tr("HUD_LEVEL_LABEL") % current_level_selected]
 	preview_level(lvl)
 
 ## Atualiza apenas o Card de Fase (usado também durante a rolagem do mapa).
@@ -52,7 +57,7 @@ func set_view_mode(map_view: bool) -> void:
 		else:
 			toggle_icon.visible = true
 			toggle_icon.texture = ICON_MAP
-			toggle_label.text = "MAPA"
+			toggle_label.text = tr("BTN_LEVELS")
 	update_level_display(current_level_selected)
 
 func _on_play_pressed() -> void:

@@ -272,3 +272,11 @@ static func get_species(key: String) -> Dictionary:
 			"desc": String(v_data.get("full_name", key))
 		}
 	return {}
+
+static func get_species_name(species: Dictionary) -> String:
+	var key: String = String(species.get("key", ""))
+	var trans_key: String = "PLANT_" + key.to_upper()
+	var translated: String = TranslationServer.translate(trans_key)
+	if translated != trans_key:
+		return translated
+	return String(species.get("name", ""))

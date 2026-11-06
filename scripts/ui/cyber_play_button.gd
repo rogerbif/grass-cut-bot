@@ -31,7 +31,7 @@ func set_level_text(new_text: String) -> void:
 
 func set_level_number(lvl: int) -> void:
 	if level_label != null:
-		level_label.text = "JOGAR - Fase %d" % lvl
+		level_label.text = "%s - %s" % [tr("BTN_PLAY"), tr("HUD_LEVEL_LABEL") % lvl]
 
 func _on_btn_down() -> void:
 	is_down = true

@@ -51,23 +51,23 @@ alignment = 1
 [node name="BtnHome" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
 tab_id = 0
-title_text = "Home"
+title_text = "NAV_HOME"
 icon_texture = ExtResource("4_icon_home")
 
 [node name="BtnGarage" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
 tab_id = 1
-title_text = "Garage"
+title_text = "NAV_WORKSHOP"
 icon_texture = ExtResource("5_icon_garage")
 
 [node name="BtnCollection" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
 tab_id = 2
-title_text = "Collection"
+title_text = "NAV_HERBARIUM"
 icon_texture = ExtResource("6_icon_collection")
 
 [node name="BtnStore" parent="HBox" instance=ExtResource("2_btn_scene")]
 layout_mode = 2
 tab_id = 3
-title_text = "Store"
+title_text = "NAV_STORE"
 icon_texture = ExtResource("7_icon_store")

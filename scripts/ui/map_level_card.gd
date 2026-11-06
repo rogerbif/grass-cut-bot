@@ -44,6 +44,13 @@ var _current_level: int = -1
 var _fade_tween: Tween = null
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		if _current_level > 0:
+			var lvl: int = _current_level
+			_current_level = -1
+			show_level(lvl, _is_unlocked(lvl))
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = Vector2(CARD_WIDTH, 0.0)
@@ -159,7 +166,7 @@ func _build_ui() -> void:
 		stars_row.add_child(star_rect)
 		_star_rects.append(star_rect)
 
-	_stars_caption = _make_label("Estrelas", 16, COL_SUB)
+	_stars_caption = _make_label(tr("CARD_STARS"), 16, COL_SUB)
 	_stars_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_stars_caption.custom_minimum_size = Vector2(0.0, 20.0)
 	center_vbox.add_child(_stars_caption)
@@ -189,7 +196,7 @@ func _build_ui() -> void:
 	_time_lbl = _make_label("1:30", 25, COL_WHITE)
 	time_row.add_child(_time_lbl)
 
-	var time_caption: Label = _make_label("Tempo", 16, COL_SUB)
+	var time_caption: Label = _make_label(tr("HUD_TIME"), 16, COL_SUB)
 	time_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	time_caption.custom_minimum_size = Vector2(0.0, 20.0)
 	right_vbox.add_child(time_caption)
@@ -215,7 +222,7 @@ func _build_ui() -> void:
 	_goals_box.custom_minimum_size = Vector2(0.0, GOAL_CARD_HEIGHT)
 	frame.add_child(_goals_box)
 
-	var obj_caption: Label = _make_label("Objetivos da Fase", 16, COL_SUB)
+	var obj_caption: Label = _make_label(tr("CARD_OBJECTIVES"), 16, COL_SUB)
 	obj_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	obj_caption.anchor_top = 1.0
 	obj_caption.anchor_bottom = 1.0
@@ -253,7 +260,7 @@ func show_level(lvl: int, unlocked: bool) -> void:
 	_current_level = lvl
 
 	var card_data: Dictionary = LevelCardData.get_level_card_data(lvl)
-	_title_lbl.text = "Fase %02d" % lvl
+	_title_lbl.text = tr("HUD_LEVEL_LABEL") % lvl
 	_biome_lbl.text = String(card_data.get("name", LevelCardData.BIOME_NAME))
 	_time_lbl.text = LevelCardData.format_time(float(card_data.get("time", 90.0)))
 	_title_icon.texture = TEX_ISLAND if unlocked else TEX_LOCK
@@ -263,7 +270,7 @@ func show_level(lvl: int, unlocked: bool) -> void:
 		stars = SaveManager.get_level_stars(lvl)
 	for i: int in range(_star_rects.size()):
 		_star_rects[i].texture = TEX_STAR_FULL if i < stars else TEX_STAR_EMPTY
-	_stars_caption.text = "Estrelas" if unlocked else "Bloqueada"
+	_stars_caption.text = tr("CARD_STARS") if unlocked else tr("CARD_LOCKED")
 
 	_rebuild_goals(card_data.get("goals", {}) as Dictionary)
 

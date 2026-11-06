@@ -161,7 +161,7 @@ func _build_ui() -> void:
 	alert_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header_hbox.add_child(alert_icon)
 
-	var title_lbl: Label = _make_label("SAIR DO JOGO?", 26, COL_CYAN_TITLE)
+	var title_lbl: Label = _make_label(tr("EXIT_MODAL_TITLE"), 26, COL_CYAN_TITLE)
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header_hbox.add_child(title_lbl)
 
@@ -176,7 +176,7 @@ func _build_ui() -> void:
 
 	# 2. Mensagem Explicativa de Progresso Salvo
 	var body_lbl: Label = Label.new()
-	body_lbl.text = "Seu progresso e moedas estão salvos.\nDeseja realmente fechar o Grass Cut Bot?"
+	body_lbl.text = tr("EXIT_MODAL_MSG")
 	body_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	body_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -195,12 +195,12 @@ func _build_ui() -> void:
 	main_vbox.add_child(spacer)
 
 	# 3. Botão Primário: CONTINUAR JOGANDO (Verde Neon)
-	_resume_btn = _make_action_button("CONTINUAR JOGANDO", TEX_ICON_PLAY, Vector2(24.0, 24.0), TEX_BTN_RESUME_N, TEX_BTN_RESUME_P)
+	_resume_btn = _make_action_button(tr("EXIT_MODAL_CONTINUE"), TEX_ICON_PLAY, Vector2(24.0, 24.0), TEX_BTN_RESUME_N, TEX_BTN_RESUME_P)
 	_resume_btn.pressed.connect(close)
 	main_vbox.add_child(_resume_btn)
 
 	# 4. Botão Secundário: SAIR DO JOGO (Vermelho Cyber)
-	_quit_btn = _make_action_button("SAIR DO APLICATIVO", TEX_ICON_ALERT, Vector2(22.0, 22.0), TEX_BTN_DANGER_N, TEX_BTN_DANGER_P)
+	_quit_btn = _make_action_button(tr("EXIT_MODAL_QUIT"), TEX_ICON_ALERT, Vector2(22.0, 22.0), TEX_BTN_DANGER_N, TEX_BTN_DANGER_P)
 	_quit_btn.pressed.connect(_on_quit_pressed)
 	main_vbox.add_child(_quit_btn)
 

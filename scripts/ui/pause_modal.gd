@@ -183,7 +183,7 @@ func _build_ui() -> void:
 	pause_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header_hbox.add_child(pause_icon)
 
-	var title_lbl: Label = _make_label("Jogo Pausado", 28, COL_CYAN_TITLE)
+	var title_lbl: Label = _make_label(tr("HUD_PAUSE"), 28, COL_CYAN_TITLE)
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header_hbox.add_child(title_lbl)
 
@@ -199,17 +199,17 @@ func _build_ui() -> void:
 	header_hbox.add_child(_close_x_btn)
 
 	# 2. Botão Principal: Continuar
-	_resume_btn = _make_action_button("Continuar", TEX_ICON_PLAY, Vector2(24.0, 24.0), TEX_BTN_RESUME_N, TEX_BTN_RESUME_P)
+	_resume_btn = _make_action_button(tr("HUD_RESUME"), TEX_ICON_PLAY, Vector2(24.0, 24.0), TEX_BTN_RESUME_N, TEX_BTN_RESUME_P)
 	_resume_btn.pressed.connect(_on_resume_pressed)
 	main_vbox.add_child(_resume_btn)
 
 	# 3. Botão Secundário 1: Reiniciar Fase
-	_restart_btn = _make_action_button("Reiniciar Fase", TEX_ICON_REFRESH, Vector2(24.0, 24.0), TEX_BTN_RESTART_N, TEX_BTN_RESTART_P)
+	_restart_btn = _make_action_button(tr("HUD_RETRY"), TEX_ICON_REFRESH, Vector2(24.0, 24.0), TEX_BTN_RESTART_N, TEX_BTN_RESTART_P)
 	_restart_btn.pressed.connect(_on_restart_pressed)
 	main_vbox.add_child(_restart_btn)
 
 	# 4. Botão Secundário 2: Menu Inicial
-	_menu_btn = _make_action_button("Menu Inicial", TEX_ICON_HOME, Vector2(24.0, 24.0), TEX_BTN_MENU_N, TEX_BTN_MENU_P)
+	_menu_btn = _make_action_button(tr("HUD_MAIN_MENU"), TEX_ICON_HOME, Vector2(24.0, 24.0), TEX_BTN_MENU_N, TEX_BTN_MENU_P)
 	_menu_btn.pressed.connect(_on_menu_pressed)
 	main_vbox.add_child(_menu_btn)
 
@@ -222,7 +222,7 @@ func _build_ui() -> void:
 
 	# Mini-card FX
 	var sfx_card: Control = _build_toggle_card(
-		"FX", TEX_ICON_SFX,
+		tr("SETTINGS_SFX"), TEX_ICON_SFX,
 		func(btn: Button, icon: TextureRect, status: Label) -> void:
 			_toggle_sfx_btn = btn
 			_toggle_sfx_icon = icon
@@ -233,7 +233,7 @@ func _build_ui() -> void:
 
 	# Mini-card Música
 	var music_card: Control = _build_toggle_card(
-		"Música", TEX_ICON_MUSIC,
+		tr("SETTINGS_MUSIC"), TEX_ICON_MUSIC,
 		func(btn: Button, icon: TextureRect, status: Label) -> void:
 			_toggle_music_btn = btn
 			_toggle_music_icon = icon
@@ -244,7 +244,7 @@ func _build_ui() -> void:
 
 	# Mini-card Vibrar
 	var vib_card: Control = _build_toggle_card(
-		"Vibrar", TEX_ICON_VIB,
+		tr("SETTINGS_VIBRATION"), TEX_ICON_VIB,
 		func(btn: Button, icon: TextureRect, status: Label) -> void:
 			_toggle_vib_btn = btn
 			_toggle_vib_icon = icon
@@ -410,7 +410,7 @@ func _update_toggle_item(icon_rect: TextureRect, status_lbl: Label, is_on: bool)
 	if icon_rect != null:
 		icon_rect.texture = TEX_TOGGLE_ON if is_on else TEX_TOGGLE_OFF
 	if status_lbl != null:
-		status_lbl.text = "Ligado" if is_on else "Desligado"
+		status_lbl.text = tr("SETTINGS_ON") if is_on else tr("SETTINGS_OFF")
 		status_lbl.add_theme_color_override("font_color", COL_GREEN_ON if is_on else COL_GRAY_OFF)
 
 

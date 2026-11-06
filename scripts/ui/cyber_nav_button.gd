@@ -12,7 +12,7 @@ signal nav_button_pressed(tab_id: int)
 	set(val):
 		title_text = val
 		if label_title != null:
-			label_title.text = val
+			label_title.text = tr(val)
 
 @export var icon_texture: Texture2D:
 	set(val):
@@ -35,12 +35,17 @@ const TWEEN_DURATION: float = 0.18
 var is_active: bool = false
 var _current_tween: Tween = null
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		if label_title != null:
+			label_title.text = tr(title_text)
+
 func _ready() -> void:
 	focus_mode = FOCUS_NONE
 	if icon_texture != null and icon_rect != null:
 		icon_rect.texture = icon_texture
 	if label_title != null:
-		label_title.text = title_text
+		label_title.text = tr(title_text)
 	pressed.connect(_on_pressed)
 	set_active(is_active, false)
 

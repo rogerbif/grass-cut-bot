@@ -69,7 +69,7 @@ func open(progress: float, remaining_goals: Dictionary, can_extend: bool) -> voi
 	var pct: int = roundi(clampf(progress, 0.0, 1.0) * 100.0)
 	_percent_lbl.text = "%d%%" % pct
 	_progress_bar.value = float(pct)
-	_subtitle_lbl.text = "Faltou pouco para concluir a fase!" if progress >= NEAR_WIN_THRESHOLD else "Continue tentando, você consegue!"
+	_subtitle_lbl.text = tr("DEFEAT_SUBTITLE_CLOSE") if progress >= NEAR_WIN_THRESHOLD else tr("DEFEAT_SUBTITLE_TRY_AGAIN")
 	_extra_btn.visible = can_extend
 	_populate_goals(remaining_goals)
 
@@ -173,7 +173,7 @@ func _build_ui() -> void:
 
 	header_hbox.add_child(_make_icon(TEX_ICON_STOPWATCH, Vector2(58.0, 58.0)))
 
-	var title_lbl: Label = _make_label("Tempo\nEsgotado!", 30, COL_TITLE_RED)
+	var title_lbl: Label = _make_label(tr("HUD_DEFEAT_TITLE"), 28, COL_TITLE_RED)
 	title_lbl.add_theme_constant_override("line_spacing", -4)
 	header_hbox.add_child(title_lbl)
 
@@ -209,7 +209,7 @@ func _build_ui() -> void:
 	prog_title_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	prog_title_hbox.add_theme_constant_override("separation", 6)
 	prog_vbox.add_child(prog_title_hbox)
-	prog_title_hbox.add_child(_make_label("Progresso do Corte:", 16, COL_WHITE))
+	prog_title_hbox.add_child(_make_label(tr("DEFEAT_CUT_PROGRESS"), 16, COL_WHITE))
 	_percent_lbl = _make_label("0%", 17, COL_PERCENT)
 	prog_title_hbox.add_child(_percent_lbl)
 
@@ -223,15 +223,15 @@ func _build_ui() -> void:
 	prog_vbox.add_child(_goals_hbox)
 
 	# 4. Botões de ação
-	var retry_btn: Button = _make_action_button("Repetir Fase", TEX_ICON_RETRY, TEX_BTN_RETRY_N, TEX_BTN_RETRY_P, 22)
+	var retry_btn: Button = _make_action_button(tr("HUD_RETRY"), TEX_ICON_RETRY, TEX_BTN_RETRY_N, TEX_BTN_RETRY_P, 22)
 	retry_btn.pressed.connect(_on_retry_pressed)
 	main_vbox.add_child(retry_btn)
 
-	_extra_btn = _make_action_button("Pegar Mais Tempo", TEX_ICON_TV, TEX_BTN_EXTRA_N, TEX_BTN_EXTRA_P, 20)
+	_extra_btn = _make_action_button(tr("DEFEAT_BTN_EXTRA_TIME"), TEX_ICON_TV, TEX_BTN_EXTRA_N, TEX_BTN_EXTRA_P, 20)
 	_extra_btn.pressed.connect(_on_extra_pressed)
 	main_vbox.add_child(_extra_btn)
 
-	var menu_btn: Button = _make_action_button("Menu Inicial", TEX_ICON_HOME, TEX_BTN_MENU_N, TEX_BTN_MENU_P, 22)
+	var menu_btn: Button = _make_action_button(tr("HUD_MAIN_MENU"), TEX_ICON_HOME, TEX_BTN_MENU_N, TEX_BTN_MENU_P, 22)
 	menu_btn.pressed.connect(_on_menu_pressed)
 	main_vbox.add_child(menu_btn)
 

@@ -279,7 +279,7 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 	if top_bar != null:
 		top_bar.visible = false
 	if victory_coins_label != null:
-		victory_coins_label.text = "+ %d MOEDAS" % coins_earned
+		victory_coins_label.text = tr("HUD_COINS_EARNED") % coins_earned
 
 	if victory_time_label != null and GameManager != null:
 		var time_taken: float = maxf(0.0, GameManager.time_limit - GameManager.time_left)
@@ -289,14 +289,14 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 
 	if GameManager.current_level >= 20:
 		if victory_title_label != null:
-			victory_title_label.text = "CAMPEÃO DO JARDIM!"
+			victory_title_label.text = tr("HUD_CHAMPION_TITLE")
 		if victory_next_label != null:
-			victory_next_label.text = "CICLO MESTRE (FASE 1)"
+			victory_next_label.text = tr("HUD_MASTER_CYCLE")
 	else:
 		if victory_title_label != null:
-			victory_title_label.text = "FASE %02d CONCLUÍDA!" % GameManager.current_level
+			victory_title_label.text = tr("HUD_LEVEL_CLEAR") % GameManager.current_level
 		if victory_next_label != null:
-			victory_next_label.text = "PRÓXIMA FASE"
+			victory_next_label.text = tr("HUD_NEXT_LEVEL")
 
 	victory_modal.visible = true
 
