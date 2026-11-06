@@ -59,3 +59,29 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
 - **Descarte de Overrides em Modelos Importados:** No Godot 4, ao compilar cenas `.tscn` para `.scn` no APK Android, propriedades `surface_material_override` atribuídas a nós filhos de cenas 3D instanciadas (`.glb`) são descartadas silenciosamente pelo exportador binário.
 - **Injeção Programática Obrigatória:** Todo pipeline que combina malhas para `MultiMeshInstance3D` (como em `VegetationGrid` e `IslandNode`) deve injetar os materiais explicitamente em código via `SurfaceTool.set_material(mat)` utilizando constantes pré-carregadas (`FLOWER_MATERIALS`, `GRASS_MATERIALS`), garantindo independência total da serialização da cena.
 - **Defesa em Profundidade 3D:** Modelos 3D gerados no Blender devem manter albedo neutro em seus materiais base para evitar que qualquer fallback inesperado de renderização exiba cores indesejadas em dispositivos móveis.
+
+---
+
+## 7. Gestão de Ciclo de Vida e Auto-Pausa (Google Play Core App Quality)
+
+- **Proteção Contra Perda de Foco:** Ao receber chamadas telefônicas, alternar para outros apps ou pressionar o botão Home, o sistema operacional Android envia as notificações `NOTIFICATION_APPLICATION_PAUSED` e `NOTIFICATION_APPLICATION_FOCUS_OUT`.
+- **Auto-Pausa no `GameManager`:** Se uma fase estiver ativa (`current_state == GameState.PLAYING`), o jogo pausa imediatamente (`get_tree().paused = true`), impedindo que o cronômetro continue correndo ou cause derrota injusta em segundo plano.
+- **Persistência Atômica:** O `SaveManager` escuta essas mesmas notificações para descarregar o progresso do jogador em disco imediatamente antes que o processo possa ser suspenso ou finalizado pelo SO.
+
+---
+
+## 8. Hierarquia do Botão Voltar e Safe Area Dinâmica
+
+- **Navegação com Botão/Gesto Voltar (`NOTIFICATION_WM_GO_BACK_REQUEST`):**
+  - **No Gameplay (`hud.gd`):**
+    1. Se a oficina estiver aberta: fecha a oficina.
+    2. Se o modal de pausa estiver aberto: fecha a pausa e retoma a partida.
+    3. Se em vitória/derrota: retorna ao menu principal.
+    4. Se jogando: abre o modal de pausa.
+  - **No Menu Principal (`main_menu.gd`):**
+    1. Se o modal de configurações estiver aberto: fecha o modal.
+    2. Se a câmera estiver no modo mapa/arquipélago: retorna à visão focada no robô.
+    3. Se estiver em aba secundária (Garagem, Coleção, Loja): retorna à aba Home (índice 0).
+    4. Se já estiver na tela inicial padrão: encerra o jogo de forma limpa (`get_tree().quit()`).
+- **Safe Area Dinâmica (Notches & Cutouts):**
+  - O método `_apply_safe_area()` consulta `DisplayServer.get_display_safe_area()` e compensa dinamicamente a margem superior (`content_margin_top`) do `TopBar` no HUD e no Menu Principal, impedindo sobreposição em aparelhos com entalhes de câmera profundos.

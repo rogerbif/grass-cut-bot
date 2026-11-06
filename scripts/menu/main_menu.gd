@@ -31,6 +31,8 @@ var current_bot_level: int = 1
 var clouds_end_node: Node3D = null
 
 func _ready() -> void:
+	_apply_safe_area()
+
 	if version_badge != null:
 		version_badge.text = GameVersion.get_version_string()
 
@@ -388,3 +390,60 @@ func _on_play_level_requested(lvl_to_play: int) -> void:
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/main.tscn")
+
+# ==============================================================================
+# Suporte Mobile: Safe Area (Notch / Cutout) & Gesto/Botão "Voltar" (Play Store)
+# ==============================================================================
+
+func _get_safe_area_top_margin() -> float:
+	var safe_area: Rect2i = DisplayServer.get_display_safe_area()
+	var win_size: Vector2i = DisplayServer.window_get_size()
+	if win_size.x <= 0 or win_size.y <= 0:
+		return 0.0
+	if safe_area.position.y > 0:
+		var vp: Viewport = get_viewport()
+		var vp_h: float = float(vp.get_visible_rect().size.y) if vp != null else 1280.0
+		var scale_y: float = vp_h / float(win_size.y)
+		var inset: float = float(safe_area.position.y) * scale_y
+		return clampf(inset, 0.0, 96.0)
+	return 0.0
+
+func _apply_safe_area() -> void:
+	var top_inset: float = _get_safe_area_top_margin()
+	if top_inset > 0.0:
+		var top_bar: MarginContainer = $CanvasLayer.get_node_or_null("TopBar") as MarginContainer
+		if top_bar != null:
+			var cur_top: int = top_bar.get_theme_constant("margin_top")
+			top_bar.add_theme_constant_override("margin_top", cur_top + int(roundf(top_inset)))
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		_handle_back_request()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_handle_back_request()
+
+func _handle_back_request() -> void:
+	# 1. Se modal de configurações estiver aberto -> fecha configurações
+	if settings_modal != null and settings_modal.has_method("is_open"):
+		if settings_modal.is_open():
+			settings_modal.close_modal()
+			return
+	elif settings_modal != null and settings_modal.visible:
+		settings_modal.close_modal()
+		return
+
+	# 2. Se a câmera estiver na visão do arquipélago / mapa -> volta para visão focada no robô
+	if menu_camera != null and menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
+		menu_camera.switch_to_bot_view()
+		return
+
+	# 3. Se estiver em aba secundária (Garagem, Coleção, Loja) -> volta para a Home (índice 0)
+	if bottom_nav != null and bottom_nav.current_tab != 0:
+		bottom_nav.select_tab(0)
+		return
+
+	# 4. Se já estiver na tela inicial padrão (Home e visão do robô) -> encerra o app de forma limpa
+	get_tree().quit()

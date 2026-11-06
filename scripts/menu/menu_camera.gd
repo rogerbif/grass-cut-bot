@@ -265,7 +265,7 @@ func toggle_mode() -> void:
 		switch_to_bot_view()
 
 func switch_to_map_view() -> void:
-	if current_mode == CameraMode.MAP_VIEW or is_transitioning:
+	if current_mode == CameraMode.MAP_VIEW:
 		return
 	current_mode = CameraMode.MAP_VIEW
 	is_transitioning = true
@@ -296,7 +296,7 @@ func switch_to_map_view() -> void:
 	view_mode_changed.emit(true)
 
 func switch_to_bot_view() -> void:
-	if current_mode == CameraMode.BOT_VIEW or is_transitioning:
+	if current_mode == CameraMode.BOT_VIEW:
 		return
 	current_mode = CameraMode.BOT_VIEW
 	is_transitioning = true

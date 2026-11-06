@@ -39,6 +39,9 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 var goal_cards: Dictionary = {}
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_apply_safe_area()
+
 	# Oculta modais inicialmente e garante top_bar visível
 	if top_bar != null:
 		top_bar.visible = true
@@ -406,3 +409,60 @@ func _update_card(key: String, card: Control, title: String) -> void:
 	cost_btn.icon = ICON_COIN
 	cost_btn.add_theme_constant_override("icon_max_width", 18)
 	cost_btn.disabled = (UpgradeManager.total_coins < cost)
+
+# ==============================================================================
+# Suporte Mobile: Safe Area (Notch / Cutout) & Gesto/Botão "Voltar" (Play Store)
+# ==============================================================================
+
+func _get_safe_area_top_margin() -> float:
+	var safe_area: Rect2i = DisplayServer.get_display_safe_area()
+	var win_size: Vector2i = DisplayServer.window_get_size()
+	if win_size.x <= 0 or win_size.y <= 0:
+		return 0.0
+	if safe_area.position.y > 0:
+		var scale_y: float = float(get_viewport_rect().size.y) / float(win_size.y)
+		var inset: float = float(safe_area.position.y) * scale_y
+		return clampf(inset, 0.0, 96.0)
+	return 0.0
+
+func _apply_safe_area() -> void:
+	var top_inset: float = _get_safe_area_top_margin()
+	if top_inset > 0.0 and top_bar != null:
+		var style: StyleBox = top_bar.get_theme_stylebox("panel")
+		if style is StyleBoxFlat:
+			var flat: StyleBoxFlat = (style as StyleBoxFlat).duplicate() as StyleBoxFlat
+			flat.content_margin_top += top_inset
+			top_bar.add_theme_stylebox_override("panel", flat)
+		top_bar.offset_bottom += top_inset
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		_handle_back_request()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_handle_back_request()
+
+func _handle_back_request() -> void:
+	# 1. Se modal da oficina estiver aberto -> fecha a oficina
+	if workshop_modal != null and workshop_modal.visible:
+		_on_close_workshop_pressed()
+		return
+
+	# 2. Se modal de pausa estiver aberto -> fecha a pausa e retoma o jogo
+	if pause_modal != null and pause_modal.visible:
+		_on_resume_pressed()
+		return
+
+	# 3. Se estiver na tela de vitória ou derrota -> volta ao menu principal
+	if victory_modal != null and victory_modal.visible:
+		_on_menu_pressed()
+		return
+	if defeat_modal != null and defeat_modal.visible:
+		_on_menu_pressed()
+		return
+
+	# 4. Se a partida estiver em andamento -> abre o modal de pausa
+	if GameManager != null and GameManager.current_state == GameManager.GameState.PLAYING:
+		_on_pause_pressed()

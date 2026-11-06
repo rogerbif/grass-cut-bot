@@ -55,6 +55,12 @@ func _ready() -> void:
 	_scan_and_connect_buttons(get_tree().root)
 	call_deferred("_init_graphics_quality")
 
+func _notification(what: int) -> void:
+	# Pausa automaticamente se o aplicativo perder o foco ou for minimizado pelo SO (ex: ligação, home)
+	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if current_state == GameState.PLAYING:
+			toggle_pause()
+
 func _init_graphics_quality() -> void:
 	if SaveManager != null:
 		var profile: String = String(SaveManager.get_setting("graphics_quality", "balanced"))

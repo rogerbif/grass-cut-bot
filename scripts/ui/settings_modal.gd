@@ -32,6 +32,7 @@ var _reset_confirmation_pending: bool = false
 var _version_tap_count: int = 0
 var android_vib_hint_btn: Button = null
 var _waiting_for_android_haptic_toggle: bool = false
+var _is_closing: bool = false
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
@@ -118,7 +119,18 @@ func _ready() -> void:
 	if support_btn != null:
 		support_btn.pressed.connect(_on_support_pressed)
 
+func is_open() -> bool:
+	return visible and not _is_closing
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible or _is_closing:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		close_modal()
+
 func open_modal() -> void:
+	_is_closing = false
 	if version_label != null:
 		var edition: String = "Web Edition" if OS.has_feature("web") else ("PC Edition" if OS.has_feature("pc") else "Mobile Edition")
 		version_label.text = "%s • %s" % [GameVersion.get_display_name(), edition]
@@ -132,12 +144,16 @@ func open_modal() -> void:
 		toast_label.visible = false
 
 func close_modal() -> void:
+	if _is_closing:
+		return
+	_is_closing = true
 	if AudioManager != null:
 		AudioManager.play_sfx("close")
 	var tw: Tween = create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.tween_callback(func() -> void:
 		visible = false
+		_is_closing = false
 		modal_closed.emit()
 	)
 
