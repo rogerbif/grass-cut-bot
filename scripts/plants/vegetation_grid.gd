@@ -537,10 +537,9 @@ func build_from_level_json(
 				if k_str == "grass" or k_str.begins_with("grass_"):
 					var phys_cnt: int = _total_physical_grass if k_str == "grass" else int(_remaining_grass_by_type.get(k_str, 0))
 					var max_grouped: int = maxi(1, int(ceilf(float(phys_cnt) / float(GRASS_TUFTS_PER_UNIT))))
-					if phys_cnt > 0 and raw_val > max_grouped:
-						goals[k_str] = clampi(int(ceilf(float(raw_val) / float(GRASS_TUFTS_PER_UNIT))), 1, max_grouped)
-					else:
-						goals[k_str] = raw_val
+					# Se o valor salvo estiver dentro do limite de unidades agrupadas, respeita-o;
+					# caso exceda (ex: nível antigo salvo com tufos brutos), trava no total físico agrupado
+					goals[k_str] = clampi(raw_val, 1, max_grouped)
 				else:
 					goals[k_str] = raw_val
 

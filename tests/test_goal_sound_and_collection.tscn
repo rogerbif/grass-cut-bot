@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://test_goal_sound_and_collection_uid"]
+
+[ext_resource type="Script" path="res://tests/test_goal_sound_and_collection.gd" id="1_test"]
+
+[node name="TestGoalSoundAndCollection" type="Node3D"]
+script = ExtResource("1_test")

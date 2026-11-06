@@ -2,13 +2,13 @@
 	"card_goals": {
 		"flower": 4,
 		"grass_green": 82,
-		"grass_yellow": 10,
+		"grass_yellow": 42,
 		"wheat": 36
 	},
 	"goals": {
 		"flower": 4,
 		"grass_green": 82,
-		"grass_yellow": 59,
+		"grass_yellow": 42,
 		"wheat": 36
 	},
 	"grass_vectors": [

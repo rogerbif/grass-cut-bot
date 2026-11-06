@@ -162,11 +162,13 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 
 	if goals.has(goal_key):
 		var goal_info: Dictionary = goals[goal_key]
+		var was_completed: bool = int(goal_info["current"]) >= int(goal_info["target"])
 		goal_info["current"] += 1
 		var remaining: int = maxi(0, int(goal_info["target"]) - int(goal_info["current"]))
 		goal_updated.emit(goal_key, remaining, goal_info["target"])
 
-		if remaining == 0:
+		# Dispara som e evento de meta concluída estritamente na transição (apenas 1 vez)
+		if not was_completed and remaining == 0:
 			goal_completed.emit(goal_key)
 			if AudioManager != null:
 				AudioManager.play_sfx("goal_completed")
