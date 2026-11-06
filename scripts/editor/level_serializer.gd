@@ -126,7 +126,10 @@ static func save_level_json(
 		}
 
 	# Grava as metas finais (idênticas ao gameplay) para o Card de Fase do menu (Home/Mapa)
-	payload["card_goals"] = LevelCardDataScript.compute_goals(payload)
+	if not custom_goals.is_empty():
+		payload["card_goals"] = custom_goals.duplicate(true)
+	else:
+		payload["card_goals"] = LevelCardDataScript.compute_goals(payload)
 	LevelCardDataScript.clear_cache()
 
 	var json_str: String = JSON.stringify(payload, "\t")
@@ -145,7 +148,7 @@ static func save_level_json(
 
 static func list_existing_levels() -> Array[int]:
 	var found: Array[int] = []
-	for i: int in range(1, 51):
+	for i: int in range(1, 101):
 		if FileAccess.file_exists(get_json_path(i)):
 			found.append(i)
 	if found.is_empty():

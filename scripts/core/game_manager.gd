@@ -301,7 +301,7 @@ func next_level() -> void:
 	get_tree().paused = false
 	var next_idx: int = current_level + 1
 	var next_json: String = "res://data/levels/level_%02d.json" % next_idx
-	if not FileAccess.file_exists(next_json) and next_idx > 20:
+	if not FileAccess.file_exists(next_json) and next_idx > 40:
 		current_level = 1
 	else:
 		current_level = next_idx

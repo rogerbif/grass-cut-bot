@@ -140,15 +140,17 @@ Jogadores casuais de dispositivos móveis que buscam sessões rápidas de descom
 
 ## 6. Level Design e Progressão
 
-### 6.1 Matriz de 20 Fases Canônicas
-O jogo conta com 20 fases serializadas em JSON v3 (`data/levels/level_XX.json`), organizadas em 5 Tiers de maestria:
-1. **Tier 1 (Fases 1 a 4) — O Despertar do Jardineiro:** Ilhas amplas e acolhedoras, tutorial do joystick e introdução ao trigo e primeiras flores.
-2. **Tier 2 (Fases 5 a 8) — Expansão Geográfica & Istmos:** Pontes estreitas de 2 blocos cercadas de água e metas triplas.
-3. **Tier 3 (Fases 9 a 12) — Desafio Tático & Chicanes:** Penínsulas em "S", ilhas trevo e curvas fechadas.
-4. **Tier 4 (Fases 13 a 16) — Labirintos & Alta Densidade:** Trigo pesado, corredores com rochas e ilhotas em degraus.
-5. **Tier 5 (Fases 17 a 20) — O Grande Arquipélago Real:** Malha de xadrez, santuários solares e a épica *Grande Coroa Real* (Fase 20) com transição para o Ciclo Mestre.
+### 6.1 Matriz de 40 Fases Canônicas (Mundo 1: Ilhas Tropicais)
+O jogo conta com **40 fases canônicas** serializadas em JSON v4 (`data/levels/level_XX.json`), escalonando desde ~25 tiles até a mega-ilha de 100 tiles exatos (Fase 40), organizadas em 4 Tiers de maestria:
+1. **Tier 1 (Fases 1 a 10) — O Despertar do Cortador (~25 a ~48 tiles):** Ilhas acolhedoras, introdução do joystick e tutorial botânico sequencial (trigo de 2 hits, margaridas, sinos, rosas, girassóis, tulipas, corolas e canteiros). Fases 1 a 3 sem rochas; estreia da 1ª rocha na Fase 4.
+2. **Tier 2 (Fases 11 a 20) — Istmos, Pontes e Navegação Tática (~50 a ~66 tiles):** Travessias marítimas, caminhos em "S", canais internos e baías de alta velocidade com obstáculos estratégicos.
+3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (~70 a ~85 tiles):** Grandes arquipélagos conectados, tabuleiros florais e fortalezas agrícolas densas.
+4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (~88 a 100 tiles):** Monumentos colossais explorados pela câmera suave, finalizando na *Grande Coroa Real* (Fase 40) com passagem triunfal para o Ciclo Mestre.
 
-### 6.2 Editor de Fases In-Game para PC
+### 6.2 Cores de Grama Estéticas & Metas Unificadas
+O solo das ilhas apresenta desenhos artísticos em até 7 cores de grama, enquanto o Top HUD contabiliza todas as aparas ceifadas sob a meta unificada 🌿 `"grass"`. Isso mantém o HUD perfeitamente legível na vertical (1 a 4 objetivos usuais, máximo de 6 no clímax tardio).
+
+### 6.3 Editor de Fases In-Game para PC
 Ferramenta interna acessível via atalho `F2` em modo janela widescreen ($1600 \times 900$):
 - Pincel livre de fitas poligonais suaves via Clipper C++ e amostragem Poisson Disk.
 - Carimbos analíticos de formas matemáticas de 1x a 20x com rotação de $5^\circ$ em $5^\circ$ (`R`).
@@ -162,9 +164,9 @@ Ferramenta interna acessível via atalho `F2` em modo janela widescreen ($1600 \
 
 ### 7.1 Dimensionamento de Fases para Lançamento
 Para atender aos padrões de retenção da indústria mobile casual:
-- **MVP / Soft Launch (20 Fases):** As 20 fases canônicas atuais com o *Ciclo Mestre* (rejogabilidade infinita preservando upgrades) formam o escopo completo para o teste inicial na Google Play Store.
-- **Lançamento Global Oficial (30 a 40 Fases):** Expansão com mais 10 a 20 fases cobrindo novos biomas e dinâmicas de jogo, garantindo entre 1h e 1h30 de jogabilidade inédita antes do Ciclo Mestre.
-- **Live-Ops (50+ Fases):** Pacotes mensais temáticos de 5 a 10 fases em atualizações sazonais.
+- **Lançamento Oficial Mundo 1 (40 Fases):** As 40 fases canônicas atuais com o *Ciclo Mestre* (rejogabilidade infinita preservando upgrades) formam o escopo completo para o lançamento global na Google Play Store.
+- **Novos Mundos Futuros (Mundo 2: Deserto / Oásis, Mundo 3: Gelo / Neve):** Expansão estruturada em biomas novos e mecânicas temáticas.
+- **Live-Ops (50+ Fases):** Pacotes temáticos sazonais com novas espécies botânicas e desafios.
 
 ### 7.2 Pilares de Evolução Canônica
 1. **Metagame & Retenção:** Ativação da aba *Coleção* com o **Herbário Botânico** (estatísticas acumuladas das 7 cores de grama, trigo e 6 flores com metas de maestria) e loja com pinturas de chassi para o Cutter Bit.

@@ -1,105 +1,100 @@
 # Estrutura das Fases e Level Design 🗺️🌱
 
-Este documento detalha o desenho dos estágios, a arquitetura de dados JSON, a progressão de dificuldade, a curva de aprendizado e o catálogo oficial das **primeiras 20 fases** em **Grass Cut Bot**.
+Este documento detalha o desenho dos estágios, a arquitetura de dados JSON v4, a progressão de dificuldade, a curva de aprendizado e o catálogo oficial das **40 fases canônicas** em **Grass Cut Bot**, correspondentes ao **Mundo 1: Ilhas Tropicais (O Grande Arquipélago)**.
 
 ---
 
 ## 1. Filosofia de Level Design Hiper-Casual
 
-1. **Sessões Rápidas (1 a 2 Minutos):**
-   - Os estágios são projetados para conclusão ágil durante pequenos intervalos diários no mobile.
-2. **Crescimento Gradual de Complexidade:**
-   - O jogador começa focado puramente na sensação do corte e na mecânica do joystick. Elementos de desafio cognitivo (evitar pedras, desviar de cotovelos de água, priorizar metas de colheita e trigo resistente de 2 hits) são introduzidos passo a passo.
-3. **Gratificação Imediata:**
-   - A distribuição de plantas garante fluxo contínuo de cortes, sem áreas vazias excessivas que quebrem o ritmo do jogo.
-4. **Zero Cercas & Ilhas Flutuantes 3D:**
+1. **Sessões Rápidas e Dinâmicas (1 a 3 Minutos):**
+   - Os estágios foram projetados para conclusão ágil durante pequenos intervalos diários no mobile (sessões *one-thumb*).
+2. **Escalonamento Geográfico Gradual:**
+   - As ilhas começam compactas e acolhedoras (~25 a 35 tiles nas primeiras fases) e escalonam de forma suave até mega-ilhas de até **100 tiles** nos estágios finais, aproveitando a câmera isométrica contínua com amortecimento suave.
+3. **Cores de Grama Estéticas & Meta Unificada Limpa:**
+   - O solo é enriquecido com mandalas, mosaicos, anéis e faixas em 7 cores estéticas (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_white`, `grass_red`, `grass_black`).
+   - Todas as aparas de grama cortadas abatem uma **única meta unificada de grama 🌿 (`"grass"`)** no HUD.
+   - O Top HUD permanece limpo e legível na proporção vertical 9:16, variando entre **1 e no máximo 6 objetivos simultâneos** mesmo no clímax final.
+4. **Introdução Consciente de Rochas Sólidas:**
+   - As **Fases 1, 2 e 3 são 100% livres de obstáculos rígidos**, garantindo foco na fluidez do joystick e no corte relaxante.
+   - A primeira rocha (`rock`) estreia na **Fase 4**, com introdução progressiva de 1 a 10 rochas por ilha.
+   - O espaçamento centro a centro entre quaisquer duas rochas adjacentes obedece estritamente ao raio de passagem seguro ($> 2.80\text{m}$).
+5. **Zero Cercas & Ilhas Flutuantes 3D:**
    - Todas as fases são ilhas estilizadas sobre o oceano azul turquesa contínuo (`water_ocean.tscn`), com contenção invisível costeira (`Layer 1`) e espuma decorativa dinâmica gerada pelo `LevelJsonLoader`.
 
 ---
 
-## 2. A Matriz Oficial das 20 Fases Canônicas
+## 2. A Matriz Oficial das 40 Fases Canônicas (Mundo 1)
 
-Todas as 20 fases residem em formato canônico JSON na pasta `res://data/levels/level_%02d.json` e são carregadas dinamicamente com prioridade 1 pelo `LevelController`:
+Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/levels/level_%02d.json`:
 
-### Parâmetros Técnicos de Dimensionamento Invariantes
-* **Spawn Seguro Central:** Área circular central com raio livre $R \ge 1.47\text{m}$ ($1.05 \times \text{raio da lâmina nível 6}$ de $1.40\text{m}$). O miolo inicial permanece 100% livre de qualquer obstáculo rígido (`rock`, `wheat`, `flower_*`), além de possuir uma clareira sutil de $0.72\text{m}$ na grama para evitar cortes automáticos no frame 0 antes do primeiro toque do jogador.
-* **Espaçamento entre Rochas:** Distância mínima centro a centro entre duas rochas sempre superior a $2.80\text{m}$ ($> 2 \times \text{raio da lâmina nível 6}$), garantindo passagem folgada mesmo com o maior alcance de corte.
-* **Regra de Desbloqueio de Obstáculos:** As **Fases 1 a 5** contêm estritamente 0 rochas (apenas vegetações e flores). As rochas sólidas (`rock`) são introduzidas progressivamente a partir da **Fase 6**.
-* **Recorte Costeiro e Folga Interna:** Todos os polígonos vetoriais de grama são automaticamente intersectados com a máscara interna da ilha (`0.34m` de recuo das bordas costeiras, garantindo 0 tufos sobre a água ou na inclinação da falésia). Todos os objetos (`rock`, `wheat`, `flower_*`) residem em células internas planas, e todas as rochas possuem os 8 vizinhos (incluindo diagonais) dentro da ilha para impedir estrangulamento contra a parede invisível costeira.
-* **Contabilização 1:1 Exata de Trigo e Flores:** Tufos de grama mantêm clareira de $0.26\text{m}$ ao redor do caule de flores e trigos, e cada instância de `wheat` e `flower_*` é contabilizada de forma 1:1 direta nas metas do HUD.
-
-| Fase | Nome Temático | Silhueta / Geometria da Ilha | Grid ($W \times H$) | Tipos de Vegetação | Qtd. Rochas | Metas do HUD | Tempo | Lição / Foco de Design |
-| :---: | :--- | :--- | :---: | :--- | :---: | :--- | :---: | :--- |
-| **01** | *Boas-Vindas ao Jardim* | Quadrado suave $9 \times 9$ | $13 \times 13$ | `grass_green` + `grass_yellow` | 0 | 🌿 34 Gramas | 75s | Tutorial de corte básico; ceifa instantânea e movimentação fluida. |
-| **02** | *O Prado Bicolor* | Quadrado chanfrado $9 \times 9$ | $13 \times 13$ | `grass_green` + `yellow` + `blue` | 0 | 🌿 48 Gramas | 80s | Diferenciação visual com faixas diagonais e manchas azuis sem sobreposição. |
-| **03** | *Introdução à Resistência* | Ilha quadrada com cruz `island_dirt` | $15 \times 15$ | `grass_green` + `yellow` + `wheat` | 0 | 🌿 65 Gramas<br>🌾 8 Trigos | 105s | Primeiro contato com trigo rígido (2 hits, tremor mecânico) em 4 lotes agrícolas. |
-| **04** | *O Jardim Nobre* | Octógono com canteiros `island_dirt` | $15 \times 15$ | `grass_blue` + `purple` + `daisy` + `bell` | 0 | 🌿 48 Gramas<br>🌼 4 + 🔔 4 | 110s | Flores nobres de 3 hits (+5 moedas) e despetalação progressiva em canteiros. |
-| **05** | *Mandala Floral Mista* | Cruz arredondada ampla $13 \times 13$ | $17 \times 17$ | `white` + `green` + `yellow` + `wheat` + `rose` + `sunflower` | 0 | 🌿 81 Gramas<br>🌾 8 Trigos<br>🌹 2 + 🌻 2 | 135s | Clímax do primeiro mundo sem rochas; anéis concêntricos de resistência. |
-| **06** | *O Primeiro Rochedo* | Retângulo alongado $15 \times 7$ | $19 \times 11$ | `grass_green` + `grass_yellow` | 2 | 🌿 49 Gramas | 90s | Primeira aparição de rochas (Layer 8) destacadas em `island_dirt`; recuo de 4.75 m/s. |
-| **07** | *O Triângulo de Pedra* | Octógono amplo $13 \times 13$ | $17 \times 17$ | `grass_blue` + estrela 6 pontas `white` | 3 | 🌿 60 Gramas | 90s | Navegação entre 3 rochas triangulares abertas com estrela hexagonal guia. |
-| **08** | *Caminho Dividido* | Formato de U com trilha em Y | $19 \times 17$ | `green` + `purple` + `red` + `daisy` + `bell` | 2 | 🌿 63 Gramas<br>🌼 1 + 🔔 1 | 100s | Penínsulas gêmeas de 5 blocos com trilha em Y e flores de recompensa nas pontas. |
-| **09** | *Pomar Protegido* | Quadrado chanfrado $13 \times 13$ | $17 \times 17$ | `green` + `yellow` + `tulip` + `sunflower` | 4 | 🌿 70 Gramas<br>🌷 2 + 🌻 2 | 120s | Coleta de flores raras em nichos de `island_dirt` atrás de anel de rochas. |
-| **10** | *O Labirinto de Trigo e Granito* | Ilha quadrada com trilhas de terra | $19 \times 19$ | `grass_yellow` + `green` + `wheat` | 4 | 🌿 75 Gramas<br>🌾 16 Trigos | 150s | Labirinto híbrido: paredes temporárias de trigo e pilares de granito. |
-| **11** | *Ilhotas Conectadas* | Duas ilhas unidas por istmo largo | $21 \times 13$ | `grass_blue` + `white` + `flower_bell` | 3 | 🌿 64 Gramas<br>🔔 4 Sinos | 110s | Precisão de alinhamento ao cruzar o istmo sobre o oceano. |
-| **12** | *Vulcânica* | Octógono vulcânico $13 \times 13$ | $17 \times 17$ | `black` + fissuras `red`/`yellow` + `corolla` | 4 | 🌿 67 Gramas<br>🏵️ 4 Corolas | 120s | Atmosfera dramática com estrela vulcânica de 8 pontas e flores corola rígidas. |
-| **13** | *O Relógio de Quatro Pilares* | Cruz simétrica com ponteiros `dirt` | $19 \times 19$ | 4 cores de grama + `flower_rose` | 4 | 🌿 77 Gramas<br>🌹 4 Rosas | 125s | Setorização em 4 quadrantes com ponteiros de terra e marcos de rocha. |
-| **14** | *Serpente de Trigo* | Retângulo comprido $17 \times 9$ | $21 \times 13$ | `white` + `green` + `yellow` + trilha `wheat` | 3 | 🌿 83 Gramas<br>🌾 12 Trigos | 140s | Zigue-zague contínuo sobre trilha `island_dirt` com bolsões de slalom amarelos. |
-| **15** | *O Parque Central de Canteiros* | Quadrado chanfrado $15 \times 13$ | $19 \times 17$ | `grass_green` + `yellow` + `flower_bed` | 5 | 🌿 77 Gramas<br>🪻 6 Canteiros | 140s | Micro-recompensas em 6 canteiros floridos emoldurados em `island_dirt`. |
-| **16** | *O Anel Exterior de Obstáculos* | Octógono amplo $15 \times 15$ | $19 \times 19$ | `yellow` (centro) + `red` + `sunflower` | 6 | 🌿 78 Gramas<br>🌻 6 Girassóis | 145s | Centro livre para velocidade; precisão nas bordas com 6 girassóis. |
-| **17** | *Alameda Imperial* | Ilha em H com boulevard `dirt` | $21 \times 17$ | `grass_green` + `yellow` + `wheat` + `tulip` | 4 | 🌿 84 Gramas<br>🌾 8 Trigos<br>🌷 4 Tulipas | 155s | Corredores cerimoniais ladeados por trigo, tulipas nobres e boulevard central. |
-| **18** | *O Labirinto dos Quatro Diamantes*| Diamante amplo $17 \times 17$ | $19 \times 19$ | Losangos `purple` + `white` + `wheat` + `bed` | 4 | 🌿 55 Gramas<br>🌾 4 Trigos<br>🪻 4 Canteiros | 130s | Desafio geométrico com losangos vetoriais de grama, 4 rochas e trigo. |
-| **19** | *O Oásis Multicolorido* | Estrela octogonal $15 \times 15$ | $19 \times 19$ | Mandala estelar 8 pontas (4 gramas) + 5 flores | 5 | 🌿 75 Gramas<br>🌸 5 Flores | 135s | Mandala estelar concêntrica com pentágono aberto de rochas e 5 espécies de flor. |
-| **20** | *Arquipélago da Maestria* | Trevo de 4 folhas $17 \times 17$ | $21 \times 21$ | 4 folhas coloridas + núcleo dourado/branco + `wheat` + flores | 6 | 🌿 133 Gramas<br>🌾 6 Trigos<br>🌷 2 + 🏵️ 2 | 190s | Clímax supremo celebrando todas as cores de grama nas 4 folhas do trevo. |
+| Fase | Nome Temático | Silhueta da Ilha | Grid ($W \times H$) | Qtd. Rochas | Metas do HUD | Foco e Progressão de Design |
+| :---: | :--- | :--- | :---: | :---: | :--- | :--- |
+| **01** | *Primeiros Passos* | Quadrado suave $5 \times 5$ | $11 \times 11$ | 0 | 🌿 Grama | Tutorial inicial de condução e corte radial básico. |
+| **02** | *O Prado Dourado* | Quadrado chanfrado | $13 \times 13$ | 0 | 🌿 Grama | Faixas diagonais estéticas verde e amarela. |
+| **03** | *O Primeiro Trigal* | Cruz com canteiros | $13 \times 13$ | 0 | 🌿 Grama<br>🌾 4 Trigos | Estreia do Trigo Maduro rígido (2 hits). |
+| **04** | *O Canteiro de Margaridas* | Octógono suave | $13 \times 13$ | **1 Rocha** | 🌿 Grama<br>🌼 2 Margaridas | **Estreia da 1ª Rocha** e da Margarida (3 hits). |
+| **05** | *A Enseada dos Sinos* | Ferradura compacta | $15 \times 15$ | 2 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🔔 2 Sinos | Estreia da Flor Sino com navegação em U. |
+| **06** | *O Jardim das Rosas* | Retângulo alongado | $17 \times 11$ | 2 Rochas | 🌿 Grama<br>🌹 4 Rosas | Estreia da Rosa Nobre em canteiros laterais. |
+| **07** | *Colina dos Girassóis* | Octógono amplo | $15 \times 15$ | 3 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 3 Girassóis | Estreia do Girassol e rochas triangulares. |
+| **08** | *Brisa das Tulipas* | Duas ilhas com ponte | $19 \times 13$ | 3 Rochas | 🌿 Grama<br>🌷 2 Tulipas<br>🌼 2 Margaridas | Estreia da Tulipa Real sobre ponte de terra. |
+| **09** | *Círculo das Corolas* | Estrela de 6 pontas | $17 \times 17$ | 3 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 3 Corolas | Estreia da Corola Nobre com grama roxa. |
+| **10** | *O Parque de Canteiros* | Cruz arredondada | $17 \times 17$ | 4 Rochas | 🌿 Grama<br>🪻 4 Canteiros<br>🌹 2 Rosas | Estreia do Canteiro Floral (Hortênsia). |
+| **11** | *As Ilhas Gêmeas* | Istmo central duplo | $21 \times 15$ | 3 Rochas | 🌿 Grama<br>🌼 2 Margaridas<br>🔔 2 Sinos | Travessia marítima entre duas grandes baías. |
+| **12** | *Serpente de Trigo* | Sinuoso em "S" | $21 \times 15$ | 4 Rochas | 🌿 Grama<br>🌾 3 Trigos<br>🌹 2 Rosas | Slalom longo contornando paredes de rocha e trigo. |
+| **13** | *O Relógio de Granito* | 4 quadrantes cardeais | $19 \times 19$ | 4 Rochas | 🌿 Grama<br>🌻 2 Girassóis<br>🌷 2 Tulipas | Setorização cromática e rochas nas diagonais. |
+| **14** | *Baía da Ferradura* | Ferradura ampla | $21 \times 19$ | 4 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 2 Corolas | Manobras nas pontas da falésia sobre o mar. |
+| **15** | *Cruz dos Quatro Ventos* | Cruz monumental | $21 \times 21$ | 4 Rochas | 🌿 Grama<br>🪻 2 Canteiros<br>🔔 2 Sinos | Canteiros nobres nas extremidades dos 4 braços. |
+| **16** | *O Trevo Imperial* | Trevo de 4 folhas | $21 \times 21$ | 5 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 2 Rosas<br>🌷 2 Tulipas | Alta diversidade com 4 folhas floridas. |
+| **17** | *Canal das Margaridas* | Lagoa central vazada | $21 \times 17$ | 5 Rochas | 🌿 Grama<br>🌼 4 Margaridas<br>🪻 1 Canteiro | Navegação ao redor de canal de água interno. |
+| **18** | *Labirinto Solar* | Labirinto com anel | $21 \times 21$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 3 Girassóis | Paredes densas de granito e trigo dourado. |
+| **19** | *Península Vulcânica* | Octógono de ardósia | $21 \times 21$ | 6 Rochas | 🌿 Grama<br>🏵️ 2 Corolas<br>🌹 2 Rosas | Atmosfera dramática com grama preta e vermelha. |
+| **20** | *O Primeiro Grande Atol* | Anel oceânico fechado | $23 \times 23$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌷 2 Tulipas<br>🔔 1 Sino | Clímax do meio do jogo em circuito circular. |
+| **21** | *Três Marias* | 3 ilhas com pontes | $25 \times 15$ | 6 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌼 1 Margarida<br>🔔 1 Sino | Deslocamento tático entre 3 ilhas consecutivas. |
+| **22** | *Boulevard de Outono* | Avenida central larga | $23 \times 19$ | 6 Rochas | 🌿 Grama<br>🌹 4 Rosas<br>🪻 2 Canteiros | Grande alameda floral de alta velocidade. |
+| **23** | *A Fortaleza de Trigo* | Bastilha fortificada | $23 \times 21$ | 7 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 2 Girassóis | Muralhas externas com núcleo de girassóis. |
+| **24** | *Ilha do Zigue-Zague* | Slalom diagonal | $23 \times 17$ | 7 Rochas | 🌿 Grama<br>🌷 3 Tulipas<br>🏵️ 1 Corola | Curvas rápidas exigindo controle fino do joystick. |
+| **25** | *O Vale das Quatro Flores*| Trevo de 4 espécies | $23 \times 23$ | 7 Rochas | 🌿 Grama<br>🌼 1 Marg.<br>🔔 1 Sino<br>🌹 1 Rosa<br>🌻 1 Gir. | 5 objetivos independentes nos 4 quadrantes. |
+| **26** | *O Grande Diamante* | Losango monumental | $23 \times 23$ | 7 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🏵️ 2 Corolas<br>🪻 2 Canteiros | Desafio nas arestas pontiagudas do diamante. |
+| **27** | *Arquipélago do Sol* | Ilha solar + 4 satélites | $25 \times 25$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 2 Girassóis<br>🌷 2 Tulipas | Núcleo solar com satélites de vegetação. |
+| **28** | *Caminhos Cruzados* | Tabuleiro quadriculado | $23 \times 23$ | 8 Rochas | 🌿 Grama<br>🌹 2 Rosas<br>🔔 2 Sinos<br>🪻 2 Canteiros | Mosaico de trilhas de terra com rochas alternadas. |
+| **29** | *O Santuário Esmeralda* | Anéis concêntricos | $23 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌷 2 Tulipas<br>🏵️ 2 Corolas | Concentração de culturas nobres no centro. |
+| **30** | *A Cidadela Costeira* | Fortaleza com bastiões | $25 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 2 Rosas<br>🌻 2 Girassóis | Transição para as mega-ilhas com bastiões costeiros. |
+| **31** | *O Labirinto de Minos* | Labirinto de 94 tiles | $25 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌼 2 Margaridas<br>🪻 2 Canteiros | Extensa área exploratória com corredores amplos. |
+| **32** | *Arquipélago em H* | Duas ilhas monumentais | $25 \times 23$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🔔 2 Sinos<br>🌷 2 Tulipas | Conexão por passadiço triplo de alta densidade. |
+| **33** | *O Grande Trevo Dourado*| Trevo de 96 tiles | $25 \times 25$ | 9 Rochas | 🌿 Grama<br>🌻 2 Girassóis<br>🌹 2 Rosas<br>🏵️ 2 Corolas | Pétalas monumentais com canteiros nobres. |
+| **34** | *O Dragão dos Mares* | Silhueta em "S" gigante | $25 \times 23$ | 9 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🪻 2 Canteiros<br>🌷 2 Tulipas | Extensão máxima com curva contínua sobre o mar. |
+| **35** | *O Tabuleiro dos Titãs* | Tabuleiro monumental | $25 \times 25$ | 9 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 2 Rosas<br>🌼 1 Marg.<br>🔔 1 Sino | Desafio tático com 5 metas simultâneas. |
+| **36** | *Oásis dos Cinco Reinos* | Estrela octogonal real | $25 \times 25$ | 10 Rochas | 🌿 Grama<br>🌹 1 Rosa<br>🌻 1 Gir.<br>🌷 1 Tul.<br>🏵️ 1 Cor. | Todas as espécies de flores nobres distribuídas. |
+| **37** | *O Grande Atol Imperial* | Lagoa oceânica gigante | $25 \times 25$ | 8 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🪻 2 Canteiros<br>🔔 2 Sinos | Mega-circuito circular de alta velocidade. |
+| **38** | *Constelação de Pedra* | Octógono monumental | $25 \times 25$ | 10 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌻 2 Girassóis<br>🏵️ 2 Corolas | Campo de manobra entre 10 rochas e muito trigo. |
+| **39** | *A Península do Infinito*| Símbolo do infinito $\infty$ | $25 \times 23$ | 10 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 1 Rosa<br>🌷 1 Tulipa<br>🪻 2 Cant. | Travessia rápida em oito duplo sobre as águas. |
+| **40** | *A Grande Coroa Real* 👑| **100 tiles exatos** | $25 \times 23$ | 4 Rochas | 🌿 Grama<br>🌾 2 Trigos<br>🌹 1 Rosa<br>🌻 1 Gir.<br>🌷 1 Tul.<br>🏵️ 1 Cor. | **Clímax supremo do Mundo 1:** As 6 metas canônicas e passagem triunfal para o Ciclo Mestre. |
 
 ---
 
-## 3. Progressão de 5 Tiers de Dificuldade
+## 3. Progressão de 4 Grandes Tiers do Mundo 1
 
-1. **Tier 1 (Fases 1 a 4) — O Despertar do Jardineiro:**
-   - Áreas amplas, livres de gargalos perigosos.
-   - Apresentação gradativa da grama amarela, trigo e primeiras flores.
-2. **Tier 2 (Fases 5 a 8) — Expansão Geográfica & Istmos:**
-   - Introdução de passadiços e pontes estreitas cercadas por água azul.
-   - Grama azul costeira e primeiras metas simultâneas de três tipos de vegetação.
-3. **Tier 3 (Fases 9 a 12) — Desafio Tático & Chicanes:**
-   - Geometrias sinuosas e bifurcações acentuadas.
-   - Grama roxa exótica e posicionamento de rochas em vértices de curvas fechadas.
-4. **Tier 4 (Fases 13 a 16) — Maestria & Economia:**
-   - Alta densidade de Trigo (2 hits), tornando os upgrades de Potência e Raio da Oficina muito vantajosos.
-   - Desafios lineares e espirais com tempos calibrados de forma competitiva.
-5. **Tier 5 (Fases 17 a 20) — Níveis Épicos & Clímax:**
-   - Grandes cenários monumentais (Tabuleiro, Santuário Solar, Labirinto Fortificado e Coroa Real).
-   - Recompensas massivas de moedas e conclusão com acesso ao Ciclo Mestre.
+1. **Tier 1 (Fases 01 a 10) — O Despertar do Cortador (~25 a ~48 tiles):**
+   - Apresentação passo a passo do robô, joystick, trigo resistente (2 hits) e introdução individual de cada flor nobre.
+   - 0 rochas até a Fase 3; 1ª rocha introduzida na Fase 4.
+2. **Tier 2 (Fases 11 a 20) — Istmos, Pontes e Navegação Tática (~50 a ~66 tiles):**
+   - Ilhas em U, H e passadiços sobre o mar azul.
+   - Combinações ricas de 2 a 4 espécies botânicas e posicionamento tático de obstáculos.
+3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (~70 a ~85 tiles):**
+   - Áreas amplas de corte e labirintos agrícolas, tornando vantajosos os upgrades de Raio e Potência da lâmina na Oficina.
+4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (~88 a 100 tiles):**
+   - O ápice de escala do Mundo 1 com as maiores ilhas do jogo, terminando na monumental *Grande Coroa Real* (Fase 40).
 
 ---
 
 ## 4. Arquitetura Técnica e Scripts
 
 - **Carregamento Runtime (`LevelController.gd` + `VegetationGrid.gd`):**
-  - Carrega `res://data/levels/level_%02d.json` e constrói a ilha e a vegetação em lote via `VegetationGrid` (`MultiMeshInstance3D` por tipo de tile e por espécie vegetal + Grade Espacial Discreta `0.40m`).
-  - Mapeia automaticamente as metas no HUD e posiciona o robô cortador no ponto `spawn` da fase em menos de `10 ms`.
-- **Renderização e Miniaturas no Menu Inicial (`IslandNode.gd`):**
-  - O `IslandNode` instancia a geometria da ilha em escala real $1.0\times$, alternando entre o mapa 2D vetorial (`MAP_VIEW`) e a visão volumétrica 3D com robô animado (`BOT_VIEW`).
-  - No `BOT_VIEW`, o filtro frontal `_is_in_front_of_bot` e `_set_rocks_in_front_hidden` desativa automaticamente qualquer vegetação, flor ou rocha em $z > \text{bot.z} - 0.30\text{m}$ e $|x - \text{bot.x}| < 3.20\text{m}$, garantindo visão limpa e desobstruída do cortador.
-- **Gerador Automatizado (`scripts/tools/generate_levels.js`):**
-  - Recalcula matematicamente o Autotile canônico (`IslandAutotiler`) de cada célula.
-  - Validador embutido (`scripts/tools/verify_levels.js`) que audita a integridade geométrica, limites de grid e ausência de sobreposições em todas as 20 fases.
-- **Ciclo de Vitória & Progressão (`GameManager.gd` & `hud.gd`):**
-  - Botão de "Próxima Fase ➔" integrado no modal de vitória.
-  - Ao vencer a Fase 20, o HUD exibe o troféu "🏆 Campeão do Jardim! 🏆" e possibilita iniciar o "Ciclo Mestre (Fase 1) 👑" preservando todas as moedas e upgrades da Oficina.
-
----
-
-## 5. Roteiro de Expansão para Lançamento Oficial (Fases 21 a 40)
-
-Para a publicação completa nas lojas móveis, o escopo do jogo expandirá de 20 para 40 fases divididas em 4 mundos/biomas visuais:
-
-1. **Mundo 1: Jardim Tropical Diurno (Fases 01 a 10):**
-   - Aprendizado, corte básico, introdução gradual de trigo, flores e rochas.
-2. **Mundo 2: Entardecer Dourado / Golden Hour (Fases 11 a 20):**
-   - Labirintos de trigo, istmos estreitos, clímax da primeira jornada e coroação no Trevo Real (Fase 20).
-3. **Mundo 3: Noite Estrelada & Farol do Cutter (Fases 21 a 30):**
-   - Céu estrelado profundo, mar noturno calmo, vaga-lumes e introdução de power-ups temporários (Turbo Nitro e Ímã de Moedas).
-4. **Mundo 4: Ilhas de Outono & Rochas Quebráveis (Fases 31 a 40):**
-   - Gramados dourados, solo terracota e introdução de rochas rachadas destrutíveis por lâminas de alto Tier, culminando no Grande Labirinto Imperial.
-
+  - Carrega dinamicamente qualquer arquivo `res://data/levels/level_%02d.json` de 1 a 40.
+  - O `VegetationGrid` instancia os tufos via `MultiMeshInstance3D` e grades espaciais discretas de $0.40\text{m}$, mantendo **60 FPS estáveis** mesmo em ilhas de 100 tiles.
+- **Suporte Nativo a Metas Unificadas (`VegetationGrid.gd`):**
+  - Quando a meta do HUD é `"grass"`, ceifar qualquer tufo de qualquer cor cosmética credita automaticamente o corte para a meta única de grama.
+- **Detecção Automática no Hub (`main_menu.gd`):**
+  - O mapa 3D do arquipélago escaneia dinamicamente até 100 fases, instanciando automaticamente todas as 40 ilhas em ziguezague com scroll vertical e teleporte.
+- **Gerador Headless Canônico (`scripts/tools/generate_all_40_levels.gd`):**
+  - Gera e audita todas as 40 fases com 0 erros de conformidade geométrica.

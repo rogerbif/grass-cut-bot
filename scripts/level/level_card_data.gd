@@ -5,8 +5,6 @@ extends RefCounted
 ## As metas ficam gravadas em cada JSON de fase na chave "card_goals" (não afeta o gameplay,
 ## que continua calculando as metas reais em VegetationGrid.build_from_level_json).
 
-const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
-
 const BIOME_NAME: String = "Ilha Tropical"
 const LEVELS_DIR: String = "res://data/levels"
 
@@ -15,7 +13,10 @@ static var _cache: Dictionary = {}
 
 ## Calcula as metas finais exatamente como o gameplay (usado ao salvar/gerar JSON).
 static func compute_goals(data: Dictionary) -> Dictionary:
-	var vg: Node3D = VegetationGridScript.new() as Node3D
+	var vg_script: GDScript = load("res://scripts/plants/vegetation_grid.gd") as GDScript
+	if vg_script == null:
+		return {}
+	var vg: Node3D = vg_script.new() as Node3D
 	var goals: Dictionary = vg.call("build_from_level_json", data, null, null) as Dictionary
 	vg.free()
 	return goals
