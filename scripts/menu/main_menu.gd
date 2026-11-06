@@ -16,6 +16,7 @@ const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node
 
 # Modais e Abas
 @onready var settings_modal: Control = $CanvasLayer/SettingsModal
+@onready var exit_modal: Control = $CanvasLayer.get_node_or_null("ExitModal") as Control
 @onready var bottom_nav: Control = $CanvasLayer/BottomNavBar
 @onready var tab_garage: Control = $CanvasLayer/TabViews/TabGarage
 @onready var tab_home: Control = $CanvasLayer/TabViews/TabHome
@@ -426,7 +427,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_handle_back_request()
 
 func _handle_back_request() -> void:
-	# 1. Se modal de configurações estiver aberto -> fecha configurações
+	# 1. Se o modal de confirmação de saída estiver aberto -> fecha o modal (cancela a saída)
+	if exit_modal != null and exit_modal.has_method("is_open") and exit_modal.call("is_open"):
+		exit_modal.call("close")
+		return
+
+	# 2. Se modal de configurações estiver aberto -> fecha configurações
 	if settings_modal != null and settings_modal.has_method("is_open"):
 		if settings_modal.is_open():
 			settings_modal.close_modal()
@@ -435,15 +441,20 @@ func _handle_back_request() -> void:
 		settings_modal.close_modal()
 		return
 
-	# 2. Se a câmera estiver na visão do arquipélago / mapa -> volta para visão focada no robô
+	# 3. Se a câmera estiver na visão do arquipélago / mapa -> volta para visão focada no robô
 	if menu_camera != null and menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
 		menu_camera.switch_to_bot_view()
 		return
 
-	# 3. Se estiver em aba secundária (Garagem, Coleção, Loja) -> volta para a Home (índice 0)
+	# 4. Se estiver em aba secundária (Garagem, Coleção, Loja) -> volta para a Home (índice 0)
 	if bottom_nav != null and bottom_nav.current_tab != 0:
 		bottom_nav.select_tab(0)
 		return
 
-	# 4. Se já estiver na tela inicial padrão (Home e visão do robô) -> encerra o app de forma limpa
+	# 5. Se já estiver na tela inicial padrão (Home e visão do robô) -> abre o modal de confirmação de saída
+	if exit_modal != null and exit_modal.has_method("open"):
+		exit_modal.call("open")
+		return
+
+	# Fallback caso o modal não esteja presente na árvore
 	get_tree().quit()

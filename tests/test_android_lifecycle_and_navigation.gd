@@ -86,6 +86,18 @@ func _ready() -> void:
 	assert(menu_node.bottom_nav.current_tab == 0, "Voltar de aba secundária deve retornar à Home (0)")
 	print("  ✔ Cenário 4C: Voltar de aba secundária retornou à Home (aba 0).")
 
+	# Cenário D: Já na Home -> Voltar abre o ExitModal (confirmação de saída)
+	assert(menu_node.exit_modal != null, "ExitModal deve existir na árvore")
+	assert(menu_node.exit_modal.is_open() == false, "ExitModal deve iniciar fechado")
+	menu_node._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	assert(menu_node.exit_modal.is_open() == true, "Voltar na tela inicial deve abrir o ExitModal")
+	print("  ✔ Cenário 4D: Voltar na tela inicial abriu modal de confirmação de saída com sucesso.")
+
+	# Cenário E: ExitModal aberto -> Voltar cancela a saída e fecha o modal
+	menu_node._notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	assert(menu_node.exit_modal.is_open() == false, "Voltar com ExitModal aberto deve cancelar e fechar")
+	print("  ✔ Cenário 4E: Voltar com ExitModal aberto cancelou a saída e fechou o modal.")
+
 	menu_node.queue_free()
 
 	print("==================================================")

@@ -29,7 +29,8 @@ Como parte da preparação do **Grass Cut Bot** para publicação na **Google Pl
   1. Se `SettingsModal` estiver aberto: aciona `close_modal()`.
   2. Se a câmera estiver na visão panorâmica do arquipélago 3D (`CameraMode.MAP_VIEW`): retorna suavemente à visão focada no robô (`switch_to_bot_view()`).
   3. Se estiver em aba secundária (Garagem, Coleção ou Loja): retorna à aba Home (índice 0).
-  4. Se já estiver na tela inicial do robô: encerra o app de forma limpa (`get_tree().quit()`).
+  4. Se o modal de confirmação de saída (`ExitModal`) estiver aberto: fecha o modal (cancela a saída).
+  5. Se já estiver na tela inicial do robô: abre o modal cyberpunk de confirmação (`ExitModal`) perguntando "SAIR DO JOGO?", com opções "CONTINUAR JOGANDO" (verde neon) e "SAIR DO APLICATIVO" (vermelho cyber que salva e encerra via `get_tree().quit()`).
 - Em `menu_camera.gd`: habilitada a interrupção suave de transições ativas (`active_tween.kill()`) ao chamar `switch_to_bot_view()`, permitindo retorno imediato sem travas.
 - Em `settings_modal.gd`: adicionada flag `_is_closing`, método `is_open() -> bool` e suporte a `ui_cancel` para cancelamento instantâneo.
 

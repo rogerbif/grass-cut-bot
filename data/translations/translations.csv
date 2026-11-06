@@ -1,0 +1,57 @@
+keys,pt_BR,en,es
+NAV_HOME,Início,Home,Inicio
+NAV_WORKSHOP,Oficina,Workshop,Taller
+NAV_HERBARIUM,Herbário,Herbarium,Herbario
+NAV_STORE,Loja,Store,Tienda
+BTN_PLAY,JOGAR,PLAY,JUGAR
+BTN_LEVELS,FASES,LEVELS,NIVELES
+BTN_EDITOR,EDITOR,EDITOR,EDITOR
+SETTINGS_TITLE,CONFIGURAÇÕES,SETTINGS,CONFIGURACIÓN
+SETTINGS_GRAPHICS,Gráficos,Graphics,Gráficos
+SETTINGS_MUSIC,Música,Music,Música
+SETTINGS_SFX,Efeitos,Sound FX,Efectos
+SETTINGS_VIBRATION,Vibração,Vibration,Vibración
+SETTINGS_LANGUAGE,Idioma,Language,Idioma
+SETTINGS_RESET,Zerar Progresso,Reset Progress,Reiniciar Progreso
+SETTINGS_RESET_CONFIRM,Toque para confirmar!,Tap to confirm!,¡Toca para confirmar!
+SETTINGS_SUPPORT,Suporte / Feedback,Support / Feedback,Soporte / Feedback
+SETTINGS_ON,ON,ON,ON
+SETTINGS_OFF,OFF,OFF,OFF
+SETTINGS_QUALITY_BALANCED,Equilibrado,Balanced,Equilibrado
+SETTINGS_QUALITY_PERFORMANCE,Performance,Performance,Rendimiento
+SETTINGS_QUALITY_HIGH,Alta,High,Alta
+SETTINGS_TOAST_RESET,Progresso zerado com sucesso!,Progress reset successfully!,¡Progreso reiniciado con éxito!
+SETTINGS_TOAST_SAVED,Configurações salvas!,Settings saved!,¡Configuración guardada!
+HUD_TIME,TEMPO,TIME,TIEMPO
+HUD_GOALS,METAS,GOALS,OBJETIVOS
+HUD_PAUSE,PAUSA,PAUSE,PAUSA
+HUD_RESUME,CONTINUAR,RESUME,CONTINUAR
+HUD_RETRY,REINICIAR,RETRY,REINTENTAR
+HUD_NEXT_LEVEL,PRÓXIMA FASE,NEXT LEVEL,SIGUIENTE NIVEL
+HUD_VICTORY_TITLE,VITÓRIA!,VICTORY!,¡VICTORIA!
+HUD_DEFEAT_TITLE,TEMPO ESGOTADO!,TIME'S UP!,¡TIEMPO AGOTADO!
+HUD_GOAL_COMPLETED,Meta Concluída!,Goal Completed!,¡Objetivo Completado!
+HUD_LEVEL_LABEL,Fase %d,Level %d,Nivel %d
+HUD_LEVEL_TITLE,FASE %d,LEVEL %d,NIVEL %d
+PLANT_GRASS_GREEN,Grama Comum,Common Grass,Césped Común
+PLANT_GRASS_YELLOW,Grama Seca,Dry Grass,Césped Seco
+PLANT_GRASS_RED,Grama Carmim,Crimson Grass,Césped Carmesí
+PLANT_GRASS_BLUE,Grama Celestial,Sky Grass,Césped Celeste
+PLANT_GRASS_PURPLE,Grama Mística,Mystic Grass,Césped Místico
+PLANT_GRASS_BLACK,Grama Sombria,Shadow Grass,Césped Sombrío
+PLANT_GRASS_WHITE,Grama Neviada,Snowy Grass,Césped Nevado
+PLANT_WHEAT,Trigo Dourado,Golden Wheat,Trigo Dorado
+PLANT_FLOWER_DAISY,Margarida Branca,White Daisy,Margarita Blanca
+PLANT_FLOWER_ROSE_RED,Rosa Nobre,Noble Rose,Rosa Noble
+PLANT_FLOWER_ROSE_PINK,Rosa Delicada,Delicate Rose,Rosa Delicada
+PLANT_FLOWER_ROSE_BLACK,Rosa Negra,Black Rose,Rosa Negra
+PLANT_FLOWER_TULIP,Tulipa,Tulip,Tulipán
+PLANT_FLOWER_BELL,Campainha,Bluebell,Campanilla
+PLANT_FLOWER_SUNFLOWER,Girassol,Sunflower,Girasol
+PLANT_FLOWER_TUFT,Flor Silvestre,Wildflower,Flor Silvestre
+UPGRADE_BLADE_RADIUS,Raio da Lâmina,Blade Radius,Radio de la Cuchilla
+UPGRADE_BLADE_SPEED,Velocidade da Lâmina,Blade Speed,Velocidad de Cuchilla
+UPGRADE_ROBOT_SPEED,Velocidade do Robô,Robot Speed,Velocidad del Robot
+UPGRADE_MAX_LEVEL,NÍVEL MÁXIMO,MAX LEVEL,NIVEL MÁXIMO
+UPGRADE_LEVEL_FMT,Nível %d,Level %d,Nivel %d
+UPGRADE_BUY,MELHORAR,UPGRADE,MEJORAR

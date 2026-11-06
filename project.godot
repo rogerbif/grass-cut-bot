@@ -58,6 +58,10 @@ textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/directional_shadow/size=1024
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://data/translations/translations.en.translation", "res://data/translations/translations.es.translation", "res://data/translations/translations.pt_BR.translation")
+
 [shader_globals]
 
 global_cutter_pos={

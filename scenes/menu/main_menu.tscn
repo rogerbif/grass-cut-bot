@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://main_menu_scene_01"]
+[gd_scene load_steps=17 format=3 uid="uid://main_menu_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/menu/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Script" path="res://scripts/menu/menu_camera.gd" id="2_camera"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://tab_store_scene_01" path="res://scenes/menu/tabs/tab_store.tscn" id="7_tab_store"]
 [ext_resource type="PackedScene" uid="uid://bottom_nav_bar_scene_01" path="res://scenes/menu/bottom_nav_bar.tscn" id="8_nav_bar"]
 [ext_resource type="PackedScene" uid="uid://settings_modal_scene_01" path="res://scenes/ui/settings_modal.tscn" id="9_settings_modal"]
+[ext_resource type="PackedScene" uid="uid://exit_modal_cyber_01" path="res://scenes/ui/exit_modal.tscn" id="10_exit_modal"]
 [ext_resource type="Material" uid="uid://toon_water_mat_01" path="res://shaders/toon_water_material.tres" id="10_water_mat"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="11_coin"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_heart.svg" id="12_heart"]
@@ -144,6 +145,9 @@ layout_mode = 1
 [node name="BottomNavBar" parent="CanvasLayer" instance=ExtResource("8_nav_bar")]
 
 [node name="SettingsModal" parent="CanvasLayer" instance=ExtResource("9_settings_modal")]
+visible = false
+
+[node name="ExitModal" parent="CanvasLayer" instance=ExtResource("10_exit_modal")]
 visible = false
 
 [node name="FadeRect" type="ColorRect" parent="CanvasLayer"]

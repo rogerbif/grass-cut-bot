@@ -82,6 +82,7 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
     1. Se o modal de configurações estiver aberto: fecha o modal.
     2. Se a câmera estiver no modo mapa/arquipélago: retorna à visão focada no robô.
     3. Se estiver em aba secundária (Garagem, Coleção, Loja): retorna à aba Home (índice 0).
-    4. Se já estiver na tela inicial padrão: encerra o jogo de forma limpa (`get_tree().quit()`).
+    4. Se o modal de saída estiver aberto: fecha o modal (cancela a saída).
+    5. Se já estiver na tela inicial padrão: exibe o modal de confirmação de saída (`ExitModal`) perguntando se o usuário deseja fechar o app ou continuar jogando. Se confirmado, salva o progresso e encerra limpo (`get_tree().quit()`).
 - **Safe Area Dinâmica (Notches & Cutouts):**
   - O método `_apply_safe_area()` consulta `DisplayServer.get_display_safe_area()` e compensa dinamicamente a margem superior (`content_margin_top`) do `TopBar` no HUD e no Menu Principal, impedindo sobreposição em aparelhos com entalhes de câmera profundos.
