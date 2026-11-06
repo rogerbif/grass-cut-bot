@@ -36,6 +36,12 @@ if (-not (Test-Path $targetDir)) {
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
 }
 
+# Limpa resíduos de exportações APK anteriores para evitar duplicidade com assetPackInstallTime no AAB
+$apkAssets = "$PSScriptRoot\..\..\android\build\src\main\assets"
+if (Test-Path $apkAssets) {
+    Remove-Item -Path $apkAssets -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host ">>> COMPILANDO ANDROID APP BUNDLE (.AAB) PARA GOOGLE PLAY <<<" -ForegroundColor Cyan
 Write-Host "Preset: $PresetName" -ForegroundColor Yellow
