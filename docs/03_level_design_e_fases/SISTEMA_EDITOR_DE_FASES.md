@@ -23,14 +23,17 @@ Este documento descreve a arquitetura, ferramentas, controles e fluxo de persist
 
 Para garantir liberdade criativa, precisão no posicionamento e facilidade na edição (incluindo exclusão pontual de pedras e flores), o editor opera com arquitetura em 3 camadas independentes:
 
-- **Camada 0 — Terreno (Ilha 3D Procedural por Polígono Extrudado `IslandMeshBuilder`):**
-  - O terreno da ilha é renderizado como uma **malha procedural contínua única** (`ArrayMesh` - 1 Draw Call), sem frestas ou emendas entre peças.
-  - No editor, a grade atua como uma **régua de alinhamento inteligente (*Snapping Grid*)**:
-    - Carimbar ou pintar terreno funde automaticamente os formatos via união booleana (`Geometry2D.merge_polygons`).
-    - As paredes de falésia descem até $Y = -0.72\text{m}$ e o teto superior de grama/terra fica em $Y = 0.0\text{m}$.
-    - A fita de espuma costeira (`CoastalFoamRibbon`) e as barreiras invisíveis de contenção física (`Layer 1: Ground & Limits`) são reconstruídas em tempo real acompanhando o perímetro da ilha.
-  - **Borracha / Clique Direito:** Recorta e subtrai partes do terreno via `Geometry2D.clip_polygons()`, permitindo abrir baías, canais ou apagar blocos, removendo automaticamente qualquer objeto contido na área apagada.
-  - **Persistência:** Salva tanto a lista de blocos quanto o polígono contínuo fechado (`island_polygons`) no formato JSON v4.
+- **Camada 0 — Terreno Vetorial (Ilha 3D Procedural por Polígono Extrudado `VectorTerrainField` & `IslandMeshBuilder`):**
+  - O terreno da ilha é 100% vetorial e contínuo, renderizado como uma **malha procedural única** (`ArrayMesh` - 1 Draw Call), sem frestas ou emendas entre peças.
+  - **Pincéis e Carimbos Vetoriais:** A Camada 0 compartilha as ferramentas de formato do editor (Círculo, Retângulo com Cantos Arredondados, Pincel Livre/Fita e Estrela):
+    - **Pintura (Botão Esquerdo):** Adiciona e funde porções de terra firme via união booleana Clipper em C++ (`Geometry2D.merge_polygons`), preenchendo automaticamente furos sobrepostos.
+    - **Borracha (Botão Direito):** Recorta a terra firme via `Geometry2D.clip_polygons()`. Permite esculpir baías, canais, istmos e abrir lagos ou bacias de água no interior da ilha.
+    - **Falésias e Limites Costeiros em Lagos:** Falésias verticais chanfradas, fitas de espuma costeira e colisores invisíveis na Camada 1 são gerados tanto nas bordas oceânicas quanto nas margens internas dos lagos.
+  - **Grade como Guia Visual & Magnetismo (Snap):**
+    - A grade deixa de ser uma matriz limitadora de dados e passa a atuar como guia de medição e alinhamento métrico.
+    - Atalho `G` ou botão superior liga/desliga a visibilidade da grade instantaneamente.
+    - Modos de Snap ajustáveis: `0.50m`, `1.00m` ou `Livre` (ou segurando a tecla `Ctrl`).
+  - **Persistência (JSON v5 / v4):** Salva contornos externos (`island_polygons`) e lagos internos (`island_holes`), com geração de fallback retrocompatível de `terrain` para ferramentas legadas.
 
 - **Camada 1 — Grama Orgânica por Coordenadas Vetoriais 2D (`VectorGrassField`):**
   - Desenho vetorial contínuo no plano $XZ$ em metros, sem qualquer amarração a matrizes quadriculadas de grid.

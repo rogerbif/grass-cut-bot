@@ -132,6 +132,23 @@ static func get_island_polygons(data: Dictionary) -> Array[PackedVector2Array]:
 	var cell_size: float = float(grid_info.get("cell_size", DEFAULT_CELL_SIZE))
 	return IslandMeshBuilder.convert_tile_grid_to_polygons(terrain_arr, width, height, cell_size)
 
+
+static func get_island_holes(data: Dictionary) -> Array[PackedVector2Array]:
+	if data.has("island_holes") and data["island_holes"] is Array:
+		var raw_list: Array = data["island_holes"] as Array
+		var result: Array[PackedVector2Array] = []
+		for item: Variant in raw_list:
+			if item is Array:
+				var pts: PackedVector2Array = PackedVector2Array()
+				for pt_var: Variant in (item as Array):
+					if pt_var is Array and (pt_var as Array).size() >= 2:
+						var pt_arr: Array = pt_var as Array
+						pts.append(Vector2(float(pt_arr[0]), float(pt_arr[1])))
+				if pts.size() >= 3:
+					result.append(pts)
+		return result
+	return []
+
 static func instantiate_tile_node(tile_id: String, rot_deg: int) -> Node3D:
 	var scene_key: String = tile_id
 	if not TILE_SCENES.has(scene_key):

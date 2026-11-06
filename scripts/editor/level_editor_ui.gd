@@ -125,6 +125,9 @@ signal level_load_requested(level_id: int)
 signal grid_resize_requested(new_width: int, new_height: int)
 signal time_limit_changed(new_time: float)
 signal generate_base_island_requested()
+signal clear_terrain_requested()
+signal toggle_grid_requested()
+signal cycle_snap_requested()
 signal clear_objects_requested()
 signal clear_all_requested()
 signal undo_requested()
@@ -154,6 +157,8 @@ var spin_level: SpinBox
 var spin_width: SpinBox
 var spin_height: SpinBox
 var spin_time: SpinBox
+var btn_grid_toggle: Button
+var btn_snap_toggle: Button
 
 var btn_layer_terrain: Button
 var btn_layer_grass: Button
@@ -371,6 +376,16 @@ func _build_top_bar() -> void:
 	)
 	hbox.add_child(btn_resize)
 
+	btn_grid_toggle = _create_styled_button("📐 Grade: ON", Color(0.35, 0.75, 0.95), Vector2(0, 32))
+	btn_grid_toggle.tooltip_text = "Alterna a visibilidade da grade guia (Atalho: G)"
+	btn_grid_toggle.pressed.connect(func() -> void: toggle_grid_requested.emit())
+	hbox.add_child(btn_grid_toggle)
+
+	btn_snap_toggle = _create_styled_button("🧲 Snap: 0.50m", Color(0.95, 0.75, 0.25), Vector2(0, 32))
+	btn_snap_toggle.tooltip_text = "Alterna magnetismo ao grid: 0.50m -> 1.00m -> Livre (ou segure Ctrl)"
+	btn_snap_toggle.pressed.connect(func() -> void: cycle_snap_requested.emit())
+	hbox.add_child(btn_snap_toggle)
+
 	hbox.add_child(VSeparator.new())
 
 	var lbl_t: Label = Label.new()
@@ -469,7 +484,7 @@ func _build_left_panel() -> void:
 	lbl_layer.add_theme_color_override("font_color", Color(0.55, 0.88, 1.0))
 	vbox.add_child(lbl_layer)
 
-	btn_layer_terrain = _create_styled_button("🏝️ Camada 0: Terreno (0.8m)", Color(0.28, 0.78, 0.45), Vector2(0, 34))
+	btn_layer_terrain = _create_styled_button("🏝️ Camada 0: Terreno (Vetorial)", Color(0.28, 0.78, 0.45), Vector2(0, 34))
 	btn_layer_terrain.pressed.connect(func() -> void: layer_changed.emit(0))
 	vbox.add_child(btn_layer_terrain)
 
@@ -712,36 +727,64 @@ func _build_right_panel() -> void:
 	lbl_active_layer_banner.add_theme_stylebox_override("normal", banner_style)
 	vbox.add_child(lbl_active_layer_banner)
 
-	# 1. Seção de Terreno (0.80m)
+	# 1. Seção de Terreno Vetorial
 	section_terrain = VBoxContainer.new()
 	section_terrain.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	section_terrain.add_theme_constant_override("separation", 6)
 	vbox.add_child(section_terrain)
 
 	var lbl_t_pal: Label = Label.new()
-	lbl_t_pal.text = "🏝️ BLOCOS DE ILHA (TERRENO 0.8m)"
+	lbl_t_pal.text = "🏝️ TERRENO VETORIAL DA ILHA"
 	lbl_t_pal.add_theme_font_size_override("font_size", 13)
 	lbl_t_pal.add_theme_color_override("font_color", Color(0.45, 0.95, 0.65))
 	section_terrain.add_child(lbl_t_pal)
 
-	var grid_terrain: GridContainer = GridContainer.new()
-	grid_terrain.columns = 2
-	grid_terrain.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	grid_terrain.add_theme_constant_override("h_separation", 6)
-	grid_terrain.add_theme_constant_override("v_separation", 6)
-	section_terrain.add_child(grid_terrain)
+	var btn_gen_base: Button = _create_styled_button("🏝️ Gerar Ilha Base Retangular", Color(0.28, 0.82, 0.48), Vector2(0, 32))
+	btn_gen_base.tooltip_text = "Preenche o centro do mapa com uma ilha retangular de cantos arredondados"
+	btn_gen_base.pressed.connect(func() -> void: generate_base_island_requested.emit())
+	section_terrain.add_child(btn_gen_base)
 
-	for item in TilePaletteDB.TERRAIN_ITEMS:
-		var t_id: String = String(item["id"])
-		var b: Button = _create_styled_button("%s %s" % [String(item["icon"]), String(item["name"])], item["color"] as Color, Vector2(0, 34))
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 12)
-		b.clip_text = true
-		b.tooltip_text = String(item.get("desc", ""))
-		b.pressed.connect(func() -> void: terrain_tile_selected.emit(t_id))
-		grid_terrain.add_child(b)
-		terrain_buttons[t_id] = b
+	var btn_clear_ter: Button = _create_styled_button("🌊 Limpar Terreno (Oceano Aberto)", Color(0.35, 0.65, 0.95), Vector2(0, 32))
+	btn_clear_ter.tooltip_text = "Remove todo o terreno e transforma o mapa em oceano aberto"
+	btn_clear_ter.pressed.connect(func() -> void: clear_terrain_requested.emit())
+	section_terrain.add_child(btn_clear_ter)
+
+	var lbl_presets: Label = Label.new()
+	lbl_presets.text = "CARIMBOS RÁPIDOS DE ILHA:"
+	lbl_presets.add_theme_font_size_override("font_size", 11)
+	lbl_presets.add_theme_color_override("font_color", Color(0.65, 0.85, 0.95))
+	section_terrain.add_child(lbl_presets)
+
+	var grid_stamps: GridContainer = GridContainer.new()
+	grid_stamps.columns = 2
+	grid_stamps.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid_stamps.add_theme_constant_override("h_separation", 6)
+	grid_stamps.add_theme_constant_override("v_separation", 6)
+	section_terrain.add_child(grid_stamps)
+
+	var stamp_items: Array[Dictionary] = [
+		{ "id": 1, "name": "🟡 Ilha Redonda", "color": Color(0.25, 0.85, 0.50) },
+		{ "id": 2, "name": "🟦 Ilha Retangular", "color": Color(0.30, 0.75, 0.85) },
+		{ "id": 0, "name": "〰️ Pincel / Fita", "color": Color(0.85, 0.65, 0.35) },
+		{ "id": 3, "name": "⭐ Ilha Estrela", "color": Color(0.95, 0.80, 0.25) }
+	]
+	for si in stamp_items:
+		var s_id: int = int(si["id"])
+		var sb: Button = _create_styled_button(String(si["name"]), si["color"] as Color, Vector2(0, 30))
+		sb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sb.add_theme_font_size_override("font_size", 11)
+		sb.pressed.connect(func() -> void:
+			brush_shape_changed.emit(s_id)
+			tool_changed.emit(0)
+		)
+		grid_stamps.add_child(sb)
+
+	var lbl_hint: Label = Label.new()
+	lbl_hint.text = "💡 Pinte com botão esquerdo para adicionar terra.\n💡 Clique com botão direito ou use a Borracha para abrir lagos, baías ou canais."
+	lbl_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl_hint.add_theme_font_size_override("font_size", 10)
+	lbl_hint.add_theme_color_override("font_color", Color(0.65, 0.75, 0.85))
+	section_terrain.add_child(lbl_hint)
 
 	# 2. Seção de Grama Orgânica (0.20m)
 	section_grass = VBoxContainer.new()
@@ -1576,3 +1619,18 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 		parts.append("%s %d" % [icon, rem])
 	var goals_str: String = "  ".join(parts) if not parts.is_empty() else "Livre"
 	lbl_playtest_info.text = "🎮 PLAYTEST — ⏱️ %d:%02d  |  Metas: %s  |  (WASD / Setas / Mouse)" % [mins, secs, goals_str]
+
+func update_grid_button(is_grid_visible: bool) -> void:
+	if btn_grid_toggle != null:
+		btn_grid_toggle.text = "📐 Grade: ON" if is_grid_visible else "📐 Grade: OFF"
+		btn_grid_toggle.modulate = Color(1.0, 1.0, 1.0, 1.0) if is_grid_visible else Color(0.65, 0.65, 0.65, 0.75)
+
+func update_snap_button(snap_step: float) -> void:
+	if btn_snap_toggle != null:
+		if snap_step <= 0.001:
+			btn_snap_toggle.text = "🧲 Snap: Livre"
+			btn_snap_toggle.modulate = Color(0.70, 0.70, 0.70, 0.8)
+		else:
+			btn_snap_toggle.text = "🧲 Snap: %.2fm" % snap_step
+			btn_snap_toggle.modulate = Color(1.0, 1.0, 1.0, 1.0)
+

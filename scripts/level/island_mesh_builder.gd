@@ -163,88 +163,18 @@ static func build_island_mesh(
 				st.set_uv(UV_GRASS_TOP)
 				st.add_vertex(Vector3(p2.x, 0.0, p2.y))
 
-		# 3. Calcula normais externas por vértice do contorno perimetral
-		var n_pts: int = outer.size()
-		var vert_normals: Array[Vector2] = _compute_vertex_normals(outer)
+		# 3. Chanfro superior e falésias costeiras verticais para o contorno externo
+		_build_perimeter_walls(st, outer, final_ground_color, final_cliff_color)
 
-		# 4. Chanfro superior e falésias costeiras verticais
-		for i: int in range(n_pts):
-			var next_i: int = (i + 1) % n_pts
-			var p_a: Vector2 = outer[i]
-			var p_b: Vector2 = outer[next_i]
-			var n_a: Vector2 = vert_normals[i]
-			var n_b: Vector2 = vert_normals[next_i]
-
-			var seg_dir: Vector2 = (p_b - p_a).normalized()
-			var seg_norm: Vector2 = Vector2(-seg_dir.y, seg_dir.x) # Normal perpendicular para fora
-
-			# Pontos do chanfro (borda suave)
-			var top_a: Vector3 = Vector3(p_a.x, 0.0, p_a.y)
-			var top_b: Vector3 = Vector3(p_b.x, 0.0, p_b.y)
-			var bev_a: Vector3 = Vector3(p_a.x + n_a.x * BEVEL_OUTSET, -BEVEL_DEPTH, p_a.y + n_a.y * BEVEL_OUTSET)
-			var bev_b: Vector3 = Vector3(p_b.x + n_b.x * BEVEL_OUTSET, -BEVEL_DEPTH, p_b.y + n_b.y * BEVEL_OUTSET)
-			var bot_a: Vector3 = Vector3(p_a.x, -CLIFF_DEPTH, p_a.y)
-			var bot_b: Vector3 = Vector3(p_b.x, -CLIFF_DEPTH, p_b.y)
-
-			var bev_norm_a: Vector3 = Vector3(n_a.x * 0.707, 0.707, n_a.y * 0.707).normalized()
-			var bev_norm_b: Vector3 = Vector3(n_b.x * 0.707, 0.707, n_b.y * 0.707).normalized()
-			var wall_norm: Vector3 = Vector3(seg_norm.x, 0.0, seg_norm.y)
-
-			# Triângulos do Chanfro (Grama -> Borda)
-			st.set_color(final_ground_color)
-			# Triângulo 1: top_a, top_b, bev_b
-			st.set_normal(bev_norm_a)
-			st.set_uv(UV_GRASS_TOP)
-			st.add_vertex(top_a)
-
-			st.set_normal(bev_norm_b)
-			st.set_uv(UV_GRASS_TOP)
-			st.add_vertex(top_b)
-
-			st.set_normal(bev_norm_b)
-			st.set_uv(UV_GRASS_TOP)
-			st.add_vertex(bev_b)
-
-			# Triângulo 2: top_a, bev_b, bev_a
-			st.set_normal(bev_norm_a)
-			st.set_uv(UV_GRASS_TOP)
-			st.add_vertex(top_a)
-
-			st.set_normal(bev_norm_b)
-			st.set_uv(UV_GRASS_TOP)
-			st.add_vertex(bev_b)
-
-			st.set_normal(bev_norm_a)
-			st.set_uv(UV_GRASS_TOP)
-			st.add_vertex(bev_a)
-
-			# Triângulos da Parede da Falésia (bev_a / bev_b até bot_a / bot_b)
-			st.set_color(final_cliff_color)
-			# Triângulo 1: bev_a, bev_b, bot_b
-			st.set_normal(wall_norm)
-			st.set_uv(UV_CLIFF_WALL)
-			st.add_vertex(bev_a)
-
-			st.set_normal(wall_norm)
-			st.set_uv(UV_CLIFF_WALL)
-			st.add_vertex(bev_b)
-
-			st.set_normal(wall_norm)
-			st.set_uv(UV_CLIFF_WALL)
-			st.add_vertex(bot_b)
-
-			# Triângulo 2: bev_a, bot_b, bot_a
-			st.set_normal(wall_norm)
-			st.set_uv(UV_CLIFF_WALL)
-			st.add_vertex(bev_a)
-
-			st.set_normal(wall_norm)
-			st.set_uv(UV_CLIFF_WALL)
-			st.add_vertex(bot_b)
-
-			st.set_normal(wall_norm)
-			st.set_uv(UV_CLIFF_WALL)
-			st.add_vertex(bot_a)
+	# 4. Chanfro superior e falésias costeiras para furos internos (Lagos / Baías)
+	if not holes.is_empty():
+		for h: PackedVector2Array in holes:
+			if h.size() >= 3:
+				var hole_poly: PackedVector2Array = h
+				# Furos devem ter sentido anti-horário para a normal apontar para o interior do lago
+				if Geometry2D.is_polygon_clockwise(hole_poly):
+					hole_poly = _reverse_polygon(hole_poly)
+				_build_perimeter_walls(st, hole_poly, final_ground_color, final_cliff_color)
 
 	var mesh: ArrayMesh = st.commit()
 	if mesh != null:
@@ -252,25 +182,123 @@ static func build_island_mesh(
 	return mesh
 
 
+static func _build_perimeter_walls(
+	st: SurfaceTool,
+	loop_poly: PackedVector2Array,
+	final_ground_color: Color,
+	final_cliff_color: Color
+) -> void:
+	var n_pts: int = loop_poly.size()
+	if n_pts < 3:
+		return
+	var vert_normals: Array[Vector2] = _compute_vertex_normals(loop_poly)
+
+	for i: int in range(n_pts):
+		var next_i: int = (i + 1) % n_pts
+		var p_a: Vector2 = loop_poly[i]
+		var p_b: Vector2 = loop_poly[next_i]
+		var n_a: Vector2 = vert_normals[i]
+		var n_b: Vector2 = vert_normals[next_i]
+
+		var seg_dir: Vector2 = (p_b - p_a).normalized()
+		var seg_norm: Vector2 = Vector2(-seg_dir.y, seg_dir.x) # Normal perpendicular para fora
+
+		# Pontos do chanfro (borda suave)
+		var top_a: Vector3 = Vector3(p_a.x, 0.0, p_a.y)
+		var top_b: Vector3 = Vector3(p_b.x, 0.0, p_b.y)
+		var bev_a: Vector3 = Vector3(p_a.x + n_a.x * BEVEL_OUTSET, -BEVEL_DEPTH, p_a.y + n_a.y * BEVEL_OUTSET)
+		var bev_b: Vector3 = Vector3(p_b.x + n_b.x * BEVEL_OUTSET, -BEVEL_DEPTH, p_b.y + n_b.y * BEVEL_OUTSET)
+		var bot_a: Vector3 = Vector3(p_a.x, -CLIFF_DEPTH, p_a.y)
+		var bot_b: Vector3 = Vector3(p_b.x, -CLIFF_DEPTH, p_b.y)
+
+		var bev_norm_a: Vector3 = Vector3(n_a.x * 0.707, 0.707, n_a.y * 0.707).normalized()
+		var bev_norm_b: Vector3 = Vector3(n_b.x * 0.707, 0.707, n_b.y * 0.707).normalized()
+		var wall_norm: Vector3 = Vector3(seg_norm.x, 0.0, seg_norm.y)
+
+		# Triângulos do Chanfro (Grama -> Borda)
+		st.set_color(final_ground_color)
+		# Triângulo 1: top_a, top_b, bev_b
+		st.set_normal(bev_norm_a)
+		st.set_uv(UV_GRASS_TOP)
+		st.add_vertex(top_a)
+
+		st.set_normal(bev_norm_b)
+		st.set_uv(UV_GRASS_TOP)
+		st.add_vertex(top_b)
+
+		st.set_normal(bev_norm_b)
+		st.set_uv(UV_GRASS_TOP)
+		st.add_vertex(bev_b)
+
+		# Triângulo 2: top_a, bev_b, bev_a
+		st.set_normal(bev_norm_a)
+		st.set_uv(UV_GRASS_TOP)
+		st.add_vertex(top_a)
+
+		st.set_normal(bev_norm_b)
+		st.set_uv(UV_GRASS_TOP)
+		st.add_vertex(bev_b)
+
+		st.set_normal(bev_norm_a)
+		st.set_uv(UV_GRASS_TOP)
+		st.add_vertex(bev_a)
+
+		# Triângulos da Parede da Falésia (bev_a / bev_b até bot_a / bot_b)
+		st.set_color(final_cliff_color)
+		# Triângulo 1: bev_a, bev_b, bot_b
+		st.set_normal(wall_norm)
+		st.set_uv(UV_CLIFF_WALL)
+		st.add_vertex(bev_a)
+
+		st.set_normal(wall_norm)
+		st.set_uv(UV_CLIFF_WALL)
+		st.add_vertex(bev_b)
+
+		st.set_normal(wall_norm)
+		st.set_uv(UV_CLIFF_WALL)
+		st.add_vertex(bot_b)
+
+		# Triângulo 2: bev_a, bot_b, bot_a
+		st.set_normal(wall_norm)
+		st.set_uv(UV_CLIFF_WALL)
+		st.add_vertex(bev_a)
+
+		st.set_normal(wall_norm)
+		st.set_uv(UV_CLIFF_WALL)
+		st.add_vertex(bot_b)
+
+		st.set_normal(wall_norm)
+		st.set_uv(UV_CLIFF_WALL)
+		st.add_vertex(bot_a)
+
+
 ## Constrói a fita de espuma costeira contínua (CoastalFoamRibbon)
 static func build_coastal_foam_mesh(
 	polygons: Array[PackedVector2Array],
+	holes: Array[PackedVector2Array] = [],
 	foam_y: float = FOAM_Y_LEVEL
 ) -> ArrayMesh:
-	if polygons.is_empty():
+	var all_loops: Array[PackedVector2Array] = []
+	for p in polygons:
+		if p.size() >= 3:
+			var op: PackedVector2Array = p
+			if not Geometry2D.is_polygon_clockwise(op):
+				op = _reverse_polygon(op)
+			all_loops.append(op)
+	for h in holes:
+		if h.size() >= 3:
+			var hp: PackedVector2Array = h
+			if Geometry2D.is_polygon_clockwise(hp):
+				hp = _reverse_polygon(hp)
+			all_loops.append(hp)
+
+	if all_loops.is_empty():
 		return null
 
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
-	for poly: PackedVector2Array in polygons:
-		if poly.size() < 3:
-			continue
-
-		var outer: PackedVector2Array = poly
-		if not Geometry2D.is_polygon_clockwise(outer):
-			outer = _reverse_polygon(outer)
-
+	for outer: PackedVector2Array in all_loops:
 		var n_pts: int = outer.size()
 		var vert_normals: Array[Vector2] = _compute_vertex_normals(outer)
 
@@ -327,19 +355,30 @@ static func build_coastal_foam_mesh(
 ## Constrói barreiras de colisão costeira invisíveis na Camada 1 ao redor do perímetro
 static func build_coastal_colliders(
 	parent_body: StaticBody3D,
-	polygons: Array[PackedVector2Array]
+	polygons: Array[PackedVector2Array],
+	holes: Array[PackedVector2Array] = []
 ) -> void:
-	if parent_body == null or polygons.is_empty():
+	if parent_body == null:
 		return
 
-	for poly: PackedVector2Array in polygons:
-		if poly.size() < 3:
-			continue
+	var all_loops: Array[PackedVector2Array] = []
+	for p in polygons:
+		if p.size() >= 3:
+			var op: PackedVector2Array = p
+			if not Geometry2D.is_polygon_clockwise(op):
+				op = _reverse_polygon(op)
+			all_loops.append(op)
+	for h in holes:
+		if h.size() >= 3:
+			var hp: PackedVector2Array = h
+			if Geometry2D.is_polygon_clockwise(hp):
+				hp = _reverse_polygon(hp)
+			all_loops.append(hp)
 
-		var outer: PackedVector2Array = poly
-		if not Geometry2D.is_polygon_clockwise(outer):
-			outer = _reverse_polygon(outer)
+	if all_loops.is_empty():
+		return
 
+	for outer: PackedVector2Array in all_loops:
 		var n_pts: int = outer.size()
 		var _vert_normals: Array[Vector2] = _compute_vertex_normals(outer)
 

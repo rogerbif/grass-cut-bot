@@ -413,11 +413,12 @@ func build_from_level_json(
 	var height: int = int(grid_info.get("height", 8))
 	var cell_size: float = float(grid_info.get("cell_size", LevelJsonLoader.DEFAULT_CELL_SIZE))
 
-	# 1. Obtém os polígonos da ilha (formato v4 ou gerados retrocompatíveis a partir de terrain[])
+	# 1. Obtém os polígonos e furos da ilha (formato v4/v5 ou gerados retrocompatíveis a partir de terrain[])
 	var island_polys: Array[PackedVector2Array] = LevelJsonLoader.get_island_polygons(data)
+	var island_holes: Array[PackedVector2Array] = LevelJsonLoader.get_island_holes(data)
 
 	# 2. Constrói a malha procedural única da ilha (ArrayMesh em 1 Draw Call)
-	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys)
+	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys, island_holes)
 	if island_mesh != null:
 		var island_mi: MeshInstance3D = MeshInstance3D.new()
 		island_mi.name = "IslandMesh"
@@ -443,9 +444,9 @@ func build_from_level_json(
 	floor_col.position = Vector3(0.0, -0.36, 0.0)
 	coastal_body.add_child(floor_col)
 
-	IslandMeshBuilder.build_coastal_colliders(coastal_body, island_polys)
+	IslandMeshBuilder.build_coastal_colliders(coastal_body, island_polys, island_holes)
 
-	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys)
+	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys, island_holes)
 	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
 		var foam_inst: MeshInstance3D = MeshInstance3D.new()
 		foam_inst.name = "CoastalFoamRibbon"

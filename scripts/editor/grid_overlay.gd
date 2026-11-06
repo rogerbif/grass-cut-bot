@@ -325,3 +325,17 @@ func update_mirror_axis(mirror_mode: int) -> void:
 
 	im.surface_end()
 	axis_line_inst.mesh = im
+
+func toggle_grid_visibility() -> bool:
+	if grid_mesh_inst != null:
+		grid_mesh_inst.visible = not grid_mesh_inst.visible
+		return grid_mesh_inst.visible
+	return false
+
+func set_grid_visible(p_visible: bool) -> void:
+	if grid_mesh_inst != null:
+		grid_mesh_inst.visible = p_visible
+
+func is_grid_visible() -> bool:
+	return grid_mesh_inst != null and grid_mesh_inst.visible
+
