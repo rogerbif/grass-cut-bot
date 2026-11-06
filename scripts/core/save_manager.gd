@@ -19,6 +19,7 @@ var is_initialized: bool = false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	load_game()
+	apply_saved_locale()
 	is_initialized = true
 
 func _notification(what: int) -> void:
@@ -37,7 +38,8 @@ func get_default_save() -> Dictionary:
 			"music_enabled": true,
 			"sfx_enabled": true,
 			"vib_enabled": true,
-			"graphics_quality": "balanced"
+			"graphics_quality": "balanced",
+			"locale": ""
 		},
 		"player": {
 			"total_coins": 0,
@@ -161,17 +163,21 @@ func _merge_with_defaults(loaded: Dictionary) -> Dictionary:
 	return merged
 
 func _apply_loaded_data_to_systems() -> void:
-	if UpgradeManager != null:
+	var upgrade_mgr: Node = get_node_or_null("/root/UpgradeManager")
+	if upgrade_mgr != null:
 		var up_dict: Dictionary = save_data.get("upgrades", {}) as Dictionary
 		var pl_dict: Dictionary = save_data.get("player", {}) as Dictionary
 		var coins: int = int(pl_dict.get("total_coins", 0))
-		if UpgradeManager.has_method("load_from_dict"):
-			UpgradeManager.load_from_dict(up_dict, coins)
+		if upgrade_mgr.has_method("load_from_dict"):
+			upgrade_mgr.call("load_from_dict", up_dict, coins)
 
-	if GameManager != null:
+	var game_mgr: Node = get_node_or_null("/root/GameManager")
+	if game_mgr != null:
 		var pl_dict: Dictionary = save_data.get("player", {}) as Dictionary
 		var last_lvl: int = int(pl_dict.get("last_played_level", 1))
-		GameManager.current_level = maxi(1, last_lvl)
+		game_mgr.set("current_level", maxi(1, last_lvl))
+
+	apply_saved_locale()
 
 func save_game() -> bool:
 	if save_data.is_empty():
@@ -315,6 +321,31 @@ func set_setting(key: String, val: Variant) -> void:
 	st[key] = val
 	save_data["settings"] = st
 	save_game()
+
+func get_locale() -> String:
+	var loc: String = String(get_setting("locale", ""))
+	if loc.is_empty():
+		loc = detect_default_locale()
+		set_setting("locale", loc)
+	return loc
+
+func set_locale(new_locale: String) -> void:
+	set_setting("locale", new_locale)
+	TranslationServer.set_locale(new_locale)
+
+func detect_default_locale() -> String:
+	var lang: String = OS.get_locale_language().to_lower()
+	match lang:
+		"pt":
+			return "pt_BR"
+		"es":
+			return "es"
+		_:
+			return "en"
+
+func apply_saved_locale() -> void:
+	var loc: String = get_locale()
+	TranslationServer.set_locale(loc)
 
 func record_plant_harvest(species_key: String, amount: int = 1) -> void:
 	if species_key.is_empty() or amount <= 0:

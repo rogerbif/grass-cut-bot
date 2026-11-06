@@ -103,3 +103,4 @@ func _ready() -> void:
 	print("==================================================")
 	print(">>> TODOS OS TESTES DE CICLO DE VIDA E VOLTAR APROVADOS! <<<")
 	print("==================================================")
+	get_tree().quit()

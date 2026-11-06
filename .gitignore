@@ -17,5 +17,11 @@ export/
 *.aab
 *.idsig
 
+# Chaves privadas e Keystores de assinatura
+*.keystore
+*.jks
+upload-keystore.jks
+release.keystore
+
 # Editores locais
 .obsidian/

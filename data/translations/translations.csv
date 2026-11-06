@@ -7,16 +7,21 @@ BTN_PLAY,JOGAR,PLAY,JUGAR
 BTN_LEVELS,FASES,LEVELS,NIVELES
 BTN_EDITOR,EDITOR,EDITOR,EDITOR
 SETTINGS_TITLE,CONFIGURAÇÕES,SETTINGS,CONFIGURACIÓN
+SETTINGS_AUDIO_SECTION,ÁUDIO E PREFERÊNCIAS,AUDIO & PREFERENCES,AUDIO Y PREFERENCIAS
 SETTINGS_GRAPHICS,Gráficos,Graphics,Gráficos
 SETTINGS_MUSIC,Música,Music,Música
-SETTINGS_SFX,Efeitos,Sound FX,Efectos
+SETTINGS_SFX,Sons (FX),Sound FX,Efectos
 SETTINGS_VIBRATION,Vibração,Vibration,Vibración
 SETTINGS_LANGUAGE,Idioma,Language,Idioma
-SETTINGS_RESET,Zerar Progresso,Reset Progress,Reiniciar Progreso
+SETTINGS_SAVE_SECTION,SALVAR PROGRESSO (Nuvem / Local),SAVE PROGRESS (Cloud / Local),GUARDAR PROGRESO (Nube / Local)
+SETTINGS_SAVE_LOCAL,Salvar Localmente,Save Locally,Guardar Localmente
+SETTINGS_CONNECT_GOOGLE,Conectar Conta Google,Connect Google Account,Conectar Cuenta Google
+SETTINGS_CONNECT_FB,Conectar Facebook,Connect Facebook,Conectar Facebook
+SETTINGS_RESET,Resetar Progresso,Reset Progress,Reiniciar Progreso
 SETTINGS_RESET_CONFIRM,Toque para confirmar!,Tap to confirm!,¡Toca para confirmar!
-SETTINGS_SUPPORT,Suporte / Feedback,Support / Feedback,Soporte / Feedback
-SETTINGS_ON,ON,ON,ON
-SETTINGS_OFF,OFF,OFF,OFF
+SETTINGS_SUPPORT,Contatar Suporte,Contact Support,Contactar Soporte
+SETTINGS_ON,LIGADO,ON,ENCENDIDO
+SETTINGS_OFF,DESLIGADO,OFF,APAGADO
 SETTINGS_QUALITY_BALANCED,Equilibrado,Balanced,Equilibrado
 SETTINGS_QUALITY_PERFORMANCE,Performance,Performance,Rendimiento
 SETTINGS_QUALITY_HIGH,Alta,High,Alta

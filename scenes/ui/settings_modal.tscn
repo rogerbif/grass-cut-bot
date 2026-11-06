@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://settings_modal_scene_01"]
+[gd_scene load_steps=29 format=3 uid="uid://settings_modal_scene_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_modal.gd" id="1_settings"]
 [ext_resource type="Texture2D" path="res://assets/ui/collection/panel_cyber_main.svg" id="2_panel_main"]
@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/settings/icon_trash_red.svg" id="18_icon_trash"]
 [ext_resource type="Texture2D" path="res://assets/ui/settings/icon_envelope_cyber.svg" id="19_icon_envelope"]
 [ext_resource type="Texture2D" path="res://assets/ui/victory/header_cyber_divider.svg" id="20_divider"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_globe.svg" id="21_icon_globe"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_modal_panel"]
 texture = ExtResource("2_panel_main")
