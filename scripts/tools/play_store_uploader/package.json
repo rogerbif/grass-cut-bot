@@ -1,0 +1,10 @@
+{
+  "name": "play-store-uploader",
+  "version": "1.0.0",
+  "description": "Script de upload automatizado de AAB para Google Play Console",
+  "main": "upload.js",
+  "private": true,
+  "dependencies": {
+    "googleapis": "^144.0.0"
+  }
+}

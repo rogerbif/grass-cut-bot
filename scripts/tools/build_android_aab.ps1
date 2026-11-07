@@ -8,7 +8,9 @@ param(
     [string]$OutputPath = "build/release/grass_cut_bot.aab",
     [string]$KeystorePath = "$PSScriptRoot\..\..\upload-keystore.jks",
     [string]$KeystoreUser = "grasscutbot",
-    [string]$KeystorePass = "grasscutbot2026"
+    [string]$KeystorePass = "grasscutbot2026",
+    [switch]$Publish,
+    [string]$Track = "internal"
 )
 
 $godotExe = "C:\Users\User\OneDrive\Documentos\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe"
@@ -59,6 +61,16 @@ if (Test-Path $OutputPath) {
     Write-Host "[SUCESSO] Android App Bundle gerado com sucesso:" -ForegroundColor Green
     Write-Host "  Arquivo: $($fileInfo.FullName)" -ForegroundColor Green
     Write-Host "  Tamanho: $sizeMB MB" -ForegroundColor Green
+
+    if ($Publish) {
+        Write-Host ""
+        Write-Host "==================================================" -ForegroundColor Magenta
+        Write-Host ">>> DISPARANDO UPLOAD AUTOMATICO PARA GOOGLE PLAY <<<" -ForegroundColor Magenta
+        Write-Host "Faixa: $Track" -ForegroundColor Yellow
+        Write-Host "==================================================" -ForegroundColor Magenta
+        $uploaderScript = (Resolve-Path "$PSScriptRoot\play_store_uploader\upload.js").Path
+        node $uploaderScript "--track=$Track" "--aab=$OutputPath"
+    }
 } else {
     Write-Host ""
     Write-Host "[FALHA] Erro na exportacao do Android App Bundle." -ForegroundColor Red

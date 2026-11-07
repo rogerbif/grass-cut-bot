@@ -22,9 +22,17 @@ export/
 *.jks
 upload-keystore.jks
 release.keystore
+*service_account*.json
+*play_api*.json
+play_service_account.json
+credentials.json
 
 # Editores locais
 .obsidian/
+
+# Dependências de ferramentas Node
+node_modules/
+package-lock.json
 
 # Arquivos de teste temporários na raiz
 test_*.png
