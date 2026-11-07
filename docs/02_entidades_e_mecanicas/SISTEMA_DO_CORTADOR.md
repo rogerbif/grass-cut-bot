@@ -20,15 +20,15 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 │           └── Body (Node3D - Chassi, Cabeça, Paralama, Bateria, Container)
 │               ├── wheel (MeshInstance3D - Rolagem contínua no eixo X por velocidade)
 │               └── BladeSpinner (Node3D - Reparentado no _ready() sob Body: herda pitch/roll/suspensão; rotação local em Y)
-│                   ├── blade_tier_1 (MeshInstance3D - Nv. 1-2: Lâmina Tripla de Aço 3 pontas)
-│                   ├── blade_tier_2 (MeshInstance3D - Nv. 3-4: Lâmina Quádrupla Ninja 4 pontas)
-│                   ├── blade_tier_3 (MeshInstance3D - Nv. 5: Lâmina Estelar de Titânio 5 pontas)
-│                   └── blade_tier_4 (MeshInstance3D - Nv. 6: Lâmina Hexagonal Dourada MAX)
+│                   ├── blade_tier_1 (MeshInstance3D - Nv. 1-3: Lâmina Tripla de Aço 3 pontas)
+│                   ├── blade_tier_2 (MeshInstance3D - Nv. 4-6: Lâmina Quádrupla Ninja 4 pontas)
+│                   ├── blade_tier_3 (MeshInstance3D - Nv. 7-8: Lâmina Estelar de Titânio 5 pontas)
+│                   └── blade_tier_4 (MeshInstance3D - Nv. 9-10: Lâmina Hexagonal de Aço MAX)
 ├── BladeArea (Area3D - Layer 0, Mask 4)
 │   └── CollisionShape3D (Cylinder r=0.90m a 1.40m dinâmico, h=0.4m em Y=0.45m)
 ├── SparkParticles (CPUParticles3D - Faíscas amarelas em impacto seco em Y=0.45m)
 ├── RobotEyes (Node - Expressões faciais)
-└── BladeProgressBar (Node3D - Barra flutuante Billboard sobre a cabeça com nível Lv. 1-5 ou MAX)
+└── BladeProgressBar (Node3D - Barra flutuante Billboard sobre a cabeça com nível Lv. 1-9 ou MAX)
 ```
 
 ---
@@ -37,7 +37,7 @@ Cutter (CharacterBody3D - Layer 2, Mask 1|8)
 
 | Parâmetro | Valor Base | Efeito no Jogo |
 | :--- | :--- | :--- |
-| `base_speed` | `6.5 m/s` | Velocidade máxima de deslocamento linear. Escalável via upgrade de Velocidade. |
+| `base_speed` | `1.95 m/s` | Velocidade inicial de deslocamento linear no Nível 1. Escala a cada nível até `3.57 m/s` no Nível 10 (+25%, passos de 0.18 m/s via `UpgradeManager`). |
 | `acceleration` | `24.0 m/s²` | Rapidez com que o cortador atinge a velocidade desejada após o toque. |
 | `friction` | `18.0 m/s²` | Desaceleração suave quando o jogador solta o joystick. |
 | `rotation_speed`| `720.0 °/s` | Rotação angular da serra em torno do eixo Y durante a condução (+20% ativo, desacoplada do giro yaw do corpo). |
@@ -85,18 +85,18 @@ O chassi e suas peças reagem organicamente às forças de inércia e relevo do 
 - O cortador opera de forma reativa via sinais `area_entered` / `area_exited` combinados a uma lista enxuta `_overlapping_vegetation` apenas para plantas resistentes (`max_health > 1`), eliminando alocações de `get_overlapping_areas()` a cada tick de física.
 - Os parâmetros de upgrade (`_cached_blade_radius`, `_cached_cutter_speed`, `_cached_cutter_power`) ficam em cache e os uniforms de shader (`cutter_pos`, `cutter_interact_radius`) só são atualizados quando o cortador efetivamente se desloca (`distance_squared_to > 0.0004`).
 - **Evolução por Upgrade:**
-  - O raio da lâmina é calibrado dinamicamente: `raio = 0.90m + (nivel - 1) * 0.10m`.
-  - A malha visual do disco e a área de interação com o shader de grama acompanham proporcionalmente o diâmetro da colisão.
+  - O raio da lâmina é calibrado dinamicamente: `raio = 0.90m + float(nivel - 1) * (0.50m / 9.0)`.
+  - A malha visual do disco e a área de interação com o shader de grama acompanham proporcionalmente o diâmetro da colisão (de 0.90m no Nv. 1 até 1.40m no Nv. 10 MAX).
 
 ### Tiers Modulares da Lâmina Estelar (Família Geométrica de Aço)
-Todas as lâminas compartilham a mesma identidade visual: alcance radial idêntico ($R_{\text{tip}} = 1.66\text{m}$, resultando em $1.18\text{m}$ no jogo com escala de visual pivot $0.7$), furo central circular de montagem ($R_{\text{hole}} = 0.29\text{m}$), espessura de $0.042\text{m}$ com chanfro de corte e material uniforme em aço metálico cinza (`M_Aco_Lamina`):
+Todas as lâminas compartilham a mesma identidade visual: alcance radial calibrado ($R_{\text{tip}} = 1.66\text{m}$, resultando em $1.18\text{m}$ no jogo com escala de visual pivot $0.7$), furo central circular de montagem ($R_{\text{hole}} = 0.29\text{m}$), espessura de $0.042\text{m}$ com chanfro de corte e material uniforme em aço metálico cinza (`M_Aco_Lamina`):
 
 | Tier | Nome Canônico | Geometria | Alcance Base | Requisitos de Nível |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tier 1** | Lâmina Estelar Tripla | Estrela geométrica de 3 pontas com arestas retas | $R = 1.18\text{m}$ | Níveis 1 e 2 |
-| **Tier 2** | Lâmina Estelar Quádrupla | Estrela geométrica de 4 pontas (cruz ninja) com arestas retas | $R = 1.18\text{m}$ | Níveis 3 e 4 |
-| **Tier 3** | Lâmina Estelar de Titânio | Estrela geométrica de 5 pontas (pentagrama regular) com arestas retas | $R = 1.18\text{m}$ | Níveis 5 |
-| **Tier 4** | Lâmina Estelar Hexagonal | Estrela geométrica de 6 pontas (hexagrama) com arestas retas | $R = 1.18\text{m}$ | Nível 6 (MAX) |
+| **Tier 1** | Lâmina Estelar Tripla | Estrela geométrica de 3 pontas com arestas retas | $R = 0.90\text{m} \sim 1.01\text{m}$ | Níveis 1 a 3 |
+| **Tier 2** | Lâmina Estelar Quádrupla | Estrela geométrica de 4 pontas (cruz ninja) com arestas retas | $R = 1.07\text{m} \sim 1.18\text{m}$ | Níveis 4 a 6 |
+| **Tier 3** | Lâmina Estelar de Titânio | Estrela geométrica de 5 pontas (pentagrama regular) com arestas retas | $R = 1.23\text{m} \sim 1.29\text{m}$ | Níveis 7 e 8 |
+| **Tier 4** | Lâmina Estelar Hexagonal | Estrela geométrica de 6 pontas (hexagrama) com arestas retas | $R = 1.34\text{m} \sim 1.40\text{m}$ | Níveis 9 e 10 (MAX) |
 
 ### Feedback Sensorial de Level UP (Pop Elástico, Flash e Onda de Choque)
 A cada subida de nível conquistada no corte de vegetação ou na Garagem (`UpgradeManager.blade_leveled_up`):
@@ -133,6 +133,7 @@ Ao colidir contra obstáculos sólidos (como rochas do grupo `"obstacles"`), sej
 4. **Compressão da Suspensão:** O chassi sofre afundamento vertical repentino (`shock_compression = -0.045`), transmitindo o recuo físico da batida mecânica.
 5. **Emissão de Faíscas no Ponto de Contato:** O nó `SparkParticles` é reposicionado exatamente no ponto de fricção dente-de-serra contra rocha (`top_level = true`) e ativado instantaneamente.
 6. **Vibração Tátil e Tremer de Câmera:** O `GameManager` emite vibração de 60ms (`Input.vibrate_handheld(60)`) e solicita um camera shake de intensidade 0.35 por 0.2s.
+7. **Penalidade de XP por Colisão (-1.000 XP):** A colisão aciona `UpgradeManager.penalize_blade_hit(1000.0)` com cooldown defensivo de 1.2s. O bot perde exatamente 1.000 XP acumulados. Se a perda exceder o XP do nível atual, sofre despromoção progressiva; se estiver no Nível 10 MAX, desce para o Nível 9 com 500 XP; no Nível 1, apenas tem seu XP zerado.
 
 ---
 
