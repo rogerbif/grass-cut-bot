@@ -513,14 +513,26 @@ func build_from_level_json(
 		vector_field = VectorGrassFieldScript.new()
 		vector_field.convert_from_legacy_field(veg_field, width, height, cell_size)
 
-	# Remove polígonos sob rochas no campo vetorial com raio canônico da maior serra (1.40m)
+	# Remove polígonos sob rochas no campo vetorial com raio da menor lâmina (0.90m)
 	for r_cell: Vector2i in rock_cells.keys():
 		var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width, height, cell_size)
 		var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
 			Vector2(r_pos.x, r_pos.z),
-			1.40
+			0.90
 		)
 		vector_field.clip_shapes(rock_clip_poly)
+
+	# Remove grama na clareira de spawn do robô com o raio atual da rocha (1.40m)
+	if data.has("spawn") and data["spawn"] is Dictionary:
+		var sp_dict: Dictionary = data["spawn"] as Dictionary
+		var sp_gx: int = int(sp_dict.get("gx", int(float(width) / 2.0)))
+		var sp_gz: int = int(sp_dict.get("gz", int(float(height) / 2.0)))
+		var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_gx, sp_gz, width, height, cell_size)
+		var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+			Vector2(sp_world.x, sp_world.z),
+			1.40
+		)
+		vector_field.clip_shapes(spawn_clip_poly)
 
 	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
 	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells, wheat_cells, rock_cells)

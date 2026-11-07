@@ -8,7 +8,8 @@ const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.g
 const CELL_SIZE: float = 0.80
 const MIN_SPAWN_CLEAR_DIST: float = 1.47 # 1.05 * 1.40m (raio lâmina nv 6)
 const MIN_ROCK_SPACING: float = 2.80      # 2.00 * 1.40m (diâmetro lâmina nv 6)
-const SPAWN_GRASS_CLEAR_RADIUS: float = 0.72 # Clareira sutil no spawn
+const SPAWN_GRASS_CLEAR_RADIUS: float = 1.40 # Clareira no spawn do robô (raio atual da rocha: 1.40m)
+const ROCK_GRASS_CLEAR_RADIUS: float = 0.90  # Clareira da rocha (raio da menor lâmina: 0.90m)
 
 func _init() -> void:
 	print("=== GERADOR E AUDITOR DAS FASES DE EXPANSÃO 21 A 40 (MEGA-ILHAS CANÔNICAS) ===")
@@ -601,7 +602,7 @@ func generate_level(lvl: int) -> int:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 
 	IslandAutotiler.apply_autotile(terrain_grid)
-	_clip_vector_field_to_island(vector_field, terrain_grid, spawn_cell, width, height)
+	_clip_vector_field_to_island(vector_field, terrain_grid, object_grid, spawn_cell, width, height)
 
 	if lvl == 27:
 		var p0: Vector3 = LevelJsonLoader.grid_to_world(10, 10, width, height, CELL_SIZE)
@@ -730,10 +731,11 @@ func _add_valid_wheat(terrain_grid: Dictionary, object_grid: Dictionary, spawn_c
 	return _add_valid_flower(terrain_grid, object_grid, spawn_cell, pref, "wheat")
 
 
-# --- Recorte Automático de Segurança Costeira e Clareira de Spawn ---
+# --- Recorte Automático de Segurança Costeira, Clareira de Spawn e Clareira de Rochas ---
 func _clip_vector_field_to_island(
 	vf: RefCounted,
 	terrain_grid: Dictionary,
+	object_grid: Dictionary,
 	spawn_cell: Vector2i,
 	width: int,
 	height: int
@@ -803,13 +805,26 @@ func _clip_vector_field_to_island(
 				if not Geometry2D.is_polygon_clockwise(part) and part.size() >= 3:
 					vf.call("add_shape", s_type, part)
 
+	# 1. Clareira do spawn do robô (raio atual da rocha: 1.40m)
 	var sp3: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, width, height, CELL_SIZE)
 	var sp_center: Vector2 = Vector2(sp3.x, sp3.z)
 	var spawn_clear_poly: PackedVector2Array = PackedVector2Array()
-	for i: int in range(20):
-		var a: float = float(i) * TAU / 20.0
+	for i: int in range(24):
+		var a: float = float(i) * TAU / 24.0
 		spawn_clear_poly.append(sp_center + Vector2(cos(a), sin(a)) * SPAWN_GRASS_CLEAR_RADIUS)
 	vf.call("clip_shapes", spawn_clear_poly)
+
+	# 2. Clareira de rochas (raio da menor lâmina: 0.90m)
+	for cell_key: Variant in object_grid.keys():
+		var cell: Vector2i = cell_key as Vector2i
+		var obj: Dictionary = object_grid[cell] as Dictionary
+		if String(obj.get("type", "")) == "rock":
+			var r_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, width, height, CELL_SIZE)
+			var r_clear_poly: PackedVector2Array = PackedVector2Array()
+			for i: int in range(20):
+				var a: float = float(i) * TAU / 20.0
+				r_clear_poly.append(Vector2(r_pos.x, r_pos.z) + Vector2(cos(a), sin(a)) * ROCK_GRASS_CLEAR_RADIUS)
+			vf.call("clip_shapes", r_clear_poly)
 
 
 # --- Métodos de Validação Estrita e Calibração de Tempo ---

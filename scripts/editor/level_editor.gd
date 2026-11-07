@@ -26,7 +26,8 @@ const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.t
 const MAX_UNDO_STEPS: int = 30
 const CELL_SIZE: float = 0.40
 const COASTAL_GRASS_CORRIDOR: float = 0.48
-const ROCK_CLEARANCE_RADIUS: float = 1.40
+const ROCK_CLEARANCE_RADIUS: float = 0.90
+const SPAWN_CLEARANCE_RADIUS: float = 1.40
 
 static var _editor_vector_materials: Dictionary = {}
 
@@ -739,6 +740,8 @@ func _refresh_hover_preview() -> void:
 	var clearance_r: float = 0.0
 	if active_layer == EditLayer.OBJECTS and active_object_id == "rock" and active_tool != ToolMode.ERASER:
 		clearance_r = ROCK_CLEARANCE_RADIUS
+	elif active_tool == ToolMode.SPAWN:
+		clearance_r = SPAWN_CLEARANCE_RADIUS
 
 	if active_tool == ToolMode.BOX_FILL:
 		fill_col = Color(1.0, 0.82, 0.2, 0.40)
@@ -1110,6 +1113,13 @@ func _place_spawn_at(cell: Vector2i) -> void:
 		}
 	if object_grid.has(cell):
 		object_grid.erase(cell)
+	if vector_grass != null:
+		var sp_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
+		var sp_clear_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+			Vector2(sp_pos.x, sp_pos.z),
+			SPAWN_CLEARANCE_RADIUS
+		)
+		vector_grass.call("clip_shapes", sp_clear_poly)
 	_rebuild_3d_world()
 	_sync_all_ui()
 	ui.show_toast("🤖 Spawn posicionado em [%d, %d]" % [cell.x, cell.y], Color(1.0, 0.85, 0.2))
@@ -1241,7 +1251,7 @@ func _build_editor_vector_ground() -> void:
 	var vector_field_clone: RefCounted = VectorGrassFieldScript.new()
 	vector_field_clone.call("from_dict_list", vector_grass.call("to_dict_list"))
 
-	# Remove polígonos sob rochas e adiciona flores
+	# Remove polígonos sob rochas
 	for cell_key: Variant in object_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
@@ -1253,7 +1263,14 @@ func _build_editor_vector_ground() -> void:
 				ROCK_CLEARANCE_RADIUS
 			)
 			vector_field_clone.call("clip_shapes", rock_clip_poly)
-		# As flores são modelos 3D no obstacles_container, sem necessidade de carimbar polígono falso no piso
+
+	# Remove polígonos na clareira do spawn do bot (raio atual da pedra: 1.40m)
+	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
+	var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+		Vector2(sp_world.x, sp_world.z),
+		SPAWN_CLEARANCE_RADIUS
+	)
+	vector_field_clone.call("clip_shapes", spawn_clip_poly)
 	var ground_meshes: Dictionary = vector_field_clone.call("generate_ground_meshes") as Dictionary
 	var vt_idx: int = 0
 	for vt_var: Variant in ground_meshes.keys():

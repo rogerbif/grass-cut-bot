@@ -9,7 +9,8 @@ const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
 const CELL_SIZE: float = 0.80
 const MIN_SPAWN_CLEAR_DIST: float = 1.47 # 1.05 * 1.40m (raio lâmina nv 6)
 const MIN_ROCK_SPACING: float = 2.80      # 2.00 * 1.40m (diâmetro lâmina nv 6)
-const SPAWN_GRASS_CLEAR_RADIUS: float = 0.72 # Clareira sutil no ponto zero para evitar auto-corte no frame 0
+const SPAWN_GRASS_CLEAR_RADIUS: float = 1.40 # Clareira no spawn do robô (raio atual da rocha: 1.40m)
+const ROCK_GRASS_CLEAR_RADIUS: float = 0.90  # Clareira da rocha (raio da menor lâmina: 0.90m)
 
 func _init() -> void:
 	print("=== INICIANDO GERAÇÃO E AUDITORIA DAS 20 FASES CANÔNICAS (LEVEL DESIGN REFINADO) ===")
@@ -417,9 +418,9 @@ func generate_level(lvl: int) -> int:
 	# 1. Aplica Autotile nas células da ilha
 	IslandAutotiler.apply_autotile(terrain_grid)
 
-	# 2. Recorta todos os polígonos de grama estritamente para a área plana interna da ilha
-	#    e abre clareira exata no ponto de spawn para evitar auto-corte no frame 0
-	_clip_vector_field_to_island(vector_field, terrain_grid, spawn_cell, width, height)
+	# 2. Recorta todos os polígonos de grama estritamente para a área plana interna da ilha,
+	#    abre clareira no ponto de spawn (1.40m) e remove grama sob rochas (0.90m)
+	_clip_vector_field_to_island(vector_field, terrain_grid, object_grid, spawn_cell, width, height)
 
 	# 3. Validações estritas de Level Design e Física + Calibração de Tempo 3 Estrelas
 	var audit_res: Dictionary = _validate_and_calibrate_level(
@@ -451,10 +452,11 @@ func generate_level(lvl: int) -> int:
 	return err_count
 
 
-# --- Recorte Automático de Segurança Costeira e Clareira de Spawn ---
+# --- Recorte Automático de Segurança Costeira, Clareira de Spawn e Clareira de Rochas ---
 func _clip_vector_field_to_island(
 	vf: RefCounted,
 	terrain_grid: Dictionary,
+	object_grid: Dictionary,
 	spawn_cell: Vector2i,
 	width: int,
 	height: int
@@ -528,14 +530,26 @@ func _clip_vector_field_to_island(
 				if not Geometry2D.is_polygon_clockwise(part) and part.size() >= 3:
 					vf.call("add_shape", s_type, part)
 
-	# Abre clareira sutil no ponto de spawn (evita que tufos sejam auto-cortados no frame 0)
+	# 1. Clareira do spawn do robô (raio atual da rocha: 1.40m)
 	var sp3: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, width, height, CELL_SIZE)
 	var sp_center: Vector2 = Vector2(sp3.x, sp3.z)
 	var spawn_clear_poly: PackedVector2Array = PackedVector2Array()
-	for i: int in range(20):
-		var a: float = float(i) * TAU / 20.0
+	for i: int in range(24):
+		var a: float = float(i) * TAU / 24.0
 		spawn_clear_poly.append(sp_center + Vector2(cos(a), sin(a)) * SPAWN_GRASS_CLEAR_RADIUS)
 	vf.call("clip_shapes", spawn_clear_poly)
+
+	# 2. Clareira de rochas (raio da menor lâmina: 0.90m)
+	for cell_key: Variant in object_grid.keys():
+		var cell: Vector2i = cell_key as Vector2i
+		var obj: Dictionary = object_grid[cell] as Dictionary
+		if String(obj.get("type", "")) == "rock":
+			var r_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, width, height, CELL_SIZE)
+			var r_clear_poly: PackedVector2Array = PackedVector2Array()
+			for i: int in range(20):
+				var a: float = float(i) * TAU / 20.0
+				r_clear_poly.append(Vector2(r_pos.x, r_pos.z) + Vector2(cos(a), sin(a)) * ROCK_GRASS_CLEAR_RADIUS)
+			vf.call("clip_shapes", r_clear_poly)
 
 
 # --- Métodos de Validação Estrita (6 Regras de Level Design) e Calibração de Tempo ---

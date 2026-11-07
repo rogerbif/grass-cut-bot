@@ -36,11 +36,11 @@ if (-not (Test-Path $targetDir)) {
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
 }
 
-# Limpa resíduos de exportações APK anteriores para evitar duplicidade com assetPackInstallTime no AAB
-$apkAssets = "$PSScriptRoot\..\..\android\build\src\main\assets"
-if (Test-Path $apkAssets) {
-    Remove-Item -Path $apkAssets -Recurse -Force -ErrorAction SilentlyContinue
-}
+# Limpa resíduos de exportações e builds anteriores para evitar locks do Windows e duplicidade de assets
+$buildRoot = (Resolve-Path "$PSScriptRoot\..\..\android\build").Path
+cmd.exe /c "if exist `"$buildRoot\build`" rmdir /s /q `"$buildRoot\build`""
+cmd.exe /c "if exist `"$buildRoot\assetPackInstallTime\build`" rmdir /s /q `"$buildRoot\assetPackInstallTime\build`""
+cmd.exe /c "if exist `"$buildRoot\src\main\assets`" rmdir /s /q `"$buildRoot\src\main\assets`""
 
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host ">>> COMPILANDO ANDROID APP BUNDLE (.AAB) PARA GOOGLE PLAY <<<" -ForegroundColor Cyan

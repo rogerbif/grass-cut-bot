@@ -424,9 +424,17 @@ func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: 
 			var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
 			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
 				Vector2(r_world.x, r_world.z),
-				1.40
+				0.90
 			)
 			vector_field.call("clip_shapes", rock_clip_poly)
+
+	# Remove grama na clareira de spawn do robô (raio atual da rocha: 1.40m)
+	if bot_anchor != null:
+		var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+			Vector2(bot_anchor.position.x, bot_anchor.position.z),
+			1.40
+		)
+		vector_field.call("clip_shapes", spawn_clip_poly)
 
 	# Adiciona flores e trigos de tile como selos circulares na malha vetorial
 	for obj_item: Variant in objects_arr:
@@ -488,9 +496,16 @@ func _ensure_3d_veg_built() -> void:
 				var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
 				var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
 					Vector2(r_world.x, r_world.z),
-					1.40
+					0.90
 				)
 				vector_field.call("clip_shapes", rock_clip_poly)
+
+		if bot_anchor != null:
+			var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+				Vector2(bot_anchor.position.x, bot_anchor.position.z),
+				1.40
+			)
+			vector_field.call("clip_shapes", spawn_clip_poly)
 
 		for obj_item: Variant in objects_arr:
 			if obj_item is Dictionary:
