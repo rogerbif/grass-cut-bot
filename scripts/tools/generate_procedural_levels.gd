@@ -11,16 +11,67 @@ const MIN_ROCK_SPACING: float = 2.80      # 2.00 * 1.40m (diâmetro lâmina nv 6
 const SPAWN_GRASS_CLEAR_RADIUS: float = 1.40 # Clareira no spawn do robô (raio atual da rocha: 1.40m)
 const ROCK_GRASS_CLEAR_RADIUS: float = 0.90  # Clareira da rocha (raio da menor lâmina: 0.90m)
 
+# generate_procedural_levels.gd
+# Gerador Procedural Agnóstico de Fases do Grass Cut Bot.
+# Suporta criação/recriação de qualquer intervalo de fases via argumentos CLI ou variáveis:
+# Exemplos CLI:
+#   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=21 --end=40
+#   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=41 --count=10
+#   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=1 --end=5
+
+# Parâmetros padrão configuráveis se executado sem argumentos CLI:
+var default_start: int = 21
+var default_end: int = 40
+
 func _init() -> void:
-	print("=== GERADOR E AUDITOR DAS FASES DE EXPANSÃO 21 A 40 (MEGA-ILHAS CANÔNICAS) ===")
+	print("==================================================")
+	print("🌿 GERADOR PROCEDURAL AGNÓSTICO DE FASES")
+	print("==================================================")
+
+	var start_lvl: int = default_start
+	var end_lvl: int = default_end
+	var count_arg: int = 0
+
+	# Processa argumentos CLI passados pelo usuário (--start=X, --end=Y, --count=K)
+	var all_args: Array = OS.get_cmdline_user_args()
+	if all_args.is_empty():
+		all_args = OS.get_cmdline_args()
+
+	for arg_v: Variant in all_args:
+		var arg: String = String(arg_v)
+		if arg.begins_with("--start=") or arg.begins_with("-start=") or arg.begins_with("-s="):
+			start_lvl = int(arg.split("=")[1])
+		elif arg.begins_with("--end=") or arg.begins_with("-end=") or arg.begins_with("-e="):
+			end_lvl = int(arg.split("=")[1])
+		elif arg.begins_with("--count=") or arg.begins_with("-count=") or arg.begins_with("-c="):
+			count_arg = int(arg.split("=")[1])
+
+	if count_arg > 0:
+		end_lvl = start_lvl + count_arg - 1
+
+	if end_lvl < start_lvl:
+		end_lvl = start_lvl
+
+	print("Configuração de geração:")
+	print("  - Fase Inicial: %d" % start_lvl)
+	print("  - Fase Final:   %d" % end_lvl)
+	print("  - Total a gerar: %d fases" % (end_lvl - start_lvl + 1))
+	print("--------------------------------------------------")
+
 	var total_errors: int = 0
-	for lvl: int in range(21, 41):
+	var generated_count: int = 0
+	for lvl: int in range(start_lvl, end_lvl + 1):
 		var errs: int = generate_level(lvl)
 		total_errors += errs
+		generated_count += 1
+
+	print("--------------------------------------------------")
 	if total_errors == 0:
-		print("=== SUCESSO ABSOLUTO: TODAS AS FASES 21 A 40 GERADAS COM 0 ERROS! ===")
+		print("✅ [SUCESSO] Todas as %d fases (Fase %02d a %02d) geradas e salvas com 0 erros!" % [generated_count, start_lvl, end_lvl])
 	else:
-		printerr("=== AUDITORIA: %d ERROS ENCONTRADOS NAS FASES ===" % total_errors)
+		printerr("❌ [AUDITORIA] Detectados %d erros durante a geração das fases." % total_errors)
+
+	print("==================================================")
 	quit(1 if total_errors > 0 else 0)
 
 
@@ -601,6 +652,15 @@ func generate_level(lvl: int) -> int:
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 
+		_:
+			level_name = _get_procedural_level_name(lvl)
+			var size_choice: int = 23 + (lvl % 5) * 2 # 23, 25, 27, 29, 31
+			width = size_choice
+			height = size_choice
+			base_time_limit = 90.0 + float(lvl) * 2.5
+			spawn_cell = Vector2i(width / 2, height / 2)
+			_generate_algorithmic_island(lvl, width, height, spawn_cell, terrain_grid, object_grid, vector_field)
+
 	IslandAutotiler.apply_autotile(terrain_grid)
 	_clip_vector_field_to_island(vector_field, terrain_grid, object_grid, spawn_cell, width, height)
 
@@ -1065,3 +1125,84 @@ func _add_grass_star_world(vf: RefCounted, type_name: String, center: Vector2, r
 		var r: float = r_out if (i % 2 == 0) else r_in
 		poly.append(center + Vector2(cos(a), sin(a)) * r)
 	vf.call("merge_or_add_shape", type_name, poly)
+
+
+# --- Gerador Procedural Algorítmico Genérico para Qualquer Nível ---
+func _get_procedural_level_name(lvl: int) -> String:
+	var prefixes: Array[String] = ["Ilha", "Arquipélago", "Refúgio", "Colina", "Clareira", "Santuário", "Costa", "Península"]
+	var suffixes: Array[String] = ["Esmeralda", "Solar", "do Vento", "Turquesa", "Cristalino", "Radiante", "das Brisas", "Harmônico", "Vibrante", "Aurora"]
+	var p: String = prefixes[lvl % prefixes.size()]
+	var s: String = suffixes[(lvl / prefixes.size()) % suffixes.size()]
+	return "%s %s (Nível %02d)" % [p, s, lvl]
+
+
+func _generate_algorithmic_island(
+	lvl: int,
+	width: int,
+	height: int,
+	spawn_cell: Vector2i,
+	terrain_grid: Dictionary,
+	object_grid: Dictionary,
+	vector_field: RefCounted
+) -> void:
+	var shape_type: int = lvl % 5
+	var r: int = (width - 4) / 2
+	match shape_type:
+		0:
+			_add_chamfered_rect_island(terrain_grid, 2, 2, width - 4, height - 4, 3)
+		1:
+			_add_octagon_island(terrain_grid, spawn_cell.x, spawn_cell.y, r)
+		2:
+			_add_rounded_cross_island(terrain_grid, spawn_cell.x, spawn_cell.y, r, 5)
+		3:
+			_add_diamond_island(terrain_grid, spawn_cell.x, spawn_cell.y, r)
+		4:
+			_add_clover_island(terrain_grid, spawn_cell.x, spawn_cell.y)
+
+	var all_grasses: Array[String] = [
+		"grass_green", "grass_yellow", "grass_blue", "grass_purple", "grass_white", "grass_red"
+	]
+	var grass_palette: Array[String] = []
+	var palette_size: int = clampi(2 + (lvl / 8), 2, all_grasses.size())
+	for i in range(palette_size):
+		grass_palette.append(all_grasses[(lvl + i) % all_grasses.size()])
+
+	var veg_style: int = (lvl / 3) % 3
+	if veg_style == 0:
+		_add_diagonal_stripes(vector_field, width, height, grass_palette, 1.80)
+	elif veg_style == 1:
+		_add_grass_rect(vector_field, grass_palette[0], 0, 0, width, height, width, height)
+		for ring_idx in range(1, grass_palette.size()):
+			var r_out: float = float(r) * 0.80 * (float(palette_size - ring_idx) / float(palette_size))
+			_add_grass_circle_world(vector_field, grass_palette[ring_idx], Vector2.ZERO, r_out)
+	else:
+		_add_diagonal_stripes(vector_field, width, height, grass_palette, 1.60)
+		_add_grass_diamond_world(vector_field, grass_palette[1], Vector2.ZERO, float(r) * 0.40)
+
+	var rock_count: int = clampi(4 + (lvl % 5), 4, 8)
+	var rock_radius: float = float(r) * 0.55
+	for i in range(rock_count):
+		var ang: float = float(i) * (TAU / float(rock_count)) + (float(lvl) * 0.2)
+		var rx: int = spawn_cell.x + int(round(cos(ang) * rock_radius))
+		var rz: int = spawn_cell.y + int(round(sin(ang) * rock_radius))
+		_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(rx, rz))
+
+	var wheat_count: int = clampi(6 + (lvl % 7) * 2, 6, 18)
+	var wheat_r: float = float(r) * 0.35
+	for i in range(wheat_count):
+		var ang_w: float = float(i) * (TAU / float(wheat_count))
+		var wx: int = spawn_cell.x + int(round(cos(ang_w) * wheat_r))
+		var wz: int = spawn_cell.y + int(round(sin(ang_w) * wheat_r))
+		_add_valid_wheat(terrain_grid, object_grid, spawn_cell, Vector2i(wx, wz))
+
+	var flower_types: Array[String] = [
+		"flower_bell", "flower_rose", "flower_daisy", "flower_sunflower", "flower_corolla", "flower_tulip"
+	]
+	var f_type: String = flower_types[lvl % flower_types.size()]
+	var flower_count: int = clampi(4 + (lvl % 6), 4, 12)
+	var flower_r: float = float(r) * 0.72
+	for i in range(flower_count):
+		var ang_f: float = float(i) * (TAU / float(flower_count)) + 0.35
+		var fx: int = spawn_cell.x + int(round(cos(ang_f) * flower_r))
+		var fz: int = spawn_cell.y + int(round(sin(ang_f) * flower_r))
+		_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(fx, fz), f_type)
