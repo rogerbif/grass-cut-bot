@@ -86,3 +86,60 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
     5. Se já estiver na tela inicial padrão: exibe o modal de confirmação de saída (`ExitModal`) perguntando se o usuário deseja fechar o app ou continuar jogando. Se confirmado, salva o progresso e encerra limpo (`get_tree().quit()`).
 - **Safe Area Dinâmica (Notches & Cutouts):**
   - O método `_apply_safe_area()` consulta `DisplayServer.get_display_safe_area()` e compensa dinamicamente a margem superior (`content_margin_top`) do `TopBar` no HUD e no Menu Principal, impedindo sobreposição em aparelhos com entalhes de câmera profundos.
+
+---
+
+## 9. Compilação do Android App Bundle (.aab) e Keystore de Lançamento
+
+- **Script de Automação:** Executado via `scripts/tools/build_android_aab.ps1`.
+- **Keystore de Assinatura:**
+  - Armazenado na raiz do projeto como `upload-keystore.jks` (alias `grasscutbot`), protegido no `.gitignore`.
+  - Injetado em tempo de execução através das variáveis de ambiente:
+    - `GODOT_ANDROID_KEYSTORE_RELEASE_PATH`
+    - `GODOT_ANDROID_KEYSTORE_RELEASE_USER`
+    - `GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD`
+- **Requisitos de SDK:**
+  - `targetSdkVersion = 36` (Android 16 obrigatório no Google Play Console a partir de 2026/2027) com supressão `android.suppressUnsupportedCompileSdk=36` em `gradle.properties`.
+  - `minSdkVersion = 24` (Android 7.0 Nougat, padrão nativo do Godot 4).
+- **Prevenção de Locks e Resíduos Gradle no Windows/OneDrive:**
+  - As tarefas `:clean` de todos os subprojetos são neutralizadas em `android/build/build.gradle` (`tasks.matching { it.name == 'clean' }.all { enabled = false }`) para impedir exceções de `IOException: Unable to delete directory`.
+  - Limpeza forçada nativa em PowerShell com `cmd.exe /c rmdir /s /q` sobre diretórios `build` e `android/build/src/main/assets` antes da compilação para evitar duplicidade de assets entre módulos `base` e `assetPackInstallTime`.
+
+---
+
+## 10. Pipeline de Publicação Automatizada via Google Play Developer API
+
+- **Infraestrutura Google Cloud & API:**
+  - API habilitada: `androidpublisher.googleapis.com`.
+  - Conta de Serviço: `play-store-uploader@play-store-uploader-514021.iam.gserviceaccount.com`.
+  - Credencial privada: `play_service_account.json` na raiz do projeto (estritamente ignorada no `.gitignore`).
+- **Script Uploader CLI (`scripts/tools/play_store_uploader/upload.js`):**
+  - Autentica via JWT com a biblioteca oficial `googleapis`.
+  - Abre sessão de edição atômica em `com.bifgames.grasscutbot`.
+  - Envia o bundle `.aab` por streaming, recebe o `versionCode` processado, associa à faixa especificada (`internal`, `alpha`, etc.), anexa as release notes multilíngues e comita as alterações.
+- **Integração Ponta a Ponta com 1 Comando:**
+  ```powershell
+  # Compila o AAB e publica diretamente no Teste Interno:
+  .\scripts\tools\build_android_aab.ps1 -Publish
+
+  # Compila e publica no Teste Fechado (Alpha):
+  .\scripts\tools\build_android_aab.ps1 -Publish -Track alpha
+  ```
+
+---
+
+## 11. Padrão Mandatório de Release Notes Bilíngues
+
+Sempre que um novo build `.aab` for gerado ou publicado, as notas da versão devem ser estruturadas obrigatoriamente nas tags correspondentes:
+
+```html
+<pt-BR>
+Novidades da versão:
+• Descrição sucinta das melhorias e novidades para o público brasileiro.
+</pt-BR>
+<en-US>
+What's new in this version:
+• Concise description of improvements and new features for global players.
+</en-US>
+```
+
