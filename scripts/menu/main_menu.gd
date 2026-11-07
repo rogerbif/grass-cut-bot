@@ -502,25 +502,13 @@ func _navigate_level_by_delta(delta: int) -> void:
 		_trigger_level_boundary_feedback(1)
 		return
 
-	# Regra de progressão: permite navegar pelas fases desbloqueadas e espiar até a primeira bloqueada
-	if SaveManager != null:
-		var max_unlocked: int = 1
-		for l: int in range(1, total_levels_count + 1):
-			if SaveManager.is_level_unlocked(l):
-				max_unlocked = l
-			else:
-				break
-		var max_allowed: int = mini(total_levels_count, max_unlocked + 1)
-		if target_lvl > max_allowed:
-			_trigger_level_boundary_feedback(1)
-			return
-
 	selected_level = target_lvl
 	if SaveManager != null:
 		SaveManager.set_last_played_level(selected_level)
 
 	_teleport_bot_to_level(selected_level)
 	_update_islands_visibility(false, selected_level)
+	_update_plaques_view_mode(false, true)
 
 	if tab_home != null and tab_home.has_method("update_level_display"):
 		tab_home.update_level_display(selected_level)

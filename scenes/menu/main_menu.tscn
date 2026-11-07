@@ -77,11 +77,36 @@ script = ExtResource("2_camera")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
+[node name="TabViews" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TabGarage" parent="CanvasLayer/TabViews" instance=ExtResource("4_tab_garage")]
+visible = false
+layout_mode = 1
+
+[node name="TabHome" parent="CanvasLayer/TabViews" instance=ExtResource("5_tab_home")]
+layout_mode = 1
+
+[node name="TabCollection" parent="CanvasLayer/TabViews" instance=ExtResource("6_tab_collection")]
+visible = false
+layout_mode = 1
+
+[node name="TabStore" parent="CanvasLayer/TabViews" instance=ExtResource("7_tab_store")]
+visible = false
+layout_mode = 1
+
 [node name="TopBar" type="MarginContainer" parent="CanvasLayer"]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 86.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -89,6 +114,7 @@ theme_override_constants/margin_bottom = 8
 
 [node name="HBox" type="HBoxContainer" parent="CanvasLayer/TopBar"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 12
 
 [node name="CoinBadge" parent="CanvasLayer/TopBar/HBox" instance=ExtResource("14_cyber_badge")]
@@ -117,30 +143,6 @@ texture_normal = ExtResource("17_settings_normal")
 texture_pressed = ExtResource("18_settings_pressed")
 ignore_texture_size = true
 stretch_mode = 5
-
-[node name="TabViews" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="TabGarage" parent="CanvasLayer/TabViews" instance=ExtResource("4_tab_garage")]
-visible = false
-layout_mode = 1
-
-[node name="TabHome" parent="CanvasLayer/TabViews" instance=ExtResource("5_tab_home")]
-layout_mode = 1
-
-[node name="TabCollection" parent="CanvasLayer/TabViews" instance=ExtResource("6_tab_collection")]
-visible = false
-layout_mode = 1
-
-[node name="TabStore" parent="CanvasLayer/TabViews" instance=ExtResource("7_tab_store")]
-visible = false
-layout_mode = 1
 
 [node name="BottomNavBar" parent="CanvasLayer" instance=ExtResource("8_nav_bar")]
 

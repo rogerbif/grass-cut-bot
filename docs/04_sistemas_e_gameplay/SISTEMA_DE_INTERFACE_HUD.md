@@ -159,7 +159,8 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
     - `Store` 🏪: Loja de pacotes de moedas e resgate de recompensas diárias.
 
 ### 3.4 Modal de Configurações (`SettingsModal`) & Sistema Multilinguagem
-- **Layout Responsivo Cyber:** Painel modal cobrindo ~85% da tela com fundo translúcido escuro, moldura chanfrada neon e fechamento tátil pelo botão [X] ou toque no backdrop.
+- **Layout Responsivo Cyber:** Painel modal cobrindo ~85% da tela com fundo translúcido escuro, moldura chanfrada neon e fechamento tátil pelo botão [X] ou toque no backdrop escuro (`ColorRect` com detecção de toque/clique fora da área do painel).
+- **Acesso Universal em Qualquer Aba:** A `TopBar` sobrepõe as abas (`TabViews`) na hierarquia visual com `mouse_filter = IGNORE` em áreas vazias das abas secundárias (Garagem, Coleção, Loja), permitindo acionar as configurações instantaneamente a partir de qualquer contexto.
 - **Preferências de Áudio e Feedback:** Toggles independentes para Música, Sons (FX) e Vibração Háptica (com detecção do sistema operacional para retorno tátil em dispositivos Android).
 - **Seletor Visual de Idiomas (i18n):** Linha de controle com ícone vetorial de globo (`icon_globe.svg`) e 3 botões segmentados Cyber:
   - `[ PT ]`: Português do Brasil (`pt_BR`).
@@ -168,12 +169,13 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
 - **Reatividade Dinâmica:** Ao alternar de idioma, o `SaveManager` persiste a preferência e sincroniza o `TranslationServer`. A engine emite `NOTIFICATION_TRANSLATION_CHANGED`, atualizando instantaneamente sem reload todos os textos do menu principal (todas as 4 abas: Início, Oficina, Herbário e Loja), toasts, botões da navbar, cartões de fase, placa 3D de arquipélago, barra da serra (Nível Máximo), oficina in-game e modais de vitória, derrota, pausa e saída.
 - **Seção Save Progress & Reset:** Salvamento manual local, conectores para Google Play Games / Facebook e botão de confirmação com segurança de duplo toque para reset geral de progresso.
 
-### 3.6 Navegação por Gestos (Swipe) no Menu Principal (`v0.12.143-alpha`)
+### 3.6 Navegação por Gestos (Swipe) no Menu Principal (`v0.12.144-alpha`)
 - **Arquitetura Desacoplada (`MenuGestureDetector`):** Detector de gestos por toque e mouse com filtro polar de eixos ($1.30\times$ dominância), threshold de $45\text{px}$ e rejeição de diagonais acidentais ou toques estáticos longos ($> 0.85\text{s}$).
 - **Troca de Fases Vertical (Opção B - Visão do Bot na Home):**
   - Deslizar para **baixo** ($\Delta Y > 0$) avança para a próxima fase ($N + 1$).
   - Deslizar para **cima** ($\Delta Y < 0$) retorna para a fase anterior ($N - 1$).
-  - O robô executa teleporte holográfico entre ilhas, o `MapLevelCard` dispara animação elástica de bump (`play_bump_animation`), e tentativas de ultrapassar os limites (Fase 1 ou máxima desbloqueada) acionam feedback visual de squash/stretch (`play_boundary_bounce`) com som sutil.
+  - **Navegação Livre e Reatividade 3D:** Permite navegar livremente por todo o arquipélago (1 a 40 fases), construindo e animando reativamente a vegetação 3D (`veg_3d_container`) da ilha focada enquanto exibe no `MapLevelCard` os objetivos, tempo e estado de bloqueio.
+  - O robô executa teleporte holográfico entre ilhas, o `MapLevelCard` dispara animação elástica de bump (`play_bump_animation`), e tentativas de ultrapassar os limites do arquipélago (Fase 1 ou Fase 40) acionam feedback visual de squash/stretch (`play_boundary_bounce`) com som sutil.
 - **Troca de Abas Horizontal (Todas as Abas do Menu):**
   - Deslizar para a **esquerda** ($\Delta X < 0$) avança para a aba da direita (`Home` ➔ `Oficina` ➔ `Coleção` ➔ `Loja`).
   - Deslizar para a **direita** ($\Delta X > 0$) retorna para a aba anterior.

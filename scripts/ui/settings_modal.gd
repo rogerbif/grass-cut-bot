@@ -23,6 +23,7 @@ const TEX_TOGGLE_OFF: Texture2D = preload("res://assets/ui/settings/toggle_off.s
 @onready var version_label: Label = find_child("VersionLabel", true, false) as Label
 @onready var close_btn: BaseButton = find_child("CloseBtn", true, false) as BaseButton
 @onready var toast_label: Label = find_child("ToastLabel", true, false) as Label
+@onready var backdrop: Control = get_node_or_null("Backdrop") as Control
 
 @onready var btn_lang_pt: Button = find_child("BtnLangPT", true, false) as Button
 @onready var btn_lang_en: Button = find_child("BtnLangEN", true, false) as Button
@@ -121,6 +122,9 @@ func _ready() -> void:
 
 	if close_btn != null:
 		close_btn.pressed.connect(close_modal)
+	if backdrop != null:
+		backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+		backdrop.gui_input.connect(_on_backdrop_gui_input)
 	if graphics_btn != null:
 		graphics_btn.pressed.connect(_on_graphics_toggled)
 	if music_btn != null:
@@ -190,6 +194,20 @@ func close_modal() -> void:
 		_is_closing = false
 		modal_closed.emit()
 	)
+
+func _on_backdrop_gui_input(event: InputEvent) -> void:
+	if _is_closing:
+		return
+	if event is InputEventMouseButton:
+		var mb: InputEventMouseButton = event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+			accept_event()
+			close_modal()
+	elif event is InputEventScreenTouch:
+		var st: InputEventScreenTouch = event as InputEventScreenTouch
+		if st.pressed:
+			accept_event()
+			close_modal()
 
 func _on_graphics_toggled() -> void:
 	match graphics_quality:
