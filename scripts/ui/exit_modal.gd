@@ -67,8 +67,9 @@ func open() -> void:
 	if _fade_tween != null and _fade_tween.is_valid():
 		_fade_tween.kill()
 
-	if AudioManager != null:
-		AudioManager.play_sfx("confirm")
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "confirm")
 
 	_card_panel.pivot_offset = Vector2(CARD_W * 0.5, CARD_H * 0.5)
 	_card_panel.scale = Vector2(0.85, 0.85)
@@ -87,8 +88,9 @@ func close() -> void:
 		return
 	_is_closing = true
 
-	if AudioManager != null:
-		AudioManager.play_sfx("close")
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "close")
 
 	if _fade_tween != null and _fade_tween.is_valid():
 		_fade_tween.kill()
@@ -107,10 +109,12 @@ func close() -> void:
 	)
 
 func _on_quit_pressed() -> void:
-	if AudioManager != null:
-		AudioManager.play_sfx("confirm")
-	if SaveManager != null:
-		SaveManager.save_game()
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "confirm")
+	var save_mgr: Node = get_node_or_null("/root/SaveManager")
+	if save_mgr != null and save_mgr.has_method("save_game"):
+		save_mgr.call("save_game")
 	quit_requested.emit()
 	get_tree().quit()
 

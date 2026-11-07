@@ -47,6 +47,7 @@ func set_value_text(new_text: String) -> void:
 
 func _on_plus_pressed() -> void:
 	Input.vibrate_handheld(15)
-	if AudioManager != null:
-		AudioManager.play_sfx("confirm")
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "confirm")
 	plus_pressed.emit()

@@ -117,24 +117,13 @@ func _detect_levels_and_build_archipelago() -> void:
 		cur_lvl = SaveManager.get_last_played_level()
 	selected_level = clampi(cur_lvl, 1, total_levels_count)
 
-	var z_spacing: float = 18.5
+	var water_gap: float = 9.0 # Canal constante de mar aberto entre as bordas de ilhas vizinhas
 	var current_z: float = 0.0
+	var prev_half_depth: float = 0.0
 
 	for i: int in range(1, total_levels_count + 1):
 		var island: Node3D = ISLAND_SCENE.instantiate() as Node3D
 		islands_container.add_child(island)
-
-		# Padrão em ziguezague no arquipélago tropical em escala real
-		var x_offset: float = 0.0
-		if i == 1:
-			x_offset = 0.0
-		elif i % 2 == 0:
-			x_offset = 5.5
-		else:
-			x_offset = -5.0
-
-		current_z = -float(i - 1) * z_spacing
-		island.position = Vector3(x_offset, 0.0, current_z)
 
 		var is_unlocked: bool = true
 		var stars: int = 0
@@ -150,20 +139,39 @@ func _detect_levels_and_build_archipelago() -> void:
 		if island.has_signal("island_selected"):
 			island.island_selected.connect(_on_island_clicked)
 
+		var dim: Vector2 = island.get_island_dimensions() if island.has_method("get_island_dimensions") else Vector2(12.0, 10.0)
+		var current_half_depth: float = dim.y * 0.5
+
+		if i == 1:
+			current_z = 0.0
+		else:
+			current_z -= (prev_half_depth + current_half_depth + water_gap)
+
+		prev_half_depth = current_half_depth
+
+		# Padrão em ziguezague no arquipélago tropical em escala real
+		var x_offset: float = 0.0
+		if i == 1:
+			x_offset = 0.0
+		elif i % 2 == 0:
+			x_offset = 5.5
+		else:
+			x_offset = -5.0
+
+		island.position = Vector3(x_offset, 0.0, current_z)
 		island_nodes.append(island)
 
 	# Instancia o banco terminal de nuvens 3D com "Em breve mais fases..."
 	var clouds_end: Node3D = CLOUDS_END_SCENE.instantiate() as Node3D
 	islands_container.add_child(clouds_end)
 	clouds_end_node = clouds_end
-	var end_z: float = current_z - 16.0
+	var end_z: float = current_z - (prev_half_depth + 14.0)
 	clouds_end.position = Vector3(0.0, 0.0, end_z)
 	clouds_end.scale = Vector3(2.5, 2.5, 2.5)
 
 	# Configura limites da rolagem e parâmetros da câmera
 	if menu_camera != null:
 		menu_camera.total_levels = total_levels_count
-		menu_camera.z_spacing = z_spacing
 		menu_camera.set_scroll_bounds(0.0, end_z)
 		var waypoints: Array[Vector3] = []
 		var dimensions: Array[Vector2] = []

@@ -77,8 +77,8 @@ func set_island_positions(positions: Array[Vector3]) -> void:
 	island_waypoints = positions.duplicate()
 
 func calculate_island_target_height(dim: Vector2) -> float:
-	var effective_span: float = maxf(dim.x * 1.65, dim.y * 1.25)
-	return clampf(effective_span * 1.45, 25.0, 36.0)
+	var ideal_height: float = maxf(dim.x * 2.10, dim.y * 1.35)
+	return clampf(ideal_height, 20.0, 58.0)
 
 func get_camera_height_at_z(scroll_z: float) -> float:
 	if island_dimensions.is_empty() or island_waypoints.is_empty():
@@ -227,13 +227,29 @@ func _end_drag() -> void:
 		var closest_lvl: int = find_closest_level(current_scroll_z)
 		snap_to_level(closest_lvl)
 
+func get_level_z(lvl: int) -> float:
+	var idx: int = lvl - 1
+	if idx >= 0 and idx < island_waypoints.size():
+		return island_waypoints[idx].z
+	return -float(idx) * z_spacing
+
 func find_closest_level(scroll_z: float) -> int:
-	var idx: int = roundi(-scroll_z / z_spacing) + 1
-	return clampi(idx, 1, total_levels)
+	if island_waypoints.is_empty():
+		var idx: int = roundi(-scroll_z / z_spacing) + 1
+		return clampi(idx, 1, total_levels)
+	var best_idx: int = 0
+	var best_dist: float = INF
+	var count: int = mini(total_levels, island_waypoints.size())
+	for i: int in range(count):
+		var d: float = absf(scroll_z - island_waypoints[i].z)
+		if d < best_dist:
+			best_dist = d
+			best_idx = i
+	return best_idx + 1
 
 func snap_to_level(lvl: int, animated: bool = true) -> void:
 	current_snapped_level = clampi(lvl, 1, total_levels)
-	var target_z: float = -float(current_snapped_level - 1) * z_spacing
+	var target_z: float = get_level_z(current_snapped_level)
 	target_scroll_z = target_z
 
 	if snap_tween != null and snap_tween.is_valid():
@@ -272,7 +288,7 @@ func switch_to_map_view() -> void:
 
 	# Começa focado na fase atual do robô
 	current_snapped_level = find_closest_level(target_bot_pos.z)
-	target_scroll_z = -float(current_snapped_level - 1) * z_spacing
+	target_scroll_z = get_level_z(current_snapped_level)
 	current_scroll_z = target_scroll_z
 	last_focused_level = current_snapped_level
 	scroll_focus_changed.emit(current_snapped_level)

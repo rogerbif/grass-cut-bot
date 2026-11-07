@@ -456,23 +456,34 @@ func generate_level(lvl: int) -> int:
 			level_name = "A Coroa de Ilhotas"
 			width = 31; height = 31; base_time_limit = 185.0
 			spawn_cell = Vector2i(15, 15)
-			_add_octagon_island(terrain_grid, 15, 15, 7) # Núcleo
+			_add_octagon_island(terrain_grid, 15, 15, 7) # Núcleo central
 			# 4 satélites chanfrados
 			_add_chamfered_rect_island(terrain_grid, 2, 2, 9, 9, 2)
 			_add_chamfered_rect_island(terrain_grid, 20, 2, 9, 9, 2)
 			_add_chamfered_rect_island(terrain_grid, 2, 20, 9, 9, 2)
 			_add_chamfered_rect_island(terrain_grid, 20, 20, 9, 9, 2)
-			# Istmos de 3 tiles de largura
-			for i: int in range(9, 14):
-				for j: int in range(i - 1, i + 2):
-					terrain_grid[Vector2i(j, j)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-					terrain_grid[Vector2i(30 - j, j)] = { "tile_id": "island_center", "rot": 0, "auto": true }
-			_add_grass_circle(vector_field, "grass_blue", 15, 15, width, height, 5.0)
-			_add_grass_rect(vector_field, "grass_yellow", 2, 2, 10, 10, width, height)
+			# Istmos contínuos sólidos de 3 tiles de largura conectando o núcleo aos 4 satélites
+			for d: int in range(7, 16):
+				for w: int in range(-1, 2):
+					# Top-Left (d, d)
+					terrain_grid[Vector2i(d + w, d)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					terrain_grid[Vector2i(d, d + w)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					# Top-Right (30 - d, d)
+					terrain_grid[Vector2i(30 - d - w, d)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					terrain_grid[Vector2i(30 - d, d + w)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					# Bottom-Left (d, 30 - d)
+					terrain_grid[Vector2i(d + w, 30 - d)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					terrain_grid[Vector2i(d, 30 - d - w)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					# Bottom-Right (30 - d, 30 - d)
+					terrain_grid[Vector2i(30 - d - w, 30 - d)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+					terrain_grid[Vector2i(30 - d, 30 - d - w)] = { "tile_id": "island_center", "rot": 0, "auto": true }
+			# Vegetação: Centro em grama verde sólida (alto contraste) e satélites cromáticos
+			_add_grass_circle(vector_field, "grass_green", 15, 15, width, height, 5.6)
+			_add_grass_rect(vector_field, "grass_blue", 2, 2, 10, 10, width, height)
 			_add_grass_rect(vector_field, "grass_yellow", 20, 2, 28, 10, width, height)
-			_add_grass_rect(vector_field, "grass_green", 2, 20, 10, 28, width, height)
-			_add_grass_rect(vector_field, "grass_green", 20, 20, 28, 28, width, height)
-			# 8 rochas
+			_add_grass_rect(vector_field, "grass_yellow", 2, 20, 10, 28, width, height)
+			_add_grass_rect(vector_field, "grass_blue", 20, 20, 28, 28, width, height)
+			# 8 rochas (distribuídas com folga)
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(6, 6))
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(24, 6))
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(6, 24))
