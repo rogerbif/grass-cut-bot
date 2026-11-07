@@ -25,3 +25,7 @@ release.keystore
 
 # Editores locais
 .obsidian/
+
+# Arquivos de teste temporários na raiz
+test_*.png
+test_*.png.import
