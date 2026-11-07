@@ -16,8 +16,9 @@ const args = process.argv.slice(2);
 let track = 'internal'; // 'internal', 'alpha' (Closed Testing), 'beta', 'production'
 let aabPath = DEFAULT_AAB_PATH;
 let keyPath = DEFAULT_KEY_PATH;
-let notesPt = process.env.RELEASE_NOTES_PT || null;
-let notesEn = process.env.RELEASE_NOTES_EN || null;
+
+let notesPt = process.env.RELEASE_NOTES_PT || 'Novidades da versão:\n• Ajustes finos de física de corte e resposta de ricochete.\n• Otimizações na renderização e estabilidade mobile.\n• Melhorias nas metas e navegação do arquipélago.';
+let notesEn = process.env.RELEASE_NOTES_EN || "What's new in this version:\n• Refined blade cutting physics and tactile recoil response.\n• Rendering and mobile performance optimizations.\n• Improved level goals and archipelago map navigation.";
 
 for (const arg of args) {
     if (arg.startsWith('--track=')) {
@@ -27,21 +28,27 @@ for (const arg of args) {
     } else if (arg.startsWith('--key=')) {
         keyPath = path.resolve(arg.split('=')[1]);
     } else if (arg.startsWith('--notes-pt=')) {
-        notesPt = arg.substring('--notes-pt='.length);
+        notesPt = arg.substring('--notes-pt='.length).replace(/\\n/g, '\n');
     } else if (arg.startsWith('--notes-en=')) {
-        notesEn = arg.substring('--notes-en='.length);
+        notesEn = arg.substring('--notes-en='.length).replace(/\\n/g, '\n');
+    } else if (arg.startsWith('--notes-file=')) {
+        const filePath = path.resolve(arg.split('=')[1]);
+        if (fs.existsSync(filePath)) {
+            const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+            if (raw['pt-BR']) notesPt = raw['pt-BR'];
+            if (raw['en-US']) notesEn = raw['en-US'];
+        }
     }
 }
 
-// Release Notes padrão ou customizadas
 const RELEASE_NOTES = [
     {
         language: 'pt-BR',
-        text: notesPt || 'Novidades da versão:\n• Ajustes finos de física de corte e resposta de ricochete.\n• Otimizações na renderização e estabilidade mobile.\n• Melhorias nas metas e navegação do arquipélago.'
+        text: notesPt
     },
     {
         language: 'en-US',
-        text: notesEn || "What's new in this version:\n• Refined blade cutting physics and tactile recoil response.\n• Rendering and mobile performance optimizations.\n• Improved level goals and archipelago map navigation."
+        text: notesEn
     }
 ];
 

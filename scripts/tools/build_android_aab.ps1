@@ -10,7 +10,9 @@ param(
     [string]$KeystoreUser = "grasscutbot",
     [string]$KeystorePass = "grasscutbot2026",
     [switch]$Publish,
-    [string]$Track = "internal"
+    [string]$Track = "internal",
+    [string]$NotesPt = "",
+    [string]$NotesEn = ""
 )
 
 $godotExe = "C:\Users\User\OneDrive\Documentos\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe"
@@ -69,7 +71,10 @@ if (Test-Path $OutputPath) {
         Write-Host "Faixa: $Track" -ForegroundColor Yellow
         Write-Host "==================================================" -ForegroundColor Magenta
         $uploaderScript = (Resolve-Path "$PSScriptRoot\play_store_uploader\upload.js").Path
-        node $uploaderScript "--track=$Track" "--aab=$OutputPath"
+        $uploadArgs = @("--track=$Track", "--aab=$OutputPath")
+        if ($NotesPt) { $uploadArgs += "--notes-pt=$NotesPt" }
+        if ($NotesEn) { $uploadArgs += "--notes-en=$NotesEn" }
+        node $uploaderScript @uploadArgs
     }
 } else {
     Write-Host ""
