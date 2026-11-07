@@ -56,3 +56,20 @@ Todas as alterações no repositório devem seguir commits semânticos padroniza
 1. **Bloqueio de Arquivo `.git/index.lock`:** Como o workspace está sincronizado via Microsoft OneDrive, processos em segundo plano de nuvem podem bloquear o arquivo de índice temporariamente.
 2. **Protocolo de Recuperação:** Caso comandos `git add` ou `git commit` falhem com `Permission denied (.git/index.lock)`, execute a operação fora da camada restritiva da sandbox (`BypassSandbox: true`) mantendo rigorosamente os mesmos descritores de ação para contornar o bloqueio efêmero.
 
+---
+
+## 6. Automação de Build e Publicação no Google Play
+
+1. **Compilação Automatizada de AAB:** Utilize o script PowerShell `scripts/tools/build_android_aab.ps1`, que gerencia keystores, desativa tarefas de clean bloqueadas pelo OneDrive e compila o pacote `.aab` com Target SDK 36 e Min SDK 24.
+2. **Publicação com 1 Comando (`-Publish`):**
+   ```powershell
+   # Compilar e subir diretamente para a faixa de Teste Interno:
+   .\scripts\tools\build_android_aab.ps1 -Publish
+
+   # Compilar e subir diretamente para o Teste Fechado (Alpha):
+   .\scripts\tools\build_android_aab.ps1 -Publish -Track alpha
+   ```
+3. **Segurança de Credenciais:** As credenciais da Conta de Serviço (`play_service_account.json`) e os arquivos de keystore (`*.keystore`, `*.jks`) devem permanecer estritamente fora do controle de versão via `.gitignore`.
+4. **Padrão de Release Notes Bilíngues:** Sempre apresente as notas da versão formatadas nas tags `<pt-BR>` e `<en-US>` a cada novo build para upload.
+
+
