@@ -12,6 +12,7 @@ enum CameraMode { BOT_VIEW, MAP_VIEW }
 @export var map_height: float = 28.0
 @export var map_z_offset: float = 17.5
 @export var map_pitch_deg: float = -58.0
+@export var quadrant_center_y_ratio: float = 0.36 # Centro do quadrante desobstruído (entre TopBar e MapLevelCard)
 
 @export var z_spacing: float = 18.5
 @export var total_levels: int = 20
@@ -61,13 +62,27 @@ func _process(delta: float) -> void:
 			last_focused_level = current_focus
 			scroll_focus_changed.emit(current_focus)
 
-		# Centraliza a câmera no X da ilha e enquadra dinamicamente na altura ideal
+		# Centraliza a câmera no X da ilha e enquadra dinamicamente no quadrante visível
 		var cam_x: float = get_camera_x_at_z(current_scroll_z)
 		var cam_y: float = get_camera_height_at_z(current_scroll_z)
-		var pitch_rad: float = deg_to_rad(absf(map_pitch_deg))
-		var cam_z_offset: float = cam_y / tan(pitch_rad) if pitch_rad > 0.001 else map_z_offset
+		var cam_z_offset: float = calculate_camera_z_offset(cam_y)
 		global_position = Vector3(cam_x, cam_y, current_scroll_z + cam_z_offset)
 		rotation_degrees = Vector3(map_pitch_deg, 0, 0)
+
+func calculate_camera_z_offset(cam_y: float) -> float:
+	var pitch_rad: float = deg_to_rad(absf(map_pitch_deg))
+	if pitch_rad <= 0.001:
+		return map_z_offset
+
+	# Projeta o centro da ilha no centro do quadrante visível (entre TopBar e MapLevelCard)
+	# quadrant_center_y_ratio = 0.36 (~460px do topo em tela 720x1280)
+	var v: float = quadrant_center_y_ratio
+	var y_ndc: float = (0.5 - v) / 0.5
+	var half_fov_rad: float = deg_to_rad(fov * 0.5)
+	var k: float = y_ndc * tan(half_fov_rad)
+	var alpha: float = atan(k)
+	var effective_pitch: float = maxf(0.1, pitch_rad - alpha)
+	return cam_y / tan(effective_pitch)
 
 func set_island_waypoints(waypoints: Array[Vector3], dimensions: Array[Vector2] = []) -> void:
 	island_waypoints = waypoints.duplicate()
@@ -77,8 +92,8 @@ func set_island_positions(positions: Array[Vector3]) -> void:
 	island_waypoints = positions.duplicate()
 
 func calculate_island_target_height(dim: Vector2) -> float:
-	var ideal_height: float = maxf(dim.x * 2.10, dim.y * 1.35)
-	return clampf(ideal_height, 20.0, 58.0)
+	var ideal_height: float = maxf(dim.x * 2.15, dim.y * 1.55)
+	return clampf(ideal_height, 21.0, 58.0)
 
 func get_camera_height_at_z(scroll_z: float) -> float:
 	if island_dimensions.is_empty() or island_waypoints.is_empty():
@@ -145,9 +160,9 @@ func get_ground_z(screen_pos: Vector2) -> float:
 
 func get_pixel_to_ground_ratio() -> float:
 	var vp_size: Vector2 = get_viewport().get_visible_rect().size
-	var center: Vector2 = vp_size / 2.0
-	var z1: float = get_ground_z(center - Vector2(0, 50))
-	var z2: float = get_ground_z(center + Vector2(0, 50))
+	var focal_center: Vector2 = Vector2(vp_size.x * 0.5, vp_size.y * quadrant_center_y_ratio)
+	var z1: float = get_ground_z(focal_center - Vector2(0, 50))
+	var z2: float = get_ground_z(focal_center + Vector2(0, 50))
 	var ratio: float = abs(z2 - z1) / 100.0
 	if ratio < 0.001 or ratio > 1.0:
 		return 0.016 # Fallback seguro
@@ -295,8 +310,7 @@ func switch_to_map_view() -> void:
 
 	var cam_x: float = get_camera_x_at_z(current_scroll_z)
 	var cam_y: float = get_camera_height_at_z(current_scroll_z)
-	var pitch_rad: float = deg_to_rad(absf(map_pitch_deg))
-	var cam_z_offset: float = cam_y / tan(pitch_rad) if pitch_rad > 0.001 else map_z_offset
+	var cam_z_offset: float = calculate_camera_z_offset(cam_y)
 	var dest_pos: Vector3 = Vector3(cam_x, cam_y, current_scroll_z + cam_z_offset)
 	var dest_rot: Vector3 = Vector3(map_pitch_deg, 0, 0)
 
