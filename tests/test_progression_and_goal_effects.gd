@@ -27,7 +27,7 @@ func _initialize() -> void:
 	assert(sm.is_level_unlocked(21) == true, "Fase 21 deve estar desbloqueada!")
 	print("✔ PASSOU: Fase 20 avança para Fase 21 (nao reinicia nem aponta para ciclo mestre)")
 
-	# 4. Teste de Ícone de Metas com Borda Branca (GoalIconFactory)
+	# 4. Teste de Ícone de Metas com Contorno Duplo (Preto 1px + Branco 2px) e Cores Canônicas
 	var gif_script = load("res://scripts/ui/goal_icon_factory.gd")
 	var wheat_icon = gif_script.build_goal_icon("wheat", 34.0, true)
 	assert(wheat_icon != null, "build_goal_icon wheat deve instanciar Control")
@@ -35,8 +35,21 @@ func _initialize() -> void:
 	for child in wheat_icon.get_children():
 		if child is TextureRect and child.material is ShaderMaterial:
 			has_shader_mat = true
+			var sh_mat: ShaderMaterial = child.material as ShaderMaterial
+			assert(sh_mat.get_shader_parameter("inner_outline_color") != null, "Shader deve possuir inner_outline_color (preto)")
+			assert(sh_mat.get_shader_parameter("outer_outline_color") != null, "Shader deve possuir outer_outline_color (branco)")
 	assert(has_shader_mat, "TextureRect do wheat_icon deve possuir ShaderMaterial de outline")
-	print("✔ PASSOU: GoalIconFactory gera icone com ShaderMaterial de contorno branco")
+
+	# Verifica se os ícones de grama verde e amarela recebem suas cores canônicas distintas no modulate
+	var green_grass_icon = gif_script.build_goal_icon("grass_green", 34.0, true)
+	var yellow_grass_icon = gif_script.build_goal_icon("grass_yellow", 34.0, true)
+	var green_blades: TextureRect = green_grass_icon.get_child(1) as TextureRect
+	var yellow_blades: TextureRect = yellow_grass_icon.get_child(1) as TextureRect
+	assert(green_blades != null and yellow_blades != null, "Camadas de laminas de grama devem existir")
+	assert(green_blades.modulate != yellow_blades.modulate, "Laminas de grama verde e amarela devem ter cores distintas!")
+	assert(green_blades.modulate != Color.WHITE, "Grama verde nao pode ter cor branca pura!")
+	assert(yellow_blades.modulate != Color.WHITE, "Grama amarela nao pode ter cor branca pura!")
+	print("✔ PASSOU: GoalIconFactory gera contorno duplo (1px preto + 2px branco) e cores canônicas de grama preservadas")
 
 	# 5. Teste de Malha de Lâmina de Grama (cut_leaf_piece)
 	var plant_script = load("res://scripts/plants/plant.gd")

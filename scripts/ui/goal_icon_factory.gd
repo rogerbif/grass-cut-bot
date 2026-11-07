@@ -25,8 +25,10 @@ static func _add_layer(parent: Control, tex: Texture2D, tint: Color, apply_outli
 	if apply_outline:
 		var mat: ShaderMaterial = ShaderMaterial.new()
 		mat.shader = OUTLINE_SHADER
-		mat.set_shader_parameter("outline_color", Color(1.0, 1.0, 1.0, 1.0))
-		mat.set_shader_parameter("outline_width", 2.4)
+		mat.set_shader_parameter("inner_outline_color", Color(0.0, 0.0, 0.0, 1.0))
+		mat.set_shader_parameter("outer_outline_color", Color(1.0, 1.0, 1.0, 1.0))
+		mat.set_shader_parameter("inner_width", 1.2)
+		mat.set_shader_parameter("outer_width", 3.6)
 		rect.material = mat
 	parent.add_child(rect)
 	return rect
