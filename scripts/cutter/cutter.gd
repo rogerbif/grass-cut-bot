@@ -452,6 +452,8 @@ func _trigger_level_up_effects() -> void:
 	if Input.has_method("vibrate_handheld"):
 		Input.vibrate_handheld(25)
 	if spark_particles != null:
+		spark_particles.global_position = global_position + Vector3(0.0, 0.45, 0.0)
+		spark_particles.reset_physics_interpolation()
 		spark_particles.restart()
 
 func _update_blade_slash_intensity() -> void:

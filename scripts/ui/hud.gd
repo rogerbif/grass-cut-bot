@@ -41,11 +41,19 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
 var goal_cards: Dictionary = {}
+var _floating_icons_container: Control = null
+var _last_goal_fly_times: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_apply_safe_area()
 	_refresh_localized_ui()
+
+	_floating_icons_container = Control.new()
+	_floating_icons_container.name = "FloatingGoalsLayer"
+	_floating_icons_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_floating_icons_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_floating_icons_container)
 
 	# Oculta modais inicialmente e garante top_bar visível
 	if top_bar != null:
@@ -64,6 +72,7 @@ func _ready() -> void:
 		GameManager.time_updated.connect(_on_time_updated)
 		GameManager.goal_updated.connect(_on_goal_updated)
 		GameManager.goal_completed.connect(_on_goal_completed)
+		GameManager.goal_item_collected.connect(_on_goal_item_collected)
 		GameManager.level_won.connect(_on_level_won)
 		GameManager.level_lost.connect(_on_level_lost)
 		GameManager.game_paused.connect(_on_game_paused)
@@ -233,6 +242,81 @@ func _on_goal_completed(plant_type: String) -> void:
 		if bg != null:
 			bg.texture = BADGE_GOAL_DONE_BG
 
+## Animação de Ícone Flutuante do Objetivo: nasce no ponto do corte e sobe até o card no TopBar
+func _on_goal_item_collected(goal_key: String, world_pos: Vector3) -> void:
+	if _floating_icons_container == null or not goal_cards.has(goal_key):
+		return
+
+	# Limitador de cadência por tipo de objetivo (máximo 1 voo a cada 55ms para manter 60 FPS)
+	var now_ms: int = Time.get_ticks_msec()
+	var last_t: int = int(_last_goal_fly_times.get(goal_key, 0))
+	if now_ms - last_t < 55:
+		return
+	_last_goal_fly_times[goal_key] = now_ms
+
+	var card: Dictionary = goal_cards[goal_key] as Dictionary
+	var target_ctrl: Control = card.get("illus_container") as Control
+	if target_ctrl == null or not is_instance_valid(target_ctrl):
+		target_ctrl = card.get("container") as Control
+	if target_ctrl == null or not is_instance_valid(target_ctrl):
+		return
+
+	# Posição global de destino (centro do ícone da meta no TopBar)
+	var target_pos: Vector2 = target_ctrl.global_position + target_ctrl.size * 0.5
+
+	# Converte a coordenada 3D de mundo para coordenada 2D de tela
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	var start_pos: Vector2
+	if cam != null and is_instance_valid(cam):
+		start_pos = cam.unproject_position(world_pos + Vector3(0.0, 0.35, 0.0))
+	else:
+		start_pos = Vector2(360.0, 700.0)
+
+	# Micro-dispersão lateral para fluidez orgânica
+	start_pos += Vector2(randf_range(-12.0, 12.0), randf_range(-8.0, 8.0))
+
+	# Instancia ícone botânico em tamanho compacto (26x26) com borda branca externa
+	var icon_size: float = 26.0
+	var floating_icon: Control = GoalIconFactory.build_goal_icon(goal_key, icon_size, true)
+	floating_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	floating_icon.pivot_offset = Vector2(icon_size * 0.5, icon_size * 0.5)
+	floating_icon.global_position = start_pos - floating_icon.pivot_offset
+	floating_icon.scale = Vector2(0.25, 0.25)
+	floating_icon.modulate.a = 0.0
+	_floating_icons_container.add_child(floating_icon)
+
+	# Ponto de controle da curva de Bézier (arco dinâmico projetado para o alto)
+	var mid_y: float = minf(start_pos.y, target_pos.y) - randf_range(40.0, 75.0)
+	var mid_x: float = lerpf(start_pos.x, target_pos.x, 0.35) + randf_range(-30.0, 30.0)
+	var control_point: Vector2 = Vector2(mid_x, mid_y)
+
+	var flight_duration: float = 0.44
+	var tw: Tween = create_tween().set_parallel(true)
+
+	# 1. Pop elástico de surgimento
+	tw.tween_property(floating_icon, "modulate:a", 1.0, 0.07).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(floating_icon, "scale", Vector2(1.28, 1.28), 0.11).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(floating_icon, "scale", Vector2(0.90, 0.90), 0.33).set_delay(0.11).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# 2. Voo parabólico curvado em Bézier quadrática
+	tw.tween_method(func(t: float) -> void:
+		if not is_instance_valid(floating_icon):
+			return
+		var one_minus_t: float = 1.0 - t
+		var curr_pos: Vector2 = (one_minus_t * one_minus_t * start_pos) + (2.0 * one_minus_t * t * control_point) + (t * t * target_pos)
+		floating_icon.global_position = curr_pos - floating_icon.pivot_offset
+	, 0.0, 1.0, flight_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	# 3. Absorção no card do TopBar: punch elástico do badge e destruição do ícone temporário
+	tw.chain().tween_callback(func() -> void:
+		if is_instance_valid(floating_icon):
+			floating_icon.queue_free()
+		if is_instance_valid(target_ctrl):
+			var punch_tw: Tween = create_tween()
+			punch_tw.tween_property(target_ctrl, "scale", Vector2(1.22, 1.22), 0.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			punch_tw.tween_property(target_ctrl, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	)
+
 func _on_coins_changed(new_amount: int) -> void:
 	if coins_label != null:
 		coins_label.text = "%d" % new_amount
@@ -292,14 +376,15 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 		var secs: int = int(time_taken) % 60
 		victory_time_label.text = "%d:%02d" % [mins, secs]
 
-	if GameManager.current_level >= 20:
+	var total_lvls: int = GameManager.get_total_levels() if GameManager != null else 40
+	if GameManager != null and GameManager.current_level >= total_lvls:
 		if victory_title_label != null:
 			victory_title_label.text = tr("HUD_CHAMPION_TITLE")
 		if victory_next_label != null:
 			victory_next_label.text = tr("HUD_MASTER_CYCLE")
 	else:
 		if victory_title_label != null:
-			victory_title_label.text = tr("HUD_LEVEL_CLEAR") % GameManager.current_level
+			victory_title_label.text = tr("HUD_LEVEL_CLEAR") % (GameManager.current_level if GameManager != null else 1)
 		if victory_next_label != null:
 			victory_next_label.text = tr("HUD_NEXT_LEVEL")
 

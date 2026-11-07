@@ -10,6 +10,8 @@ const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_flower
 static var _triangle_mesh: ArrayMesh = null
 static var _square_mesh: ArrayMesh = null
 static var _circle_mesh: ArrayMesh = null
+static var _grass_blade_mesh: Mesh = null
+static var _grass_blade_tip_mesh: Mesh = null
 
 static var _particle_pool: Array[CPUParticles3D] = []
 static var _pool_idx: int = 0
@@ -173,6 +175,37 @@ static func _ensure_particle_meshes() -> void:
 			st.set_normal(n); st.set_uv(Vector2(0.5 + 0.5 * cos(a0), 0.5 + 0.5 * sin(a0))); st.add_vertex(Vector3(cos(a0) * r, sin(a0) * r, 0.0))
 			st.set_normal(n); st.set_uv(Vector2(0.5 + 0.5 * cos(a1), 0.5 + 0.5 * sin(a1))); st.add_vertex(Vector3(cos(a1) * r, sin(a1) * r, 0.0))
 		_circle_mesh = st.commit()
+
+	# Malha 3D de pedaço chanfrado de lâmina de grama (cut_leaf_piece)
+	if _grass_blade_mesh == null:
+		if ResourceLoader.exists("res://assets/models/cut_leaf_piece.obj"):
+			var loaded_res = load("res://assets/models/cut_leaf_piece.obj")
+			if loaded_res is Mesh:
+				_grass_blade_mesh = loaded_res as Mesh
+		if _grass_blade_mesh == null:
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			var n: Vector3 = Vector3(0.0, 0.0, 1.0)
+			var v0 := Vector3(-0.022, -0.09, 0.0)
+			var v1 := Vector3(0.020, -0.08, 0.0)
+			var v2 := Vector3(0.016, 0.0, 0.005)
+			var v3 := Vector3(-0.016, 0.0, -0.005)
+			var v4 := Vector3(0.002, 0.11, 0.0)
+			st.set_normal(n); st.add_vertex(v0); st.add_vertex(v1); st.add_vertex(v2)
+			st.set_normal(n); st.add_vertex(v0); st.add_vertex(v2); st.add_vertex(v3)
+			st.set_normal(n); st.add_vertex(v3); st.add_vertex(v2); st.add_vertex(v4)
+			_grass_blade_mesh = st.commit()
+
+	# Ponta menor chanfrada de folha de grama
+	if _grass_blade_tip_mesh == null:
+		var st: SurfaceTool = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var n: Vector3 = Vector3(0.0, 0.0, 1.0)
+		var t0 := Vector3(-0.018, -0.05, -0.003)
+		var t1 := Vector3(0.018, -0.05, 0.003)
+		var t2 := Vector3(0.0, 0.075, 0.0)
+		st.set_normal(n); st.add_vertex(t0); st.add_vertex(t1); st.add_vertex(t2)
+		_grass_blade_tip_mesh = st.commit()
 
 static func get_flower_colors(flower_type: String) -> Dictionary:
 	var petal_col: Color = Color(1.0, 0.58, 0.80, 1.0)
@@ -342,6 +375,7 @@ func _perform_cut() -> void:
 	if scene_root != null:
 		if type == PlantType.FLOWER:
 			spawn_flower_cut_particles(scene_root, global_position + Vector3(0.0, 0.15, 0.0), plant_key)
+			spawn_flower_detach_pieces(scene_root, visual_mesh.global_transform, plant_key)
 		else:
 			spawn_grass_cut_particles(scene_root, global_position + Vector3(0.0, 0.15, 0.0), _resolve_particle_color())
 
@@ -405,11 +439,12 @@ static func _emit_sub_burst(scene_root: Node, pos: Vector3, mesh: Mesh, col: Col
 		emitter.position = pos
 	emitter.restart()
 
-## Emissão para Grama e Trigo: fragmentos geométricos de Triângulos e Quadrados da cor da vegetação
+## Emissão para Grama e Trigo: pedaços 3D chanfrados de folhas/lâminas de grama (estilo flores)
 static func spawn_grass_cut_particles(scene_root: Node, world_pos: Vector3, col: Color) -> void:
 	_ensure_particle_meshes()
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _triangle_mesh, col, 8)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _square_mesh, col, 6)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _grass_blade_mesh, col, 8)
+	var tip_col: Color = col.lightened(0.14)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _grass_blade_tip_mesh, tip_col, 6)
 
 ## Emissão para Flores: Círculos das cores de pétala e miolo, mais pedaços verdes de caule (quadrados) e folhas (triângulos)
 static func spawn_flower_cut_particles(scene_root: Node, world_pos: Vector3, flower_type: String) -> void:
@@ -434,14 +469,29 @@ static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flowe
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.25, 0.0), _circle_mesh, cols["petal"] as Color, 6)
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.18, 0.0), _triangle_mesh, FLOWER_STEM_COLOR, 2)
 
+## Resolução universal da chave base de espécie para qualquer variação de flor
+static func _resolve_flower_base_type(flower_type: String) -> String:
+	if DETACH_CONFIG_BY_TYPE.has(flower_type):
+		return flower_type
+	if flower_type.begins_with("flower_rose"):
+		return "flower_rose"
+	if flower_type.begins_with("flower_daisy"):
+		return "flower_daisy"
+	if flower_type.begins_with("flower_sunflower"):
+		return "flower_sunflower"
+	if flower_type.begins_with("flower_bell"):
+		return "flower_bell"
+	if flower_type.begins_with("flower_corolla"):
+		return "flower_corolla"
+	if flower_type.begins_with("flower_tulip"):
+		return "flower_tulip"
+	if flower_type.begins_with("flower_bed"):
+		return "flower_bed"
+	return "flower"
+
 ## Carrega (sob demanda e com cache) as malhas das peças desprendíveis por espécie de flor
 static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
-	var cfg_type: String = flower_type
-	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
-		if cfg_type.begins_with("flower_rose_"):
-			cfg_type = "flower_rose"
-		elif cfg_type.begins_with("flower_"):
-			cfg_type = "flower"
+	var cfg_type: String = _resolve_flower_base_type(flower_type)
 	if _detach_meshes_by_type.has(cfg_type):
 		return _detach_meshes_by_type[cfg_type] as Dictionary
 	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
@@ -458,17 +508,12 @@ static func _ensure_detach_meshes(flower_type: String) -> Dictionary:
 			if mi != null and mi.mesh != null:
 				dict[piece_name] = mi.mesh
 		inst.free()
-	_detach_meshes_by_type[flower_type] = dict
+	_detach_meshes_by_type[cfg_type] = dict
 	return dict
 
-## Hit 1 de Flores: 2 pétalas + 1 folha da respectiva espécie saem para cima, caem, encolhem e somem
+## Peças desprendíveis de Flores (2 pétalas + 1 folha da respectiva espécie saem para cima, caem, encolhem e somem)
 static func spawn_flower_detach_pieces(scene_root: Node, flower_xform: Transform3D, flower_type: String) -> void:
-	var cfg_type: String = flower_type
-	if not DETACH_CONFIG_BY_TYPE.has(cfg_type):
-		if cfg_type.begins_with("flower_rose_"):
-			cfg_type = "flower_rose"
-		elif cfg_type.begins_with("flower_"):
-			cfg_type = "flower"
+	var cfg_type: String = _resolve_flower_base_type(flower_type)
 	if not DETACH_CONFIG_BY_TYPE.has(cfg_type) or scene_root == null or not scene_root.is_inside_tree():
 		return
 	_ensure_particle_meshes()

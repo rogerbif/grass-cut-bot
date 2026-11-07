@@ -109,7 +109,7 @@ func _detect_levels_and_build_archipelago() -> void:
 		if FileAccess.file_exists(json_path):
 			level_count = lvl
 
-	total_levels_count = maxi(level_count, 20)
+	total_levels_count = maxi(level_count, 40)
 
 	# Garante que selected_level e GameManager.current_level estejam em faixa válida
 	var cur_lvl: int = GameManager.current_level if GameManager != null else 1

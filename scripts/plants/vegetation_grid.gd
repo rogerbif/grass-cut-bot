@@ -1506,6 +1506,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 						var s_root: Node = tree_node.current_scene if tree_node != null else self
 						if p_key_part.begins_with("flower"):
 							PlantScript.spawn_flower_cut_particles(s_root, safe_p_pos, p_key_part)
+							PlantScript.spawn_flower_detach_pieces(s_root, _initial_transforms[p_idx], p_key_part)
 						else:
 							PlantScript.spawn_grass_cut_particles(s_root, safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1

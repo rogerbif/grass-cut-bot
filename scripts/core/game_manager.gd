@@ -11,6 +11,7 @@ signal level_lost(reason: String)
 signal game_paused(is_paused: bool)
 signal camera_shake_requested(intensity: float, duration: float)
 signal coin_popup_requested(world_pos: Vector3, amount: int, plant_type: String)
+signal goal_item_collected(plant_type: String, world_pos: Vector3)
 
 enum GameState { READY, PLAYING, PAUSED, VICTORY, GAME_OVER }
 
@@ -172,6 +173,8 @@ func register_cut(plant_type: String, base_coins: int = 1, cut_pos: Vector3 = Ve
 		goal_info["current"] += 1
 		var remaining: int = maxi(0, int(goal_info["target"]) - int(goal_info["current"]))
 		goal_updated.emit(goal_key, remaining, goal_info["target"])
+		if not was_completed and cut_pos != Vector3.ZERO:
+			goal_item_collected.emit(goal_key, cut_pos)
 
 		# Dispara som e evento de meta concluída estritamente na transição (apenas 1 vez)
 		if not was_completed and remaining == 0:
@@ -293,15 +296,29 @@ func toggle_pause() -> void:
 		game_paused.emit(false)
 		state_changed.emit(current_state)
 
+var _cached_total_levels: int = -1
+
+func get_total_levels() -> int:
+	if _cached_total_levels > 0:
+		return _cached_total_levels
+	var count: int = 0
+	for lvl: int in range(1, 101):
+		var json_path: String = "res://data/levels/level_%02d.json" % lvl
+		if FileAccess.file_exists(json_path):
+			count = lvl
+	_cached_total_levels = maxi(count, 40)
+	return _cached_total_levels
+
 func restart_level() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 
 func next_level() -> void:
 	get_tree().paused = false
+	var total_lvls: int = get_total_levels()
 	var next_idx: int = current_level + 1
 	var next_json: String = "res://data/levels/level_%02d.json" % next_idx
-	if not FileAccess.file_exists(next_json) and next_idx > 40:
+	if not FileAccess.file_exists(next_json) or next_idx > total_lvls:
 		current_level = 1
 	else:
 		current_level = next_idx

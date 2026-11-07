@@ -205,7 +205,9 @@ func save_game() -> bool:
 
 	if GameManager != null:
 		var pl: Dictionary = save_data.get("player", {}) as Dictionary
-		pl["last_played_level"] = GameManager.current_level
+		var cur_last: int = int(pl.get("last_played_level", 1))
+		# Se last_played_level já foi configurado/avançado para um nível superior, preserva
+		pl["last_played_level"] = maxi(cur_last, GameManager.current_level)
 		save_data["player"] = pl
 
 	var json_str: String = JSON.stringify(save_data, "\t")
