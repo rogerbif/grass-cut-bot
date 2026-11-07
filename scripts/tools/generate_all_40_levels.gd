@@ -56,16 +56,15 @@ func generate_level(lvl: int) -> int:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 			for c: Vector2i in [Vector2i(6, 11), Vector2i(16, 11), Vector2i(11, 4), Vector2i(11, 18), Vector2i(5, 5), Vector2i(17, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
-			custom_goals = { "grass": 160, "wheat": 12, "flower_bell": 6 }
 
 		22:
 			level_name = "O Grande Atol Esmeralda"
 			width = 23; height = 23; base_time_limit = 140.0
 			spawn_cell = Vector2i(11, 11)
 			_add_octagon_island(terrain_grid, 11, 11, 9) # ~290 tiles
-			_add_grass_circle(vector_field, "grass_blue", 11, 11, width, height, 4.8)
-			_add_grass_ring(vector_field, "grass_green", 11, 11, width, height, 2.5, 4.8)
 			_add_grass_ring(vector_field, "grass_yellow", 11, 11, width, height, 4.8, 6.4)
+			_add_grass_ring(vector_field, "grass_green", 11, 11, width, height, 2.5, 4.8)
+			_add_grass_circle(vector_field, "grass_blue", 11, 11, width, height, 2.5)
 			# 6 rochas
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(11, 5))
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(11, 17))
@@ -78,7 +77,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy")
 			for c: Vector2i in [Vector2i(11, 8), Vector2i(11, 14), Vector2i(8, 11), Vector2i(14, 11), Vector2i(7, 15), Vector2i(15, 7)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_sunflower")
-			custom_goals = { "grass": 170, "flower_daisy": 8, "flower_sunflower": 6 }
 
 		23:
 			level_name = "As Ilhas Gêmeas de Safira"
@@ -102,7 +100,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 			for c: Vector2i in [Vector2i(4, 4), Vector2i(8, 4), Vector2i(4, 16), Vector2i(8, 16), Vector2i(16, 4), Vector2i(20, 4), Vector2i(16, 16), Vector2i(20, 16)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
-			custom_goals = { "grass": 165, "wheat": 8, "flower_tulip": 8 }
 
 		24:
 			level_name = "O Bosque dos Três Canteiros"
@@ -126,7 +123,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
 			for c: Vector2i in [Vector2i(12, 8), Vector2i(12, 16), Vector2i(8, 12), Vector2i(16, 12), Vector2i(5, 12), Vector2i(19, 12)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose")
-			custom_goals = { "grass": 180, "flower_bed": 8, "flower_rose": 6 }
 
 		25:
 			level_name = "A Fortaleza de Granito"
@@ -153,7 +149,6 @@ func generate_level(lvl: int) -> int:
 				Vector2i(11, 7), Vector2i(13, 7), Vector2i(11, 17), Vector2i(13, 17)
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
-			custom_goals = { "grass": 175, "flower_corolla": 6, "wheat": 12 }
 
 		26:
 			level_name = "O Vale das Tulipas Imperiais"
@@ -182,7 +177,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 			for c: Vector2i in [Vector2i(4, 10), Vector2i(6, 14), Vector2i(18, 10), Vector2i(20, 14), Vector2i(12, 10), Vector2i(12, 14)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy")
-			custom_goals = { "grass": 185, "flower_tulip": 10, "flower_daisy": 6 }
 
 		27:
 			level_name = "O Grande Lago Interior"
@@ -212,7 +206,6 @@ func generate_level(lvl: int) -> int:
 				Vector2i(3, 13), Vector2i(23, 13), Vector2i(10, 5), Vector2i(16, 5)
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
-			custom_goals = { "grass": 190, "flower_sunflower": 8, "wheat": 16 }
 
 		28:
 			level_name = "A Espiral da Colheita"
@@ -239,7 +232,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 			for c: Vector2i in [Vector2i(13, 9), Vector2i(13, 17), Vector2i(9, 13), Vector2i(17, 13), Vector2i(8, 18), Vector2i(18, 8), Vector2i(5, 9), Vector2i(21, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
-			custom_goals = { "grass": 195, "wheat": 20, "flower_bell": 8 }
 
 		29:
 			level_name = "A Rosa dos Ventos"
@@ -262,7 +254,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose")
 			for c: Vector2i in [Vector2i(13, 10), Vector2i(13, 16), Vector2i(10, 13), Vector2i(16, 13), Vector2i(10, 10), Vector2i(16, 10), Vector2i(10, 16), Vector2i(16, 16)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_corolla")
-			custom_goals = { "grass": 190, "flower_rose": 8, "flower_corolla": 8 }
 
 		30:
 			level_name = "O Arquipélago das Quatro Lagoas"
@@ -298,7 +289,6 @@ func generate_level(lvl: int) -> int:
 				Vector2i(12, 9), Vector2i(14, 9), Vector2i(12, 17), Vector2i(14, 17)
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
-			custom_goals = { "grass": 200, "flower_bed": 6, "flower_sunflower": 6, "wheat": 12 }
 
 		31:
 			level_name = "O Tridente Coralino"
@@ -325,7 +315,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
 			for c: Vector2i in [Vector2i(6, 6), Vector2i(6, 15), Vector2i(14, 6), Vector2i(14, 15), Vector2i(23, 6), Vector2i(23, 15), Vector2i(10, 22), Vector2i(18, 22)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
-			custom_goals = { "grass": 210, "flower_bell": 8, "flower_tulip": 8 }
 
 		32:
 			level_name = "O Jardim Suspenso da Falésia"
@@ -350,7 +339,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
 			for c: Vector2i in [Vector2i(11, 11), Vector2i(17, 11), Vector2i(11, 17), Vector2i(17, 17), Vector2i(9, 14), Vector2i(19, 14), Vector2i(5, 10), Vector2i(23, 18)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy")
-			custom_goals = { "grass": 220, "flower_bed": 10, "flower_daisy": 8 }
 
 		33:
 			level_name = "O Enclave dos Monólitos"
@@ -377,7 +365,6 @@ func generate_level(lvl: int) -> int:
 				var wx: int = 14 + int(round(cos(a) * 10.0))
 				var wz: int = 14 + int(round(sin(a) * 10.0))
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, Vector2i(wx, wz))
-			custom_goals = { "grass": 225, "flower_rose": 8, "wheat": 16 }
 
 		34:
 			level_name = "O Mosaico Imperial"
@@ -400,7 +387,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_corolla")
 			for c: Vector2i in [Vector2i(14, 11), Vector2i(14, 17), Vector2i(11, 14), Vector2i(17, 14), Vector2i(6, 11), Vector2i(22, 11), Vector2i(6, 17), Vector2i(22, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
-			custom_goals = { "grass": 230, "flower_corolla": 8, "flower_tulip": 8 }
 
 		35:
 			level_name = "A Encruzilhada das Quatro Estações"
@@ -439,7 +425,6 @@ func generate_level(lvl: int) -> int:
 				Vector2i(14, 10), Vector2i(16, 10), Vector2i(14, 20), Vector2i(16, 20)
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
-			custom_goals = { "grass": 240, "flower_sunflower": 6, "flower_rose": 6, "flower_tulip": 6, "wheat": 12 }
 
 		36:
 			level_name = "O Labirinto dos Guardiões"
@@ -466,7 +451,6 @@ func generate_level(lvl: int) -> int:
 				Vector2i(6, 6), Vector2i(24, 6), Vector2i(6, 24), Vector2i(24, 24)
 			]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
-			custom_goals = { "grass": 250, "wheat": 24, "flower_bed": 8 }
 
 		37:
 			level_name = "A Coroa de Ilhotas"
@@ -502,7 +486,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
 			for c: Vector2i in [Vector2i(6, 4), Vector2i(6, 8), Vector2i(24, 4), Vector2i(24, 8), Vector2i(13, 13), Vector2i(17, 13), Vector2i(13, 17), Vector2i(17, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy")
-			custom_goals = { "grass": 235, "flower_bell": 8, "flower_daisy": 8 }
 
 		38:
 			level_name = "O Grande Fiorde Selvagem"
@@ -535,7 +518,6 @@ func generate_level(lvl: int) -> int:
 			for i: int in range(20):
 				var c_tr: Vector2i = Vector2i(4 + i, 4 if i < 10 else (16 if i < 16 else 24))
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c_tr)
-			custom_goals = { "grass": 245, "flower_corolla": 10, "wheat": 20 }
 
 		39:
 			level_name = "O Santuário Botânico"
@@ -559,7 +541,6 @@ func generate_level(lvl: int) -> int:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 0.25) * 8.0)), 15 + int(round(sin(a + 0.25) * 8.0))), "flower_sunflower")
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 0.5) * 9.5)), 15 + int(round(sin(a + 0.5) * 9.5))), "flower_tulip")
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 0.75) * 11.0)), 15 + int(round(sin(a + 0.75) * 11.0))), "flower_bed")
-			custom_goals = { "grass": 255, "flower_rose": 6, "flower_sunflower": 6, "flower_tulip": 6, "flower_bed": 6 }
 
 		40:
 			level_name = "O Grande Arquipélago Mestre"
@@ -607,7 +588,6 @@ func generate_level(lvl: int) -> int:
 				Vector2i(22, 22), Vector2i(23, 22), Vector2i(22, 23), Vector2i(23, 23)
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
-			custom_goals = { "grass": 270, "flower_rose": 6, "flower_tulip": 6, "flower_sunflower": 6, "flower_daisy": 6, "wheat": 16 }
 
 	IslandAutotiler.apply_autotile(terrain_grid)
 	_clip_vector_field_to_island(vector_field, terrain_grid, spawn_cell, width, height)
@@ -995,9 +975,7 @@ func _add_grass_ring(vf: RefCounted, type_name: String, gx: int, gz: int, width:
 		var a: float = float(i) * TAU / float(segs)
 		outer.append(center + Vector2(cos(a), sin(a)) * r_out)
 		inner.append(center + Vector2(cos(a), sin(a)) * r_in)
-	var clipped: Array[PackedVector2Array] = Geometry2D.clip_polygons(outer, inner)
-	for part: PackedVector2Array in clipped:
-		vf.call("merge_or_add_shape", type_name, part)
+	vf.call("add_shape", type_name, outer, [inner])
 
 func _add_grass_rect(vf: RefCounted, type_name: String, gx0: int, gz0: int, gx1: int, gz1: int, width: int, height: int) -> void:
 	var p0: Vector3 = LevelJsonLoader.grid_to_world(gx0, gz0, width, height, CELL_SIZE)

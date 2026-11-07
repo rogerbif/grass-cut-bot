@@ -1,17 +1,13 @@
 {
 	"card_goals": {
-		"flower_bed": 6,
+		"flower_bed": 4,
 		"flower_rose": 6,
-		"flower_sunflower": 6,
-		"flower_tulip": 6,
-		"grass": 255
-	},
-	"goals": {
-		"flower_bed": 6,
-		"flower_rose": 6,
-		"flower_sunflower": 6,
-		"flower_tulip": 6,
-		"grass": 255
+		"flower_sunflower": 4,
+		"flower_tulip": 4,
+		"grass_blue": 149,
+		"grass_green": 79,
+		"grass_purple": 139,
+		"grass_yellow": 35
 	},
 	"grass_vectors": [
 		{
@@ -1180,6 +1176,7 @@
 		"height": 31,
 		"width": 31
 	},
+	"island_holes": [],
 	"island_polygons": [
 		[
 			[
@@ -6167,5 +6164,5 @@
 		}
 	],
 	"time_limit": 195.0,
-	"version": 4
+	"version": 5
 }

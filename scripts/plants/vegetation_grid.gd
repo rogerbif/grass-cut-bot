@@ -982,14 +982,10 @@ func _build_from_vector_field(
 		_grass_cut_accumulator_by_type[gt_str] = 0
 
 	goals.clear()
-	# Se há múltiplas cores de grama OU se a única cor presente não for verde comum,
-	# contabiliza as cores separadamente!
-	if grass_counts_by_type.size() > 1 or (grass_counts_by_type.size() == 1 and not grass_counts_by_type.has("grass_green")):
-		for g_key: Variant in grass_counts_by_type.keys():
-			var g_count: int = int(grass_counts_by_type[g_key])
-			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
-	else:
-		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / float(GRASS_TUFTS_PER_UNIT))))
+	# Todas as variedades de grama são tratadas individualmente por cor/tipo
+	for g_key: Variant in grass_counts_by_type.keys():
+		var g_count: int = int(grass_counts_by_type[g_key])
+		goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
@@ -1313,14 +1309,10 @@ func _build_from_vegetation_field(
 		_grass_cut_accumulator_by_type[gt_str] = 0
 
 	goals.clear()
-	# Se há múltiplas cores de grama OU se a única cor presente não for verde comum,
-	# contabiliza as cores separadamente!
-	if grass_counts_by_type.size() > 1 or (grass_counts_by_type.size() == 1 and not grass_counts_by_type.has("grass_green")):
-		for g_key: Variant in grass_counts_by_type.keys():
-			var g_count: int = int(grass_counts_by_type[g_key])
-			goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
-	else:
-		goals["grass"] = maxi(1, int(ceilf(float(_total_physical_grass) / float(GRASS_TUFTS_PER_UNIT))))
+	# Todas as variedades de grama são tratadas individualmente por cor/tipo
+	for g_key: Variant in grass_counts_by_type.keys():
+		var g_count: int = int(grass_counts_by_type[g_key])
+		goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
 	if _total_physical_wheat > 0:
 		goals["wheat"] = _total_physical_wheat
 	if _total_physical_flower > 0:
@@ -1513,16 +1505,18 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 
 					# Atualização de metas e concessão de XP da lâmina: Trigo (3 XP), Flores (5 XP), Grama (1 XP)
 					var p_key: String = _plant_keys[p_idx]
-					if SaveManager != null:
-						SaveManager.record_plant_harvest(p_key, 1)
+					var sm_node: Node = get_node_or_null("/root/SaveManager")
+					if sm_node != null and sm_node.has_method("record_plant_harvest"):
+						sm_node.call("record_plant_harvest", p_key, 1)
 
-					if UpgradeManager != null:
+					var um_node: Node = get_node_or_null("/root/UpgradeManager")
+					if um_node != null and um_node.has_method("add_blade_xp"):
 						if p_key == "wheat":
-							UpgradeManager.add_blade_xp(3.0)
+							um_node.call("add_blade_xp", 3.0)
 						elif p_key.begins_with("flower"):
-							UpgradeManager.add_blade_xp(5.0)
+							um_node.call("add_blade_xp", 5.0)
 						else:
-							UpgradeManager.add_blade_xp(1.0)
+							um_node.call("add_blade_xp", 1.0)
 
 					if p_key == "wheat":
 						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
@@ -1583,8 +1577,9 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 					var s_root: Node = tree_node.current_scene if tree_node != null else self
 
 					# Feedback audiovisual e háptico imediato para o golpe parcial
-					if AudioManager != null:
-						AudioManager.play_cut_sfx(false)
+					var am_node: Node = get_node_or_null("/root/AudioManager")
+					if am_node != null and am_node.has_method("play_cut_sfx"):
+						am_node.call("play_cut_sfx", false)
 					if gm != null and gm.has_method("trigger_haptic_cut"):
 						gm.call("trigger_haptic_cut")
 

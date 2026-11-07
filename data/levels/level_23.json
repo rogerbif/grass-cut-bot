@@ -1,12 +1,9 @@
 {
 	"card_goals": {
 		"flower_tulip": 8,
-		"grass": 165,
-		"wheat": 8
-	},
-	"goals": {
-		"flower_tulip": 8,
-		"grass": 165,
+		"grass_blue": 121,
+		"grass_green": 53,
+		"grass_purple": 112,
 		"wheat": 8
 	},
 	"grass_vectors": [
@@ -868,6 +865,7 @@
 		"height": 21,
 		"width": 25
 	},
+	"island_holes": [],
 	"island_polygons": [
 		[
 			[
@@ -3745,5 +3743,5 @@
 		}
 	],
 	"time_limit": 140.0,
-	"version": 4
+	"version": 5
 }

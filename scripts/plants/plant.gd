@@ -333,10 +333,12 @@ func cut(power: int) -> void:
 	if health <= 0:
 		_perform_cut()
 	else:
-		if AudioManager != null:
-			AudioManager.play_cut_sfx(false)
-		if GameManager != null:
-			GameManager.trigger_haptic_cut()
+		var am: Node = get_node_or_null("/root/AudioManager")
+		if am != null and am.has_method("play_cut_sfx"):
+			am.call("play_cut_sfx", false)
+		var gm_node: Node = get_node_or_null("/root/GameManager")
+		if gm_node != null and gm_node.has_method("trigger_haptic_cut"):
+			gm_node.call("trigger_haptic_cut")
 
 		if type == PlantType.FLOWER:
 			_apply_flower_damage_stage(health)

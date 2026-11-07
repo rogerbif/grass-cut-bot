@@ -1,13 +1,11 @@
 {
 	"card_goals": {
 		"flower_corolla": 8,
-		"flower_rose": 8,
-		"grass": 190
-	},
-	"goals": {
-		"flower_corolla": 8,
-		"flower_rose": 8,
-		"grass": 190
+		"flower_rose": 6,
+		"grass_black": 61,
+		"grass_blue": 76,
+		"grass_red": 56,
+		"grass_yellow": 32
 	},
 	"grass_vectors": [
 		{
@@ -664,6 +662,7 @@
 		"height": 27,
 		"width": 27
 	},
+	"island_holes": [],
 	"island_polygons": [
 		[
 			[
@@ -4359,5 +4358,5 @@
 		}
 	],
 	"time_limit": 160.0,
-	"version": 4
+	"version": 5
 }

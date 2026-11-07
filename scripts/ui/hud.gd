@@ -164,11 +164,15 @@ func _on_goal_updated(plant_type: String, remaining: int, target: int) -> void:
 	if not goal_cards.has(plant_type):
 		_create_goal_card(plant_type, target)
 	
-	var card = goal_cards[plant_type]
-	card["count_label"].text = str(remaining)
+	var card: Dictionary = goal_cards[plant_type] as Dictionary
+	if remaining <= 0 or card.get("is_completed", false):
+		_on_goal_completed(plant_type)
+	else:
+		card["count_label"].text = str(remaining)
+		(card["count_label"] as Label).modulate = Color.WHITE
 	
 	# Efeito de pop/escala quando atualiza
-	var tween = create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(card["container"], "scale", Vector2(1.15, 1.15), 0.05)
 	tween.tween_property(card["container"], "scale", Vector2.ONE, 0.05)
 
@@ -223,18 +227,21 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	hbox.add_child(illus_container)
 	hbox.add_child(count_lbl)
 	margin.add_child(hbox)
-	goals_container.add_child(card_panel)
+	if goals_container != null:
+		goals_container.add_child(card_panel)
 
 	goal_cards[plant_type] = {
 		"container": card_panel,
 		"count_label": count_lbl,
 		"illus_container": illus_container,
-		"bg_rect": bg_rect
+		"bg_rect": bg_rect,
+		"is_completed": false
 	}
 
 func _on_goal_completed(plant_type: String) -> void:
 	if goal_cards.has(plant_type):
 		var card: Dictionary = goal_cards[plant_type] as Dictionary
+		card["is_completed"] = true
 		var lbl: Label = card["count_label"] as Label
 		lbl.text = "OK"
 		lbl.modulate = Color(0.22, 1.0, 0.48)

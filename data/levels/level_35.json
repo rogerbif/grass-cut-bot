@@ -3,14 +3,11 @@
 		"flower_rose": 6,
 		"flower_sunflower": 6,
 		"flower_tulip": 6,
-		"grass": 240,
-		"wheat": 12
-	},
-	"goals": {
-		"flower_rose": 6,
-		"flower_sunflower": 6,
-		"flower_tulip": 6,
-		"grass": 240,
+		"grass_blue": 103,
+		"grass_green": 140,
+		"grass_red": 151,
+		"grass_white": 166,
+		"grass_yellow": 152,
 		"wheat": 12
 	},
 	"grass_vectors": [
@@ -1438,6 +1435,7 @@
 		"height": 31,
 		"width": 31
 	},
+	"island_holes": [],
 	"island_polygons": [
 		[
 			[
@@ -7301,5 +7299,5 @@
 		}
 	],
 	"time_limit": 210.0,
-	"version": 4
+	"version": 5
 }

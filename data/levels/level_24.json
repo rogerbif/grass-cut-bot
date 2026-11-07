@@ -1,13 +1,11 @@
 {
 	"card_goals": {
-		"flower_bed": 8,
 		"flower_rose": 6,
-		"grass": 180
-	},
-	"goals": {
-		"flower_bed": 8,
-		"flower_rose": 6,
-		"grass": 180
+		"grass_blue": 48,
+		"grass_green": 54,
+		"grass_purple": 45,
+		"grass_white": 65,
+		"grass_yellow": 53
 	},
 	"grass_vectors": [
 		{
@@ -682,6 +680,7 @@
 		"height": 25,
 		"width": 25
 	},
+	"island_holes": [],
 	"island_polygons": [
 		[
 			[
@@ -3245,5 +3244,5 @@
 		}
 	],
 	"time_limit": 145.0,
-	"version": 4
+	"version": 5
 }

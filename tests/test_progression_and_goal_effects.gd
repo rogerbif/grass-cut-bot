@@ -52,6 +52,51 @@ func _initialize() -> void:
 	assert(plant_script._resolve_flower_base_type("flower_sunflower") == "flower_sunflower", "flower_sunflower deve resolver para flower_sunflower")
 	print("✔ PASSOU: Todas as variantes de flores resolvem para sua especie dedicada")
 
+	# 7. Teste de Tratamento Individual de Gramas nas 40 Fases (sem meta genérica "grass")
+	var loader = load("res://scripts/level/level_json_loader.gd")
+	for lvl in range(1, 41):
+		var json_path = "res://data/levels/level_%02d.json" % lvl
+		assert(FileAccess.file_exists(json_path), "Arquivo de nível %02d deve existir" % lvl)
+		var ldata = loader.load_json_file(json_path)
+		var card_g: Dictionary = ldata.get("card_goals", {}) as Dictionary
+		assert(not card_g.has("grass"), "Fase %02d nao deve possuir a chave generica 'grass', apenas cores individuais!" % lvl)
+		# Garante que há pelo menos uma meta de grama específica presente
+		var has_colored_grass: bool = false
+		for k in card_g.keys():
+			if String(k).begins_with("grass_"):
+				has_colored_grass = true
+				break
+		assert(has_colored_grass, "Fase %02d deve conter pelo menos uma variedade individual de grama (ex: grass_green, grass_yellow)" % lvl)
+	print("✔ PASSOU: Todas as 40 fases tratam gramas individualmente por cor (zero ocorrências de 'grass' genérico)")
+
+	# 8. Teste de Fix do OK no HUD: permanência estrita de 'OK' após bater meta
+	var hud_packed: PackedScene = load("res://scenes/ui/hud.tscn")
+	assert(hud_packed != null, "Cena hud.tscn deve ser carregada")
+	var hud_inst: Control = hud_packed.instantiate() as Control
+	root.add_child(hud_inst)
+	if hud_inst.get("goals_container") == null:
+		var container = HBoxContainer.new()
+		hud_inst.set("goals_container", container)
+		hud_inst.add_child(container)
+
+	# Simula meta inicial de 10 grass_green
+	hud_inst.call("_on_goal_updated", "grass_green", 10, 10)
+	var card_info: Dictionary = hud_inst.get("goal_cards")["grass_green"] as Dictionary
+	var lbl: Label = card_info["count_label"] as Label
+	assert(lbl.text == "10", "Card inicial deve exibir '10'")
+
+	# Simula meta batida (0 restante)
+	hud_inst.call("_on_goal_updated", "grass_green", 0, 10)
+	assert(lbl.text == "OK", "Card ao zerar meta deve exibir 'OK'")
+	assert(card_info["is_completed"] == true, "Card deve estar marcado como is_completed = true")
+
+	# Simula corte subsequente de grama (chamada repetida com remaining = 0)
+	hud_inst.call("_on_goal_updated", "grass_green", 0, 10)
+	assert(lbl.text == "OK", "Card DEVE continuar exibindo 'OK' mesmo apos cortes excedentes subsequentes!")
+
+	hud_inst.queue_free()
+	print("✔ PASSOU: HUD mantém texto 'OK' e estado concluído permanentemente sem resetar para '0'")
+
 	print("\n==========================================")
 	print(">>> TODOS OS TESTES PASSARAM COM SUCESSO! <<<")
 	print("==========================================")
