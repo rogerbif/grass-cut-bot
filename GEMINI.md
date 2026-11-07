@@ -4,7 +4,7 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
 
 ---
 
-## ⚡ Os 13 Mandamentos Invariantes (Guardrails Críticos)
+## ⚡ Os 16 Mandamentos Invariantes (Guardrails Críticos)
 
 1. **Zero Warnings Estrito:** O console da Godot deve permanecer com 0 warnings a cada execução. Não permita divisões inteiras diretas, variáveis com nomes de métodos/propriedades da engine ou identificadores sombreados.
 2. **Terminal PowerShell, UTF-8 sem BOM & Git no OneDrive:** Utilize exclusivamente ponto e vírgula `;` para encadear comandos no Windows PowerShell. Ao gravar/ler arquivos via script/terminal, force `-Encoding UTF8` (sem BOM). Em referências a nós Godot (`$Node`), utilize sempre aspas simples (`@' ... '@`) para impedir que o PowerShell interprete como variável. Ao executar comandos que gravam no índice do Git (`git add`, `git commit`) em diretórios do OneDrive, utilize `BypassSandbox: true` para evitar erros de permissão em `.git/index.lock`.
@@ -25,6 +25,9 @@ Este documento é a **Central de Guardrails Invariantes e Roteador Mestre** do p
    - **Orientação Canônica de Tiles 3D:** Em `rot = 0`, a face externa/falésia (mar) deve sempre apontar para o Norte ($-Z$ no Godot, correspondendo a $-Y$ no Blender com `export_yup=True`), enquanto a face interna plana de grama (conexão com vizinhos) conecta em $+Z$ (Sul no Godot, $+Y$ no Blender).
    - **Reimportação Atômica de Cache:** Após exportar novos arquivos `.glb`, execute obrigatoriamente `godot --headless --import` no terminal para que o compilador da Godot regenere os recursos binários `.scn` em `.godot/imported/` antes de testar ou rodar o jogo.
 13. **Imunidade de Materiais em glTF & MultiMesh (Zero Overrides em .scn):** O exportador binário da Godot 4 descarta silenciosamente `surface_material_override` em nós filhos herdados de modelos `.glb` ao compilar para `.scn` no APK. Para qualquer malha combinada (`MultiMeshInstance3D` ou `SurfaceTool`), NUNCA dependa de overrides declarados no arquivo `.tscn`. Sempre injete os materiais canônicos programaticamente em GDScript a partir de dicionários pré-carregados (ex: `FLOWER_MATERIALS`, `GRASS_MATERIALS`). Além disso, ao exportar modelos no Blender, garanta que os materiais base utilizem albedo neutro/branco como defesa em profundidade.
+14. **Tratamento Botânico 100% Individual (Zero Metas Genéricas):** Cada espécie e variação cromática de vegetação possui identidade, card e contagem própria. É estritamente proibido unificar ou consolidar variedades em chaves genéricas (`"grass"`, `"flower"`) nas fases, no HUD, no banco de dados (`PlantDatabase`) ou nos geradores de fases. Variedades de grama devem ser sempre declaradas por sua cor específica (`grass_green`, `grass_yellow`, `grass_blue`, `grass_purple`, `grass_red`, `grass_white`, `grass_black`).
+15. **Imutabilidade de Metas Concluídas no Top HUD:** Uma vez que um objetivo tem seu contador zerado (`remaining <= 0`), seu card entra em estado permanente de conclusão (`is_completed = true`), exibindo `"OK"`, modulate verde luminoso (`Color(0.22, 1.0, 0.48)`) e a moldura `badge_goal_done_bg.svg`. Chamadas subsequentes de corte excedente da mesma espécie NUNCA devem sobrescrever o card com `"0"` ou valores numéricos.
+16. **Acesso Defensivo a Autoloads em Entidades e Testes:** Scripts de entidades (`Plant`, `VegetationGrid`, etc.) e geradores/testes standalone executados via CLI (`--script`) nunca devem acessar singletons Autoload como identificadores globais não qualificados se houver possibilidade de execução isolada. Sempre utilize busca defensiva (`get_node_or_null("/root/AudioManager")`) com verificação de métodos antes da chamada para manter paridade e execução limpa em qualquer contexto.
 
 ---
 

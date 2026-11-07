@@ -47,3 +47,23 @@ O console da Godot Engine deve permanecer limpo em todas as execuções:
 
 - **Ausência de `_ready()` fora da SceneTree:** Ao instanciar cenas com `PackedScene.instantiate()` exclusivamente para ler malhas e combiná-las via `SurfaceTool` (sem inserção na árvore via `add_child()`), lembre-se de que o método `_ready()` **não é executado**.
 - **Atribuição Programática de Materiais:** Nunca confie que a lógica de estilização de nós filhos herdados no `.tscn` ou no `_ready()` estará presente na malha combinada. A atribuição de materiais para `MultiMeshInstance3D` deve ser feita de forma estática ou através de funções de montagem programática dedicadas (ex: `_build_flower_combined_mesh()`), forçando `st.set_material(mat)` com dicionários canônicos pré-carregados.
+
+---
+
+## 5. Resiliência de Autoloads e Execução Standalone (CLI / Testes)
+
+Ao desenvolver scripts de entidades reutilizáveis, ferramentas ou testes de integração executados via CLI (`godot --headless --script res://tests/...`), os singletons declarados como Autoload em `project.godot` podem não estar disponíveis como identificadores globais imediatos durante a compilação:
+
+- **Padrão Defensivo Obrigatório:**
+  ```gdscript
+  # Correto:
+  var am_node: Node = get_node_or_null("/root/AudioManager")
+  if am_node != null and am_node.has_method("play_cut_sfx"):
+      am_node.call("play_cut_sfx", false)
+
+  # Incorreto (falha na compilação standalone):
+  if AudioManager != null:
+      AudioManager.play_cut_sfx(false)
+  ```
+- **Benefício:** Permite executar baterias de testes unitários rápidos e geradores analíticos sem depender da inicialização de toda a árvore de cenas ou de Autoloads em modo isolado.
+
