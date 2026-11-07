@@ -16,6 +16,8 @@ const args = process.argv.slice(2);
 let track = 'internal'; // 'internal', 'alpha' (Closed Testing), 'beta', 'production'
 let aabPath = DEFAULT_AAB_PATH;
 let keyPath = DEFAULT_KEY_PATH;
+let notesPt = process.env.RELEASE_NOTES_PT || null;
+let notesEn = process.env.RELEASE_NOTES_EN || null;
 
 for (const arg of args) {
     if (arg.startsWith('--track=')) {
@@ -24,18 +26,22 @@ for (const arg of args) {
         aabPath = path.resolve(arg.split('=')[1]);
     } else if (arg.startsWith('--key=')) {
         keyPath = path.resolve(arg.split('=')[1]);
+    } else if (arg.startsWith('--notes-pt=')) {
+        notesPt = arg.substring('--notes-pt='.length);
+    } else if (arg.startsWith('--notes-en=')) {
+        notesEn = arg.substring('--notes-en='.length);
     }
 }
 
-// Release Notes padrão
+// Release Notes padrão ou customizadas
 const RELEASE_NOTES = [
     {
         language: 'pt-BR',
-        text: 'Novidades da versão:\n• Ajustes finos de física de corte e resposta de ricochete.\n• Otimizações na renderização e estabilidade mobile.\n• Melhorias nas metas e navegação do arquipélago.'
+        text: notesPt || 'Novidades da versão:\n• Ajustes finos de física de corte e resposta de ricochete.\n• Otimizações na renderização e estabilidade mobile.\n• Melhorias nas metas e navegação do arquipélago.'
     },
     {
         language: 'en-US',
-        text: "What's new in this version:\n• Refined blade cutting physics and tactile recoil response.\n• Rendering and mobile performance optimizations.\n• Improved level goals and archipelago map navigation."
+        text: notesEn || "What's new in this version:\n• Refined blade cutting physics and tactile recoil response.\n• Rendering and mobile performance optimizations.\n• Improved level goals and archipelago map navigation."
     }
 ];
 

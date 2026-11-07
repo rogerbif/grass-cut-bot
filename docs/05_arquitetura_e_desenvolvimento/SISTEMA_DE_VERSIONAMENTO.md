@@ -20,7 +20,7 @@ Exemplos práticos:
 - `v0.9.0-alpha` (Sistema de áudio e sonoplastia completo com 20 SFX e trilhas Dyalla)
 - `v0.10.0-alpha` (Calibração háptica Android precisa e suíte de ícones oficiais)
 - `v0.11.0-alpha` (Celebração de vitória 3 ⭐, derrota expressiva, teleporte 3D e moedas cartoon)
-- `v0.12.150-alpha` (**Versão Atual:** Pipeline de publicação automatizada no Google Play Console via Google Developer API, conformidade com Target SDK 36 - Android 16, 40 fases canônicas, bot com 10 níveis de lâmina, herbário completo e release notes bilíngues automáticas)
+- `v0.12.151-alpha` (**Versão Atual:** Pipeline de publicação automatizada no Google Play Console via Google Developer API e GitHub Action CI/CD, conformidade com Target SDK 36 - Android 16, 40 fases canônicas, bot com 10 níveis de lâmina, herbário completo e release notes bilíngues automáticas)
 - `v0.13.0-beta` (*Feature Complete:* Abas Loja/Coleção integradas a moedas e balanceamento final)
 - `v1.0.0-rc.1` (*Feature Freeze:* Testes finais de empacotamento APK/AAB no Android)
 - `v1.0.0` (Lançamento Oficial Comercial na Google Play Store)
@@ -66,7 +66,7 @@ graph TD
 | Fase | Faixa de Versão | Status no Projeto | Foco Principal e Critérios de Conclusão |
 | :--- | :--- | :--- | :--- |
 | **Pre-Alpha** | `v0.1.0` a `v0.2.x` | **Concluída** | Prova de conceito do corte por contato radial, movimento omnidirecional, shader Arnklit e ricochete com rochas. |
-| **Alpha** | `v0.3.0` a `v0.12.x` | **FASE ATUAL (`v0.12.150-alpha`)** | Robô 3D com física procedural, 40 fases canônicas em arquipélago 3D contínuo, 8 flores individuais e 7 cores de grama, lâmina com 10 níveis de maestria, áudio completo, sistema multilíngue (pt, en, es), pipeline Google Play automatizado e SaveManager resiliente. |
+| **Alpha** | `v0.3.0` a `v0.12.x` | **FASE ATUAL (`v0.12.151-alpha`)** | Robô 3D com física procedural, 40 fases canônicas em arquipélago 3D contínuo, 8 flores individuais e 7 cores de grama, lâmina com 10 níveis de maestria, áudio completo, sistema multilíngue (pt, en, es), pipeline Google Play automatizado e SaveManager resiliente. |
 | **Beta** | `v0.9.0` a `v0.9.x` | **Planejada** | *Feature Complete*. Conclusão das 4 abas completas do Hub, áudio dinâmico (música/SFX de corte), balanceamento da progressão de moedas e testes em múltiplos aparelhos Android. |
 | **Release Candidate** | `v1.0.0-rc.X` | **Planejada** | *Feature Freeze*. Zero novos recursos; caça rigorosa a bugs impeditivos e validação final dos arquivos `.apk` e `.aab`. |
 | **Gold / Lançamento 1.0** | `v1.0.0` | **Planejada** | Entrega comercial completa na Google Play Store. |
