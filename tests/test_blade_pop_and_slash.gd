@@ -57,7 +57,7 @@ func _ready() -> void:
 		return
 	print("✔ PASSOU: Tier 1 configurou 3 pontas de slash")
 
-	UpgradeManager.blade_level = 6 # Tier 4
+	UpgradeManager.blade_level = 10 # Tier 4
 	cutter.call("update_upgrades")
 	if mat_check.get_shader_parameter("blade_points") != 6:
 		push_error("Tier 4 should set blade_points to 6, got: %s" % str(mat_check.get_shader_parameter("blade_points")))
@@ -79,9 +79,9 @@ func _ready() -> void:
 		_last_level_up_level = lvl
 	)
 	
-	# 3. Testa Level UP: adiciona 50 XP (requisito Lv 1->2 é 50)
+	# 3. Testa Level UP: adiciona 200 XP (requisito Lv 1->2 é 200)
 	_leveled_up_emitted = false
-	UpgradeManager.add_blade_xp(50.0)
+	UpgradeManager.add_blade_xp(200.0)
 	
 	if not _leveled_up_emitted or _last_level_up_level != 2:
 		push_error("blade_leveled_up signal was not emitted properly on level up!")

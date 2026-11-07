@@ -59,7 +59,7 @@ func _ready() -> void:
 	_current_rotation = rotation_degrees
 
 func get_target_offset_for_level(lvl: int) -> Vector3:
-	var t: float = clampf(float(lvl - 1) / 5.0, 0.0, 1.0)
+	var t: float = clampf(float(lvl - 1) / 9.0, 0.0, 1.0)
 	var ratio: float = lerpf(MIN_DISTANCE_RATIO, MAX_DISTANCE_RATIO, t)
 	return base_canonical_offset * ratio
 

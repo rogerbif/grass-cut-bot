@@ -287,7 +287,7 @@ func _populate_goals(remaining_goals: Dictionary) -> void:
 		item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		item.add_theme_constant_override("separation", 6)
 		item.add_child(GoalIconFactory.build_goal_icon(String(key), 30.0))
-		item.add_child(_make_label(str(int(remaining_goals[key])), 18, COL_WHITE))
+		item.add_child(_make_label(str(int(remaining_goals[key])), 16, COL_WHITE))
 		_goals_hbox.add_child(item)
 	_goals_hbox.visible = not remaining_goals.is_empty()
 

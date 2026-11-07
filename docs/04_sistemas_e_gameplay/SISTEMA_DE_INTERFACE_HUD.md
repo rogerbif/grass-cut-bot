@@ -28,7 +28,7 @@ TopBar (Control - sem fundo opaco)
 2. **Cards Dinâmicos de Metas (`GoalsContainer`):**
    - Posicionados logo abaixo de Tempo e Moedas (`LeftCluster`) com espaçamento simétrico de `10px` vertical e horizontal.
    - Utilizam moldura chanfrada cyber (`assets/ui/topbar/badge_goal_card.svg`, `54x62` px) e `badge_goal_card_done.svg` quando concluídos, compartilhando a mesma identidade visual (fundo `#060d18` e borda `#00d2ff` chanfrada a 45°) dos badges superiores.
-   - Cada card exibe o ícone vetorial SVG da espécie (`assets/icons/icon_*.svg`) e a quantidade pendente (com agrupamento de **6 tufos visuais = 1 unidade de meta** para gramas, e 1:1 para trigo e flores).
+   - Cada card exibe o ícone vetorial SVG da espécie gerado por `GoalIconFactory` com contorno duplo externo puro (1px preto + 2px branco) via silhueta subjacente sem artefatos ou linhas internas, e a quantidade pendente em tipografia de 16px (equalizada com a legenda "Objetivos:" do Card de Fases).
    - **Efeito Visual de Pop:** A cada unidade contabilizada, o card correspondente sofre uma rápida animação de escala (`1.15x` -> `1.0x` em 0.1s).
    - **Meta Batida:** Ao zerar o contador, o texto muda para `"OK"` em verde luminoso (`Color(0.22, 1.0, 0.48)`) e a moldura alterna permanentemente para `badge_goal_done_bg.svg`. O estado de sucesso é imutável e retido contra sobrescritas por eventuais cortes excedentes da mesma espécie até a celebração final.
 3. **Botão de Pausa (`PauseButton`):**

@@ -34,17 +34,21 @@ O motor do jogo utiliza a API nativa da Godot para dispositivos móveis (`Input.
 
 ## 3. Câmera Isométrica com Zoom Dinâmico por Nível da Lâmina
 
-- **Zoom Dinâmico Adaptativo (8.4m no Lv 1 até 12.0m no Lv 6 MAX):**
+- **Zoom Dinâmico Adaptativo (8.4m no Lv 1 até 12.0m no Lv 10 MAX):**
   - **Nível 1 (Base):** Distância em $8.4\text{m}$ (`offset = Vector3(0.0, 5.4258, 6.4133)`), mantendo ângulo de pitch de $-40.3^\circ$. Proporciona enquadramento 40% mais recuado/afastado para visão panorâmica confortável do início da partida.
-  - **Níveis 2 a 5:** Afastamento gradual linear (+0.72m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
-    - Lv 1: $8.4\text{m}$ (`Vector3(0.0, 5.4258, 6.4133)`)
-    - Lv 2: $9.12\text{m}$ (`Vector3(0.0, 5.8908, 6.9630)`)
-    - Lv 3: $9.84\text{m}$ (`Vector3(0.0, 6.3559, 7.5127)`)
-    - Lv 4: $10.56\text{m}$ (`Vector3(0.0, 6.8210, 8.0624)`)
-    - Lv 5: $11.28\text{m}$ (`Vector3(0.0, 7.2860, 8.6121)`)
-    - Lv 6: $12.0\text{m}$ (`Vector3(0.0, 7.7511, 9.1619)`)
-  - **Nível 6 (MAX):** Distância canônica máxima de $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`), conferindo ampla visão panorâmica para manusear com total destreza e segurança a serra estelar de $1.40\text{m}$ de raio.
-  - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por impacto contra obstáculos sólidos.
+  - **Níveis 2 a 9:** Afastamento gradual linear (+0.40m por nível) com transição suave via Tween ($0.75\text{s}$, curva cúbica desacelerada `TRANS_CUBIC` `EASE_OUT`):
+    - Lv 1: $8.40\text{m}$ (`Vector3(0.0, 5.4258, 6.4133)`)
+    - Lv 2: $8.80\text{m}$ (`Vector3(0.0, 5.6841, 6.7187)`)
+    - Lv 3: $9.20\text{m}$ (`Vector3(0.0, 5.9425, 7.0241)`)
+    - Lv 4: $9.60\text{m}$ (`Vector3(0.0, 6.2009, 7.3295)`)
+    - Lv 5: $10.00\text{m}$ (`Vector3(0.0, 6.4592, 7.6349)`)
+    - Lv 6: $10.40\text{m}$ (`Vector3(0.0, 6.7176, 7.9403)`)
+    - Lv 7: $10.80\text{m}$ (`Vector3(0.0, 6.9760, 8.2457)`)
+    - Lv 8: $11.20\text{m}$ (`Vector3(0.0, 7.2344, 8.5511)`)
+    - Lv 9: $11.60\text{m}$ (`Vector3(0.0, 7.4927, 8.8565)`)
+    - Lv 10 (MAX): $12.00\text{m}$ (`Vector3(0.0, 7.7511, 9.1619)`)
+  - **Nível 10 (MAX):** Distância canônica máxima de $12.0\text{m}$ (`offset = Vector3(0.0, 7.7511, 9.1619)`), conferindo ampla visão panorâmica para manusear com total destreza e segurança a serra estelar de $1.40\text{m}$ de raio.
+  - **Penalidade de Rochas:** Reaproximação suave e imediata caso o nível seja reduzido por perda de XP após impacto contra obstáculos sólidos.
 - **Posicionamento e Orientação Fixa:**
   - Orientação angular travada com pitch de $-40.3^\circ$ (sem chamada de `look_at()` no `_process()`), eliminando qualquer oscilação ou giro dinâmico quando o cortador manobra.
   - FOV de $48^\circ$, proporcionando excelente amplitude, destaque vertical para as falésias de terra marrom e profundidade da ilha sem distorção excessiva de perspectiva em telas verticais (Portrait).

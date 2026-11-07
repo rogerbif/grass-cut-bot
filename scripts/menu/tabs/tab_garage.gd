@@ -47,7 +47,7 @@ func refresh_ui() -> void:
 	if blade_tier_label != null:
 		var tier_name: String = UpgradeManager.get_blade_tier_name()
 		var tier_num: int = UpgradeManager.get_blade_tier()
-		if lvl >= 6:
+		if lvl >= 10:
 			blade_tier_label.text = tr("GARAGE_TIER_MAX_FMT") % [tier_name, tier_num]
 		else:
 			blade_tier_label.text = tr("GARAGE_TIER_FMT") % [tier_name, tier_num]
@@ -56,7 +56,7 @@ func refresh_ui() -> void:
 		var radius: float = UpgradeManager.get_blade_radius()
 		var speed: float = UpgradeManager.get_cutter_speed()
 
-		if lvl >= 6:
+		if lvl >= 10:
 			blade_lvl_label.text = tr("GARAGE_STATS_MAX_FMT") % [radius, speed]
 			if buy_btn_label != null:
 				buy_btn_label.text = tr("UPGRADE_MAX_LEVEL")
@@ -64,7 +64,7 @@ func refresh_ui() -> void:
 				buy_btn_icon.texture = preload("res://assets/icons/icon_checkmark.svg")
 				buy_btn_icon.visible = true
 			blade_buy_btn.disabled = true
-		elif lvl >= 5:
+		elif lvl >= 8:
 			blade_lvl_label.text = tr("GARAGE_STATS_INGAME_FMT") % [lvl, radius, speed]
 			if buy_btn_label != null:
 				buy_btn_label.text = tr("GARAGE_BTN_STORE_MAX")
@@ -73,7 +73,9 @@ func refresh_ui() -> void:
 			blade_buy_btn.disabled = true
 		else:
 			var cost: int = UpgradeManager.get_blade_upgrade_cost()
-			blade_lvl_label.text = tr("GARAGE_STATS_NEXT_FMT") % [lvl, lvl + 1, radius + 0.10, speed + 0.30]
+			var next_radius: float = 0.90 + float(lvl) * (0.50 / 9.0)
+			var next_speed: float = 1.95 + float(lvl) * 0.18
+			blade_lvl_label.text = tr("GARAGE_STATS_NEXT_FMT") % [lvl, lvl + 1, next_radius, next_speed]
 			if buy_btn_label != null:
 				buy_btn_label.text = "%d" % cost
 			if buy_btn_icon != null:

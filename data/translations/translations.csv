@@ -1,4 +1,4 @@
-keys,pt_BR,en,es
+﻿keys,pt_BR,en,es
 NAV_HOME,Início,Home,Inicio
 NAV_WORKSHOP,Oficina,Workshop,Taller
 NAV_HERBARIUM,Herbário,Herbarium,Herbario
@@ -98,9 +98,9 @@ GARAGE_COINS_FMT,%d Moedas,%d Coins,%d Monedas
 GARAGE_BLADE_UPGRADE_TITLE,Upgrade da Lâmina,Blade Upgrade,Mejora de Cuchilla
 GARAGE_STATS_NEXT_FMT,"Nível %d -> %d • Raio: %.2fm • Vel: %.2fm/s","Level %d -> %d • Radius: %.2fm • Spd: %.2fm/s","Nivel %d -> %d • Radio: %.2fm • Vel: %.2fm/s"
 GARAGE_STATS_INGAME_FMT,"Nível %d • Raio: %.2fm • Vel: %.2fm/s\n(Próximo nível somente por corte na partida)","Level %d • Radius: %.2fm • Spd: %.2fm/s\n(Next level only via in-match mowing)","Nivel %d • Radio: %.2fm • Vel: %.2fm/s\n(Siguiente nivel solo cortando en partida)"
-GARAGE_STATS_MAX_FMT,"Nível MAX (6) • Raio: %.2fm • Vel: %.2fm/s","MAX Level (6) • Radius: %.2fm • Spd: %.2fm/s","Nivel MÁX (6) • Radio: %.2fm • Vel: %.2fm/s"
+GARAGE_STATS_MAX_FMT,"Nível MAX (10) • Raio: %.2fm • Vel: %.2fm/s","MAX Level (10) • Radius: %.2fm • Spd: %.2fm/s","Nivel MÁX (10) • Radio: %.2fm • Vel: %.2fm/s"
 GARAGE_BTN_STORE_MAX,MÁX LOJA,SHOP MAX,MÁX TIENDA
-GARAGE_TIP,"Dica: A lâmina também sobe de nível durante a partida cortando vegetação (até o Nível 6 MAX). Bater em pedras reduz o nível!","Tip: The blade also levels up during the match by cutting plants (up to Level 6 MAX). Hitting rocks lowers its level!","Consejo: La cuchilla también sube de nivel durante la partida cortando vegetación (hasta Nivel 6 MÁX). ¡Chocar con rocas reduce el nivel!"
+GARAGE_TIP,"Dica: A lâmina também sobe de nível durante a partida cortando vegetação (até o Nível 10 MAX). Bater em pedras perde XP!","Tip: The blade also levels up during the match by cutting plants (up to Level 10 MAX). Hitting rocks loses XP!","Consejo: La cuchilla también sube de nivel durante la partida cortando vegetación (hasta Nivel 10 MÁX). ¡Chocar con rocas pierde XP!"
 STORE_TITLE,Loja do Arquipélago,Archipelago Shop,Tienda del Archipiélago
 STORE_WELCOME_HEADER,Pacote de Boas-Vindas Grátis!,Free Welcome Pack!,¡Paquete de Bienvenida Gratis!
 STORE_WELCOME_DESC,Colete 250 moedas para turbinar sua primeira lâmina na oficina!,Collect 250 coins to power up your first blade in the workshop!,¡Consigue 250 monedas para mejorar tu primera cuchilla en el taller!

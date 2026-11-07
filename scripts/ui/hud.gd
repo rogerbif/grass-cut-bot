@@ -253,7 +253,7 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	count_lbl.text = str(target)
 	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	count_lbl.add_theme_font_size_override("font_size", 18)
+	count_lbl.add_theme_font_size_override("font_size", 16)
 	count_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
 	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
