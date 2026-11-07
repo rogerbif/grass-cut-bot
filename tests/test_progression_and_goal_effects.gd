@@ -92,11 +92,25 @@ func _initialize() -> void:
 		hud_inst.set("goals_container", container)
 		hud_inst.add_child(container)
 
-	# Simula meta inicial de 10 grass_green
+	# Simula meta inicial de 10 grass_green (menor que 100 -> sem barra de progresso)
 	hud_inst.call("_on_goal_updated", "grass_green", 10, 10)
 	var card_info: Dictionary = hud_inst.get("goal_cards")["grass_green"] as Dictionary
 	var lbl: Label = card_info["count_label"] as Label
 	assert(lbl.text == "10", "Card inicial deve exibir '10'")
+	assert(card_info["progress_bar"] == null, "Meta < 100 nao deve possuir barra de progresso")
+
+	# Simula meta de 150 grass_yellow (>= 100 -> com barra de progresso enchendo)
+	hud_inst.call("_on_goal_updated", "grass_yellow", 150, 150)
+	var card_yellow: Dictionary = hud_inst.get("goal_cards")["grass_yellow"] as Dictionary
+	var bar_yellow: ProgressBar = card_yellow["progress_bar"] as ProgressBar
+	assert(bar_yellow != null, "Meta >= 100 DEVE possuir ProgressBar abaixo do icone!")
+	assert(bar_yellow.max_value == 150.0, "max_value da ProgressBar deve ser 150")
+	assert(bar_yellow.value == 0.0, "Ao iniciar (150 restantes de 150), barra deve estar em 0")
+
+	# Atualiza com corte de 50 itens (100 restantes)
+	hud_inst.call("_on_goal_updated", "grass_yellow", 100, 150)
+	var lbl_yellow: Label = card_yellow["count_label"] as Label
+	assert(lbl_yellow.text == "100", "Label do objetivo yellow deve exibir 100")
 
 	# Simula meta batida (0 restante)
 	hud_inst.call("_on_goal_updated", "grass_green", 0, 10)
@@ -108,7 +122,7 @@ func _initialize() -> void:
 	assert(lbl.text == "OK", "Card DEVE continuar exibindo 'OK' mesmo apos cortes excedentes subsequentes!")
 
 	hud_inst.queue_free()
-	print("✔ PASSOU: HUD mantém texto 'OK' e estado concluído permanentemente sem resetar para '0'")
+	print("✔ PASSOU: HUD mantém texto 'OK', layout vertical e ProgressBar funcional para metas >= 100")
 
 	print("\n==========================================")
 	print(">>> TODOS OS TESTES PASSARAM COM SUCESSO! <<<")

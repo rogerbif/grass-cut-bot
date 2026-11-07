@@ -170,17 +170,21 @@ func _on_goal_updated(plant_type: String, remaining: int, target: int) -> void:
 	else:
 		card["count_label"].text = str(remaining)
 		(card["count_label"] as Label).modulate = Color.WHITE
+		if card.has("progress_bar") and card["progress_bar"] != null:
+			var bar: ProgressBar = card["progress_bar"] as ProgressBar
+			var tw: Tween = create_tween()
+			tw.tween_property(bar, "value", float(target - remaining), 0.08)
 	
 	# Efeito de pop/escala quando atualiza
 	var tween: Tween = create_tween()
-	tween.tween_property(card["container"], "scale", Vector2(1.15, 1.15), 0.05)
+	tween.tween_property(card["container"], "scale", Vector2(1.12, 1.12), 0.05)
 	tween.tween_property(card["container"], "scale", Vector2.ONE, 0.05)
 
 func _create_goal_card(plant_type: String, target: int) -> void:
 	var card_panel: PanelContainer = PanelContainer.new()
-	# Simetria exata de altura 52px com os badges superiores
-	card_panel.custom_minimum_size = Vector2(88, 52)
-	card_panel.pivot_offset = Vector2(44, 26)
+	# Card vertical proporcional com a arte do badge (76x72)
+	card_panel.custom_minimum_size = Vector2(74, 82)
+	card_panel.pivot_offset = Vector2(37, 41)
 	card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
@@ -195,28 +199,63 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 
 	var margin: MarginContainer = MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_left", 8)
-	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_left", 6)
+	margin.add_theme_constant_override("margin_right", 6)
 	margin.add_theme_constant_override("margin_top", 4)
 	margin.add_theme_constant_override("margin_bottom", 4)
 	card_panel.add_child(margin)
 
-	var hbox: HBoxContainer = HBoxContainer.new()
-	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_theme_constant_override("separation", 6)
+	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_theme_constant_override("separation", 2)
 
-	# Ilustração botânica canônica da Coleção (34x34)
-	var illus_container: Control = GoalIconFactory.build_goal_icon(plant_type, 34.0)
+	# Ilustração botânica aumentada em 20% (34px -> 41px)
+	var illus_container: Control = GoalIconFactory.build_goal_icon(plant_type, 41.0)
+	illus_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	illus_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(illus_container)
+
+	# Barra de progresso para objetivos grandes (>= 100 itens)
+	var prog_bar: ProgressBar = null
+	if target >= 100:
+		prog_bar = ProgressBar.new()
+		prog_bar.custom_minimum_size = Vector2(50, 5)
+		prog_bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		prog_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		prog_bar.show_percentage = false
+		prog_bar.max_value = float(target)
+		prog_bar.value = 0.0
+
+		var bg_style: StyleBoxFlat = StyleBoxFlat.new()
+		bg_style.bg_color = Color(0.04, 0.08, 0.14, 0.85)
+		bg_style.corner_radius_top_left = 3
+		bg_style.corner_radius_top_right = 3
+		bg_style.corner_radius_bottom_right = 3
+		bg_style.corner_radius_bottom_left = 3
+		prog_bar.add_theme_stylebox_override("background", bg_style)
+
+		var fill_style: StyleBoxFlat = StyleBoxFlat.new()
+		var sp_data: Dictionary = PlantDatabaseScript.get_species(plant_type)
+		var bar_color: Color = sp_data.get("color", Color(0.28, 0.81, 0.10, 1.0)) as Color
+		if bar_color.v < 0.6:
+			bar_color.v = 0.75
+		fill_style.bg_color = bar_color
+		fill_style.corner_radius_top_left = 3
+		fill_style.corner_radius_top_right = 3
+		fill_style.corner_radius_bottom_right = 3
+		fill_style.corner_radius_bottom_left = 3
+		prog_bar.add_theme_stylebox_override("fill", fill_style)
+
+		vbox.add_child(prog_bar)
 
 	var count_lbl: Label = Label.new()
 	count_lbl.text = str(target)
 	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	# Fonte 23px idêntica aos badges da Home
-	count_lbl.add_theme_font_size_override("font_size", 23)
+	count_lbl.add_theme_font_size_override("font_size", 18)
 	count_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
-	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.4))
+	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
 	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
 
 	var sys_font: SystemFont = SystemFont.new()
@@ -224,9 +263,9 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	sys_font.font_weight = 900
 	count_lbl.add_theme_font_override("font", sys_font)
 
-	hbox.add_child(illus_container)
-	hbox.add_child(count_lbl)
-	margin.add_child(hbox)
+	vbox.add_child(count_lbl)
+	margin.add_child(vbox)
+
 	if goals_container != null:
 		goals_container.add_child(card_panel)
 
@@ -234,6 +273,8 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 		"container": card_panel,
 		"count_label": count_lbl,
 		"illus_container": illus_container,
+		"progress_bar": prog_bar,
+		"target": target,
 		"bg_rect": bg_rect,
 		"is_completed": false
 	}
@@ -245,12 +286,17 @@ func _on_goal_completed(plant_type: String) -> void:
 		var lbl: Label = card["count_label"] as Label
 		lbl.text = "OK"
 		lbl.modulate = Color(0.22, 1.0, 0.48)
+		if card.has("progress_bar") and card["progress_bar"] != null:
+			var bar: ProgressBar = card["progress_bar"] as ProgressBar
+			bar.value = bar.max_value
 		var bg: TextureRect = card.get("bg_rect") as TextureRect
 		if bg != null:
 			bg.texture = BADGE_GOAL_DONE_BG
 
 ## Animação de Ícone Flutuante do Objetivo: nasce no ponto do corte e sobe até o card no TopBar
 func _on_goal_item_collected(goal_key: String, world_pos: Vector3) -> void:
+	# Temporariamente desabilitado a pedido do usuário
+	return
 	if _floating_icons_container == null or not goal_cards.has(goal_key):
 		return
 
