@@ -13,16 +13,8 @@ const SPAWN_GRASS_CLEAR_RADIUS: float = 1.40 # Clareira no spawn do robô (raio 
 const ROCK_GRASS_CLEAR_RADIUS: float = 0.90  # Clareira da rocha (raio da menor lâmina: 0.90m)
 
 func _init() -> void:
-	print("=== INICIANDO GERAÇÃO E AUDITORIA DAS 20 FASES CANÔNICAS (LEVEL DESIGN REFINADO) ===")
-	var total_errors: int = 0
-	for lvl: int in range(1, 21):
-		var errs: int = generate_level(lvl)
-		total_errors += errs
-	if total_errors == 0:
-		print("=== SUCESSO ABSOLUTO: 20 FASES GERADAS E AUDITADAS COM 0 ERROS! ===")
-	else:
-		printerr("=== FALHA DE AUDITORIA: %d ERROS ENCONTRADOS ===" % total_errors)
-	quit(1 if total_errors > 0 else 0)
+	printerr("PROTEÇÃO ATIVA: As fases 01 a 20 são canônicas e refinadas no editor. Geração procedural legada desativada para proteger as fases oficiais!")
+	quit(1)
 
 
 func generate_level(lvl: int) -> int:

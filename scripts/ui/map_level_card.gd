@@ -42,6 +42,7 @@ var _time_lbl: Label = null
 var _goals_box: HBoxContainer = null
 var _current_level: int = -1
 var _fade_tween: Tween = null
+var _bump_tween: Tween = null
 
 
 func _notification(what: int) -> void:
@@ -287,6 +288,30 @@ func show_level(lvl: int, unlocked: bool) -> void:
 		_fade_tween.tween_property(self, "modulate", target_mod, 0.14)
 	else:
 		modulate = target_mod
+
+
+## Animação rápida de escala (bump/pop) ao trocar de fase por swipe.
+func play_bump_animation(_direction: int = 1) -> void:
+	if not is_inside_tree():
+		return
+	if _bump_tween != null and _bump_tween.is_valid():
+		_bump_tween.kill()
+	pivot_offset = Vector2(CARD_WIDTH * 0.5, size.y * 0.5)
+	scale = Vector2(0.96, 0.96)
+	_bump_tween = create_tween()
+	_bump_tween.tween_property(self, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+## Efeito elástico sutil de limite alcançado (squash & stretch).
+func play_boundary_bounce(_direction: int = 1) -> void:
+	if not is_inside_tree():
+		return
+	if _bump_tween != null and _bump_tween.is_valid():
+		_bump_tween.kill()
+	pivot_offset = Vector2(CARD_WIDTH * 0.5, size.y * 0.5)
+	_bump_tween = create_tween()
+	_bump_tween.tween_property(self, "scale", Vector2(1.03, 0.94), 0.08).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_bump_tween.tween_property(self, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 
 
 func _rebuild_goals(goals: Dictionary) -> void:

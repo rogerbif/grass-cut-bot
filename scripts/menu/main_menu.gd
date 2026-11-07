@@ -2,6 +2,7 @@ extends Node3D
 
 const ISLAND_SCENE: PackedScene = preload("res://scenes/menu/island_node.tscn")
 const CLOUDS_END_SCENE: PackedScene = preload("res://scenes/menu/clouds_end_node.tscn")
+const MenuGestureDetectorScript = preload("res://scripts/menu/menu_gesture_detector.gd")
 
 @onready var menu_camera: Camera3D = $MenuCamera3D
 @onready var islands_container: Node3D = $World/IslandsContainer
@@ -30,6 +31,7 @@ var island_nodes: Array[Node3D] = []
 var selected_level: int = 1
 var current_bot_level: int = 1
 var clouds_end_node: Node3D = null
+var _gesture_detector: RefCounted = null
 
 func _ready() -> void:
 	_apply_safe_area()
@@ -78,6 +80,11 @@ func _ready() -> void:
 		menu_camera.view_mode_changed.connect(_on_camera_view_mode_changed)
 		menu_camera.island_snapped.connect(_on_camera_island_snapped)
 		menu_camera.scroll_focus_changed.connect(_on_camera_scroll_focus_changed)
+
+	# Detector de gestos de swipe (troca de fases e de abas)
+	_gesture_detector = MenuGestureDetectorScript.new()
+	_gesture_detector.connect("swipe_horizontal", _on_gesture_swipe_horizontal)
+	_gesture_detector.connect("swipe_vertical", _on_gesture_swipe_vertical)
 
 	# Inicia na aba Home e visão do Bot (Home agora é índice 0)
 	_switch_tab(0)
@@ -361,7 +368,12 @@ func _switch_tab(tab_idx: int) -> void:
 	for i: int in range(tabs.size()):
 		var t: Control = tabs[i]
 		if t != null:
-			t.visible = (i == tab_idx)
+			var is_target: bool = (i == tab_idx)
+			if is_target and not t.visible:
+				t.modulate.a = 0.55
+				var tw: Tween = create_tween()
+				tw.tween_property(t, "modulate:a", 1.0, 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			t.visible = is_target
 			if t.visible and t.has_method("refresh_ui"):
 				t.call("refresh_ui")
 
@@ -433,6 +445,104 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		_handle_back_request()
+
+
+func _input(event: InputEvent) -> void:
+	if _are_modals_open():
+		return
+
+	if _gesture_detector != null:
+		var is_bot_view: bool = (menu_camera != null and menu_camera.current_mode == menu_camera.CameraMode.BOT_VIEW)
+		var is_home_tab: bool = (bottom_nav != null and bottom_nav.current_tab == 0)
+		_gesture_detector.allow_vertical = (is_home_tab and is_bot_view)
+
+		var is_cam_transition: bool = (menu_camera != null and menu_camera.is_transitioning)
+		_gesture_detector.allow_horizontal = not is_cam_transition
+
+		if _gesture_detector.process_input(event):
+			get_viewport().set_input_as_handled()
+
+
+func _are_modals_open() -> bool:
+	if exit_modal != null and exit_modal.has_method("is_open") and exit_modal.call("is_open"):
+		return true
+	if settings_modal != null:
+		if settings_modal.has_method("is_open") and settings_modal.call("is_open"):
+			return true
+		elif settings_modal.visible:
+			return true
+	return false
+
+
+func _on_gesture_swipe_horizontal(direction: int) -> void:
+	if bottom_nav == null:
+		return
+	var cur_tab: int = bottom_nav.current_tab
+	# direction: -1 = esquerda (avança para aba da direita +1); +1 = direita (retorna para aba da esquerda -1)
+	var target_tab: int = cur_tab + (-direction)
+	if target_tab >= 0 and target_tab <= 3 and target_tab != cur_tab:
+		bottom_nav.select_tab(target_tab)
+
+
+func _on_gesture_swipe_vertical(direction: int) -> void:
+	# Opção B: direction +1 (baixo) = avança fase (+1); direction -1 (cima) = volta fase (-1)
+	_navigate_level_by_delta(direction)
+
+
+func _navigate_level_by_delta(delta: int) -> void:
+	var target_lvl: int = selected_level + delta
+
+	# Limite inferior: Fase 1
+	if target_lvl < 1:
+		_trigger_level_boundary_feedback(-1)
+		return
+
+	# Limite superior: total_levels_count
+	if target_lvl > total_levels_count:
+		_trigger_level_boundary_feedback(1)
+		return
+
+	# Regra de progressão: permite navegar pelas fases desbloqueadas e espiar até a primeira bloqueada
+	if SaveManager != null:
+		var max_unlocked: int = 1
+		for l: int in range(1, total_levels_count + 1):
+			if SaveManager.is_level_unlocked(l):
+				max_unlocked = l
+			else:
+				break
+		var max_allowed: int = mini(total_levels_count, max_unlocked + 1)
+		if target_lvl > max_allowed:
+			_trigger_level_boundary_feedback(1)
+			return
+
+	selected_level = target_lvl
+	if SaveManager != null:
+		SaveManager.set_last_played_level(selected_level)
+
+	_teleport_bot_to_level(selected_level)
+	_update_islands_visibility(false, selected_level)
+
+	if tab_home != null and tab_home.has_method("update_level_display"):
+		tab_home.update_level_display(selected_level)
+
+	if tab_home != null:
+		var card: MapLevelCard = tab_home.get_node_or_null("MapLevelCard") as MapLevelCard
+		if card != null and card.has_method("play_bump_animation"):
+			card.play_bump_animation(delta)
+
+	if GameManager != null:
+		GameManager.trigger_haptic_cut()
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
+
+
+func _trigger_level_boundary_feedback(direction: int) -> void:
+	if tab_home != null:
+		var card: MapLevelCard = tab_home.get_node_or_null("MapLevelCard") as MapLevelCard
+		if card != null and card.has_method("play_boundary_bounce"):
+			card.play_boundary_bounce(direction)
+	if AudioManager != null:
+		AudioManager.play_sfx("close")
 
 func _handle_back_request() -> void:
 	# 1. Se o modal de confirmação de saída estiver aberto -> fecha o modal (cancela a saída)

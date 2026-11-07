@@ -168,6 +168,17 @@ Na aba `Home`, ao alternar a câmera para a visão aproximada do cortador (`BOT_
 - **Reatividade Dinâmica:** Ao alternar de idioma, o `SaveManager` persiste a preferência e sincroniza o `TranslationServer`. A engine emite `NOTIFICATION_TRANSLATION_CHANGED`, atualizando instantaneamente sem reload todos os textos do menu principal (todas as 4 abas: Início, Oficina, Herbário e Loja), toasts, botões da navbar, cartões de fase, placa 3D de arquipélago, barra da serra (Nível Máximo), oficina in-game e modais de vitória, derrota, pausa e saída.
 - **Seção Save Progress & Reset:** Salvamento manual local, conectores para Google Play Games / Facebook e botão de confirmação com segurança de duplo toque para reset geral de progresso.
 
+### 3.6 Navegação por Gestos (Swipe) no Menu Principal (`v0.12.143-alpha`)
+- **Arquitetura Desacoplada (`MenuGestureDetector`):** Detector de gestos por toque e mouse com filtro polar de eixos ($1.30\times$ dominância), threshold de $45\text{px}$ e rejeição de diagonais acidentais ou toques estáticos longos ($> 0.85\text{s}$).
+- **Troca de Fases Vertical (Opção B - Visão do Bot na Home):**
+  - Deslizar para **baixo** ($\Delta Y > 0$) avança para a próxima fase ($N + 1$).
+  - Deslizar para **cima** ($\Delta Y < 0$) retorna para a fase anterior ($N - 1$).
+  - O robô executa teleporte holográfico entre ilhas, o `MapLevelCard` dispara animação elástica de bump (`play_bump_animation`), e tentativas de ultrapassar os limites (Fase 1 ou máxima desbloqueada) acionam feedback visual de squash/stretch (`play_boundary_bounce`) com som sutil.
+- **Troca de Abas Horizontal (Todas as Abas do Menu):**
+  - Deslizar para a **esquerda** ($\Delta X < 0$) avança para a aba da direita (`Home` ➔ `Oficina` ➔ `Coleção` ➔ `Loja`).
+  - Deslizar para a **direita** ($\Delta X > 0$) retorna para a aba anterior.
+  - Sincroniza a `BottomNavBar`, dispara transição suave de fade e **não interfere na rolagem vertical nativa** dos `ScrollContainer` das abas de Oficina, Coleção e Loja.
+
 ---
 
 ## 4. Barra Flutuante 3D de Evolução da Lâmina (`BladeProgressBar3D`)

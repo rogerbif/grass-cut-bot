@@ -48,3 +48,17 @@ Para máxima acessibilidade no PC, Web e dispositivos com controles conectados:
    - Isso impede qualquer conflito ou sequestro de toques/cliques direcionados aos botões dos modais de fim de fase.
 3. **Emulação Bidirecional de Toque e Mouse:**
    - Configurados `pointing/emulate_touch_from_mouse = true` e `pointing/emulate_mouse_from_touch = true` em `project.godot`, garantindo que os botões de interface respondam imediatamente tanto a cliques de mouse no PC quanto a toques diretos em telas móveis touchscreen.
+
+---
+
+## 5. Gestos de Swipe no Menu Principal (`MenuGestureDetector`)
+
+Em conformidade com o **Guardrail 6 (One-Thumb Experience)**, o Menu Principal conta com reconhecimento de gestos:
+- **Swipe Vertical (Opção B - Visão do Bot na Home):**
+  - Deslizar para **baixo** ($\Delta Y > 0$): Avança para a próxima fase.
+  - Deslizar para **cima** ($\Delta Y < 0$): Retorna para a fase anterior.
+- **Swipe Horizontal (Em Todas as Abas):**
+  - Deslizar para a **esquerda** ($\Delta X < 0$): Avança para a aba seguinte (`Home` ➔ `Oficina` ➔ `Coleção` ➔ `Loja`).
+  - Deslizar para a **direita** ($\Delta X > 0$): Retorna para a aba anterior.
+- **Discriminação de Eixo e Anti-Conflito:** Limiar mínimo de $45\text{px}$, razão de dominância de $1.30\times$ entre eixos e respeito integral à rolagem vertical dos `ScrollContainer` das abas de conteúdo.
+
