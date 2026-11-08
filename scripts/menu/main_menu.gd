@@ -377,6 +377,10 @@ func _switch_tab(tab_idx: int) -> void:
 			if t.visible and t.has_method("refresh_ui"):
 				t.call("refresh_ui")
 
+	# Controla visibilidade do VersionBadge (exibido apenas na aba Home/Bot View)
+	if version_badge != null:
+		version_badge.visible = (tab_idx == 0)
+
 	# Se for para outra aba que não a Home (índice 0), garante visão do bot ou reseta mapa
 	if tab_idx != 0 and menu_camera != null:
 		if menu_camera.current_mode == menu_camera.CameraMode.MAP_VIEW:
@@ -436,6 +440,19 @@ func _apply_safe_area() -> void:
 		if top_bar != null:
 			var cur_top: int = top_bar.get_theme_constant("margin_top")
 			top_bar.add_theme_constant_override("margin_top", cur_top + int(roundf(top_inset)))
+
+		# Desloca os painéis das abas secundárias para respeitar o notch e ficar abaixo da TopBar
+		var tabs: Array[Control] = [tab_garage, tab_collection, tab_store]
+		for tab: Control in tabs:
+			if tab != null:
+				var panel: Control = tab.get_node_or_null("Panel") as Control
+				if panel != null:
+					panel.offset_top += roundf(top_inset)
+
+		# Desloca também o VersionBadge para não colidir com os badges do topo
+		if version_badge != null:
+			version_badge.offset_top += roundf(top_inset)
+			version_badge.offset_bottom += roundf(top_inset)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
