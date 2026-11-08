@@ -720,9 +720,9 @@ func _build_from_vector_field(
 		return goals
 
 	var tufts: Array[Dictionary] = []
-	var stem_positions: Array[Vector2] = []
 
 	# Adiciona flores de tile caso existam no JSON (respeitando clareira de rochas de 1.40m)
+	# Regra canônica: flores convivem harmoniosamente com a grama (não limpam tufos de grama)
 	for f_cell: Vector2i in tile_flowers.keys():
 		var f_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
 		var inside_rock_radius: bool = false
@@ -734,7 +734,6 @@ func _build_from_vector_field(
 		if inside_rock_radius:
 			continue
 
-		stem_positions.append(Vector2(f_pos.x, f_pos.z))
 		var f_val: Variant = tile_flowers[f_cell]
 		var f_type: String = "flower"
 		var f_rot: float = 0.0
@@ -764,7 +763,6 @@ func _build_from_vector_field(
 		if inside_rock:
 			continue
 
-		stem_positions.append(Vector2(w_pos.x, w_pos.z))
 		tufts.append({
 			"pos": w_pos,
 			"type": "wheat",
@@ -775,31 +773,20 @@ func _build_from_vector_field(
 	var sampled_tufts: Array = vector_field.call("sample_all_tufts") as Array
 	for item: Variant in sampled_tufts:
 		if item is Dictionary:
-			var t_dict: Dictionary = item as Dictionary
-			var t_type: String = String(t_dict.get("type", "grass_green"))
-			if t_type != "wheat" and not t_type.begins_with("flower") and not stem_positions.is_empty():
-				var t_pos: Vector3 = t_dict["pos"] as Vector3
-				var t_xz: Vector2 = Vector2(t_pos.x, t_pos.z)
-				var too_close: bool = false
-				for sp_xz: Vector2 in stem_positions:
-					if t_xz.distance_squared_to(sp_xz) < 0.0676: # 0.26m de clareira no caule
-						too_close = true
-						break
-				if too_close:
-					continue
-			tufts.append(t_dict)
+			tufts.append(item as Dictionary)
 
-	# Agrupa por célula lógica de 0.40m para manter metas consistentes e pontuação justa
+	# Agrupa por célula lógica de 0.40m e por espécie vegetal distinta
+	# Garante que flores e grama no mesmo local físico mantenham células lógicas e metas independentes
 	var logical_cells_map: Dictionary = {}
 	for t_dict: Dictionary in tufts:
 		var pos: Vector3 = t_dict["pos"] as Vector3
 		var lx: int = roundi(pos.x / 0.40)
 		var lz: int = roundi(pos.z / 0.40)
-		var lkey: Vector2i = Vector2i(lx, lz)
+		var v_type: String = String(t_dict.get("type", "grass_green"))
+		var lkey: String = "%d_%d_%s" % [lx, lz, v_type]
 		if not logical_cells_map.has(lkey):
 			var new_cell_idx: int = _cell_keys.size()
-			var v_type: String = String(t_dict.get("type", "grass_green"))
-			var g_key: String = "grass"
+			var g_key: String = v_type
 			var r_coins: int = 1
 			if v_type == "wheat":
 				g_key = "wheat"

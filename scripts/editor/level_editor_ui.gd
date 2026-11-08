@@ -192,6 +192,7 @@ var _goal_manually_edited: Dictionary = {}
 var _goal_manually_unchecked: Dictionary = {}
 var _last_detected_counts: Dictionary = {}
 var lbl_world_metrics: Label
+var lbl_no_goals_hint: Label
 
 var section_terrain: VBoxContainer
 var section_grass: VBoxContainer
@@ -867,6 +868,7 @@ func _build_goals_metric_section(parent_box: VBoxContainer) -> void:
 		var card: PanelContainer = PanelContainer.new()
 		card.add_theme_stylebox_override("panel", _make_panel_style(Color(0.10, 0.14, 0.18, 0.9), g_color.darkened(0.55), 6))
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.visible = false
 		parent_box.add_child(card)
 		_goal_cards[g_key] = card
 
@@ -944,6 +946,16 @@ func _build_goals_metric_section(parent_box: VBoxContainer) -> void:
 				elif spin.value < 1:
 					spin.value = 1
 			)
+
+	# Dica informativa quando nenhuma espécie está presente na fase
+	lbl_no_goals_hint = Label.new()
+	lbl_no_goals_hint.text = "Nenhuma vegetação detectada nesta fase.\nPinte grama ou posicione flores para definir metas."
+	lbl_no_goals_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_no_goals_hint.add_theme_font_size_override("font_size", 11)
+	lbl_no_goals_hint.add_theme_color_override("font_color", Color(0.55, 0.65, 0.75, 0.7))
+	lbl_no_goals_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl_no_goals_hint.visible = false
+	parent_box.add_child(lbl_no_goals_hint)
 
 	# Métricas informativas de construção (rochas e solo)
 	var card_world: PanelContainer = PanelContainer.new()
@@ -1439,6 +1451,7 @@ func update_goals_summary(
 		elif t == "rock":
 			rock_c += 1
 
+	var any_goals_present: bool = false
 	for gm in GOALS_CATALOG:
 		var g_key: String = String(gm["key"])
 		var g_unit: String = String(gm.get("unit", "tufos"))
@@ -1456,6 +1469,8 @@ func update_goals_summary(
 		var card: PanelContainer = _goal_cards.get(g_key, null) as PanelContainer
 		if card != null:
 			card.visible = (total_count > 0)
+			if card.visible:
+				any_goals_present = true
 
 		if _goal_total_labels.has(g_key) and _goal_total_labels[g_key] != null:
 			var lbl: Label = _goal_total_labels[g_key] as Label
@@ -1500,6 +1515,9 @@ func update_goals_summary(
 			if chk != null:
 				spin.visible = chk.button_pressed and total_count > 0
 
+	if lbl_no_goals_hint != null:
+		lbl_no_goals_hint.visible = not any_goals_present
+
 	if lbl_world_metrics != null:
 		lbl_world_metrics.text = "🪨 Rochas: %d  |  🏝️ Blocos Ilha: %d" % [rock_c, terrain_count]
 
@@ -1518,6 +1536,7 @@ func set_configured_goals(goals: Dictionary) -> void:
 	_goal_manually_edited.clear()
 	_goal_manually_unchecked.clear()
 	var has_saved_goals: bool = not goals.is_empty()
+	var any_goals_present: bool = false
 	for gm in GOALS_CATALOG:
 		var k: String = String(gm["key"])
 		var chk: CheckBox = _goal_checkboxes.get(k, null) as CheckBox
@@ -1527,6 +1546,12 @@ func set_configured_goals(goals: Dictionary) -> void:
 		var total: int = int(_last_detected_counts.get(k, 0))
 		var is_active: bool = false
 		var goal_val: int = total
+
+		var card: PanelContainer = _goal_cards.get(k, null) as PanelContainer
+		if card != null:
+			card.visible = (total > 0)
+			if card.visible:
+				any_goals_present = true
 
 		if has_saved_goals:
 			if goals.has(k):
@@ -1557,6 +1582,9 @@ func set_configured_goals(goals: Dictionary) -> void:
 			spin.min_value = 1
 			spin.max_value = maxi(1, total)
 			spin.set_value_no_signal(float(maxi(1, total)))
+
+	if lbl_no_goals_hint != null:
+		lbl_no_goals_hint.visible = not any_goals_present
 
 func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> void:
 	if lbl_status == null:
