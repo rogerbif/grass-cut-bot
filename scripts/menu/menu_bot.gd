@@ -86,6 +86,7 @@ func _ready() -> void:
 
 	if UpgradeManager != null:
 		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
+		UpgradeManager.blade_level_changed.connect(func(_lvl: int, _max: bool): update_blade_tier())
 
 func _apply_compat_blade_tint(mi: MeshInstance3D) -> void:
 	if mi == null or mi.mesh == null:

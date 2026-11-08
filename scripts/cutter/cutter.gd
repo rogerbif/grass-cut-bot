@@ -865,7 +865,7 @@ func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO)
 	if AudioManager != null:
 		AudioManager.play_sfx("slap_rock")
 
-	# Penalidade na lâmina: Opção A (reduz 1 nível completo) com cooldown de proteção anti-cascata de 1.2s
+	# Penalidade na lâmina: dedução fixa de 1.000 XP com cooldown defensivo de 1.2s
 	if _blade_penalty_cooldown <= 0.0:
 		_blade_penalty_cooldown = 1.2
 		if UpgradeManager != null:

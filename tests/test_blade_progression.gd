@@ -136,19 +136,18 @@ func test_blade_progression() -> void:
 	UpgradeManager.load_from_dict({"blade_level": 7, "blade_xp": 120.0}, 200)
 	assert_true(UpgradeManager.blade_level == 7 and is_equal_approx(UpgradeManager.blade_xp, 120.0), "Carregou blade_level 7 e 120 XP")
 
-	# 7. Teste de Inicialização do BladeProgressBar ao mudar de fase (ex: Nível 6)
-	UpgradeManager.load_from_dict({"blade_level": 6, "blade_xp": 100.0}, 200)
+	# 7. Teste de Inicialização do BladeProgressBar ao mudar de fase em todos os níveis (1 a 10)
 	var bar_scene: PackedScene = load("res://scenes/cutter/blade_progress_bar.tscn")
-	var bar_node: Node3D = bar_scene.instantiate() as Node3D
-	add_child(bar_node)
-	assert_true(not bar_node._is_max, "BladeProgressBar em Nível 6 inicia com _is_max == false")
-	assert_true("6" in bar_node.level_label.text, "BladeProgressBar exibe texto com nível 6")
-	assert_true(not bar_node.crown_icon.visible, "Coroa oculta no Nível 6")
-	bar_node.queue_free()
-
-	UpgradeManager.load_from_dict({"blade_level": 10, "blade_xp": 0.0}, 200)
-	var bar_max: Node3D = bar_scene.instantiate() as Node3D
-	add_child(bar_max)
-	assert_true(bar_max._is_max, "BladeProgressBar em Nível 10 inicia com _is_max == true")
-	assert_true(bar_max.crown_icon.visible, "Coroa visível no Nível 10 MAX")
-	bar_max.queue_free()
+	for test_lvl in range(1, 11):
+		UpgradeManager.load_from_dict({"blade_level": test_lvl, "blade_xp": 50.0}, 100)
+		var test_bar: Node3D = bar_scene.instantiate() as Node3D
+		add_child(test_bar)
+		if test_lvl < 10:
+			assert_true(not test_bar._is_max, "BladeProgressBar em Nível %d inicia com _is_max == false" % test_lvl)
+			assert_true(str(test_lvl) in test_bar.level_label.text, "BladeProgressBar em Nível %d exibe texto '%s'" % [test_lvl, test_bar.level_label.text])
+			assert_true(not test_bar.crown_icon.visible, "Coroa oculta no Nível %d" % test_lvl)
+		else:
+			assert_true(test_bar._is_max, "BladeProgressBar em Nível 10 inicia com _is_max == true")
+			assert_true(test_bar.crown_icon.visible, "Coroa visível no Nível 10 MAX")
+			assert_true(test_bar.level_label.text == tr("BLADE_LEVEL_MAX"), "Texto é NÍVEL MÁXIMO no Nv 10")
+		test_bar.queue_free()
