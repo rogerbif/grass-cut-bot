@@ -30,7 +30,7 @@ Write-Host "Faixa Google Play: $Track" -ForegroundColor Yellow
 Write-Host "==================================================" -ForegroundColor Cyan
 
 # 1. Bump de versão
-$gvText = Get-Content $gameVersionFile -Raw
+$gvText = [System.IO.File]::ReadAllText($gameVersionFile, [System.Text.Encoding]::UTF8)
 $major = [int]([regex]::Match($gvText, 'const MAJOR:\s*int\s*=\s*(\d+)').Groups[1].Value)
 $minor = [int]([regex]::Match($gvText, 'const MINOR:\s*int\s*=\s*(\d+)').Groups[1].Value)
 $patch = [int]([regex]::Match($gvText, 'const PATCH:\s*int\s*=\s*(\d+)').Groups[1].Value)
@@ -61,20 +61,20 @@ if ($Bump -ne "None") {
     $gvText = [regex]::Replace($gvText, 'const MINOR:\s*int\s*=\s*\d+', "const MINOR: int = $minor")
     $gvText = [regex]::Replace($gvText, 'const PATCH:\s*int\s*=\s*\d+', "const PATCH: int = $patch")
     [System.IO.File]::WriteAllText($gameVersionFile, $gvText, [System.Text.UTF8Encoding]::new($false))
-    Write-Host "  ✔ Atualizado scripts/core/game_version.gd" -ForegroundColor Gray
+    Write-Host "  [OK] Atualizado scripts/core/game_version.gd" -ForegroundColor Gray
 
     # Atualiza project.godot
-    $projText = Get-Content $projectGodotFile -Raw
+    $projText = [System.IO.File]::ReadAllText($projectGodotFile, [System.Text.Encoding]::UTF8)
     $projText = [regex]::Replace($projText, 'config/version="[^"]*"', "config/version=`"$rawVersion`"")
     [System.IO.File]::WriteAllText($projectGodotFile, $projText, [System.Text.UTF8Encoding]::new($false))
-    Write-Host "  ✔ Atualizado project.godot" -ForegroundColor Gray
+    Write-Host "  [OK] Atualizado project.godot" -ForegroundColor Gray
 
     # Atualiza export_presets.cfg
-    $presetsText = Get-Content $exportPresetsFile -Raw
+    $presetsText = [System.IO.File]::ReadAllText($exportPresetsFile, [System.Text.Encoding]::UTF8)
     $presetsText = [regex]::Replace($presetsText, 'version/code=\d+', "version/code=$versionCode")
     $presetsText = [regex]::Replace($presetsText, 'version/name="[^"]*"', "version/name=`"$rawVersion`"")
     [System.IO.File]::WriteAllText($exportPresetsFile, $presetsText, [System.Text.UTF8Encoding]::new($false))
-    Write-Host "  ✔ Atualizado export_presets.cfg" -ForegroundColor Gray
+    Write-Host "  [OK] Atualizado export_presets.cfg" -ForegroundColor Gray
 }
 
 # 2. Release Notes padrão caso não fornecidas
@@ -89,14 +89,7 @@ if (-not $NotesEn) {
 Write-Host "`n[2/4] Compilando e enviando pacote .AAB para Google Play..." -ForegroundColor White
 $buildScript = "$PSScriptRoot\build_android_aab.ps1"
 
-$buildArgs = @(
-    "-Publish",
-    "-Track", $Track,
-    "-NotesPt", $NotesPt,
-    "-NotesEn", $NotesEn
-)
-
-& $buildScript @buildArgs
+& $buildScript -Publish -Track $Track -NotesPt $NotesPt -NotesEn $NotesEn
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Falha na compilacao ou publicacao do AAB."
