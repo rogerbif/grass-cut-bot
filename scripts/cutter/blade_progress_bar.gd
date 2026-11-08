@@ -39,7 +39,8 @@ func _ready() -> void:
 	_setup_styles()
 
 	if UpgradeManager != null:
-		_on_blade_level_changed(UpgradeManager.blade_level, UpgradeManager.blade_level >= 6)
+		var is_max: bool = UpgradeManager.is_max_level() if UpgradeManager.has_method("is_max_level") else (UpgradeManager.blade_level >= UpgradeManager.MAX_BLADE_LEVEL)
+		_on_blade_level_changed(UpgradeManager.blade_level, is_max)
 		_on_blade_xp_changed(UpgradeManager.blade_xp, UpgradeManager.get_xp_required_for_next_level(), UpgradeManager.get_progress_ratio())
 		UpgradeManager.blade_level_changed.connect(_on_blade_level_changed)
 		UpgradeManager.blade_xp_changed.connect(_on_blade_xp_changed)
@@ -72,7 +73,8 @@ func _setup_styles() -> void:
 func _on_blade_level_changed(new_level: int, is_max: bool) -> void:
 	var prev_lvl: int = _current_level
 	_current_level = new_level
-	_is_max = is_max or (new_level >= 10)
+	var max_lvl: int = UpgradeManager.MAX_BLADE_LEVEL if UpgradeManager != null else 10
+	_is_max = is_max or (new_level >= max_lvl)
 	_update_visual_theme()
 	if new_level > prev_lvl:
 		play_level_up_reaction()
@@ -81,7 +83,8 @@ func _on_blade_xp_changed(_current_xp: float, _max_xp: float, progress_ratio: fl
 	if _fill_tween != null and _fill_tween.is_valid():
 		_fill_tween.kill()
 	_fill_tween = create_tween()
-	var target_val: float = 100.0 if (_is_max or _current_level >= 10) else (progress_ratio * 100.0)
+	var max_lvl: int = UpgradeManager.MAX_BLADE_LEVEL if UpgradeManager != null else 10
+	var target_val: float = 100.0 if (_is_max or _current_level >= max_lvl) else (progress_ratio * 100.0)
 	_fill_tween.tween_property(progress_bar, "value", target_val, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _on_blade_penalized(_new_level: int) -> void:

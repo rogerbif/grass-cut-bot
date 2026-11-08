@@ -51,6 +51,7 @@ func test_blade_progression() -> void:
 	# Lv 5 -> 6: 1200 XP
 	UpgradeManager.add_blade_xp(1200.0)
 	assert_true(UpgradeManager.blade_level == 6, "Subiu para Lv 6")
+	assert_true(not UpgradeManager.is_max_level(), "is_max_level() é false no Nível 6")
 
 	# Lv 6 -> 7: 1700 XP
 	UpgradeManager.add_blade_xp(1700.0)
@@ -75,6 +76,7 @@ func test_blade_progression() -> void:
 	assert_true(is_equal_approx(UpgradeManager.get_cutter_speed(), 3.57), "Velocidade do Nível 10 (MAX) é 3.57m/s (+25%)")
 	assert_true(UpgradeManager.get_blade_tier() == 4, "Tier visual no Nível 10 é 4 (Hexagonal)")
 	assert_true(is_equal_approx(UpgradeManager.get_progress_ratio(), 1.0), "Ratio no MAX é 1.0 (100%)")
+	assert_true(UpgradeManager.is_max_level(), "is_max_level() é true no Nível 10")
 
 	# Adicionar XP além do MAX não deve estourar
 	UpgradeManager.add_blade_xp(500.0)
@@ -133,3 +135,20 @@ func test_blade_progression() -> void:
 	assert_true(int(exported.get("blade_level", 0)) == 8, "Exportou blade_level 8")
 	UpgradeManager.load_from_dict({"blade_level": 7, "blade_xp": 120.0}, 200)
 	assert_true(UpgradeManager.blade_level == 7 and is_equal_approx(UpgradeManager.blade_xp, 120.0), "Carregou blade_level 7 e 120 XP")
+
+	# 7. Teste de Inicialização do BladeProgressBar ao mudar de fase (ex: Nível 6)
+	UpgradeManager.load_from_dict({"blade_level": 6, "blade_xp": 100.0}, 200)
+	var bar_scene: PackedScene = load("res://scenes/cutter/blade_progress_bar.tscn")
+	var bar_node: Node3D = bar_scene.instantiate() as Node3D
+	add_child(bar_node)
+	assert_true(not bar_node._is_max, "BladeProgressBar em Nível 6 inicia com _is_max == false")
+	assert_true("6" in bar_node.level_label.text, "BladeProgressBar exibe texto com nível 6")
+	assert_true(not bar_node.crown_icon.visible, "Coroa oculta no Nível 6")
+	bar_node.queue_free()
+
+	UpgradeManager.load_from_dict({"blade_level": 10, "blade_xp": 0.0}, 200)
+	var bar_max: Node3D = bar_scene.instantiate() as Node3D
+	add_child(bar_max)
+	assert_true(bar_max._is_max, "BladeProgressBar em Nível 10 inicia com _is_max == true")
+	assert_true(bar_max.crown_icon.visible, "Coroa visível no Nível 10 MAX")
+	bar_max.queue_free()

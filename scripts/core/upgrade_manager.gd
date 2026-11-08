@@ -102,6 +102,9 @@ func get_progress_ratio() -> float:
 		return 1.0
 	return clampf(blade_xp / req, 0.0, 1.0)
 
+func is_max_level() -> bool:
+	return blade_level >= MAX_BLADE_LEVEL
+
 func add_blade_xp(amount: float) -> void:
 	if blade_level >= MAX_BLADE_LEVEL:
 		return
