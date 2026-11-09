@@ -1502,6 +1502,13 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							PlantScript.spawn_grass_cut_particles(s_root, safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1
 
+					# Feedback audiovisual e háptico imediato para o corte físico de qualquer vegetação
+					var am_node: Node = get_node_or_null("/root/AudioManager")
+					if am_node != null and am_node.has_method("play_cut_sfx"):
+						am_node.call("play_cut_sfx", false)
+					if gm != null and gm.has_method("trigger_haptic_cut"):
+						gm.call("trigger_haptic_cut")
+
 					# Atualização de metas e concessão de XP da lâmina: Trigo (3 XP), Flores (5 XP), Grama (1 XP)
 					var p_key: String = _plant_keys[p_idx]
 					var sm_node: Node = get_node_or_null("/root/SaveManager")
