@@ -105,11 +105,12 @@ if (-not $SkipExport) {
 }
 
 # 4. Envio com Butler para o itch.io
+$butlerTarget = "$($ProjectSlug):$($Channel)"
 Write-Host "`n[2/2] Enviando build para o itch.io via Butler CLI..." -ForegroundColor White
-Write-Host "Target: $ProjectSlug:$Channel" -ForegroundColor Cyan
+Write-Host "Target: $butlerTarget" -ForegroundColor Cyan
 Write-Host "Versao: $UserVersion" -ForegroundColor Cyan
 
-& $butlerExe push "$webDir" "$ProjectSlug:$Channel" --userversion "$UserVersion"
+& $butlerExe push "$webDir" "$butlerTarget" --userversion "$UserVersion"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error @"
