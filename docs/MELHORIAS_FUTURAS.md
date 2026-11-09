@@ -46,6 +46,12 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
   - Exemplo 2: *"Conclua 2 fases sem colidir com rochas."*
   - Exemplo 3: *"Alcance a Lâmina Nível 5 ou 6 em qualquer fase."*
 
+### 2.4 Ativação dos Pacotes de Moedas da Loja (`TabStore`)
+- **🛒 Fim do Estado "EM BREVE":** Substituição dos botões estáticos inativos por mecânicas reais de aquisição e conversão econômica com feedback de áudio (`buy`) e haptics:
+  - 💰 **Saco de Moedas (Coin Bag):** Pacote intermediário de moedas verdes para acelerar upgrades de lâminas.
+  - 🪙 **Baú de Moedas (Coin Chest):** Grande cofre de moedas para aquisição de skins nobres e cosméticos.
+  - 🎁 **Pack Boas-Vindas:** Preservação do resgate gratuito inicial de +250 moedas já validado no jogo.
+
 ---
 
 ## 🌅 3. Arquitetura de Mundos Temáticos: Atmosferas como Novos Mundos
