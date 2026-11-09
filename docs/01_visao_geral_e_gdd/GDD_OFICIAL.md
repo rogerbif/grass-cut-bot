@@ -162,15 +162,15 @@ Ferramenta interna acessível via atalho `F2` em modo janela widescreen ($1600 \
 
 ## 7. Estratégia de Publicação Mobile & Roadmap de Expansão
 
-### 7.1 Dimensionamento de Fases para Lançamento
-Para atender aos padrões de retenção da indústria mobile casual:
-- **Lançamento Oficial Mundo 1 (40 Fases):** As 40 fases canônicas atuais com o *Ciclo Mestre* (rejogabilidade infinita preservando upgrades) formam o escopo completo para o lançamento global na Google Play Store.
-- **Novos Mundos Futuros (Mundo 2: Deserto / Oásis, Mundo 3: Gelo / Neve):** Expansão estruturada em biomas novos e mecânicas temáticas.
-- **Live-Ops (50+ Fases):** Pacotes temáticos sazonais com novas espécies botânicas e desafios.
+### 7.1 Arquitetura de Mundos & Dimensionamento de Fases
+Para atender aos padrões de retenção da indústria mobile casual e garantir profundidade de conteúdo:
+- **Mundo 1: Ilhas Tropicais (Escopo de 100 Fases):** As 40 fases canônicas atuais compõem a base inicial do Mundo 1, que expandirá até alcançar **100 fases criadas, balanceadas e revisadas**.
+- **Regra Canônica de Transição entre Mundos:** O **Mundo 2** (próximo bioma temático, ex: *Oásis das Dunas / Cânions de Areia* ou *Arquipélago Glacial*) **será criado exclusivamente após a conclusão e revisão completa das 100 fases do Mundo 1: Ilhas Tropicais**.
+- **Ciclo Mestre (New Game+):** Permite rejogabilidade contínua preservando upgrades ao concluir as fases disponíveis.
 
 ### 7.2 Pilares de Evolução Canônica
 1. **Metagame & Retenção:** Ativação da aba *Coleção* com o **Herbário Botânico** (estatísticas acumuladas das 7 cores de grama, trigo e 6 flores com metas de maestria) e loja com pinturas de chassi para o Cutter Bit.
-2. **Variabilidade de Biomas:** Modulação de atmosfera sem perda de performance mobile por blocos de fases: Fases 1-10 (Jardim Tropical Diurno), 11-20 (Golden Hour / Entardecer), 21-30 (Noite Estrelada com Vaga-lumes) e 31-40 (Outono Dourado / Terracota).
-3. **Gameplay Dinâmico:** Power-ups temporários de campo (Turbo Nitro, Ímã de Moedas, Sobrecarga Relâmpago) e rochas rachadas destrutíveis por lâminas avançadas.
+2. **Variabilidade Visual e Atmosférica no Mundo 1 (Custo Zero de GPU):** Modulação da atmosfera tropical ao longo das 100 fases em blocos de 25 estágios sem sobrecarregar a GPU mobile: Fases 1-25 (Manhã Solar / Diurno), 26-50 (Golden Hour / Entardecer Dourado), 51-75 (Noite Tropical Estrelada com Vaga-lumes) e 76-100 (Alvorada Mística / Névoa das Ilhas).
+3. **Gameplay Dinâmico:** Power-ups temporários de campo (Cogumelo Turbo, Trevo Magnético, Sobrecarga Relâmpago) e rochas rachadas destrutíveis por lâminas avançadas.
 4. **Loja & Publicação:** Validação contínua em hardware Android real (60 FPS e haptics em `Input.vibrate_handheld(15)`) e kit de arte promocional vertical 9:16 para a Google Play Store.
 

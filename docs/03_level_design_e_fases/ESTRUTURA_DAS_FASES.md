@@ -72,7 +72,7 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 
 ---
 
-## 3. Progressão de 4 Grandes Tiers do Mundo 1
+## 3. Progressão em Tiers e Horizonte Canônico de 100 Fases (Mundo 1)
 
 1. **Tier 1 (Fases 01 a 10) — O Despertar do Cortador:**
    - Apresentação passo a passo do robô, joystick, trigo resistente (2 hits) e introdução individual de cada flor nobre.
@@ -81,9 +81,13 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
    - Ilhas em U, H e passadiços sobre o mar azul ($13.6\text{m}$ a $16.8\text{m}$).
    - Combinações ricas de 2 a 4 espécies botânicas e posicionamento tático de obstáculos sólidos.
 3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (221 a 465 tiles):**
-   - Áreas amplas de corte e labirintos agrícolas ($15.2\text{m}$ a $18.4\text{m}$ com `cell_size = 0.80m`), tornando indispensáveis os upgrades de Raio e Potência da lâmina na Oficina.
+   - Áreas amplas de corte e labirintos agrícolas ($15.2\text{m} a $18.4\text{m}$ com `cell_size = 0.80m`), tornando indispensáveis os upgrades de Raio e Potência da lâmina na Oficina.
 4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (433 a 689 tiles):**
-   - O ápice de escala do Mundo 1 com as maiores ilhas do jogo ($20.0\text{m}$ a $21.6\text{m}$), finalizando no monumental *Grande Arquipélago Mestre* (Fase 40).
+   - O ápice de escala do primeiro bloco do Mundo 1 com as maiores ilhas do jogo ($20.0\text{m}$ a $21.6\text{m}$), finalizando no monumental *Grande Arquipélago Mestre* (Fase 40).
+5. **Roteiro Canônico de Expansão (Fases 41 a 100 do Mundo 1):**
+   - O Mundo 1 (Ilhas Tropicais) compreenderá exatamente **100 fases criadas, balanceadas e revisadas**.
+   - A atmosfera é modulada em 4 ciclos visuais de 25 fases: Fases 01-25 (Diurno), Fases 26-50 (Golden Hour), Fases 51-75 (Noite Estrelada) e Fases 76-100 (Alvorada Mística).
+   - **Regra Canônica de Transição:** O **Mundo 2** (próximo bioma/cenário temático) **será criado apenas após atingir 100 fases criadas e revisadas no Mundo 1**.
 
 ---
 

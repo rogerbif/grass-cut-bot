@@ -4,15 +4,16 @@ Este documento contém o planejamento canônico de evolução do jogo, dimension
 
 ---
 
-## 🎯 1. Estratégia de Lançamento & Quantidade de Fases
+## 🎯 1. Estratégia de Lançamento & Arquitetura de Mundos
 
-No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e D7) depende diretamente da cadência de conteúdo novo sem frustração. A esteira oficial de publicação divide-se em 3 marcos:
+No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e D7) depende diretamente da cadência de conteúdo novo sem frustração e com sensação nítida de progressão geográfica. O jogo adota a estrutura canônica de **Mundos Temáticos**:
 
 | Marco de Publicação | Fases Canônicas | Status Atual | Foco Estratégico & Retenção |
 | :--- | :---: | :---: | :--- |
-| **🚀 MVP / Soft Launch** | **20 Fases** | ✅ **Concluído e Validado** | Validação de engajamento primário, sensação do joystick *one-thumb*, curva de dificuldade dos 5 Tiers e taxa de 60 FPS estáveis em aparelhos Android de entrada. O **Ciclo Mestre (New Game+)** garante rejogabilidade infinita aos jogadores que concluírem o nível 20. |
-| **🌟 Lançamento Global Oficial (Full Release)** | **30 a 40 Fases** | ⏳ **Próxima Etapa (+10 a +20 Fases)** | Volume de ouro para lançamento global. Com 30 a 40 fases (~1m30s a 2m por fase), o jogador experimenta entre **1h e 1h30 de jogabilidade 100% inédita**, desbloqueando novos biomas, mecânicas e lâminas antes de ingressar no Ciclo Mestre. |
-| **🔄 Live-Ops / Pós-Lançamento** | **50+ Fases** | Planejado | Atualizações sazonais mensais com blocos de 5 a 10 fases temáticas, eventos de tempo limitado e novas variantes de vegetação. |
+| **🚀 MVP / Soft Launch** | **20 Fases** | ✅ **Concluído e Validado** | Validação de engajamento primário, sensação do joystick *one-thumb*, curva de dificuldade dos 5 Tiers e taxa de 60 FPS estáveis em aparelhos Android de entrada. |
+| **🌟 Lançamento Global — Mundo 1 (Ilhas Tropicais)** | **40 Fases Canônicas** | ✅ **Concluído e Auditado** | 40 fases canônicas serializadas em JSON v4, divididas em 4 Tiers com grandes ilhas e mega-ilhas interligadas pelo mapa do arquipélago. O **Ciclo Mestre (New Game+)** garante rejogabilidade infinita aos jogadores que concluírem o nível 40. |
+| **🌴 Expansão Total do Mundo 1: Ilhas Tropicais** | **100 Fases Revisadas** | ⏳ **Meta Canônica do Mundo 1** | O Mundo 1 compreenderá exatamente **100 fases autorais, criadas e revisadas**. O jogador vivencia a maestria completa do arquipélago tropical com desafios botânicos graduais. |
+| **🌋 Desbloqueio do Mundo 2 (Próximo Tema)** | **Novo Mundo (+100 Fases)** | 🔒 **Condicionado à Conclusão do Mundo 1** | **Diretriz Canônica Invariante:** O **Mundo 2** (ex: *Oásis das Dunas / Cânions de Areia* ou *Arquipélago Ártico*) será criado **exclusivamente após a entrega, revisão e aprovação completa de todas as 100 fases do Mundo 1: Ilhas Tropicais**. |
 
 ---
 
@@ -46,18 +47,27 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
 
 ---
 
-## 🌅 3. Variabilidade Visual de Biomas & Cenários (Custo Zero de Performance)
+## 🌅 3. Variabilidade Visual de Atmosfera no Mundo 1: Ilhas Tropicais (Alto Impacto / Custo Zero de GPU)
 
-Para manter o frescor estético ao longo das 40 fases sem sobrecarregar a GPU mobile, a atmosfera será modulada por faixas de níveis alterando apenas luz solar, cor do mar e céu procedural:
+### 3.1 Diretriz Canônica de Mundos: Mundo 1 até 100 Fases
+A arquitetura macro do jogo baseia-se na conclusão completa e curada de **Mundos Temáticos**:
+- O mundo atual é o **Mundo 1: Ilhas Tropicais (O Grande Arquipélago)**.
+- O Mundo 1 compreenderá exatamente **100 fases autorais, criadas e revisadas** (atualmente as primeiras 40 fases canônicas já estão totalmente estruturadas).
+- **Regra de Transição:** O **Mundo 2** (próximo tema/bioma, ex: *Oásis das Dunas / Cânions de Areia* ou *Arquipélago Glacial*) **será criado estritamente após a conclusão, auditoria e revisão das 100 fases do Mundo 1**.
 
-1. **🌿 Bioma 1 — Jardim Tropical Diurno (Fases 1 a 10):**
-   - Céu azul ciano limpo, oceano turquesa vibrante, sol a pino com sombras nítidas.
-2. **🌇 Bioma 2 — Entardecer Dourado / Golden Hour (Fases 11 a 20):**
-   - Céu alaranjado suave com névoa quente, oceano em tom âmbar/cobre, luz solar inclinada com sombras longas e acolhedoras.
-3. **🌌 Bioma 3 — Noite de Verão Estrelada (Fases 21 a 30):**
-   - Céu azul escuro profundo pontilhado de estrelas, água marinha noturna com reflexos lunares suaves, farol sutil do Cutter Bit iluminando a grama frontal e partículas de vaga-lumes flutuantes.
-4. **🍂 Bioma 4 — Ilhas de Outono / Terracota (Fases 31 a 40):**
-   - Solo em tons terracota e argila suave, vegetação dourada/acobreada, mar azul arroxeado e folhagens secas dispersadas pelo vento.
+### 3.2 Ciclos Atmosféricos dentro do Mundo 1 (Ilhas Tropicais)
+Para manter o frescor estético, a sensação de passagem do tempo e evitar monotonia ao longo das **100 fases do Mundo 1**, sem trocar o bioma base tropical e sem nenhum impacto negativo de performance na GPU mobile, a atmosfera é modulada em **4 grandes blocos de 25 fases** alterando apenas iluminação direcional, cor do mar e céu procedural:
+
+1. **☀️ Bloco 1 (Fases 01 a 25) — Ilhas Tropicais Diurnas (Manhã Solar / Sol a Pino):**
+   - Céu azul ciano limpo e límpido, oceano turquesa vibrante (`#46E6FF`), luz solar a pino com sombras nítidas e acolhedoras.
+2. **🌇 Bloco 2 (Fases 26 a 50) — Entardecer Dourado Tropical (Golden Hour / Pôr do Sol):**
+   - Céu alaranjado suave com névoa quente, oceano em tom âmbar/cobre suave, luz solar inclinada com sombras longas e acolhedoras.
+3. **🌌 Bloco 3 (Fases 51 a 75) — Noite Tropical Estrelada (Tropical Night & Vaga-lumes):**
+   - Céu azul-marinho profundo pontilhado de estrelas, água marinha noturna com reflexos lunares suaves, farol sutil do Cutter Bit iluminando a grama frontal e partículas de vaga-lumes flutuantes sobre a vegetação.
+4. **🌸 Bloco 4 (Fases 76 a 100) — Alvorada Mística / Névoa das Ilhas (Twilight Dawn):**
+   - Céu em gradiente suave de rosa matinal, lilás e dourado, névoa suave nos horizontes oceânicos, mar calmo em azul celeste e iluminação sublime de ápice da maestria rumo à Fase 100.
+
+Ao concluir a **Fase 100**, o jogador atinge a consagração do Mundo 1 e desbloqueia o portal de transição para o **Mundo 2**.
 
 ---
 
