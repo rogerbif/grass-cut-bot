@@ -13,8 +13,6 @@ const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn"
 const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
 const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
-const FLOWER_BELL_SCENE: PackedScene = preload("res://scenes/plants/flower_bell.tscn")
-const FLOWER_COROLLA_SCENE: PackedScene = preload("res://scenes/plants/flower_corolla.tscn")
 const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tulip.tscn")
 const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 
@@ -51,8 +49,6 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_daisy_pink": preload("res://shaders/flower_daisy_pink_material.tres"),
 	"flower_daisy_bicolor": preload("res://shaders/flower_daisy_bicolor_material.tres"),
 	"flower_sunflower": preload("res://shaders/flower_sunflower_material.tres"),
-	"flower_bell": preload("res://shaders/flower_bell_material.tres"),
-	"flower_corolla": preload("res://shaders/flower_corolla_material.tres"),
 	"flower_tulip": preload("res://shaders/flower_tulip_material.tres"),
 	"flower_bed": preload("res://shaders/flower_bed_material.tres")
 }
@@ -98,8 +94,6 @@ const VEG_TYPES: Array[String] = [
 	"flower_daisy_pink",
 	"flower_daisy_bicolor",
 	"flower_sunflower",
-	"flower_bell",
-	"flower_corolla",
 	"flower_tulip",
 	"flower_bed"
 ]
@@ -121,8 +115,6 @@ static var _flower_variation_meshes: Dictionary = {}
 static var _flower_rose_mesh: ArrayMesh = null
 static var _flower_daisy_mesh: ArrayMesh = null
 static var _flower_sunflower_mesh: ArrayMesh = null
-static var _flower_bell_mesh: ArrayMesh = null
-static var _flower_corolla_mesh: ArrayMesh = null
 static var _flower_tulip_mesh: ArrayMesh = null
 static var _flower_bed_mesh: ArrayMesh = null
 static var _tile_meshes: Dictionary = {}
@@ -231,12 +223,6 @@ static func _ensure_static_meshes() -> void:
 
 	if _flower_sunflower_mesh == null:
 		_flower_sunflower_mesh = _build_flower_combined_mesh("flower_sunflower", FLOWER_SUNFLOWER_SCENE)
-
-	if _flower_bell_mesh == null:
-		_flower_bell_mesh = _build_flower_combined_mesh("flower_bell", FLOWER_BELL_SCENE)
-
-	if _flower_corolla_mesh == null:
-		_flower_corolla_mesh = _build_flower_combined_mesh("flower_corolla", FLOWER_COROLLA_SCENE)
 
 	if _flower_tulip_mesh == null:
 		_flower_tulip_mesh = _build_flower_combined_mesh("flower_tulip", FLOWER_TULIP_SCENE)
@@ -635,10 +621,6 @@ static func _resolve_clipping_color(v_type: String) -> Color:
 			return Color(0.90, 0.85, 0.50, 1.0)
 		"flower_sunflower":
 			return Color(0.82, 0.65, 0.08, 1.0)
-		"flower_bell":
-			return Color(0.18, 0.45, 0.75, 1.0)
-		"flower_corolla":
-			return Color(0.85, 0.42, 0.15, 1.0)
 		"flower_tulip":
 			return Color(0.75, 0.12, 0.18, 1.0)
 		"flower_bed":
@@ -843,10 +825,6 @@ func _build_from_vector_field(
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
-			elif v_type == "flower_bell":
-				mm.mesh = _flower_bell_mesh
-			elif v_type == "flower_corolla":
-				mm.mesh = _flower_corolla_mesh
 			elif v_type == "flower_tulip":
 				mm.mesh = _flower_tulip_mesh
 			elif v_type == "flower_bed":
@@ -1167,10 +1145,6 @@ func _build_from_vegetation_field(
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
-			elif v_type == "flower_bell":
-				mm.mesh = _flower_bell_mesh
-			elif v_type == "flower_corolla":
-				mm.mesh = _flower_corolla_mesh
 			elif v_type == "flower_tulip":
 				mm.mesh = _flower_tulip_mesh
 			elif v_type == "flower_bed":
@@ -1387,10 +1361,6 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 		return d_cols.get("petal", Color(1.0, 1.0, 1.0, 1.0))
 	if v_type == "flower_sunflower":
 		return Color(1.0, 0.88, 0.0, 1.0)
-	if v_type == "flower_bell":
-		return Color(0.12, 0.65, 1.0, 1.0)
-	if v_type == "flower_corolla":
-		return Color(1.0, 0.50, 0.05, 1.0)
 	if v_type == "flower_tulip":
 		return Color(1.0, 0.08, 0.24, 1.0)
 	if v_type == "flower_bed":

@@ -663,10 +663,6 @@ func _ensure_3d_veg_built() -> void:
 				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = VegetationGrid._flower_sunflower_mesh
-			elif v_type == "flower_bell":
-				mm.mesh = VegetationGrid._flower_bell_mesh
-			elif v_type == "flower_corolla":
-				mm.mesh = VegetationGrid._flower_corolla_mesh
 			elif v_type == "flower_tulip":
 				mm.mesh = VegetationGrid._flower_tulip_mesh
 			elif v_type == "flower_bed":

@@ -163,22 +163,6 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"category": "plant"
 	},
 	{
-		"id": "flower_bell",
-		"name": "Flor Sino",
-		"icon": "🔔",
-		"color": Color(0.12, 0.65, 1.0),
-		"goal_key": "flower_bell",
-		"category": "plant"
-	},
-	{
-		"id": "flower_corolla",
-		"name": "Cravo Corola",
-		"icon": "🏵️",
-		"color": Color(1.0, 0.50, 0.05),
-		"goal_key": "flower_corolla",
-		"category": "plant"
-	},
-	{
 		"id": "flower_tulip",
 		"name": "Tulipa Imperial",
 		"icon": "🌷",

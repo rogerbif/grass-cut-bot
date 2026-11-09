@@ -37,8 +37,6 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "flower_daisy_bicolor", "name": "✨ Margarida Bicolor", "color": Color(1.0, 0.90, 0.50), "unit": "margaridas" },
 	# --- Demais Flores Nobres & Canteiros ---
 	{ "key": "flower_sunflower", "name": "🌻 Girassol", "color": Color(1.0, 0.88, 0.0), "unit": "girassóis" },
-	{ "key": "flower_bell", "name": "🔔 Flor Sino", "color": Color(0.12, 0.65, 1.0), "unit": "sinos" },
-	{ "key": "flower_corolla", "name": "🏵️ Cravo Corola", "color": Color(1.0, 0.50, 0.05), "unit": "cravos" },
 	{ "key": "flower_tulip", "name": "🌷 Tulipa Imperial", "color": Color(1.0, 0.08, 0.24), "unit": "tulipas" },
 	{ "key": "flower_bed", "name": "🪻 Canteiro Florido", "color": Color(0.88, 0.30, 1.0), "unit": "canteiros" }
 ]
@@ -152,6 +150,10 @@ signal terrain_tile_selected(tile_id: String)
 signal grass_item_selected(grass_id: String)
 signal object_item_selected(obj_id: String)
 signal convert_yellow_to_wheat_requested()
+signal auto_calc_time_requested()
+signal layer_visibility_toggled(layer_idx: int)
+signal toggle_3d_grass_preview_requested()
+signal save_and_load_level_requested(level_id: int)
 
 var spin_level: SpinBox
 var spin_width: SpinBox
@@ -159,10 +161,16 @@ var spin_height: SpinBox
 var spin_time: SpinBox
 var btn_grid_toggle: Button
 var btn_snap_toggle: Button
+var btn_3d_grass_toggle: Button
+var btn_save: Button
+var unsaved_dialog: ConfirmationDialog
+var _is_dirty_state: bool = false
+var _pending_load_level_id: int = 1
 
 var btn_layer_terrain: Button
 var btn_layer_grass: Button
 var btn_layer_objects: Button
+var btn_vis_layers: Dictionary = {}
 var tool_buttons: Dictionary = {}
 var shape_buttons: Dictionary = {}
 var corner_radius_container: VBoxContainer
@@ -246,6 +254,7 @@ func _build_ui() -> void:
 	_build_variations_dock()
 	_build_playtest_bar()
 	_build_toast_container()
+	_build_unsaved_dialog()
 
 func _make_panel_style(bg: Color, border: Color, radius: int = 10) -> StyleBoxFlat:
 	var s: StyleBoxFlat = StyleBoxFlat.new()
@@ -323,22 +332,40 @@ func _build_top_bar() -> void:
 	lbl_lvl.text = "Fase:"
 	hbox.add_child(lbl_lvl)
 
+	var btn_prev_lvl: Button = _create_styled_button("◀", Color(0.3, 0.75, 0.95), Vector2(30, 32))
+	btn_prev_lvl.tooltip_text = "Fase Anterior"
+	btn_prev_lvl.pressed.connect(func() -> void:
+		get_viewport().gui_release_focus()
+		var target_lvl: int = maxi(1, int(spin_level.value) - 1)
+		_request_level_switch(target_lvl)
+	)
+	hbox.add_child(btn_prev_lvl)
+
 	spin_level = SpinBox.new()
 	spin_level.min_value = 1
-	spin_level.max_value = 50
+	spin_level.max_value = 200
 	spin_level.step = 1
 	spin_level.value = 1
-	spin_level.custom_minimum_size = Vector2(70, 32)
+	spin_level.custom_minimum_size = Vector2(68, 32)
 	spin_level.get_line_edit().text_submitted.connect(func(_text: String) -> void:
 		get_viewport().gui_release_focus()
-		level_load_requested.emit(int(spin_level.value))
+		_request_level_switch(int(spin_level.value))
 	)
 	hbox.add_child(spin_level)
+
+	var btn_next_lvl: Button = _create_styled_button("▶", Color(0.3, 0.75, 0.95), Vector2(30, 32))
+	btn_next_lvl.tooltip_text = "Próxima Fase"
+	btn_next_lvl.pressed.connect(func() -> void:
+		get_viewport().gui_release_focus()
+		var target_lvl: int = mini(200, int(spin_level.value) + 1)
+		_request_level_switch(target_lvl)
+	)
+	hbox.add_child(btn_next_lvl)
 
 	var btn_load: Button = _create_styled_button("📂 Abrir", Color(0.3, 0.75, 0.95))
 	btn_load.pressed.connect(func() -> void:
 		get_viewport().gui_release_focus()
-		level_load_requested.emit(int(spin_level.value))
+		_request_level_switch(int(spin_level.value))
 	)
 	hbox.add_child(btn_load)
 
@@ -387,6 +414,12 @@ func _build_top_bar() -> void:
 	btn_snap_toggle.pressed.connect(func() -> void: cycle_snap_requested.emit())
 	hbox.add_child(btn_snap_toggle)
 
+	btn_3d_grass_toggle = _create_styled_button("🌿 3D: OFF", Color(0.30, 0.88, 0.55), Vector2(0, 32))
+	btn_3d_grass_toggle.tooltip_text = "Alterna visualização entre tapete vetorial rápido e tufos 3D volumétricos reais"
+	btn_3d_grass_toggle.pressed.connect(func() -> void: toggle_3d_grass_preview_requested.emit())
+	btn_3d_grass_toggle.modulate = Color(0.70, 0.75, 0.70, 0.85)
+	hbox.add_child(btn_3d_grass_toggle)
+
 	hbox.add_child(VSeparator.new())
 
 	var lbl_t: Label = Label.new()
@@ -398,7 +431,7 @@ func _build_top_bar() -> void:
 	spin_time.max_value = 600
 	spin_time.step = 5
 	spin_time.value = 90
-	spin_time.custom_minimum_size = Vector2(74, 32)
+	spin_time.custom_minimum_size = Vector2(70, 32)
 	spin_time.value_changed.connect(func(v: float) -> void:
 		time_limit_changed.emit(v)
 	)
@@ -417,6 +450,14 @@ func _build_top_bar() -> void:
 		time_limit_changed.emit(spin_time.value)
 	)
 	hbox.add_child(spin_time)
+
+	var btn_auto_t: Button = _create_styled_button("⚡ Auto", Color(1.0, 0.82, 0.22), Vector2(0, 32))
+	btn_auto_t.tooltip_text = "Calcula automaticamente o tempo ideal da fase (Abordagem 3 + 10%)"
+	btn_auto_t.pressed.connect(func() -> void:
+		get_viewport().gui_release_focus()
+		auto_calc_time_requested.emit()
+	)
+	hbox.add_child(btn_auto_t)
 
 	hbox.add_child(VSeparator.new())
 
@@ -437,7 +478,7 @@ func _build_top_bar() -> void:
 
 	hbox.add_child(VSeparator.new())
 
-	var btn_save: Button = _create_styled_button("💾 Salvar [Ctrl+S]", Color(0.2, 0.85, 0.45))
+	btn_save = _create_styled_button("💾 Salvar [Ctrl+S]", Color(0.2, 0.85, 0.45))
 	btn_save.pressed.connect(func() -> void: save_json_requested.emit())
 	hbox.add_child(btn_save)
 
@@ -485,17 +526,44 @@ func _build_left_panel() -> void:
 	lbl_layer.add_theme_color_override("font_color", Color(0.55, 0.88, 1.0))
 	vbox.add_child(lbl_layer)
 
+	var row_l0: HBoxContainer = HBoxContainer.new()
+	row_l0.add_theme_constant_override("separation", 4)
+	vbox.add_child(row_l0)
 	btn_layer_terrain = _create_styled_button("🏝️ Camada 0: Terreno (Vetorial)", Color(0.28, 0.78, 0.45), Vector2(0, 34))
+	btn_layer_terrain.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_layer_terrain.pressed.connect(func() -> void: layer_changed.emit(0))
-	vbox.add_child(btn_layer_terrain)
+	row_l0.add_child(btn_layer_terrain)
+	var btn_vis_0: Button = _create_styled_button("👁️", Color(0.28, 0.78, 0.45), Vector2(36, 34))
+	btn_vis_0.tooltip_text = "Mostrar / Ocultar Camada de Terreno"
+	btn_vis_0.pressed.connect(func() -> void: layer_visibility_toggled.emit(0))
+	row_l0.add_child(btn_vis_0)
+	btn_vis_layers[0] = btn_vis_0
 
+	var row_l1: HBoxContainer = HBoxContainer.new()
+	row_l1.add_theme_constant_override("separation", 4)
+	vbox.add_child(row_l1)
 	btn_layer_grass = _create_styled_button("🌿 Camada 1: Grama (0.2m)", Color(0.30, 0.82, 0.95), Vector2(0, 34))
+	btn_layer_grass.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_layer_grass.pressed.connect(func() -> void: layer_changed.emit(1))
-	vbox.add_child(btn_layer_grass)
+	row_l1.add_child(btn_layer_grass)
+	var btn_vis_1: Button = _create_styled_button("👁️", Color(0.30, 0.82, 0.95), Vector2(36, 34))
+	btn_vis_1.tooltip_text = "Mostrar / Ocultar Camada de Grama"
+	btn_vis_1.pressed.connect(func() -> void: layer_visibility_toggled.emit(1))
+	row_l1.add_child(btn_vis_1)
+	btn_vis_layers[1] = btn_vis_1
 
+	var row_l2: HBoxContainer = HBoxContainer.new()
+	row_l2.add_theme_constant_override("separation", 4)
+	vbox.add_child(row_l2)
 	btn_layer_objects = _create_styled_button("🪨 Camada 2: Objetos (0.8m)", Color(0.85, 0.65, 0.35), Vector2(0, 34))
+	btn_layer_objects.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_layer_objects.pressed.connect(func() -> void: layer_changed.emit(2))
-	vbox.add_child(btn_layer_objects)
+	row_l2.add_child(btn_layer_objects)
+	var btn_vis_2: Button = _create_styled_button("👁️", Color(0.85, 0.65, 0.35), Vector2(36, 34))
+	btn_vis_2.tooltip_text = "Mostrar / Ocultar Camada de Objetos"
+	btn_vis_2.pressed.connect(func() -> void: layer_visibility_toggled.emit(2))
+	row_l2.add_child(btn_vis_2)
+	btn_vis_layers[2] = btn_vis_2
 
 	vbox.add_child(HSeparator.new())
 
@@ -1594,7 +1662,7 @@ func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> v
 	if lbl_status == null:
 		return
 	var cell_str: String = "[%d, %d]" % [cell.x, cell.y] if in_bounds else "[Fora da Grade]"
-	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  [Shift+Clique]: Linha Reta  |  [Ctrl+Scroll / S]: Escala  |  [R]: Girar  |  [X]: Espelho  |  [F1]: Playtest" % [
+	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  [Alt+Clique]: Pipeta  |  [Shift+Clique]: Linha Reta  |  [Ctrl+Scroll / S]: Escala  |  [R]: Girar  |  [X]: Espelho  |  [F1]: Playtest" % [
 		cell_str, world_pos.x, world_pos.z
 	]
 
@@ -1626,10 +1694,6 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 			icon = "🌼"
 		elif k_str == "flower_sunflower":
 			icon = "🌻"
-		elif k_str == "flower_bell":
-			icon = "🔔"
-		elif k_str == "flower_corolla":
-			icon = "🏵️"
 		elif k_str == "flower_tulip":
 			icon = "🌷"
 		elif k_str == "flower_bed":
@@ -1665,4 +1729,61 @@ func update_snap_button(snap_step: float) -> void:
 		else:
 			btn_snap_toggle.text = "🧲 Snap: %.2fm" % snap_step
 			btn_snap_toggle.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+func update_3d_grass_button(enabled: bool) -> void:
+	if btn_3d_grass_toggle != null:
+		btn_3d_grass_toggle.text = "🌿 3D: ON" if enabled else "🌿 3D: OFF"
+		btn_3d_grass_toggle.modulate = Color(1.0, 1.0, 1.0, 1.0) if enabled else Color(0.70, 0.75, 0.70, 0.85)
+		_set_button_selected(btn_3d_grass_toggle, enabled, Color(0.30, 0.88, 0.55))
+
+func update_layer_visibility_buttons(vis_dict: Dictionary) -> void:
+	var accents: Dictionary = {
+		0: Color(0.28, 0.78, 0.45),
+		1: Color(0.30, 0.82, 0.95),
+		2: Color(0.85, 0.65, 0.35)
+	}
+	for l_idx: int in [0, 1, 2]:
+		if btn_vis_layers.has(l_idx):
+			var b: Button = btn_vis_layers[l_idx] as Button
+			var is_vis: bool = bool(vis_dict.get(l_idx, true))
+			b.text = "👁️" if is_vis else "🚫"
+			b.modulate = Color(1.0, 1.0, 1.0, 1.0) if is_vis else Color(0.55, 0.55, 0.60, 0.75)
+			_set_button_selected(b, is_vis, accents[l_idx] as Color)
+
+func update_dirty_indicator(is_dirty: bool) -> void:
+	_is_dirty_state = is_dirty
+	if btn_save != null:
+		if is_dirty:
+			btn_save.text = "💾 Salvar* [Ctrl+S]"
+			_set_button_selected(btn_save, true, Color(1.0, 0.78, 0.22))
+		else:
+			btn_save.text = "💾 Salvar [Ctrl+S]"
+			_set_button_selected(btn_save, false, Color(0.2, 0.85, 0.45))
+
+func _build_unsaved_dialog() -> void:
+	unsaved_dialog = ConfirmationDialog.new()
+	unsaved_dialog.title = "⚠️ Alterações Não Salvas"
+	unsaved_dialog.dialog_text = "A fase atual possui alterações não salvas.\nDeseja salvar antes de abrir a outra fase?"
+	unsaved_dialog.ok_button_text = "💾 Salvar e Abrir"
+	unsaved_dialog.cancel_button_text = "Cancelar"
+	unsaved_dialog.add_button("🗑️ Descartar e Abrir", true, "discard")
+	unsaved_dialog.confirmed.connect(func() -> void:
+		save_and_load_level_requested.emit(_pending_load_level_id)
+	)
+	unsaved_dialog.custom_action.connect(func(action: StringName) -> void:
+		if String(action) == "discard":
+			unsaved_dialog.hide()
+			level_load_requested.emit(_pending_load_level_id)
+	)
+	add_child(unsaved_dialog)
+
+func _request_level_switch(target_lvl: int) -> void:
+	if spin_level != null:
+		spin_level.set_value_no_signal(float(target_lvl))
+	if _is_dirty_state and unsaved_dialog != null:
+		_pending_load_level_id = target_lvl
+		unsaved_dialog.dialog_text = "A fase atual possui alterações não salvas.\nDeseja salvar antes de abrir a Fase %02d?" % target_lvl
+		unsaved_dialog.popup_centered(Vector2i(420, 140))
+	else:
+		level_load_requested.emit(target_lvl)
 

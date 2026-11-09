@@ -100,8 +100,14 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
     - **Execução 1:1 de Metas Personalizadas:** No `VegetationGrid`, fases com metas customizadas (`"goals"`) abatem 1 unidade de meta para cada tufo físico ceifado (em vez do agrupamento legado de 10), garantindo correspondência exata entre o número definido no editor e a contagem de vitória do jogo.
     - **Métricas Informativas de Construção:** Exibe no rodapé as quantidades de obstáculos (`🪨 Rochas`) e solo construído (`🏝️ Blocos Ilha`).
 
-### 2.3 Prancheta Vetorial no Modo Edição vs. Grama 3D no Playtest (F1) com Câmera Oficial
-- **Modo Edição (Prancheta Vetorial):** A vegetação é exibida exclusivamente através de superfícies vetoriais planas coloridas (`VectorGrassField.generate_ground_meshes()`) a $Y = 0.005\text{m}$, com materiais foscos (`roughness = 0.90`) e recorte exato sob as rochas. O tempo de resposta ao pintar com pincel ou carimbo cai de $\sim 35\text{ms}$ para **$< 0.5\text{ms}$** (zero lag), mantendo a grade, o spawn e os encaixes de blocos 100% visíveis.
+### 2.3 Prancheta Vetorial no Modo Edição vs. Grama 3D Opcional (`🌿 3D`) e Playtest (F1) com Câmera Oficial
+- **Modo Edição (Prancheta Vetorial Padrão):** Por padrão, a vegetação é exibida através de superfícies vetoriais planas coloridas (`VectorGrassField.generate_ground_meshes()`) a $Y = 0.005\text{m}$, com materiais foscos (`roughness = 0.90`) e recorte exato sob as rochas. O tempo de resposta ao pintar com pincel ou carimbo é **$< 0.5\text{ms}$** (zero lag), mantendo a grade, o spawn e os encaixes 100% visíveis.
+- **Preview 3D dos Tufos em Tempo Real (`🌿 3D: ON/OFF`):** O botão superior `"🌿 3D: OFF/ON"` permite inspecionar os tufos 3D volumétricos reais (`EditorPreviewVegGrid` via `VegetationGrid`) diretamente na prancheta de edição sem precisar iniciar o Playtest. Para preservar 60 FPS durante o traço, o editor usa a malha vetorial plana ultrarrápida enquanto o botão esquerdo está pressionado (`is_painting_lmb`) e reconstrói os tufos 3D apenas ao soltar o mouse.
+- **Visibilidade Individual por Camada (`👁️` / `🚫`):** Cada botão de camada no painel esquerdo (`Terreno`, `Grama` e `Objetos`) possui um botão rápido de visibilidade (`👁️` / `🚫`) ao lado direito, permitindo ocultar/exibir instantaneamente qualquer camada para inspecionar o solo, a grama ou os objetos sem interferência visual.
+- **Cálculo Automático de Tempo Recomendado (`⚡ Auto`):** Ao lado do campo `⏱️(s)` na barra superior, o botão `"⚡ Auto"` calcula e preenche o `time_limit` ideal para a fase usando a fórmula canônica **Abordagem 3 + 10% de folga** (velocidade linear de $6\text{ blocos/s}$, largura de corte de $1.80\text{m} \approx 4.5$ células de $0.40\text{m}$, fator de manobra $1.4\times$, penalidade por rochas e múltiplos hits de flores/trigo, arredondado para múltiplos de $5\text{s}$ no intervalo $[20\text{s}, 240\text{s}]$).
+- **Navegação Rápida de Fases (`◀` / `▶`, até 200) e Proteção de Alterações Não Salvas (`*`):**
+  - Os botões `◀` e `▶` adjacentes ao seletor `Fase:` permitem avançar ou retroceder rapidamente entre fases (suportando de `1` a `200`).
+  - Qualquer edição marca o estado `is_dirty = true`, destacando o botão `"💾 Salvar* [Ctrl+S]"` em tom âmbar de alerta. Se o usuário tentar trocar de fase com alterações pendentes, um modal de proteção (`unsaved_dialog`) oferece `"💾 Salvar e Abrir"`, `"🗑️ Descartar e Abrir"` ou `"Cancelar"`.
 - **Modo Playtest ([F1] ou [F5]) com Paridade Total de Câmera:** Ao acionar o teste, o `VegetationGrid` oficial 3D volumétrico (com física de corte, partículas em arco, moedas e colheitadeira) é instanciado na hora.
   - **Câmera Oficial do Jogo (`PlaytestGameCamera`):** O editor alterna da câmera livre de prancheta (`EditorCamera`) para a câmera canônica de gameplay ([`IsometricCamera`](../04_sistemas_e_gameplay/GAME_FEEL_E_HAPTICS.md)), garantindo **100% de paridade visual com o jogo real**:
     - Campo de visão idêntico: $\text{FOV} = 48.0$.
@@ -130,11 +136,15 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | Comando | Atalho | Função |
 | :--- | :---: | :--- |
 | **Pincel / Carimbo** | `1` ou `B` | Pinta na camada ativa com o formato de pincel selecionado. |
+| **Pipeta / Conta-Gotas** | `Alt + Clique Esquerdo` | Amostra o elemento sob o cursor em ordem visual de topo (`Spawn -> Objeto/Flor/Rocha -> Grama Vetorial -> Terreno`), alternando automaticamente para a camada, item, variante cromática e rotação correspondentes. |
 | **Linha Reta / Ponte Vetorial** | `Shift + Clique` | Nas camadas vetoriais (Terreno e Grama), conecta o último ponto clicado até o cursor com uma ponte/faixa reta (ou abre um canal reto se estiver na Borracha), com preview holográfico em tempo real. |
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular no Terreno Vetorial, na Grama Vetorial (com recorte costeiro) ou nos Objetos (segure `Shift` para recortar/apagar em caixa). |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
 | **Escala Rápida no Mouse** | `Ctrl + Scroll` ou `Alt + Scroll` | Ajusta o tamanho do pincel (`1` a `20`) diretamente na roda do mouse sem mover o zoom da câmera. |
+| **Auto-Calcular Tempo** | Botão `⚡ Auto` | Calcula e aplica automaticamente o tempo recomendado (`time_limit`) com base nas metas, área de grama, rochas e flores. |
+| **Visibilidade de Camada** | Botões `👁️` / `🚫` | Oculta ou exibe individualmente cada uma das 3 camadas (`Terreno`, `Grama`, `Objetos`). |
+| **Preview de Grama 3D** | Botão `🌿 3D: ON/OFF` | Alterna entre o tapete vetorial plano ultrarrápido e os tufos 3D volumétricos reais no Modo Edição. |
 | **Modo Espelho / Simetria** | `X` | Alterna os modos de simetria: Desligado $\to$ Horizontal (X) $\to$ Vertical (Z) $\to$ Quádruplo (X+Z) $\to$ Desligado, desenhando em tempo real com linhas guias e preview holográfico simultâneo. |
 | **Modo Escala do Pincel (Padrão)** | `S` | Seleciona o modo de ajuste de **Escala** (ferramenta padrão inicial) e direciona os atalhos `[` e `]` para tamanho. |
 | **Modo Rotação** | `R` | Seleciona o modo de **Rotação** e direciona os atalhos `[` e `]` para giro ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |

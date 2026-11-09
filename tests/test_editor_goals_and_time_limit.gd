@@ -171,7 +171,7 @@ func test_individual_flowers_in_vegetation_grid() -> void:
 			{ "gx": 1, "gz": 1, "type": "flower_rose", "rot": 0 },
 			{ "gx": 2, "gz": 1, "type": "flower_daisy", "rot": 0 },
 			{ "gx": 3, "gz": 1, "type": "flower_sunflower", "rot": 0 },
-			{ "gx": 4, "gz": 1, "type": "flower_bell", "rot": 0 }
+			{ "gx": 4, "gz": 1, "type": "flower_tulip", "rot": 0 }
 		],
 		"spawn": { "gx": 2, "gz": 2 }
 	}
@@ -182,7 +182,7 @@ func test_individual_flowers_in_vegetation_grid() -> void:
 	assert(goals.has("flower_rose"), "Deve conter 'flower_rose' individual")
 	assert(goals.has("flower_daisy"), "Deve conter 'flower_daisy' individual")
 	assert(goals.has("flower_sunflower"), "Deve conter 'flower_sunflower' individual")
-	assert(goals.has("flower_bell"), "Deve conter 'flower_bell' individual")
+	assert(goals.has("flower_tulip"), "Deve conter 'flower_tulip' individual")
 
-	print("✔ Teste 4: Todas as 8 flores operam como metas 100% individuais no VegetationGrid!")
+	print("✔ Teste 4: Todas as flores operam como metas 100% individuais no VegetationGrid!")
 	vg.queue_free()

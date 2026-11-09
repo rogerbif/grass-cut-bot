@@ -153,7 +153,7 @@ static func get_all_species() -> Array[Dictionary]:
 			"milestones": CROP_MILESTONES
 		},
 
-		# --- 3. FLORES NOBRES & CANTEIROS (7 Espécies) ---
+		# --- 3. FLORES NOBRES & CANTEIROS (5 Espécies) ---
 		{
 			"key": "flower_daisy",
 			"category": "flower",
@@ -164,18 +164,6 @@ static func get_all_species() -> Array[Dictionary]:
 			"hits": 3,
 			"reward_coins": 5,
 			"desc": "Pétalas brancas com miolo amarelo brilhante. Despetala em 3 golpes concedendo alto valor.",
-			"milestones": FLOWER_MILESTONES
-		},
-		{
-			"key": "flower_bell",
-			"category": "flower",
-			"name": "Flor de Sino Cerúlea",
-			"icon": "🔔",
-			"color": Color(0.28, 0.79, 0.90, 1.0),
-			"origin_level": 4,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "Cálice em forma de sino pendular que tilinta suavemente ao balanço da brisa do mar.",
 			"milestones": FLOWER_MILESTONES
 		},
 		{
@@ -215,18 +203,6 @@ static func get_all_species() -> Array[Dictionary]:
 			"milestones": FLOWER_MILESTONES
 		},
 		{
-			"key": "flower_corolla",
-			"category": "flower",
-			"name": "Corola Vulcânica",
-			"icon": "🏵️",
-			"color": Color(0.98, 0.52, 0.0, 1.0),
-			"origin_level": 12,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "Espécie termófila com pétalas flamejantes que desabrocham sobre a lava adormecida.",
-			"milestones": FLOWER_MILESTONES
-		},
-		{
 			"key": "flower_bed",
 			"category": "flower",
 			"name": "Canteiro de Flores Mistas",
@@ -240,7 +216,7 @@ static func get_all_species() -> Array[Dictionary]:
 		}
 	]
 
-	# Ordena todas as 15 espécies de forma crescente pela fase de origem (origin_level)
+	# Ordena todas as 13 espécies de forma crescente pela fase de origem (origin_level)
 	_species_cache.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		var lvl_a: int = int(a.get("origin_level", 1))
 		var lvl_b: int = int(b.get("origin_level", 1))

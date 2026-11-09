@@ -15,7 +15,7 @@ func _ready() -> void:
 	assert(TilePaletteDB.has_variations("flower_rose"), "flower_rose deve ter variações")
 	assert(TilePaletteDB.has_variations("flower_daisy"), "flower_daisy deve ter variações")
 	assert(not TilePaletteDB.has_variations("rock"), "rock não deve ter variações")
-	assert(not TilePaletteDB.has_variations("flower_bell"), "flower_bell não deve ter variações")
+	assert(not TilePaletteDB.has_variations("wheat"), "wheat não deve ter variações")
 
 	var vars_flower: Array = TilePaletteDB.get_variations("flower")
 	assert(vars_flower.size() == 6, "flower deve conter 6 variações")

@@ -1,5 +1,5 @@
 extends SceneTree
-## Teste headless: 8 Espécies de Flores em 3 partes + desprendimento de 2 pétalas e 1 folha no 1º hit.
+## Teste headless: 6 Espécies de Flores em 3 partes + desprendimento de 2 pétalas e 1 folha no 1º hit.
 ## Execução: godot --headless --path . --script res://tests/test_flower_detach.gd
 
 const FLOWER_SCENES: Array[String] = [
@@ -7,8 +7,6 @@ const FLOWER_SCENES: Array[String] = [
 	"res://scenes/plants/flower_rose.tscn",
 	"res://scenes/plants/flower_daisy.tscn",
 	"res://scenes/plants/flower_sunflower.tscn",
-	"res://scenes/plants/flower_bell.tscn",
-	"res://scenes/plants/flower_corolla.tscn",
 	"res://scenes/plants/flower_tulip.tscn",
 	"res://scenes/plants/flower_bed.tscn",
 ]

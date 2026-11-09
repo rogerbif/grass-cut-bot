@@ -107,7 +107,7 @@ func generate_level(lvl: int) -> int:
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 			for c: Vector2i in [Vector2i(6, 11), Vector2i(16, 11), Vector2i(11, 4), Vector2i(11, 18), Vector2i(5, 5), Vector2i(17, 17)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 
 		22:
 			level_name = "O Grande Atol Esmeralda"
@@ -194,7 +194,7 @@ func generate_level(lvl: int) -> int:
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(9, 15))
 			# 6 corolas + 12 trigo
 			for c: Vector2i in [Vector2i(12, 8), Vector2i(12, 16), Vector2i(8, 12), Vector2i(16, 12), Vector2i(15, 15), Vector2i(14, 10)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_corolla")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
 			for c: Vector2i in [
 				Vector2i(10, 8), Vector2i(14, 8), Vector2i(10, 16), Vector2i(14, 16),
 				Vector2i(8, 10), Vector2i(8, 14), Vector2i(16, 10), Vector2i(16, 14),
@@ -283,7 +283,7 @@ func generate_level(lvl: int) -> int:
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 			for c: Vector2i in [Vector2i(13, 9), Vector2i(13, 17), Vector2i(9, 13), Vector2i(17, 13), Vector2i(8, 18), Vector2i(18, 8), Vector2i(5, 9), Vector2i(21, 17)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 
 		29:
 			level_name = "A Rosa dos Ventos"
@@ -305,7 +305,7 @@ func generate_level(lvl: int) -> int:
 			for c: Vector2i in [Vector2i(13, 7), Vector2i(13, 19), Vector2i(7, 13), Vector2i(19, 13), Vector2i(9, 9), Vector2i(17, 9), Vector2i(9, 17), Vector2i(17, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose")
 			for c: Vector2i in [Vector2i(13, 10), Vector2i(13, 16), Vector2i(10, 13), Vector2i(16, 13), Vector2i(10, 10), Vector2i(16, 10), Vector2i(10, 16), Vector2i(16, 16)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_corolla")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
 
 		30:
 			level_name = "O Arquipélago das Quatro Lagoas"
@@ -364,7 +364,7 @@ func generate_level(lvl: int) -> int:
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 18))
 			# 8 flores sino + 8 tulipas
 			for c: Vector2i in [Vector2i(6, 4), Vector2i(6, 8), Vector2i(14, 4), Vector2i(14, 8), Vector2i(23, 4), Vector2i(23, 8), Vector2i(5, 22), Vector2i(23, 22)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 			for c: Vector2i in [Vector2i(6, 6), Vector2i(6, 15), Vector2i(14, 6), Vector2i(14, 15), Vector2i(23, 6), Vector2i(23, 15), Vector2i(10, 22), Vector2i(18, 22)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 
@@ -436,7 +436,7 @@ func generate_level(lvl: int) -> int:
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 14))
 			# 8 corolas + 8 tulipas
 			for c: Vector2i in [Vector2i(14, 8), Vector2i(14, 20), Vector2i(8, 14), Vector2i(20, 14), Vector2i(11, 11), Vector2i(17, 11), Vector2i(11, 17), Vector2i(17, 17)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_corolla")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
 			for c: Vector2i in [Vector2i(14, 11), Vector2i(14, 17), Vector2i(11, 14), Vector2i(17, 14), Vector2i(6, 11), Vector2i(22, 11), Vector2i(6, 17), Vector2i(22, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 
@@ -546,7 +546,7 @@ func generate_level(lvl: int) -> int:
 			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 15))
 			# 8 flores sino + 8 margaridas
 			for c: Vector2i in [Vector2i(4, 6), Vector2i(8, 6), Vector2i(22, 6), Vector2i(26, 6), Vector2i(4, 24), Vector2i(8, 24), Vector2i(22, 24), Vector2i(26, 24)]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bell")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip")
 			for c: Vector2i in [Vector2i(6, 4), Vector2i(6, 8), Vector2i(24, 4), Vector2i(24, 8), Vector2i(13, 13), Vector2i(17, 13), Vector2i(13, 17), Vector2i(17, 17)]:
 				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy")
 
@@ -577,7 +577,7 @@ func generate_level(lvl: int) -> int:
 				Vector2i(5, 6), Vector2i(12, 6), Vector2i(19, 6), Vector2i(25, 10), Vector2i(25, 18),
 				Vector2i(7, 18), Vector2i(15, 18), Vector2i(21, 18), Vector2i(12, 25), Vector2i(21, 25)
 			]:
-				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_corolla")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed")
 			for i: int in range(20):
 				var c_tr: Vector2i = Vector2i(4 + i, 4 if i < 10 else (16 if i < 16 else 24))
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c_tr)
@@ -1196,7 +1196,7 @@ func _generate_algorithmic_island(
 		_add_valid_wheat(terrain_grid, object_grid, spawn_cell, Vector2i(wx, wz))
 
 	var flower_types: Array[String] = [
-		"flower_bell", "flower_rose", "flower_daisy", "flower_sunflower", "flower_corolla", "flower_tulip"
+		"flower_tulip", "flower_rose", "flower_daisy", "flower_sunflower", "flower_bed"
 	]
 	var f_type: String = flower_types[lvl % flower_types.size()]
 	var flower_count: int = clampi(4 + (lvl % 6), 4, 12)

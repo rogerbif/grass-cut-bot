@@ -54,22 +54,6 @@ const DETACH_CONFIG_BY_TYPE: Dictionary = {
 			"Piece_Leaf": Vector3(-0.0165, 0.4632, -0.5075),
 		}
 	},
-	"flower_bell": {
-		"model": "res://assets/models/flower_05_bell_detach.glb",
-		"offsets": {
-			"Piece_Petal_A": Vector3(0.1305, 0.743, 0.3262),
-			"Piece_Petal_B": Vector3(0.0571, 0.7856, 0.3106),
-			"Piece_Leaf": Vector3(0.2271, 0.3069, -0.1652),
-		}
-	},
-	"flower_corolla": {
-		"model": "res://assets/models/flower_06_corolla_detach.glb",
-		"offsets": {
-			"Piece_Petal_A": Vector3(-0.3926, 0.5603, -0.2205),
-			"Piece_Petal_B": Vector3(0.459, 0.6517, -0.1923),
-			"Piece_Leaf": Vector3(0.3915, 0.4572, -0.3362),
-		}
-	},
 	"flower_tulip": {
 		"model": "res://assets/models/flower_07_tulip_detach.glb",
 		"offsets": {
@@ -271,12 +255,6 @@ static func get_flower_colors(flower_type: String) -> Dictionary:
 		"flower_sunflower":
 			petal_col = Color(1.0, 0.88, 0.0, 1.0)
 			center_col = Color(0.48, 0.22, 0.05, 1.0)
-		"flower_bell":
-			petal_col = Color(0.12, 0.65, 1.0, 1.0)
-			center_col = Color(0.05, 0.38, 0.92, 1.0)
-		"flower_corolla":
-			petal_col = Color(1.0, 0.50, 0.05, 1.0)
-			center_col = Color(0.95, 0.15, 0.05, 1.0)
 		"flower_tulip":
 			petal_col = Color(1.0, 0.08, 0.24, 1.0)
 			center_col = Color(0.68, 0.05, 0.15, 1.0)
@@ -481,10 +459,6 @@ static func _resolve_flower_base_type(flower_type: String) -> String:
 		return "flower_daisy"
 	if flower_type.begins_with("flower_sunflower"):
 		return "flower_sunflower"
-	if flower_type.begins_with("flower_bell"):
-		return "flower_bell"
-	if flower_type.begins_with("flower_corolla"):
-		return "flower_corolla"
 	if flower_type.begins_with("flower_tulip"):
 		return "flower_tulip"
 	if flower_type.begins_with("flower_bed"):

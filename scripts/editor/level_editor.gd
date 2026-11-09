@@ -15,8 +15,6 @@ const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn"
 const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
 const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
-const FLOWER_BELL_SCENE: PackedScene = preload("res://scenes/plants/flower_bell.tscn")
-const FLOWER_COROLLA_SCENE: PackedScene = preload("res://scenes/plants/flower_corolla.tscn")
 const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tulip.tscn")
 const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
@@ -150,6 +148,9 @@ var _has_last_vector_click: bool = false
 var _undo_stack: Array[Dictionary] = []
 var _redo_stack: Array[Dictionary] = []
 var _last_editor_goals: Dictionary = {}
+var is_dirty: bool = false
+var layer_visible: Dictionary = { 0: true, 1: true, 2: true }
+var preview_3d_grass: bool = false
 
 var is_playtesting: bool = false
 var _playtest_cutter: CharacterBody3D = null
@@ -263,8 +264,16 @@ func _connect_ui_signals() -> void:
 	if ui == null:
 		return
 	ui.level_load_requested.connect(_on_level_load_requested)
+	ui.save_and_load_level_requested.connect(_on_save_and_load_level_requested)
 	ui.grid_resize_requested.connect(_on_grid_resize_requested)
-	ui.time_limit_changed.connect(func(new_t: float) -> void: time_limit = new_t)
+	ui.time_limit_changed.connect(func(new_t: float) -> void:
+		if not is_equal_approx(time_limit, new_t):
+			time_limit = new_t
+			_mark_dirty(true)
+	)
+	ui.auto_calc_time_requested.connect(apply_auto_calculated_time)
+	ui.layer_visibility_toggled.connect(toggle_layer_visibility)
+	ui.toggle_3d_grass_preview_requested.connect(toggle_3d_grass_preview)
 	ui.generate_base_island_requested.connect(_on_generate_base_island)
 	ui.clear_terrain_requested.connect(_on_clear_terrain)
 	ui.toggle_grid_requested.connect(toggle_grid_visibility)
@@ -301,11 +310,13 @@ func _connect_ui_signals() -> void:
 		_adjust_scale(delta_sz)
 	)
 	ui.corner_radius_changed.connect(func(r: float) -> void:
-		current_corner_radius = r
-		if vector_terrain != null:
-			vector_terrain.call("set_corner_radius", r)
-			_rebuild_3d_world()
-		_refresh_hover_preview()
+		if not is_equal_approx(current_corner_radius, r):
+			current_corner_radius = r
+			_mark_dirty(true)
+			if vector_terrain != null:
+				vector_terrain.call("set_corner_radius", r)
+				_rebuild_3d_world()
+			_refresh_hover_preview()
 	)
 	ui.rotate_requested.connect(func() -> void:
 		active_adjust_mode = QuickAdjustMode.ROTATION
@@ -391,6 +402,12 @@ func _sync_all_ui(recalc_goals: bool = true) -> void:
 		mirror_mode
 	)
 	ui.update_level_header(current_level_id, grid_width, grid_height, time_limit)
+	if ui.has_method("update_dirty_indicator"):
+		ui.call("update_dirty_indicator", is_dirty)
+	if ui.has_method("update_layer_visibility_buttons"):
+		ui.call("update_layer_visibility_buttons", layer_visible)
+	if ui.has_method("update_3d_grass_button"):
+		ui.call("update_3d_grass_button", preview_3d_grass)
 	if recalc_goals:
 		ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 
@@ -530,6 +547,9 @@ func _input(event: InputEvent) -> void:
 			if mb.pressed and not over_ui:
 				if text_focus:
 					get_viewport().gui_release_focus()
+				if Input.is_key_pressed(KEY_ALT) and is_hover_in_bounds:
+					_pick_at_cursor(hovered_cell, Vector2(last_world_hit.x, last_world_hit.z))
+					return
 				if active_tool == ToolMode.BOX_FILL:
 					if is_hover_in_bounds:
 						_push_undo_snapshot()
@@ -578,6 +598,8 @@ func _input(event: InputEvent) -> void:
 						_last_vector_click_pos = Vector2(last_world_hit.x, last_world_hit.z)
 						_has_last_vector_click = true
 						_freehand_points.clear()
+						if preview_3d_grass and _stroke_modified:
+							_rebuild_3d_world()
 						_sync_all_ui(true)
 						_refresh_hover_preview()
 					elif _stroke_modified:
@@ -1263,10 +1285,6 @@ func _rebuild_3d_world() -> void:
 				f_scene = FLOWER_DAISY_SCENE
 			elif o_type == "flower_sunflower":
 				f_scene = FLOWER_SUNFLOWER_SCENE
-			elif o_type == "flower_bell":
-				f_scene = FLOWER_BELL_SCENE
-			elif o_type == "flower_corolla":
-				f_scene = FLOWER_COROLLA_SCENE
 			elif o_type == "flower_tulip":
 				f_scene = FLOWER_TULIP_SCENE
 			elif o_type == "flower_bed":
@@ -1336,6 +1354,28 @@ func _build_editor_vector_ground() -> void:
 		SPAWN_CLEARANCE_RADIUS
 	)
 	vector_field_clone.call("clip_shapes", spawn_clip_poly)
+	if preview_3d_grass and not is_painting_lmb:
+		var veg_json_3d: Dictionary = {
+			"grid": { "width": grid_width, "height": grid_height, "cell_size": CELL_SIZE },
+			"terrain": [],
+			"objects": [],
+			"grass_vectors": vector_field_clone.call("to_dict_list")
+		}
+		var preview_vg: Node3D = VegetationGridScript.new() as Node3D
+		preview_vg.name = "EditorPreviewVegGrid"
+		plants_container.add_child(preview_vg)
+		preview_vg.call("build_from_level_json", veg_json_3d, null, null)
+		var cw: Node = preview_vg.get_node_or_null("WaterOcean")
+		if cw != null:
+			preview_vg.remove_child(cw)
+			cw.queue_free()
+		var cl: Node = preview_vg.get_node_or_null("CoastalLimits")
+		if cl != null:
+			preview_vg.remove_child(cl)
+			cl.queue_free()
+		_update_layers_transparency()
+		return
+
 	var ground_meshes: Dictionary = vector_field_clone.call("generate_ground_meshes") as Dictionary
 	var vt_idx: int = 0
 	for vt_var: Variant in ground_meshes.keys():
@@ -1359,20 +1399,162 @@ func _update_layers_transparency() -> void:
 	var terrain_t: float = 0.0
 	var grass_t: float = 0.0
 	var objects_t: float = 0.0
+	var vis_terrain: bool = true
+	var vis_grass: bool = true
+	var vis_objects: bool = true
 
 	if not is_playtesting:
 		terrain_t = 0.0 if active_layer == EditLayer.TERRAIN else 0.5
 		grass_t = 0.0 if active_layer == EditLayer.GRASS else 0.5
 		objects_t = 0.0 if active_layer == EditLayer.OBJECTS else 0.5
+		vis_terrain = bool(layer_visible.get(0, true))
+		vis_grass = bool(layer_visible.get(1, true))
+		vis_objects = bool(layer_visible.get(2, true))
 
 	if island_tiles_container != null:
+		island_tiles_container.visible = vis_terrain
 		_set_container_transparency(island_tiles_container, terrain_t)
 	if coastal_limits_body != null:
+		coastal_limits_body.visible = vis_terrain
 		_set_container_transparency(coastal_limits_body, terrain_t)
 	if plants_container != null:
+		plants_container.visible = vis_grass
 		_set_container_transparency(plants_container, grass_t)
 	if obstacles_container != null:
+		obstacles_container.visible = vis_objects
 		_set_container_transparency(obstacles_container, objects_t)
+
+func _mark_dirty(dirty: bool = true) -> void:
+	is_dirty = dirty
+	if ui != null and ui.has_method("update_dirty_indicator"):
+		ui.call("update_dirty_indicator", is_dirty)
+
+func toggle_layer_visibility(layer_idx: int) -> void:
+	var cur_vis: bool = bool(layer_visible.get(layer_idx, true))
+	layer_visible[layer_idx] = not cur_vis
+	_update_layers_transparency()
+	if ui != null and ui.has_method("update_layer_visibility_buttons"):
+		ui.call("update_layer_visibility_buttons", layer_visible)
+	var l_names: Array[String] = ["Terreno", "Grama", "Objetos"]
+	var l_name: String = l_names[clampi(layer_idx, 0, 2)]
+	if ui != null:
+		ui.show_toast("👁️ Camada %s: %s" % [l_name, "Visível" if not cur_vis else "Oculta"], Color(0.45, 0.88, 1.0))
+
+func toggle_3d_grass_preview() -> void:
+	preview_3d_grass = not preview_3d_grass
+	_build_editor_vector_ground()
+	if ui != null and ui.has_method("update_3d_grass_button"):
+		ui.call("update_3d_grass_button", preview_3d_grass)
+	if ui != null:
+		ui.show_toast("🌿 Grama 3D no Editor: %s" % ("ATIVADA" if preview_3d_grass else "DESATIVADA (Modo Rápido)"), Color(0.35, 0.95, 0.55))
+
+func _pick_at_cursor(cell: Vector2i, hit_2d: Vector2) -> bool:
+	# Ordem visual Z (de cima para baixo no mundo 3D): Spawn -> Objetos (Flores/Rochas/Trigo) -> Grama Vetorial -> Terreno da Ilha
+	var check_order: Array[int] = [EditLayer.OBJECTS, EditLayer.GRASS, EditLayer.TERRAIN]
+
+	for layer_cand: int in check_order:
+		if layer_cand == EditLayer.OBJECTS:
+			if cell == spawn_cell:
+				active_layer = EditLayer.OBJECTS
+				active_tool = ToolMode.SPAWN
+				current_rot_deg = spawn_rot
+				_sync_all_ui(false)
+				_refresh_hover_preview()
+				if ui != null:
+					ui.show_toast("💧 Pipeta: 🤖 Spawn do Robô (%d°)" % spawn_rot, Color(1.0, 0.88, 0.25))
+				return true
+			if object_grid.has(cell):
+				var entry: Dictionary = object_grid[cell] as Dictionary
+				var o_type: String = String(entry.get("type", "rock"))
+				var o_rot: int = int(entry.get("rot", 0))
+				active_layer = EditLayer.OBJECTS
+				active_tool = ToolMode.BRUSH
+				active_object_id = o_type
+				current_rot_deg = o_rot
+				_sync_all_ui(false)
+				_refresh_hover_preview()
+				var info_o: Dictionary = TilePaletteDB.get_item_by_id(o_type)
+				var label_o: String = String(info_o.get("name", o_type))
+				if ui != null:
+					ui.show_toast("💧 Pipeta: %s" % label_o, Color(1.0, 0.78, 0.35))
+				return true
+		elif layer_cand == EditLayer.GRASS:
+			if vector_grass != null and vector_grass.has_method("get_type_at_point"):
+				var g_type: String = String(vector_grass.call("get_type_at_point", hit_2d))
+				if not g_type.is_empty():
+					active_layer = EditLayer.GRASS
+					active_tool = ToolMode.BRUSH
+					active_grass_id = g_type
+					_sync_all_ui(false)
+					_refresh_hover_preview()
+					var info_g: Dictionary = TilePaletteDB.get_item_by_id(g_type)
+					var label_g: String = String(info_g.get("name", g_type))
+					if ui != null:
+						ui.show_toast("💧 Pipeta: %s" % label_g, Color(0.35, 0.92, 1.0))
+					return true
+		elif layer_cand == EditLayer.TERRAIN:
+			var on_land: bool = false
+			if vector_terrain != null and vector_terrain.has_method("is_point_on_land"):
+				on_land = bool(vector_terrain.call("is_point_on_land", hit_2d))
+			elif terrain_grid.has(cell):
+				on_land = true
+			if on_land:
+				active_layer = EditLayer.TERRAIN
+				active_tool = ToolMode.BRUSH
+				_sync_all_ui(false)
+				_refresh_hover_preview()
+				if ui != null:
+					ui.show_toast("💧 Pipeta: 🏝️ Terreno da Ilha", Color(0.35, 0.92, 0.55))
+				return true
+
+	if ui != null:
+		ui.show_toast("ℹ️ Pipeta: Nenhum elemento neste ponto", Color(0.65, 0.75, 0.85))
+	return false
+
+func calculate_recommended_time_limit() -> float:
+	# Abordagem 3 Canônica:
+	# Velocidade linear: 6 tiles/s; Diâmetro da serra: 1.80m (4.5 células de 0.40m).
+	var land_cells: int = maxi(16, terrain_grid.size())
+	if vector_terrain != null and not bool(vector_terrain.call("is_empty")):
+		var sampled_land: int = 0
+		for gz: int in range(grid_height):
+			for gx: int in range(grid_width):
+				var wp: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, grid_width, grid_height, CELL_SIZE)
+				if bool(vector_terrain.call("is_point_on_land", Vector2(wp.x, wp.z))):
+					sampled_land += 1
+		if sampled_land > 0:
+			land_cells = sampled_land
+
+	var rock_count: int = 0
+	var extra_hit_seconds: float = 0.0
+	for k_var: Variant in object_grid.keys():
+		var e: Dictionary = object_grid[k_var] as Dictionary
+		var ot: String = String(e.get("type", ""))
+		if ot == "rock":
+			rock_count += 1
+		elif ot.begins_with("flower"):
+			extra_hit_seconds += 0.45
+		elif ot == "wheat":
+			extra_hit_seconds += 0.25
+
+	var swath_cells: float = 4.5 # 1.80m / 0.40m
+	var linear_tiles_path: float = float(land_cells) / swath_cells
+	var base_sweep_sec: float = linear_tiles_path / 6.0
+	var turn_factor: float = 1.40
+	var rock_factor: float = 1.0 + minf(0.25, float(rock_count) / 100.0)
+	var raw_sec: float = (base_sweep_sec * turn_factor * rock_factor + extra_hit_seconds) * 1.10
+	var rounded_5: float = ceilf(raw_sec / 5.0) * 5.0
+	return clampf(rounded_5, 20.0, 240.0)
+
+func apply_auto_calculated_time() -> void:
+	var rec_t: float = calculate_recommended_time_limit()
+	time_limit = rec_t
+	_mark_dirty(true)
+	if ui != null:
+		if ui.has_method("set_level_time_limit"):
+			ui.set_level_time_limit(time_limit)
+		ui.update_level_header(current_level_id, grid_width, grid_height, time_limit, true)
+		ui.show_toast("⚡ Tempo ideal calculado: %.0fs (Abordagem 3 + 10%%)" % time_limit, Color(1.0, 0.85, 0.25))
 
 static func _set_container_transparency(node: Node, alpha_transparency: float) -> void:
 	if node is GeometryInstance3D:
@@ -1396,6 +1578,7 @@ func _push_undo_snapshot() -> void:
 	if _undo_stack.size() > MAX_UNDO_STEPS:
 		_undo_stack.pop_front()
 	_redo_stack.clear()
+	_mark_dirty(true)
 
 func perform_undo() -> void:
 	if _undo_stack.is_empty():
@@ -1580,6 +1763,11 @@ func _on_grid_resize_requested(new_w: int, new_h: int) -> void:
 	_sync_all_ui()
 	ui.show_toast("📐 Grade ajustada para %dx%d" % [grid_width, grid_height], Color(0.4, 0.85, 1.0))
 
+func _on_save_and_load_level_requested(lvl_id: int) -> void:
+	save_current_level_json()
+	_load_or_init_level(lvl_id)
+	_sync_all_ui()
+
 func _on_level_load_requested(lvl_id: int) -> void:
 	_load_or_init_level(lvl_id)
 	_sync_all_ui()
@@ -1587,6 +1775,7 @@ func _on_level_load_requested(lvl_id: int) -> void:
 func _load_or_init_level(lvl_id: int) -> void:
 	current_level_id = lvl_id
 	_has_last_vector_click = false
+	_mark_dirty(false)
 	_undo_stack.clear()
 	_redo_stack.clear()
 
@@ -1775,6 +1964,7 @@ func save_current_level_json() -> void:
 		vector_terrain
 	)
 	if ok:
+		_mark_dirty(false)
 		ui.show_toast("💾 Fase %02d salva! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.25, 0.95, 0.5))
 	else:
 		ui.show_toast("❌ Erro ao salvar JSON da fase!", Color(0.95, 0.3, 0.3))

@@ -29,7 +29,7 @@ const GOAL_ORDER: Array[String] = [
 	"flower", "flower_blue", "flower_sunset", "flower_purple", "flower_white", "flower_turquoise",
 	"flower_rose", "flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_wine", "flower_rose_black", "flower_rose_peach",
 	"flower_daisy", "flower_daisy_blue", "flower_daisy_orange", "flower_daisy_yellow", "flower_daisy_red", "flower_daisy_pink", "flower_daisy_bicolor",
-	"flower_bell", "flower_sunflower", "flower_tulip", "flower_corolla", "flower_bed"
+	"flower_sunflower", "flower_tulip", "flower_bed"
 ]
 
 var _font: SystemFont = null
