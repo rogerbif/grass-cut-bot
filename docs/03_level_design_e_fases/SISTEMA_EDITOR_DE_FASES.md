@@ -25,9 +25,10 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
 
 - **Camada 0 — Terreno Vetorial (Ilha 3D Procedural por Polígono Extrudado `VectorTerrainField` & `IslandMeshBuilder`):**
   - O terreno da ilha é 100% vetorial e contínuo, renderizado como uma **malha procedural única** (`ArrayMesh` - 1 Draw Call), sem frestas ou emendas entre peças.
-  - **Pincéis e Carimbos Vetoriais:** A Camada 0 compartilha as ferramentas de formato do editor (Círculo, Retângulo com Cantos Arredondados, Pincel Livre/Fita e Estrela):
+  - **Pincéis e Carimbos Vetoriais:** A Camada 0 compartilha as ferramentas de formato do editor (Quadrado sempre reto com 4 vértices, Círculo, Retângulo, Pincel Livre/Fita e Estrela):
+    - **Curvatura do Mapa (`corner_radius`):** O controle de curvatura é aplicado dinamicamente aos cantos angulares do terreno da ilha (esquinas de 90° e ângulos vivos), mantendo o carimbo quadrado com arestas retilíneas e idempotência geométrica estrita (`max_dot = 0.75`).
     - **Pintura (Botão Esquerdo):** Adiciona e funde porções de terra firme via união booleana Clipper em C++ (`Geometry2D.merge_polygons`), preenchendo automaticamente furos sobrepostos.
-    - **Borracha (Botão Direito):** Recorta a terra firme via `Geometry2D.clip_polygons()`. Permite esculpir baías, canais, istmos e abrir lagos ou bacias de água no interior da ilha.
+    - **Borracha (Botão Direito):** Recorta a terra firme via `Geometry2D.clip_polygons()`. Permite esculpir baías, canais, istmos e abrir lagos ou bacias de água no interior da ilha com detecção precisa de furos fechados (`holes`), convertendo-os automaticamente em baías oceânicas quando conectados ao mar aberto.
     - **Falésias e Limites Costeiros em Lagos:** Falésias verticais chanfradas, fitas de espuma costeira e colisores invisíveis na Camada 1 são gerados tanto nas bordas oceânicas quanto nas margens internas dos lagos.
   - **Grade como Guia Visual & Magnetismo (Snap):**
     - A grade deixa de ser uma matriz limitadora de dados e passa a atuar como guia de medição e alinhamento métrico.

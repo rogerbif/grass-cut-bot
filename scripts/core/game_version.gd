@@ -7,11 +7,11 @@ extends RefCounted
 
 const MAJOR: int = 0
 const MINOR: int = 12
-const PATCH: int = 159
+const PATCH: int = 160
 const STAGE: String = "ALPHA" # "PRE-ALPHA", "ALPHA", "BETA", "RC", "RELEASE"
 const BUILD_TYPE: String = "dev" # "dev", "nightly", "public"
 
-## Retorna a versão crua sem prefixo 'v' (ex: "0.12.106-alpha").
+## Retorna a versão crua sem prefixo 'v' (ex: "0.12.68-alpha").
 ## Lê dinamicamente do ProjectSettings se disponível para garantir sincronização automática.
 static func get_raw_version() -> String:
 	var proj_ver: String = String(ProjectSettings.get_setting("application/config/version", ""))
@@ -22,18 +22,18 @@ static func get_raw_version() -> String:
 		base += "-%s" % STAGE.to_lower()
 	return base
 
-## Retorna a string semântica padrão com prefixo 'v' (ex: "v0.12.106-alpha")
+## Retorna a string semântica padrão com prefixo 'v' (ex: "v0.12.68-alpha")
 static func get_version_string() -> String:
 	var raw: String = get_raw_version()
 	if not raw.begins_with("v"):
 		return "v%s" % raw
 	return raw
 
-## Retorna o nome completo com título do jogo (ex: "Grass Cut Bot v0.12.106-alpha")
+## Retorna o nome completo com título do jogo (ex: "Grass Cut Bot v0.12.68-alpha")
 static func get_display_name() -> String:
 	return "Grass Cut Bot %s" % get_version_string()
 
-## Retorna um código numérico de versão para versionCode do Android (ex: 1306 para 0.12.106)
+## Retorna um código numérico de versão para versionCode do Android (ex: 1268 para 0.12.68)
 static func get_version_code() -> int:
 	var raw: String = get_raw_version()
 	var clean: String = raw.trim_prefix("v").split("-")[0]
@@ -62,7 +62,7 @@ static func is_rc() -> bool:
 static func is_release() -> bool:
 	return not is_pre_alpha() and not is_alpha() and not is_beta() and not is_rc()
 
-## Retorna um dicionário estruturado com todos os metadados da versao
+## Retorna um dicionário estruturado com todos os metadados da versão
 static func get_full_info() -> Dictionary:
 	var raw: String = get_raw_version()
 	var clean: String = raw.trim_prefix("v").split("-")[0]

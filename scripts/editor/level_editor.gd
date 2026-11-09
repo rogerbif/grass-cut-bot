@@ -294,6 +294,9 @@ func _connect_ui_signals() -> void:
 	)
 	ui.corner_radius_changed.connect(func(r: float) -> void:
 		current_corner_radius = r
+		if vector_terrain != null:
+			vector_terrain.call("set_corner_radius", r)
+			_rebuild_3d_world()
 		_refresh_hover_preview()
 	)
 	ui.rotate_requested.connect(func() -> void:
@@ -1355,6 +1358,8 @@ func _restore_snapshot(snap: Dictionary) -> void:
 	if snap.has("vector_terrain_data"):
 		vector_terrain = VectorTerrainFieldScript.new()
 		vector_terrain.call("from_dict", snap["vector_terrain_data"] as Dictionary)
+		current_corner_radius = float(vector_terrain.call("get_corner_radius"))
+		ui.set_corner_radius(current_corner_radius)
 	if snap.has("grass_vectors_data"):
 		vector_grass = VectorGrassFieldScript.new()
 		vector_grass.call("from_dict_list", snap["grass_vectors_data"] as Array)
@@ -1550,6 +1555,8 @@ func _load_or_init_level(lvl_id: int) -> void:
 			vector_terrain.call("from_dict", data)
 		else:
 			vector_terrain.call("convert_from_tile_grid", t_arr, orig_width, orig_height, loaded_cell_size)
+		current_corner_radius = float(vector_terrain.call("get_corner_radius"))
+		ui.set_corner_radius(current_corner_radius)
 
 		object_grid.clear()
 		var o_arr: Array = data.get("objects", []) as Array

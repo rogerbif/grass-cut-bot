@@ -553,7 +553,7 @@ func _build_left_panel() -> void:
 	corner_radius_container.add_child(hbox_cr)
 
 	var lbl_cr: Label = Label.new()
-	lbl_cr.text = "📐 Quina (R):"
+	lbl_cr.text = "📐 Curvatura do Mapa:"
 	lbl_cr.add_theme_font_size_override("font_size", 12)
 	lbl_cr.add_theme_color_override("font_color", Color(0.9, 0.85, 0.55))
 	hbox_cr.add_child(lbl_cr)
@@ -1219,6 +1219,10 @@ func show_toast(message: String, border_color: Color = Color(0.3, 0.9, 0.55)) ->
 	tw.tween_property(panel, "modulate:a", 0.0, 0.3)
 	tw.tween_callback(panel.queue_free)
 
+func set_corner_radius(r: float) -> void:
+	if spin_corner_radius != null:
+		spin_corner_radius.set_value_no_signal(r)
+
 func set_active_layer(layer_idx: int) -> void:
 	if section_terrain != null:
 		section_terrain.visible = (layer_idx == 0)
@@ -1274,7 +1278,7 @@ func sync_state(
 		_set_button_selected(shape_buttons[sid] as Button, active_shape == sid, Color(0.45, 0.75, 0.98))
 
 	if corner_radius_container != null:
-		corner_radius_container.visible = (active_shape == BrushPatterns.ShapeType.SQUARE)
+		corner_radius_container.visible = (active_layer == 0)
 
 	for item in TilePaletteDB.TERRAIN_ITEMS:
 		var tid_str: String = String(item["id"])

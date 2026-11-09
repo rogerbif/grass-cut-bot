@@ -486,7 +486,8 @@ static func convert_tile_grid_to_polygons(
 static func round_polygon_corners(
 	poly: PackedVector2Array,
 	radius: float = DEFAULT_CORNER_RADIUS,
-	arc_steps: int = DEFAULT_CORNER_ARC_STEPS
+	arc_steps: int = DEFAULT_CORNER_ARC_STEPS,
+	max_dot: float = 0.75
 ) -> PackedVector2Array:
 	if poly.size() < 3 or radius <= 0.001:
 		return poly
@@ -523,7 +524,9 @@ static func round_polygon_corners(
 			continue
 
 		var dot: float = clampf(dir_in.dot(dir_out), -1.0, 1.0)
-		if dot > 0.999:
+		# Só arredonda cantos verdadeiramente angulares (ex: 90 graus = dot 0.0, 60 graus = dot 0.5)
+		# Ignora facetas suaves de arcos pré-existentes (dot > max_dot) tornando a operação idempotente
+		if dot > max_dot:
 			out.append(p_curr)
 			continue
 

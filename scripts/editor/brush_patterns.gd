@@ -275,35 +275,13 @@ static func get_vector_stamp_polygon(
 				poly.append(center + Vector2(cos(a), sin(a)) * r)
 
 		ShapeType.SQUARE:
+			# Regra canônica: o pincel quadrado é sempre reto e angular (90 graus)
+			# A curvatura de borda é aplicada diretamente ao mapa sobre os cantos angulares do terreno
 			var h: float = r * 0.95
-			if corner_radius <= 0.001:
-				poly.append(center + Vector2(-h, -h))
-				poly.append(center + Vector2(h, -h))
-				poly.append(center + Vector2(h, h))
-				poly.append(center + Vector2(-h, h))
-			else:
-				var cr: float = minf(corner_radius, h * 0.95)
-				var arc_steps: int = 5
-				# Canto Superior Direito (Top-Right: de -PI/2 a 0)
-				var c_tr: Vector2 = Vector2(h - cr, -h + cr)
-				for i: int in range(arc_steps + 1):
-					var a: float = lerpf(-PI * 0.5, 0.0, float(i) / float(arc_steps))
-					poly.append(center + c_tr + Vector2(cos(a), sin(a)) * cr)
-				# Canto Inferior Direito (Bottom-Right: de 0 a PI/2)
-				var c_br: Vector2 = Vector2(h - cr, h - cr)
-				for i: int in range(arc_steps + 1):
-					var a: float = lerpf(0.0, PI * 0.5, float(i) / float(arc_steps))
-					poly.append(center + c_br + Vector2(cos(a), sin(a)) * cr)
-				# Canto Inferior Esquerdo (Bottom-Left: de PI/2 a PI)
-				var c_bl: Vector2 = Vector2(-h + cr, h - cr)
-				for i: int in range(arc_steps + 1):
-					var a: float = lerpf(PI * 0.5, PI, float(i) / float(arc_steps))
-					poly.append(center + c_bl + Vector2(cos(a), sin(a)) * cr)
-				# Canto Superior Esquerdo (Top-Left: de PI a 3*PI/2)
-				var c_tl: Vector2 = Vector2(-h + cr, -h + cr)
-				for i: int in range(arc_steps + 1):
-					var a: float = lerpf(PI, PI * 1.5, float(i) / float(arc_steps))
-					poly.append(center + c_tl + Vector2(cos(a), sin(a)) * cr)
+			poly.append(center + Vector2(-h, -h))
+			poly.append(center + Vector2(h, -h))
+			poly.append(center + Vector2(h, h))
+			poly.append(center + Vector2(-h, h))
 
 		ShapeType.DIAMOND:
 			var d: float = r * 1.25
