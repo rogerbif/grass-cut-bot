@@ -1,12 +1,14 @@
 # ==============================================================================
-# Atalho Rapido de Publicacao no Google Play (Grass Cut Bot)
+# Atalho Rapido de Publicacao (Grass Cut Bot)
 # Executa: .\scripts\tools\publish_version.ps1
 #
 # Exemplos de uso:
-#   .\publish.ps1                           # Bump Patch + Upload Teste Interno + Push
-#   .\publish.ps1 -Track alpha             # Bump Patch + Upload Teste Fechado + Push
-#   .\publish.ps1 -Bump Minor              # Bump Minor + Upload Teste Interno + Push
-#   .\publish.ps1 -Bump None               # Re-publica a versao atual sem bump
+#   .\publish.ps1                           # Bump Patch + Deploy Google Play (Internal) + Push
+#   .\publish.ps1 -Itch                     # Bump Patch + Deploy Google Play + itch.io (HTML5) + Push
+#   .\publish.ps1 -Target Itch              # Bump Patch + Deploy apenas itch.io (HTML5) + Push
+#   .\publish.ps1 -Target All               # Bump Patch + Deploy Google Play + itch.io (HTML5) + Push
+#   .\publish.ps1 -Track alpha              # Bump Patch + Deploy Google Play (Alpha/Closed) + Push
+#   .\publish.ps1 -Bump None -Target Itch   # Re-publica versao atual apenas no itch.io sem bump
 # ==============================================================================
 
 param(
@@ -19,6 +21,10 @@ param(
     [string]$NotesPt = "",
     [string]$NotesEn = "",
 
+    [ValidateSet("GooglePlay", "Itch", "All")]
+    [string]$Target = "GooglePlay",
+
+    [switch]$Itch,
     [switch]$NoGit
 )
 

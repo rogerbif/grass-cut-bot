@@ -64,3 +64,37 @@ Este documento reúne os requisitos técnicos, presets de exportação e diretri
 
 - **Nunca use emojis em `Label`/`Button` para a UI:** na Web as fontes de emoji do sistema não existem e o texto vira caixas hexadecimais ("tofu"). Use os SVGs de `assets/icons/` via `TextureRect` ou `Button.icon`.
 - **Loading customizado:** `web_shell/shell.html` (preset Web, `html/custom_html_shell`) exibe logo, barra de progresso com porcentagem real e dicas, com fade-out ao iniciar. Mantenha os placeholders `$GODOT_URL`, `$GODOT_CONFIG`, `$GODOT_PROJECT_NAME` e `$GODOT_HEAD_INCLUDE`.
+
+---
+
+## 7. Pipeline de Publicação Automatizada no itch.io (Butler CLI)
+
+O itch.io utiliza a ferramenta oficial **Butler CLI** para envio contínuo e atualizações binárias (`wharf`).
+
+- **Canal Canônico:** `html5` (WebAssembly jogável no navegador).
+- **Slug Oficial:** `bifgames/grass-cut-bot`.
+- **URL Pública:** [`https://bifgames.itch.io/grass-cut-bot`](https://bifgames.itch.io/grass-cut-bot).
+- **Instalação do Butler:**
+  ```powershell
+  .\scripts\tools\setup_butler.ps1
+  butler login   # Executar uma única vez para autorizar a conta
+  ```
+- **Comandos de Deploy:**
+  - Envio direto exclusivo para itch.io:
+    ```powershell
+    .\scripts\tools\publish_itch.ps1
+    ```
+  - Envio integrado via pipeline mestre com bump SemVer:
+    ```powershell
+    .\publish.ps1 -Target Itch -Bump Patch
+    ```
+  - Envio simultâneo para Google Play + itch.io:
+    ```powershell
+    .\publish.ps1 -Target All -Bump Patch
+    # Ou o atalho com switch:
+    .\publish.ps1 -Itch
+    ```
+- **Configuração no Painel do itch.io:**
+  - Kind of project: **HTML**.
+  - No canal `html5`, a build Web é automaticamente marcada para execução direta no navegador.
+  - Viewport recomendada: Dimensões fixas ou responsivas orientadas ao modo retrato (`720x1280` ou ratio 9:16).

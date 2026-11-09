@@ -1,6 +1,6 @@
 # ==============================================================================
 # Script de Publicação Completa com 1 Comando (Grass Cut Bot)
-# Executa: Bump de Versão -> Compilação AAB -> Upload Google Play -> Git Push
+# Executa: Bump de Versão -> Compilação AAB / Web -> Deploy Play Store / Itch.io -> Git Push
 # ==============================================================================
 
 param(
@@ -13,10 +13,18 @@ param(
     [string]$NotesPt = "",
     [string]$NotesEn = "",
 
+    [ValidateSet("GooglePlay", "Itch", "All")]
+    [string]$Target = "GooglePlay",
+
+    [switch]$Itch,
     [switch]$NoGit
 )
 
 $ErrorActionPreference = "Stop"
+
+if ($Itch -and $Target -eq "GooglePlay") {
+    $Target = "All"
+}
 
 $rootDir = (Resolve-Path "$PSScriptRoot\..\..").Path
 $gameVersionFile = "$rootDir\scripts\core\game_version.gd"
@@ -24,9 +32,15 @@ $projectGodotFile = "$rootDir\project.godot"
 $exportPresetsFile = "$rootDir\export_presets.cfg"
 
 Write-Host "==================================================" -ForegroundColor Cyan
-Write-Host ">>> PIPELINE DE PUBLICACAO AUTOMATIZADA GOOGLE PLAY <<<" -ForegroundColor Cyan
+Write-Host ">>> PIPELINE DE PUBLICACAO AUTOMATIZADA GRASS CUT BOT <<<" -ForegroundColor Cyan
 Write-Host "Modo de Bump: $Bump" -ForegroundColor Yellow
-Write-Host "Faixa Google Play: $Track" -ForegroundColor Yellow
+Write-Host "Destino de Deploy: $Target" -ForegroundColor Yellow
+if ($Target -ne "Itch") {
+    Write-Host "Faixa Google Play: $Track" -ForegroundColor Yellow
+}
+if ($Target -ne "GooglePlay") {
+    Write-Host "Canal itch.io: html5 (bifgames/grass-cut-bot)" -ForegroundColor Yellow
+}
 Write-Host "==================================================" -ForegroundColor Cyan
 
 # 1. Bump de versão
@@ -77,40 +91,58 @@ if ($Bump -ne "None") {
     Write-Host "  [OK] Atualizado export_presets.cfg" -ForegroundColor Gray
 }
 
-# 2. Release Notes padrão caso não fornecidas
-if (-not $NotesPt) {
-    $NotesPt = "Novidades da versão $($versionString):`n• Melhorias contínuas de jogabilidade e resposta de corte.`n• Otimizações de renderização e estabilidade mobile.`n• Refinamentos nas metas de fases e navegação."
+# 2. Deploy Google Play (se aplicável)
+if ($Target -in @("GooglePlay", "All")) {
+    if (-not $NotesPt) {
+        $NotesPt = "Novidades da versão $($versionString):`n• Melhorias contínuas de jogabilidade e resposta de corte.`n• Otimizações de renderização e estabilidade mobile.`n• Refinamentos nas metas de fases e navegação."
+    }
+    if (-not $NotesEn) {
+        $NotesEn = "What's new in version $($versionString):`n• Gameplay refinements and responsive blade cutting.`n• Mobile rendering and stability optimizations.`n• Archipelago level goals and navigation improvements."
+    }
+
+    Write-Host "`n[2/4] Compilando e enviando pacote .AAB para Google Play..." -ForegroundColor White
+    $buildScript = "$PSScriptRoot\build_android_aab.ps1"
+
+    & $buildScript -Publish -Track $Track -NotesPt $NotesPt -NotesEn $NotesEn
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Falha na compilacao ou publicacao do AAB."
+        exit 1
+    }
+
+    Write-Host "`n==================================================" -ForegroundColor Cyan
+    Write-Host ">>> NOTAS DA VERSAO PUBLICADA (PLAY CONSOLE) <<<" -ForegroundColor Cyan
+    Write-Host "==================================================" -ForegroundColor Cyan
+    Write-Host "<pt-BR>`n$NotesPt`n</pt-BR>" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "<en-US>`n$NotesEn`n</en-US>" -ForegroundColor Green
+    Write-Host "==================================================" -ForegroundColor Cyan
 }
-if (-not $NotesEn) {
-    $NotesEn = "What's new in version $($versionString):`n• Gameplay refinements and responsive blade cutting.`n• Mobile rendering and stability optimizations.`n• Archipelago level goals and navigation improvements."
+
+# 3. Deploy itch.io HTML5 (se aplicável)
+if ($Target -in @("Itch", "All")) {
+    Write-Host "`n[3/4] Exportando e publicando versao Web (HTML5) no itch.io..." -ForegroundColor White
+    $itchScript = "$PSScriptRoot\publish_itch.ps1"
+
+    & $itchScript -UserVersion $rawVersion
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Falha na publicacao para o itch.io."
+        exit 1
+    }
 }
 
-# 3. Compilação e Upload AAB
-Write-Host "`n[2/4] Compilando e enviando pacote .AAB para Google Play..." -ForegroundColor White
-$buildScript = "$PSScriptRoot\build_android_aab.ps1"
-
-& $buildScript -Publish -Track $Track -NotesPt $NotesPt -NotesEn $NotesEn
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Falha na compilacao ou publicacao do AAB."
-    exit 1
-}
-
-# 4. Exibe Release Notes obrigatórias
-Write-Host "`n==================================================" -ForegroundColor Cyan
-Write-Host ">>> NOTAS DA VERSAO PUBLICADA (PLAY CONSOLE) <<<" -ForegroundColor Cyan
-Write-Host "==================================================" -ForegroundColor Cyan
-Write-Host "<pt-BR>`n$NotesPt`n</pt-BR>" -ForegroundColor Green
-Write-Host ""
-Write-Host "<en-US>`n$NotesEn`n</en-US>" -ForegroundColor Green
-Write-Host "==================================================" -ForegroundColor Cyan
-
-# 5. Git Commit & Push
+# 4. Git Commit & Push
 if (-not $NoGit) {
-    Write-Host "`n[3/4] Sincronizando checkpoint no Git e GitHub..." -ForegroundColor White
+    Write-Host "`n[4/4] Sincronizando checkpoint no Git e GitHub..." -ForegroundColor White
+    $deployLabel = switch ($Target) {
+        "All" { "Google Play + itch.io" }
+        "Itch" { "itch.io (HTML5)" }
+        default { "Google Play" }
+    }
     git add export_presets.cfg project.godot scripts/core/game_version.gd
-    git commit -m "chore(release): bump version para $rawVersion (code $versionCode) e deploy Google Play"
-    Write-Host "`n[4/4] Enviando para repositório remoto (git push origin main)..." -ForegroundColor White
+    git commit -m "chore(release): bump version para $rawVersion (code $versionCode) e deploy $deployLabel"
+    Write-Host "`nEnviando para repositório remoto (git push origin main)..." -ForegroundColor White
     git push origin main
 }
 
