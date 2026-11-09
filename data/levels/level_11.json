@@ -1439,6 +1439,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 110.0,
+	"time_limit": 20.0,
 	"version": 4
 }
