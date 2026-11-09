@@ -114,7 +114,43 @@ Conceito diegético de editor de fases executado diretamente no celular pelo jog
 
 ---
 
-## ✅ Histórico de Metas Canônicas Concluídas
+## 📊 7. Matriz Canônica de Priorização (Esforço vs. Impacto)
+
+Para orientar a tomada de decisão ágil e a esteira de desenvolvimento, as melhorias planejadas são mapeadas na matriz cartesiana de **Impacto no Jogador / Negócio versus Esforço Técnico de Implementação**:
+
+```
+        ▲ ALTO IMPACTO
+        │
+        │  [1. Bônus Diário & Missões]   [4. Expansão 100 Fases Mundo 1]
+        │  [2. Loja: Pacotes de Moedas]  [5. Skins & Customização Bot]
+        │  [3. Assets Play Store ASO]    [6. Power-ups de Campo]
+        │                                [7. Rochas Destrutíveis]
+────────┼────────────────────────────────────────────────────────►
+        │                                ALTO ESFORÇO
+        │                                [8. Mundo 2: Sunset (F101-200)]*
+        │                                [9. Bot Arquiteto Mobile]
+        │
+        ▼ BAIXO IMPACTO
+        * Condicionado à conclusão das 100 fases do Mundo 1
+```
+
+### 📋 Tabela Estruturada de Priorização
+
+| Ordem | Iniciativa / Melhoria | Impacto | Esforço | Categoria | Justificativa Estratégica |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| **1º** | **Bônus Diário (Daily Bonus) & Missões Rápidas** | **Alto** | **Baixo/Médio** | Retenção / Metagame | **Vitória Rápida (Quick Win):** Cria o hábito diário de retorno (D1/D7) com lógica leve no `SaveManager` e modal de resgate. |
+| **2º** | **Ativação Real dos Pacotes da Loja (`TabStore`)** | **Médio/Alto** | **Baixo** | Economia / UI | Elimina o texto `"EM BREVE"`, dando função real à aba Loja com resgates e conversões de moedas. |
+| **3º** | **Assets Promocionais & ASO da Play Store** | **Alto** | **Baixo/Médio** | Publicação / Marketing | Feature Graphic (1024x500) e Screenshots 9:16 com lettering usando as ferramentas prontas `capture_store_screenshots.tscn` e `icon_photo_studio.tscn`. |
+| **4º** | **Skins de Chassi & Trilhas de Lâmina (`TabGarage`)** | **Alto** | **Médio** | Cosmético / Economia | Concede vazão ao excesso de moedas colhidas, estimulando a progressão com pinturas e rastros luminosos. |
+| **5º** | **Power-ups Coletáveis de Campo (Turbo / Ímã / Relâmpago)** | **Alto** | **Médio** | Gameplay / Game Feel | Brotam esporadicamente na grama, acelerando a dinâmica do corte e quebrando repetição em fases amplas. |
+| **6º** | **Expansão Contínua do Mundo 1 (Fases 41 a 100 Diurnas)** | **Crítico** | **Alto** | Level Design / Conteúdo | Esteira contínua de criação autoral no editor `F2`. Meta mandatória para atingir 100 fases revisadas e liberar o Mundo 2. |
+| **7º** | **Obstáculos Interativos: Rochas Rachadas & Troncos** | **Médio/Alto** | **Médio** | Level Design / Física | Rochas que quebram com lâminas avançadas (Tier 3+ / Lv 10 MAX), abrindo atalhos e canteiros nobres. |
+| **8º** | **Mundo 2: Ilhas do Entardecer Dourado (Sunset World)** | **Muito Alto** | **Alto** | Expansão / Novo Mundo | **Bloqueio Mandatório:** Iniciado **exclusivamente após as 100 fases do Mundo 1 estarem criadas e auditadas**. 100 novas fases (101 a 200). |
+| **9º** | **Modo Construtor Mobile ("Bot Arquiteto")** | **Médio/Alto** | **Muito Alto** | Sandbox Mobile | Ferramenta criativa diegética operada no celular. Demanda adaptação tátil complexa do pipeline vetorial. |
+
+---
+
+## ✅ 8. Histórico de Metas Canônicas Concluídas
 
 - [x] **20 Fases Canônicas com Autotile:** Arquipélago de 20 ilhas 3D flutuantes sem cercas e com 5 Tiers de maestria ([Melhoria 034](historico_melhorias/034_criacao_20_fases_canonicas.md)).
 - [x] **Toon Shader Gradiente e Iluminação Canônica:** Sombreamento cel-shaded, normais 360°, rim lighting e solo em harmonia ([Melhorias 124](historico_melhorias/124_integracao_toon_shader_grama_e_iluminacao_canonicos.md), [125](historico_melhorias/125_calibracao_final_toon_shader_grama_e_solo_da_ilha.md) e [126](historico_melhorias/126_calibracao_luz_e_diferenciacao_cores_vegetacao.md)).
