@@ -482,7 +482,7 @@ static func convert_tile_grid_to_polygons(
 	return merged_polys
 
 
-## Arredonda cantos externos convexos de um polígono com arcos tangentes circulares suaves
+## Arredonda cantos de um polígono (convexos e côncavos/internos) com arcos tangentes circulares suaves
 static func round_polygon_corners(
 	poly: PackedVector2Array,
 	radius: float = DEFAULT_CORNER_RADIUS,
@@ -518,10 +518,14 @@ static func round_polygon_corners(
 		var dir_out: Vector2 = v_out / len_out
 
 		var cross: float = dir_in.x * dir_out.y - dir_in.y * dir_out.x
-		# Em polígono CW, cantos convexos (voltados para fora da ilha) possuem cross < -0.01
-		if cross >= -0.01:
+		if absf(cross) < 0.01:
 			out.append(p_curr)
 			continue
+
+		# Em polígono CW:
+		# cross < -0.01: curva vira à direita (canto convexo)
+		# cross > 0.01: curva vira à esquerda (canto côncavo / curvatura interna negativa)
+		var is_convex: bool = (cross < -0.01)
 
 		var dot: float = clampf(dir_in.dot(dir_out), -1.0, 1.0)
 		# Só arredonda cantos verdadeiramente angulares (ex: 90 graus = dot 0.0, 60 graus = dot 0.5)
@@ -537,16 +541,27 @@ static func round_polygon_corners(
 		var start_pt: Vector2 = p_curr - dir_in * d_tan
 		var end_pt: Vector2 = p_curr + dir_out * d_tan
 
-		# Centro do arco (normal à direita de dir_in no sentido horário)
+		# Centro do arco
+		# norm_in = Vector2(dir_in.y, -dir_in.x) é a normal à direita de dir_in
+		# Canto convexo: centro fica à direita (+norm_in)
+		# Canto côncavo (interno/negativo): centro fica à esquerda (-norm_in)
 		var norm_in: Vector2 = Vector2(dir_in.y, -dir_in.x)
-		var arc_center: Vector2 = start_pt + norm_in * d_tan
+		var arc_center: Vector2 = start_pt + (norm_in if is_convex else -norm_in) * d_tan
 
 		var ang_start: float = (start_pt - arc_center).angle()
 		var ang_end: float = (end_pt - arc_center).angle()
 
 		var sweep: float = ang_end - ang_start
-		while sweep > 0.0:
-			sweep -= TAU
+		if is_convex:
+			while sweep > 0.0:
+				sweep -= TAU
+			while sweep < -TAU:
+				sweep += TAU
+		else:
+			while sweep < 0.0:
+				sweep += TAU
+			while sweep > TAU:
+				sweep -= TAU
 
 		for s: int in range(arc_steps + 1):
 			var t: float = float(s) / float(arc_steps)

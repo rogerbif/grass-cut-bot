@@ -1,9 +1,10 @@
-# Melhoria 209: Curvatura Angular do Mapa e Furos Internos na Borracha de Terreno 🏝️📐
+# Melhoria 209: Curvatura Angular do Mapa (Convexa e Interna/Negativa) e Furos na Borracha de Terreno 🏝️📐
 
 ## 1. Contexto e Motivação
-Durante o uso do Editor de Fases em Modo Vetorial Contínuo, dois comportamentos necessitavam de refinamento arquitetural:
+Durante o uso do Editor de Fases em Modo Vetorial Contínuo, três comportamentos necessitavam de refinamento arquitetural:
 1. **Pincel Quadrado Reto e Curvatura do Mapa:** Anteriormente, o controle de quina arredondada aplicava-se diretamente à geometria do pincel quadrado durante a pintura. O design correto exigido é que o carimbo quadrado (`ShapeType.SQUARE`) seja sempre retilíneo e pontiagudo (4 vértices puros), enquanto o parâmetro de curvatura (`corner_radius`) deve ser uma propriedade global do mapa/terreno, permitindo suavizar dinamicamente os cantos angulares (como quinas de 90°) da ilha sem distorcer vértices já curvos.
-2. **Furos Internos com a Ferramenta Borracha (Deletar):** Ao esculpir um plano de terreno, o uso da borracha (`carve_water`) no interior da massa de terra não criava furos/lagos internos, pois o algoritmo anterior invertia a orientação dos recortes para horário e os reduzia de volta à terra externa (`outer_polygons`), neutralizando o furo.
+2. **Curvatura Interna (Negativa / Côncava):** Além dos cantos externos convexos, as quinas internas/reentrantes (como cantos côncavos em formatos de "L", baías ou encontros perpendiculares de terra) também necessitam de arredondamento suave pelo mesmo raio de curvatura.
+3. **Furos Internos com a Ferramenta Borracha (Deletar):** Ao esculpir um plano de terreno, o uso da borracha (`carve_water`) no interior da massa de terra não criava furos/lagos internos, pois o algoritmo anterior invertia a orientação dos recortes para horário e os reduzia de volta à terra externa (`outer_polygons`), neutralizando o furo.
 
 ---
 
@@ -12,12 +13,17 @@ Durante o uso do Editor de Fases em Modo Vetorial Contínuo, dois comportamentos
 ### A. Pincel Quadrado 100% Reto (`scripts/editor/brush_patterns.gd`)
 - `get_vector_stamp_polygon`: A primitiva `ShapeType.SQUARE` agora gera sempre 4 vértices ortogonais estritos ($(-r, -r)$ a $(+r, +r)$) rotacionados pelo ângulo ativo, ignorando `corner_radius` no carimbo.
 
-### B. Gestão de Polígonos Base e Derivados com Curvatura Idempotente (`scripts/level/vector_terrain_field.gd` & `scripts/level/island_mesh_builder.gd`)
+### B. Gestão de Polígonos Base e Derivados com Curvatura Convexa e Interna (`scripts/level/vector_terrain_field.gd` & `scripts/level/island_mesh_builder.gd`)
 - `VectorTerrainField` agora mantém:
   - `base_outer_polygons` e `base_holes`: geometria base poligonal sem arredondamento.
   - `outer_polygons` e `holes`: malha derivada gerada por `_update_derived_polygons()`.
 - Se `corner_radius <= 0.001`, as listas derivadas são cópias idênticas da base.
-- Se `corner_radius > 0.001`, aplica `IslandMeshBuilder.round_polygon_corners(..., corner_radius, 5, 0.75)`. O parâmetro `max_dot = 0.75` garante que apenas esquinas angulares (≤ 138°) sejam arredondadas, preservando facetas de arcos já suaves sem inflar ou degradar a geometria.
+- Se `corner_radius > 0.001`, aplica `IslandMeshBuilder.round_polygon_corners(..., corner_radius, 5, 0.75)`:
+  - **Diferenciação Convexa vs. Côncava:** Pelo produto vetorial 2D (`cross = dir_in.x * dir_out.y - dir_in.y * dir_out.x`), identifica se a curva é externa/convexa (`cross < -0.01` em polígonos CW) ou interna/côncava (`cross > 0.01`).
+  - **Centro e Sentido do Arco:**
+    - Canto convexo: centro posicionado à direita do vetor incidente (`start_pt + norm_in * d_tan`) com varredura horária (`sweep < 0`).
+    - Canto côncavo/interno (negativo): centro posicionado à esquerda do vetor incidente (`start_pt - norm_in * d_tan`) com varredura anti-horária (`sweep > 0`).
+  - O parâmetro `max_dot = 0.75` garante que apenas esquinas angulares (≤ 138°) sejam arredondadas, preservando facetas de arcos já suaves sem inflar ou degradar a geometria (idempotência geométrica estrita).
 - Persistência atualizada em `to_dict()` e `from_dict()` salvando `"corner_radius"`, `"island_polygons"` e `"island_holes"`.
 
 ### C. Recorte e Gestão Robusta de Furos Internos (`VectorTerrainField.carve_water`)
@@ -35,16 +41,17 @@ Durante o uso do Editor de Fases em Modo Vetorial Contínuo, dois comportamentos
 ---
 
 ## 3. Testes Automatizados e Verificação
-- Desenvolvido `tests/test_terrain_hole_and_curvature.gd` cobrindo 5 suítes:
+- Desenvolvido `tests/test_terrain_hole_and_curvature.gd` cobrindo 6 suítes:
   1. Verificação do carimbo quadrado com 4 vértices estritos.
-  2. Curvatura angular dinâmica e idempotência de vértices.
-  3. Criação e expansão/fusão de furos internos no meio do terreno.
-  4. Abertura de canal conectando furo ao mar e conversão para baía.
-  5. Serialização e desserialização (`to_dict` / `from_dict`) com preservação da curvatura e furos.
+  2. Curvatura angular convexa e idempotência de vértices.
+  3. Curvatura angular interna (negativa / côncava) do mapa em polígonos em "L" (arredondamento de todos os 6 cantos com 36 vértices).
+  4. Criação e expansão/fusão de furos internos no meio do terreno.
+  5. Abertura de canal conectando furo ao mar e conversão para baía.
+  6. Serialização e desserialização (`to_dict` / `from_dict`) com preservação da curvatura e furos.
 - Todos os testes headless executados com 0 warnings e 0 erros.
 
 ---
 
 ## 4. Governança e Versionamento
-- Incremento Game SemVer: `v0.12.160-alpha` (code `1360`).
+- Incremento Game SemVer: `v0.12.162-alpha` (code `1362`).
 - Atualizados `scripts/core/game_version.gd`, `project.godot` e `export_presets.cfg`.
