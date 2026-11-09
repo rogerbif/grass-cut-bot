@@ -14,6 +14,8 @@ func _ready() -> void:
 	assert(TilePaletteDB.has_variations("flower"), "flower deve ter variações")
 	assert(TilePaletteDB.has_variations("flower_rose"), "flower_rose deve ter variações")
 	assert(TilePaletteDB.has_variations("flower_daisy"), "flower_daisy deve ter variações")
+	assert(TilePaletteDB.has_variations("flower_tulip"), "flower_tulip deve ter variações")
+	assert(TilePaletteDB.has_variations("flower_bed"), "flower_bed deve ter variações")
 	assert(not TilePaletteDB.has_variations("rock"), "rock não deve ter variações")
 	assert(not TilePaletteDB.has_variations("wheat"), "wheat não deve ter variações")
 
@@ -28,6 +30,14 @@ func _ready() -> void:
 	var vars_daisy: Array = TilePaletteDB.get_variations("flower_daisy")
 	assert(vars_daisy.size() == 7, "flower_daisy deve conter 7 variações")
 	print("  [OK] TilePaletteDB tem 7 variações registradas para 'flower_daisy'")
+
+	var vars_tulip: Array = TilePaletteDB.get_variations("flower_tulip")
+	assert(vars_tulip.size() == 4, "flower_tulip deve conter 4 variações")
+	print("  [OK] TilePaletteDB tem 4 variações registradas para 'flower_tulip'")
+
+	var vars_bed: Array = TilePaletteDB.get_variations("flower_bed")
+	assert(vars_bed.size() == 3, "flower_bed deve conter 3 variações")
+	print("  [OK] TilePaletteDB tem 3 variações registradas para 'flower_bed'")
 
 	assert(TilePaletteDB.get_base_id_for_variant("flower") == "flower")
 	assert(TilePaletteDB.get_base_id_for_variant("flower_blue") == "flower")

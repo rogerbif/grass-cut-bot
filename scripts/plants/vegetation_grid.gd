@@ -50,7 +50,12 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_daisy_bicolor": preload("res://shaders/flower_daisy_bicolor_material.tres"),
 	"flower_sunflower": preload("res://shaders/flower_sunflower_material.tres"),
 	"flower_tulip": preload("res://shaders/flower_tulip_material.tres"),
-	"flower_bed": preload("res://shaders/flower_bed_material.tres")
+	"flower_tulip_yellow": preload("res://shaders/flower_tulip_yellow_material.tres"),
+	"flower_tulip_purple": preload("res://shaders/flower_tulip_purple_material.tres"),
+	"flower_tulip_orange": preload("res://shaders/flower_tulip_orange_material.tres"),
+	"flower_bed": preload("res://shaders/flower_bed_material.tres"),
+	"flower_bed_blue": preload("res://shaders/flower_bed_blue_material.tres"),
+	"flower_bed_white": preload("res://shaders/flower_bed_white_material.tres")
 }
 const FLOWER_LEAVES_MATERIAL: Material = preload("res://shaders/interactive_flower_leaves_material.tres")
 const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_flower_stem_material.tres")
@@ -95,7 +100,12 @@ const VEG_TYPES: Array[String] = [
 	"flower_daisy_bicolor",
 	"flower_sunflower",
 	"flower_tulip",
-	"flower_bed"
+	"flower_tulip_yellow",
+	"flower_tulip_purple",
+	"flower_tulip_orange",
+	"flower_bed",
+	"flower_bed_blue",
+	"flower_bed_white"
 ]
 
 const GRID_STEP: float = 0.40
@@ -226,9 +236,19 @@ static func _ensure_static_meshes() -> void:
 
 	if _flower_tulip_mesh == null:
 		_flower_tulip_mesh = _build_flower_combined_mesh("flower_tulip", FLOWER_TULIP_SCENE)
+		_flower_variation_meshes["flower_tulip"] = _flower_tulip_mesh
+
+	for t_var_key in ["flower_tulip_yellow", "flower_tulip_purple", "flower_tulip_orange"]:
+		if not _flower_variation_meshes.has(t_var_key):
+			_flower_variation_meshes[t_var_key] = _build_flower_combined_mesh(t_var_key, FLOWER_TULIP_SCENE)
 
 	if _flower_bed_mesh == null:
 		_flower_bed_mesh = _build_flower_combined_mesh("flower_bed", FLOWER_BED_SCENE)
+		_flower_variation_meshes["flower_bed"] = _flower_bed_mesh
+
+	for b_var_key in ["flower_bed_blue", "flower_bed_white"]:
+		if not _flower_variation_meshes.has(b_var_key):
+			_flower_variation_meshes[b_var_key] = _build_flower_combined_mesh(b_var_key, FLOWER_BED_SCENE)
 
 	if _tile_meshes.is_empty():
 		var model_scale_xform: Transform3D = Transform3D().scaled(Vector3(1.0, 2.0, 1.0))
@@ -825,10 +845,10 @@ func _build_from_vector_field(
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
-			elif v_type == "flower_tulip":
-				mm.mesh = _flower_tulip_mesh
-			elif v_type == "flower_bed":
-				mm.mesh = _flower_bed_mesh
+			elif v_type.begins_with("flower_tulip"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_tulip_mesh)
+			elif v_type.begins_with("flower_bed"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_bed_mesh)
 			else:
 				mm.mesh = _flower_mesh
 		elif v_type == "wheat":
@@ -1145,10 +1165,10 @@ func _build_from_vegetation_field(
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
 			elif v_type == "flower_sunflower":
 				mm.mesh = _flower_sunflower_mesh
-			elif v_type == "flower_tulip":
-				mm.mesh = _flower_tulip_mesh
-			elif v_type == "flower_bed":
-				mm.mesh = _flower_bed_mesh
+			elif v_type.begins_with("flower_tulip"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_tulip_mesh)
+			elif v_type.begins_with("flower_bed"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_bed_mesh)
 			else:
 				mm.mesh = _flower_mesh
 		elif v_type == "wheat":
@@ -1455,7 +1475,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 					var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 					if clip_mm != null:
 						clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
-					if particles_spawned_this_frame < 2:
+					if particles_spawned_this_frame < 8:
 						var max_p_dist: float = blade_radius * 0.75
 						var dist_xz: float = sqrt(dx * dx + dz * dz)
 						var safe_p_pos: Vector3 = p_pos

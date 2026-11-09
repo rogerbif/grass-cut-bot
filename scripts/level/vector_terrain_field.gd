@@ -125,6 +125,18 @@ func is_point_on_land(pt: Vector2) -> bool:
 	return true
 
 
+## Preenche/fecha imediatamente um furo (lago interno) que contenha o ponto 2D informado
+func fill_hole_at_point(pt: Vector2) -> bool:
+	for i in range(base_holes.size() - 1, -1, -1):
+		var h: PackedVector2Array = base_holes[i]
+		var derived_h: PackedVector2Array = holes[i] if i < holes.size() else h
+		if (h.size() >= 3 and Geometry2D.is_point_in_polygon(pt, h)) or (derived_h.size() >= 3 and Geometry2D.is_point_in_polygon(pt, derived_h)):
+			base_holes.remove_at(i)
+			_update_derived_polygons()
+			return true
+	return false
+
+
 ## Adiciona/funde nova porção de terra à ilha (Pincel de Terreno)
 func add_land(new_poly: PackedVector2Array) -> void:
 	if new_poly.size() < 3:

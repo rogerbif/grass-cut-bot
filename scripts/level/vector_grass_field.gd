@@ -69,9 +69,8 @@ func add_shape(type_name: String, outer_poly: PackedVector2Array, holes_list: Ar
 	})
 	return shape_id
 
-## Retorna o tipo de grama presente em uma coordenada contínua 2D (X, Z no mundo)
-func get_type_at_point(point: Vector2) -> String:
-	# Itera do mais recente ao mais antigo (ordem de sobreposição Z)
+## Retorna o índice da forma mais ao topo que contém o ponto 2D (ou -1 se vazio)
+func get_shape_index_at_point(point: Vector2) -> int:
 	for i in range(shapes.size() - 1, -1, -1):
 		var s: Dictionary = shapes[i]
 		var poly: PackedVector2Array = s.get("polygon", PackedVector2Array()) as PackedVector2Array
@@ -79,7 +78,27 @@ func get_type_at_point(point: Vector2) -> String:
 			continue
 		var holes_list: Array = s.get("holes", []) as Array
 		if Geometry2D.is_point_in_polygon(point, poly) and not _is_point_in_any_hole(point, holes_list):
-			return String(s.get("type", "grass_green"))
+			return i
+	return -1
+
+## Recolore a mancha vetorial sob o cursor para new_type e mescla com adjacentes da mesma cor
+func recolor_shape_at_point(point: Vector2, new_type: String) -> bool:
+	var idx: int = get_shape_index_at_point(point)
+	if idx < 0:
+		return false
+	var s: Dictionary = shapes[idx]
+	if String(s.get("type", "")) == new_type:
+		return false
+	var poly: PackedVector2Array = (s.get("polygon", PackedVector2Array()) as PackedVector2Array).duplicate()
+	shapes.remove_at(idx)
+	merge_or_add_shape(new_type, poly)
+	return true
+
+## Retorna o tipo de grama presente em uma coordenada contínua 2D (X, Z no mundo)
+func get_type_at_point(point: Vector2) -> String:
+	var idx: int = get_shape_index_at_point(point)
+	if idx >= 0:
+		return String(shapes[idx].get("type", "grass_green"))
 	return ""
 
 ## Mescla um novo polígono desenhado nas formas existentes do mesmo tipo (Auto-Merge via Clipper C++)

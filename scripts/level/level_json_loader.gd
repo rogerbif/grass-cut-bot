@@ -66,7 +66,12 @@ const OBJECT_SCENES: Dictionary = {
 	"flower_daisy_bicolor": preload("res://scenes/plants/flower_daisy.tscn"),
 	"flower_sunflower": preload("res://scenes/plants/flower_sunflower.tscn"),
 	"flower_tulip": preload("res://scenes/plants/flower_tulip.tscn"),
+	"flower_tulip_yellow": preload("res://scenes/plants/flower_tulip.tscn"),
+	"flower_tulip_purple": preload("res://scenes/plants/flower_tulip.tscn"),
+	"flower_tulip_orange": preload("res://scenes/plants/flower_tulip.tscn"),
 	"flower_bed": preload("res://scenes/plants/flower_bed.tscn"),
+	"flower_bed_blue": preload("res://scenes/plants/flower_bed.tscn"),
+	"flower_bed_white": preload("res://scenes/plants/flower_bed.tscn"),
 	"rock": preload("res://scenes/obstacles/rock.tscn")
 }
 

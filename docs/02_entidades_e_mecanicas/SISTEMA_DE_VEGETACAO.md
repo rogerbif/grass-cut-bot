@@ -31,10 +31,13 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 | **Rosa Pêssego Salmão** | `flower_rose_peach` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Miolo damasco dourado e pétalas pêssego com base terracota coral | Variação cromática nobre oficial com gradiente suave aprovado. |
 | **Margarida do Campo** | `flower_daisy` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas brancas | Modelo em 3 partes com miolo ouro vibrante. No Hit 1 ejeta 2 pétalas brancas e 1 folha no ar. Despetalação em 2 levas. |
 | **Girassol Solar** | `flower_sunflower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar | Modelo em 3 partes com disco central avelã e pétalas em leque dourado. No Hit 1 ejeta 2 pétalas e 1 folha no ar. Ceifa fatal no 3º golpe. |
-| **Flor Sino (Campânula)** | `flower_bell` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas azul campânula | Modelo em 3 partes com pétalas em sino azul celeste. No Hit 1 ejeta 2 sinos e 1 folha no ar. Despetalação em 2 levas. |
-| **Cravo Corola** | `flower_corolla` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas coral damasco | Modelo em 3 partes com coroa aberta. No Hit 1 ejeta 2 pétalas coral e 1 folha no ar. Despetalação progressiva. |
-| **Tulipa Imperial** | `flower_tulip` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas vermelho rubi | Modelo em 3 partes com cálice imperial. No Hit 1 ejeta 2 cálices e 1 folha no ar. Despetalação externa e interna. |
-| **Canteiro Florido** | `flower_bed` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas lilás violeta | Modelo em 3 partes com tufo largo rasteiro. No Hit 1 ejeta 2 florzinhas inteiras e 1 folha no ar. Ceifa rente ao solo no 3º hit. |
+| **Tulipa Imperial (Rubi)** | `flower_tulip` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas vermelho rubi com base vinho/bordeaux escuro profundo | Modelo em 3 partes com gradiente interno de alto contraste (`petal_inner_color`). Despetalação em 2 levas. |
+| **Tulipa Imperial Solar** | `flower_tulip_yellow` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar com base âmbar profundo | Variação cromática oficial de alto contraste. |
+| **Tulipa Imperial Real** | `flower_tulip_purple` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas violeta real com base amora escura | Variação cromática nobre oficial. |
+| **Tulipa Imperial Chama** | `flower_tulip_orange` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas laranja tangerina com base carmesim | Variação cromática quente oficial. |
+| **Canteiro Florido (Misto)** | `flower_bed` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta orquídea com base ameixa profunda e miolo dourado | Base alongada em +50% (altura total de 1.18m, mais alto que a grama). No Hit 1 ejeta 2 flores e 1 folha no ar. |
+| **Canteiro Florido Celeste** | `flower_bed_blue` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Flores ciano/azul elétrico com base marinho profundo | Variação ornamental oficial para ilhas litorâneas. |
+| **Canteiro Florido Alvorada** | `flower_bed_white` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Flores branco perolado com base verde menta profunda | Variação ornamental oficial para jardins reais. |
 
 ---
 

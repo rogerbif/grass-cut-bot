@@ -1,12 +1,11 @@
-# Blender 5.2.1 LTS
-# www.blender.org
+# Pedaço chanfrado 3D de lâmina de grama cortada (ampliado para visualização nítida mobile/isométrica)
 mtllib cut_leaf_piece.mtl
 o cut_leaf_piece
-v -0.022000 -0.100000 0.000000
-v 0.020000 -0.085000 0.000000
-v 0.016000 0.000000 0.004000
-v -0.016000 0.000000 -0.004000
-v 0.002000 0.115000 0.000000
+v -0.055000 -0.220000 0.000000
+v 0.050000 -0.190000 0.000000
+v 0.040000 0.020000 0.012000
+v -0.040000 0.020000 -0.012000
+v 0.005000 0.260000 0.000000
 vn -0.1077 0.0012 0.9942
 vn -0.2425 0.0042 0.9701
 s 0

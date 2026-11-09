@@ -37,8 +37,15 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "flower_daisy_bicolor", "name": "✨ Margarida Bicolor", "color": Color(1.0, 0.90, 0.50), "unit": "margaridas" },
 	# --- Demais Flores Nobres & Canteiros ---
 	{ "key": "flower_sunflower", "name": "🌻 Girassol", "color": Color(1.0, 0.88, 0.0), "unit": "girassóis" },
-	{ "key": "flower_tulip", "name": "🌷 Tulipa Imperial", "color": Color(1.0, 0.08, 0.24), "unit": "tulipas" },
-	{ "key": "flower_bed", "name": "🪻 Canteiro Florido", "color": Color(0.88, 0.30, 1.0), "unit": "canteiros" }
+	# --- Tulipas Imperiais (4 Variações) ---
+	{ "key": "flower_tulip", "name": "🌷 Tulipa Rubi", "color": Color(1.0, 0.12, 0.28), "unit": "tulipas" },
+	{ "key": "flower_tulip_yellow", "name": "💛 Tulipa Solar", "color": Color(1.0, 0.88, 0.05), "unit": "tulipas" },
+	{ "key": "flower_tulip_purple", "name": "💜 Tulipa Real", "color": Color(0.85, 0.15, 0.80), "unit": "tulipas" },
+	{ "key": "flower_tulip_orange", "name": "🧡 Tulipa Chama", "color": Color(1.0, 0.45, 0.05), "unit": "tulipas" },
+	# --- Canteiros Floridos (3 Variações) ---
+	{ "key": "flower_bed", "name": "🪻 Canteiro Misto", "color": Color(0.92, 0.35, 1.0), "unit": "canteiros" },
+	{ "key": "flower_bed_blue", "name": "💠 Canteiro Celeste", "color": Color(0.15, 0.75, 1.0), "unit": "canteiros" },
+	{ "key": "flower_bed_white", "name": "🤍 Canteiro Alvorada", "color": Color(0.96, 0.98, 1.0), "unit": "canteiros" }
 ]
 
 class FlowerColorSwatch extends Control:
@@ -154,6 +161,17 @@ signal auto_calc_time_requested()
 signal layer_visibility_toggled(layer_idx: int)
 signal toggle_3d_grass_preview_requested()
 signal save_and_load_level_requested(level_id: int)
+signal island_template_requested(template_id: String)
+signal save_as_requested(target_level_id: int)
+
+const ISLAND_TEMPLATES_META: Array[Dictionary] = [
+	{ "id": "retangulo", "label": "⬛ Ilha Retangular Clássica" },
+	{ "id": "atol", "label": "🍩 Atol / Anel (Lagoa Central)" },
+	{ "id": "gemeas", "label": "🌉 Ilhas Gêmeas com Ponte" },
+	{ "id": "cruz_4", "label": "➕ Quatro Ilhotas em Cruz" },
+	{ "id": "estrela", "label": "⭐ Ilha Estrela Tropical" },
+	{ "id": "meia_lua", "label": "🌙 Enseada Meia-Lua (Baía)" }
+]
 
 var spin_level: SpinBox
 var spin_width: SpinBox
@@ -163,7 +181,12 @@ var btn_grid_toggle: Button
 var btn_snap_toggle: Button
 var btn_3d_grass_toggle: Button
 var btn_save: Button
+var btn_save_as: Button
+var menu_island_templates: MenuButton
 var unsaved_dialog: ConfirmationDialog
+var save_as_dialog: ConfirmationDialog
+var spin_save_as_target: SpinBox
+var lbl_save_as_status: Label
 var _is_dirty_state: bool = false
 var _pending_load_level_id: int = 1
 
@@ -255,6 +278,7 @@ func _build_ui() -> void:
 	_build_playtest_bar()
 	_build_toast_container()
 	_build_unsaved_dialog()
+	_build_save_as_dialog()
 
 func _make_panel_style(bg: Color, border: Color, radius: int = 10) -> StyleBoxFlat:
 	var s: StyleBoxFlat = StyleBoxFlat.new()
@@ -461,10 +485,33 @@ func _build_top_bar() -> void:
 
 	hbox.add_child(VSeparator.new())
 
-	var btn_island: Button = _create_styled_button("🏝️ Gerar Ilha Base", Color(0.28, 0.80, 0.45))
-	btn_island.tooltip_text = "Preenche a grade com uma ilha 3D completa com falésias e bordas"
+	var btn_island: Button = _create_styled_button("🏝️ Ilha Base", Color(0.28, 0.80, 0.45))
+	btn_island.tooltip_text = "Preenche a grade com uma ilha 3D retangular completa com falésias e bordas"
 	btn_island.pressed.connect(func() -> void: generate_base_island_requested.emit())
 	hbox.add_child(btn_island)
+
+	menu_island_templates = MenuButton.new()
+	menu_island_templates.text = "📐 Templates ▾"
+	menu_island_templates.flat = false
+	menu_island_templates.custom_minimum_size = Vector2(0, 34)
+	menu_island_templates.focus_mode = Control.FOCUS_NONE
+	menu_island_templates.tooltip_text = "Escolher um formato pré-pronto de ilha (Atol, Gêmeas, Cruz, Estrela, Meia-Lua)"
+	menu_island_templates.add_theme_font_size_override("font_size", 14)
+	menu_island_templates.add_theme_color_override("font_color", Color.WHITE)
+	var accent_tpl: Color = Color(0.25, 0.78, 0.65)
+	menu_island_templates.add_theme_stylebox_override("normal", _make_btn_style(Color(0.14, 0.18, 0.22, 0.95), accent_tpl.darkened(0.25)))
+	menu_island_templates.add_theme_stylebox_override("hover", _make_btn_style(accent_tpl.darkened(0.55), accent_tpl.lightened(0.2)))
+	menu_island_templates.add_theme_stylebox_override("pressed", _make_btn_style(accent_tpl.darkened(0.35), Color.WHITE))
+	var popup_tpl: PopupMenu = menu_island_templates.get_popup()
+	for i in range(ISLAND_TEMPLATES_META.size()):
+		var t_meta: Dictionary = ISLAND_TEMPLATES_META[i]
+		popup_tpl.add_item(String(t_meta["label"]), i)
+	popup_tpl.id_pressed.connect(func(idx: int) -> void:
+		if idx >= 0 and idx < ISLAND_TEMPLATES_META.size():
+			var tpl_id: String = String(ISLAND_TEMPLATES_META[idx]["id"])
+			island_template_requested.emit(tpl_id)
+	)
+	hbox.add_child(menu_island_templates)
 
 	var btn_undo: Button = _create_styled_button("↩️ Undo", Color(0.65, 0.65, 0.75))
 	btn_undo.tooltip_text = "Desfazer (Ctrl+Z)"
@@ -481,6 +528,13 @@ func _build_top_bar() -> void:
 	btn_save = _create_styled_button("💾 Salvar [Ctrl+S]", Color(0.2, 0.85, 0.45))
 	btn_save.pressed.connect(func() -> void: save_json_requested.emit())
 	hbox.add_child(btn_save)
+
+	btn_save_as = _create_styled_button("📋 Duplicar", Color(0.30, 0.75, 0.95))
+	btn_save_as.tooltip_text = "Salvar Como / Duplicar Fase para outro número [Ctrl+Shift+S]"
+	btn_save_as.pressed.connect(func() -> void:
+		open_save_as_dialog(_find_next_free_level_id())
+	)
+	hbox.add_child(btn_save_as)
 
 	var btn_bake: Button = _create_styled_button("📦 Bake .tscn", Color(0.65, 0.45, 0.95))
 	btn_bake.tooltip_text = "Exporta também como cena nativa res://scenes/levels/level_XX.tscn"
@@ -569,7 +623,7 @@ func _build_left_panel() -> void:
 
 	# 2. Ferramentas
 	var lbl_tools: Label = Label.new()
-	lbl_tools.text = "FERRAMENTAS [1..4]"
+	lbl_tools.text = "FERRAMENTAS [1..5]"
 	lbl_tools.add_theme_font_size_override("font_size", 13)
 	lbl_tools.add_theme_color_override("font_color", Color(0.55, 0.88, 1.0))
 	vbox.add_child(lbl_tools)
@@ -578,7 +632,8 @@ func _build_left_panel() -> void:
 		{ "id": 0, "name": "🖌️ [1] Pincel / Carimbo", "color": Color(0.25, 0.88, 0.52) },
 		{ "id": 1, "name": "🧽 [2] Borracha (Apagar)", "color": Color(0.95, 0.38, 0.38) },
 		{ "id": 2, "name": "🔲 [3] Retângulo (Box Fill)", "color": Color(0.98, 0.78, 0.22) },
-		{ "id": 3, "name": "🤖 [4] Posicionar Spawn", "color": Color(0.95, 0.85, 0.25) }
+		{ "id": 3, "name": "🤖 [4] Posicionar Spawn", "color": Color(0.95, 0.85, 0.25) },
+		{ "id": 4, "name": "🪣 [5] Balde (Preencher)", "color": Color(0.35, 0.85, 0.98) }
 	]
 
 	for tm in tools_meta:
@@ -1694,9 +1749,9 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 			icon = "🌼"
 		elif k_str == "flower_sunflower":
 			icon = "🌻"
-		elif k_str == "flower_tulip":
+		elif k_str.begins_with("flower_tulip"):
 			icon = "🌷"
-		elif k_str == "flower_bed":
+		elif k_str.begins_with("flower_bed"):
 			icon = "🪻"
 		elif k_str.begins_with("flower"):
 			icon = "🌸"
@@ -1786,4 +1841,76 @@ func _request_level_switch(target_lvl: int) -> void:
 		unsaved_dialog.popup_centered(Vector2i(420, 140))
 	else:
 		level_load_requested.emit(target_lvl)
+
+func _find_next_free_level_id() -> int:
+	for id_candidate in range(1, 201):
+		var p: String = "res://data/levels/level_%02d.json" % id_candidate
+		if not FileAccess.file_exists(p):
+			return id_candidate
+	return clampi(int(spin_level.value) + 1 if spin_level != null else 41, 1, 200)
+
+func _update_save_as_status_label(target_id: int) -> void:
+	if lbl_save_as_status == null:
+		return
+	var p: String = "res://data/levels/level_%02d.json" % target_id
+	if FileAccess.file_exists(p):
+		lbl_save_as_status.text = "⚠️ A Fase %02d já existe em disco (será sobrescrita)." % target_id
+		lbl_save_as_status.add_theme_color_override("font_color", Color(1.0, 0.78, 0.25))
+	else:
+		lbl_save_as_status.text = "✨ A Fase %02d está livre (nova fase será criada)." % target_id
+		lbl_save_as_status.add_theme_color_override("font_color", Color(0.35, 0.95, 0.55))
+
+func _build_save_as_dialog() -> void:
+	save_as_dialog = ConfirmationDialog.new()
+	save_as_dialog.title = "📋 Duplicar / Salvar Fase Como..."
+	save_as_dialog.ok_button_text = "💾 Salvar Cópia"
+	save_as_dialog.cancel_button_text = "Cancelar"
+
+	var vbox_dlg: VBoxContainer = VBoxContainer.new()
+	vbox_dlg.add_theme_constant_override("separation", 10)
+	save_as_dialog.add_child(vbox_dlg)
+
+	var lbl_desc: Label = Label.new()
+	lbl_desc.text = "Escolha o número de destino para salvar uma cópia completa desta fase:"
+	vbox_dlg.add_child(lbl_desc)
+
+	var hbox_spin: HBoxContainer = HBoxContainer.new()
+	hbox_spin.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_spin.add_theme_constant_override("separation", 8)
+	vbox_dlg.add_child(hbox_spin)
+
+	var lbl_target: Label = Label.new()
+	lbl_target.text = "Salvar na Fase nº:"
+	hbox_spin.add_child(lbl_target)
+
+	spin_save_as_target = SpinBox.new()
+	spin_save_as_target.min_value = 1
+	spin_save_as_target.max_value = 200
+	spin_save_as_target.step = 1
+	spin_save_as_target.value = 41
+	spin_save_as_target.custom_minimum_size = Vector2(90, 32)
+	spin_save_as_target.value_changed.connect(func(v: float) -> void:
+		_update_save_as_status_label(int(v))
+	)
+	hbox_spin.add_child(spin_save_as_target)
+
+	lbl_save_as_status = Label.new()
+	lbl_save_as_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox_dlg.add_child(lbl_save_as_status)
+
+	save_as_dialog.confirmed.connect(func() -> void:
+		if spin_save_as_target != null:
+			spin_save_as_target.apply()
+			save_as_requested.emit(int(spin_save_as_target.value))
+	)
+	add_child(save_as_dialog)
+
+func open_save_as_dialog(suggested_id: int = -1) -> void:
+	if save_as_dialog == null or spin_save_as_target == null:
+		return
+	var target_id: int = suggested_id if suggested_id >= 1 else _find_next_free_level_id()
+	spin_save_as_target.value = float(clampi(target_id, 1, 200))
+	_update_save_as_status_label(int(spin_save_as_target.value))
+	save_as_dialog.popup_centered(Vector2i(440, 170))
+
 

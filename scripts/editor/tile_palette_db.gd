@@ -403,6 +403,80 @@ const ITEM_VARIATIONS: Dictionary = {
 			"center_color": Color(0.92, 0.60, 0.0, 1.0),
 			"material_path": "res://shaders/flower_daisy_bicolor_material.tres"
 		}
+	],
+	"flower_tulip": [
+		{
+			"id": "flower_tulip",
+			"name": "Rubi",
+			"full_name": "Tulipa Imperial Rubi",
+			"icon": "🌷",
+			"inner_color": Color(0.35, 0.02, 0.06, 1.0),
+			"petal_color": Color(1.0, 0.12, 0.28, 1.0),
+			"center_color": Color(0.85, 0.60, 0.05, 1.0),
+			"material_path": "res://shaders/flower_tulip_material.tres"
+		},
+		{
+			"id": "flower_tulip_yellow",
+			"name": "Solar",
+			"full_name": "Tulipa Imperial Solar",
+			"icon": "💛",
+			"inner_color": Color(0.65, 0.28, 0.02, 1.0),
+			"petal_color": Color(1.0, 0.88, 0.05, 1.0),
+			"center_color": Color(0.30, 0.15, 0.05, 1.0),
+			"material_path": "res://shaders/flower_tulip_yellow_material.tres"
+		},
+		{
+			"id": "flower_tulip_purple",
+			"name": "Real",
+			"full_name": "Tulipa Imperial Real",
+			"icon": "💜",
+			"inner_color": Color(0.25, 0.02, 0.35, 1.0),
+			"petal_color": Color(0.85, 0.15, 0.80, 1.0),
+			"center_color": Color(1.0, 0.85, 0.20, 1.0),
+			"material_path": "res://shaders/flower_tulip_purple_material.tres"
+		},
+		{
+			"id": "flower_tulip_orange",
+			"name": "Chama",
+			"full_name": "Tulipa Imperial Chama",
+			"icon": "🧡",
+			"inner_color": Color(0.45, 0.05, 0.05, 1.0),
+			"petal_color": Color(1.0, 0.45, 0.05, 1.0),
+			"center_color": Color(0.95, 0.85, 0.10, 1.0),
+			"material_path": "res://shaders/flower_tulip_orange_material.tres"
+		}
+	],
+	"flower_bed": [
+		{
+			"id": "flower_bed",
+			"name": "Misto",
+			"full_name": "Canteiro Florido Misto",
+			"icon": "🪻",
+			"inner_color": Color(0.38, 0.08, 0.55, 1.0),
+			"petal_color": Color(0.92, 0.35, 1.0, 1.0),
+			"center_color": Color(1.0, 0.90, 0.10, 1.0),
+			"material_path": "res://shaders/flower_bed_material.tres"
+		},
+		{
+			"id": "flower_bed_blue",
+			"name": "Celeste",
+			"full_name": "Canteiro Florido Celeste",
+			"icon": "💠",
+			"inner_color": Color(0.05, 0.18, 0.55, 1.0),
+			"petal_color": Color(0.15, 0.75, 1.0, 1.0),
+			"center_color": Color(1.0, 0.95, 0.20, 1.0),
+			"material_path": "res://shaders/flower_bed_blue_material.tres"
+		},
+		{
+			"id": "flower_bed_white",
+			"name": "Alvorada",
+			"full_name": "Canteiro Florido Alvorada",
+			"icon": "🤍",
+			"inner_color": Color(0.08, 0.28, 0.20, 1.0),
+			"petal_color": Color(0.96, 0.98, 1.0, 1.0),
+			"center_color": Color(1.0, 0.85, 0.15, 1.0),
+			"material_path": "res://shaders/flower_bed_white_material.tres"
+		}
 	]
 }
 

@@ -65,9 +65,9 @@ const DETACH_CONFIG_BY_TYPE: Dictionary = {
 	"flower_bed": {
 		"model": "res://assets/models/flower_08_bed_detach.glb",
 		"offsets": {
-			"Piece_Petal_A": Vector3(-0.2531, 0.2374, -0.8424),
-			"Piece_Petal_B": Vector3(0.1881, 0.2374, 0.7965),
-			"Piece_Leaf": Vector3(-0.1092, 0.2805, 0.0025),
+			"Piece_Petal_A": Vector3(-0.2531, 0.5800, -0.8424),
+			"Piece_Petal_B": Vector3(0.1881, 0.5800, 0.7965),
+			"Piece_Leaf": Vector3(-0.1092, 0.4800, 0.0025),
 		}
 	},
 }
@@ -170,11 +170,11 @@ static func _ensure_particle_meshes() -> void:
 			var st: SurfaceTool = SurfaceTool.new()
 			st.begin(Mesh.PRIMITIVE_TRIANGLES)
 			var n: Vector3 = Vector3(0.0, 0.0, 1.0)
-			var v0 := Vector3(-0.022, -0.09, 0.0)
-			var v1 := Vector3(0.020, -0.08, 0.0)
-			var v2 := Vector3(0.016, 0.0, 0.005)
-			var v3 := Vector3(-0.016, 0.0, -0.005)
-			var v4 := Vector3(0.002, 0.11, 0.0)
+			var v0 := Vector3(-0.055, -0.22, 0.0)
+			var v1 := Vector3(0.050, -0.19, 0.0)
+			var v2 := Vector3(0.040, 0.02, 0.012)
+			var v3 := Vector3(-0.040, 0.02, -0.012)
+			var v4 := Vector3(0.005, 0.26, 0.0)
 			st.set_normal(n); st.add_vertex(v0); st.add_vertex(v1); st.add_vertex(v2)
 			st.set_normal(n); st.add_vertex(v0); st.add_vertex(v2); st.add_vertex(v3)
 			st.set_normal(n); st.add_vertex(v3); st.add_vertex(v2); st.add_vertex(v4)
@@ -185,9 +185,9 @@ static func _ensure_particle_meshes() -> void:
 		var st: SurfaceTool = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 		var n: Vector3 = Vector3(0.0, 0.0, 1.0)
-		var t0 := Vector3(-0.018, -0.05, -0.003)
-		var t1 := Vector3(0.018, -0.05, 0.003)
-		var t2 := Vector3(0.0, 0.075, 0.0)
+		var t0 := Vector3(-0.045, -0.12, -0.008)
+		var t1 := Vector3(0.045, -0.12, 0.008)
+		var t2 := Vector3(0.0, 0.18, 0.0)
 		st.set_normal(n); st.add_vertex(t0); st.add_vertex(t1); st.add_vertex(t2)
 		_grass_blade_tip_mesh = st.commit()
 
@@ -256,11 +256,26 @@ static func get_flower_colors(flower_type: String) -> Dictionary:
 			petal_col = Color(1.0, 0.88, 0.0, 1.0)
 			center_col = Color(0.48, 0.22, 0.05, 1.0)
 		"flower_tulip":
-			petal_col = Color(1.0, 0.08, 0.24, 1.0)
-			center_col = Color(0.68, 0.05, 0.15, 1.0)
+			petal_col = Color(1.0, 0.12, 0.28, 1.0)
+			center_col = Color(0.85, 0.60, 0.05, 1.0)
+		"flower_tulip_yellow":
+			petal_col = Color(1.0, 0.88, 0.05, 1.0)
+			center_col = Color(0.30, 0.15, 0.05, 1.0)
+		"flower_tulip_purple":
+			petal_col = Color(0.85, 0.15, 0.80, 1.0)
+			center_col = Color(1.0, 0.85, 0.20, 1.0)
+		"flower_tulip_orange":
+			petal_col = Color(1.0, 0.45, 0.05, 1.0)
+			center_col = Color(0.95, 0.85, 0.10, 1.0)
 		"flower_bed":
-			petal_col = Color(0.88, 0.30, 1.0, 1.0)
-			center_col = Color(0.55, 0.08, 0.80, 1.0)
+			petal_col = Color(0.92, 0.35, 1.0, 1.0)
+			center_col = Color(1.0, 0.90, 0.10, 1.0)
+		"flower_bed_blue":
+			petal_col = Color(0.15, 0.75, 1.0, 1.0)
+			center_col = Color(1.0, 0.95, 0.20, 1.0)
+		"flower_bed_white":
+			petal_col = Color(0.96, 0.98, 1.0, 1.0)
+			center_col = Color(1.0, 0.85, 0.15, 1.0)
 		_:
 			petal_col = Color(1.0, 0.18, 0.65, 1.0)
 			center_col = Color(1.0, 0.85, 0.05, 1.0)
@@ -419,12 +434,13 @@ static func _emit_sub_burst(scene_root: Node, pos: Vector3, mesh: Mesh, col: Col
 		emitter.position = pos
 	emitter.restart()
 
-## Emissão para Grama e Trigo: pedaços 3D chanfrados de folhas/lâminas de grama (estilo flores)
+## Emissão para Grama e Trigo: lâminas 3D chanfradas voando e caindo em arco (estilo pétalas)
 static func spawn_grass_cut_particles(scene_root: Node, world_pos: Vector3, col: Color) -> void:
 	_ensure_particle_meshes()
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _grass_blade_mesh, col, 8)
-	var tip_col: Color = col.lightened(0.14)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.14, 0.0), _grass_blade_tip_mesh, tip_col, 6)
+	var blade_col: Color = col.lightened(0.12)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.16, 0.0), _grass_blade_mesh, blade_col, 10)
+	var tip_col: Color = col.lightened(0.28)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.16, 0.0), _grass_blade_tip_mesh, tip_col, 8)
 
 ## Emissão para Flores: Círculos das cores de pétala e miolo, mais pedaços verdes de caule (quadrados) e folhas (triângulos)
 static func spawn_flower_cut_particles(scene_root: Node, world_pos: Vector3, flower_type: String) -> void:
@@ -550,31 +566,31 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
-		p.amount = 8
-		p.lifetime = 0.52
+		p.amount = 10
+		p.lifetime = 0.85
 		p.one_shot = true
 		p.explosiveness = 0.95
 		p.mesh = _triangle_mesh
 		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
-		p.emission_sphere_radius = 0.12
+		p.emission_sphere_radius = 0.16
 		p.particle_flag_rotate_y = false # Rotação 3D livre / tumbling
 		p.direction = Vector3(0.0, 1.0, 0.0)
-		p.spread = 82.0
-		p.gravity = Vector3(0.0, -14.0, 0.0) # Arco parabólico com queda firme
-		p.initial_velocity_min = 3.2
+		p.spread = 78.0
+		p.gravity = Vector3(0.0, -8.2, 0.0) # Arco parabólico fluido e gracioso
+		p.initial_velocity_min = 2.8
 		p.initial_velocity_max = 5.2
-		p.angular_velocity_min = -720.0
-		p.angular_velocity_max = 720.0
+		p.angular_velocity_min = -540.0
+		p.angular_velocity_max = 540.0
 		p.angle_min = -180.0
 		p.angle_max = 180.0
-		p.radial_accel_min = 1.2
-		p.radial_accel_max = 3.2
-		p.tangential_accel_min = -2.5
-		p.tangential_accel_max = 2.5
-		p.damping_min = 1.2
-		p.damping_max = 2.8
-		p.scale_amount_min = 0.75
-		p.scale_amount_max = 1.35
+		p.radial_accel_min = 1.4
+		p.radial_accel_max = 3.6
+		p.tangential_accel_min = -2.2
+		p.tangential_accel_max = 2.2
+		p.damping_min = 0.8
+		p.damping_max = 2.0
+		p.scale_amount_min = 1.15
+		p.scale_amount_max = 1.85
 		p.scale_amount_curve = _scale_curve
 		scene_root.add_child(p)
 		_particle_pool.append(p)

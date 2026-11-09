@@ -61,10 +61,8 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
       - **`flower_rose` (Rosa Nobre 🌹):** Arbusto nobre com caule folhoso e rosa em camadas.
       - **`flower_daisy` (Margarida do Campo 🌼):** Haste alta com miolo ouro e 36 pétalas radiais.
       - **`flower_sunflower` (Girassol Solar 🌻):** Disco central avelã e pétalas em leque dourado.
-      - **`flower_bell` (Flor Sino / Campânula 🔔):** Formato em sino pendente azul celeste com 16 pétalas.
-      - **`flower_corolla` (Cravo Corola 🏵️):** Flor espalmada aberta em tom coral damasco.
-      - **`flower_tulip` (Tulipa Imperial 🌷):** Cálice ereto em taça vermelha rubi.
-      - **`flower_bed` (Canteiro Florido 🪻):** Tufo horizontal salpicado com folhagem verde e 9 florzinhas lilás violeta.
+      - **`flower_tulip` (Tulipa Imperial 🌷):** Cálice ereto em taça de alto contraste com 4 variações cromáticas (Rubi, Solar, Real, Chama).
+      - **`flower_bed` (Canteiro Florido 🪻):** Arranjo alongado em +50% na base (1.18m, mais alto que a grama) com 3 variações cromáticas (Misto, Celeste, Alvorada).
     - **`wheat` (Trigo Maduro 🌾):** Cultura agrícola dourada de 2 hits (3 moedas) com contagem direta 1:1 na meta do HUD.
     - **`cutter_spawn` (Spawn do Robô 🤖):** Marcador de início do robô cortador (único por fase).
   - **Borracha / Clique Direito Direto:** Ao usar a borracha ou clicar com o botão direito na Camada de Objetos (ou clicar com a borracha direto sobre uma pedra, flor ou trigo em qualquer camada), o objeto é removido imediatamente da célula discreta (`object_grid.erase(cell)`), permitindo apagar itens instantaneamente!
@@ -141,6 +139,9 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
 | **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular no Terreno Vetorial, na Grama Vetorial (com recorte costeiro) ou nos Objetos (segure `Shift` para recortar/apagar em caixa). |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
+| **Balde de Tinta (Preencher)** | `5` ou `K` | **Camada 1 (Grama):** clica sobre mancha existente para recolori-la, ou sobre solo livre para preencher toda a ilha respeitando margem costeira, lagos, rochas e spawn (`Shift + Clique` substitui toda a grama).<br>**Camada 0 (Terreno):** clica em lago interno para fechá-lo em 1 clique.<br>**Camada 2 (Objetos):** clica em flor/rocha para substituir todas as ocorrências do mesmo tipo. |
+| **Templates de Ilha** | Botão `📐 Templates ▾` | Gera instantaneamente 1 dos 6 formatos de ilha pré-prontos (`Retangular`, `Atol / Anel`, `Ilhas Gêmeas com Ponte`, `Quatro Ilhotas em Cruz`, `Estrela Tropical`, `Enseada Meia-Lua`). |
+| **Duplicar / Salvar Como** | `Ctrl + Shift + S` (ou `📋 Duplicar`) | Abre modal sugerindo o próximo slot de fase livre (`1..200`) e salva uma cópia completa da fase atual. |
 | **Escala Rápida no Mouse** | `Ctrl + Scroll` ou `Alt + Scroll` | Ajusta o tamanho do pincel (`1` a `20`) diretamente na roda do mouse sem mover o zoom da câmera. |
 | **Auto-Calcular Tempo** | Botão `⚡ Auto` | Calcula e aplica automaticamente o tempo recomendado (`time_limit`) com base nas metas, área de grama, rochas e flores. |
 | **Visibilidade de Camada** | Botões `👁️` / `🚫` | Oculta ou exibe individualmente cada uma das 3 camadas (`Terreno`, `Grama`, `Objetos`). |

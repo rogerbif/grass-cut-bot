@@ -72,7 +72,8 @@ enum ToolMode {
 	BRUSH = 0,
 	ERASER = 1,
 	BOX_FILL = 2,
-	SPAWN = 3
+	SPAWN = 3,
+	FLOOD_FILL = 4
 }
 
 @onready var editor_camera: Camera3D = $EditorCamera
@@ -275,6 +276,8 @@ func _connect_ui_signals() -> void:
 	ui.layer_visibility_toggled.connect(toggle_layer_visibility)
 	ui.toggle_3d_grass_preview_requested.connect(toggle_3d_grass_preview)
 	ui.generate_base_island_requested.connect(_on_generate_base_island)
+	ui.island_template_requested.connect(apply_island_template)
+	ui.save_as_requested.connect(save_level_as)
 	ui.clear_terrain_requested.connect(_on_clear_terrain)
 	ui.toggle_grid_requested.connect(toggle_grid_visibility)
 	ui.cycle_snap_requested.connect(cycle_snap_mode)
@@ -430,7 +433,10 @@ func _input(event: InputEvent) -> void:
 
 			if not is_playtesting:
 				if ke.ctrl_pressed and ke.keycode == KEY_S:
-					save_current_level_json()
+					if ke.shift_pressed and ui != null and ui.has_method("open_save_as_dialog"):
+						ui.call("open_save_as_dialog", -1)
+					else:
+						save_current_level_json()
 					get_viewport().set_input_as_handled()
 					return
 				if not ui.has_text_focus():
@@ -458,6 +464,10 @@ func _input(event: InputEvent) -> void:
 						_refresh_hover_preview()
 					KEY_4:
 						active_tool = ToolMode.SPAWN
+						_sync_all_ui()
+						_refresh_hover_preview()
+					KEY_5, KEY_K:
+						active_tool = ToolMode.FLOOD_FILL
 						_sync_all_ui()
 						_refresh_hover_preview()
 					KEY_S:
@@ -560,6 +570,10 @@ func _input(event: InputEvent) -> void:
 					if is_hover_in_bounds:
 						_push_undo_snapshot()
 						_place_spawn_at(hovered_cell)
+				elif active_tool == ToolMode.FLOOD_FILL:
+					if is_hover_in_bounds:
+						_push_undo_snapshot()
+						_apply_flood_fill_at(hovered_cell, Vector2(last_world_hit.x, last_world_hit.z), Input.is_key_pressed(KEY_SHIFT))
 				elif active_tool == ToolMode.BRUSH or active_tool == ToolMode.ERASER:
 					var is_erase_tool: bool = (active_tool == ToolMode.ERASER)
 					var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
@@ -695,8 +709,11 @@ func _get_safe_coastal_island_polygons() -> Array[PackedVector2Array]:
 	for p: PackedVector2Array in island_polys:
 		if p.size() < 3:
 			continue
+		var p_cw: PackedVector2Array = p.duplicate()
+		if not Geometry2D.is_polygon_clockwise(p_cw):
+			p_cw.reverse()
 		var inset_arr: Array[PackedVector2Array] = Geometry2D.offset_polygon(
-			p, -COASTAL_GRASS_CORRIDOR, Geometry2D.JOIN_ROUND
+			p_cw, -COASTAL_GRASS_CORRIDOR, Geometry2D.JOIN_ROUND
 		)
 		for ip: PackedVector2Array in inset_arr:
 			if ip.size() >= 3:
@@ -1645,32 +1662,306 @@ func _restore_snapshot(snap: Dictionary) -> void:
 	_sync_all_ui()
 
 func _on_generate_base_island() -> void:
+	apply_island_template("retangulo")
+
+func _apply_flood_fill_at(cell: Vector2i, hit_2d: Vector2, replace_all: bool = false) -> void:
+	if active_layer == EditLayer.TERRAIN:
+		if vector_terrain != null and vector_terrain.has_method("fill_hole_at_point"):
+			if bool(vector_terrain.call("fill_hole_at_point", hit_2d)):
+				_rebuild_3d_world()
+				_sync_all_ui()
+				if ui != null:
+					ui.show_toast("🪣 Lago / furo fechado com terra firme!", Color(0.28, 0.88, 0.48))
+				return
+		if vector_terrain == null or bool(vector_terrain.call("is_empty")):
+			apply_island_template("retangulo")
+		else:
+			if ui != null:
+				ui.show_toast("ℹ️ Clique dentro de um furo/lago para fechá-lo com o Balde.", Color(0.65, 0.85, 1.0))
+		return
+
+	elif active_layer == EditLayer.GRASS:
+		if vector_grass == null:
+			return
+		# 1. Se clicou em cima de uma mancha de grama existente e não está segurando Shift, recolore essa mancha!
+		if not replace_all and vector_grass.has_method("recolor_shape_at_point"):
+			var existing_type: String = String(vector_grass.call("get_type_at_point", hit_2d))
+			if not existing_type.is_empty():
+				if existing_type == active_grass_id:
+					if ui != null:
+						ui.show_toast("ℹ️ Esta mancha já é do tipo %s (use Shift+Clique para preencher toda a ilha)." % active_grass_id, Color(0.65, 0.85, 1.0))
+					return
+				if bool(vector_grass.call("recolor_shape_at_point", hit_2d, active_grass_id)):
+					_rebuild_3d_world()
+					_sync_all_ui()
+					if ui != null:
+						ui.show_toast("🪣 Mancha recolorida: %s -> %s" % [existing_type, active_grass_id], Color(0.35, 0.95, 0.65))
+					return
+
+		# 2. Caso contrário, preenche o solo livre da ilha respeitando corredor costeiro, lagos, rochas e spawn
+		var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
+		if safe_polys.is_empty():
+			if ui != null:
+				ui.show_toast("⚠️ Crie uma ilha na Camada 0 antes de usar o Balde de Grama!", Color(1.0, 0.75, 0.25))
+			return
+
+		# Recorta furos internos da ilha expandidos pelo corredor costeiro (0.48m)
+		var working_polys: Array[PackedVector2Array] = safe_polys.duplicate()
+		if vector_terrain != null and vector_terrain.has_method("get_holes"):
+			var holes_arr: Array[PackedVector2Array] = vector_terrain.call("get_holes")
+			for h: PackedVector2Array in holes_arr:
+				if h.size() < 3:
+					continue
+				var h_cw: PackedVector2Array = h.duplicate()
+				if not Geometry2D.is_polygon_clockwise(h_cw):
+					h_cw.reverse()
+				var expanded_holes: Array[PackedVector2Array] = Geometry2D.offset_polygon(
+					h_cw, COASTAL_GRASS_CORRIDOR, Geometry2D.JOIN_ROUND
+				)
+				for eh: PackedVector2Array in expanded_holes:
+					var next_polys: Array[PackedVector2Array] = []
+					for wp: PackedVector2Array in working_polys:
+						var clipped: Array[PackedVector2Array] = vector_grass.call("_clip_polygon_without_holes", wp, eh)
+						for cp: PackedVector2Array in clipped:
+							if cp.size() >= 3:
+								next_polys.append(cp)
+					working_polys = next_polys
+
+		# Se não estiver em modo replace_all (Shift), preserva manchas existentes de outras cores
+		var existing_other_polys: Array[PackedVector2Array] = []
+		if not replace_all:
+			var shapes_arr: Array = vector_grass.call("get_shapes") as Array
+			for s_var: Variant in shapes_arr:
+				var s_dict: Dictionary = s_var as Dictionary
+				if String(s_dict.get("type", "")) != active_grass_id:
+					var sp: PackedVector2Array = s_dict.get("polygon", PackedVector2Array()) as PackedVector2Array
+					if sp.size() >= 3:
+						existing_other_polys.append(sp.duplicate())
+		else:
+			vector_grass.call("clear")
+
+		for wp: PackedVector2Array in working_polys:
+			var pieces: Array[PackedVector2Array] = [wp]
+			for other_p: PackedVector2Array in existing_other_polys:
+				var next_pieces: Array[PackedVector2Array] = []
+				for pc: PackedVector2Array in pieces:
+					var clipped_pc: Array[PackedVector2Array] = vector_grass.call("_clip_polygon_without_holes", pc, other_p)
+					for c_part: PackedVector2Array in clipped_pc:
+						if c_part.size() >= 3:
+							next_pieces.append(c_part)
+				pieces = next_pieces
+			for final_p: PackedVector2Array in pieces:
+				if final_p.size() >= 3:
+					vector_grass.call("merge_or_add_shape", active_grass_id, final_p)
+
+		# Recorta clareiras de rochas e do spawn
+		for c_key: Variant in object_grid.keys():
+			var c_pos: Vector2i = c_key as Vector2i
+			var entry: Dictionary = object_grid[c_pos] as Dictionary
+			if String(entry.get("type", "")) == "rock":
+				var r_world: Vector3 = LevelJsonLoader.grid_to_world(c_pos.x, c_pos.y, grid_width, grid_height, CELL_SIZE)
+				var r_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(Vector2(r_world.x, r_world.z), ROCK_CLEARANCE_RADIUS)
+				vector_grass.call("clip_shapes", r_poly)
+		var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
+		var sp_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(Vector2(sp_world.x, sp_world.z), SPAWN_CLEARANCE_RADIUS)
+		vector_grass.call("clip_shapes", sp_poly)
+
+		_rebuild_3d_world()
+		_sync_all_ui()
+		if ui != null:
+			ui.show_toast("🪣 Ilha preenchida com %s!" % active_grass_id, Color(0.35, 0.95, 0.65))
+		return
+
+	elif active_layer == EditLayer.OBJECTS:
+		if not object_grid.has(cell):
+			if ui != null:
+				ui.show_toast("ℹ️ Na Camada de Objetos, clique com o Balde sobre uma flor/pedra para substituir todas do mesmo tipo.", Color(0.65, 0.85, 1.0))
+			return
+		var target_entry: Dictionary = object_grid[cell] as Dictionary
+		var old_type: String = String(target_entry.get("type", ""))
+		if old_type.is_empty() or old_type == active_object_id:
+			return
+		var replaced_count: int = 0
+		for k_cell: Variant in object_grid.keys():
+			var c_vec: Vector2i = k_cell as Vector2i
+			var e_dict: Dictionary = object_grid[c_vec] as Dictionary
+			if String(e_dict.get("type", "")) == old_type:
+				e_dict["type"] = active_object_id
+				object_grid[c_vec] = e_dict
+				replaced_count += 1
+		if replaced_count > 0:
+			_rebuild_3d_world()
+			_sync_all_ui()
+			if ui != null:
+				ui.show_toast("🪣 %d objeto(s) '%s' substituídos por '%s'!" % [replaced_count, old_type, active_object_id], Color(0.35, 0.95, 0.65))
+
+func apply_island_template(template_id: String) -> void:
 	_push_undo_snapshot()
 	terrain_grid.clear()
-	if vector_terrain != null:
-		vector_terrain.call("clear")
-		var half_w: float = (float(grid_width) * CELL_SIZE) * 0.5 - 0.20
-		var half_h: float = (float(grid_height) * CELL_SIZE) * 0.5 - 0.20
-		var base_rect: PackedVector2Array = PackedVector2Array([
-			Vector2(-half_w, -half_h),
-			Vector2(half_w, -half_h),
-			Vector2(half_w, half_h),
-			Vector2(-half_w, half_h)
-		])
-		var rounded: PackedVector2Array = IslandMeshBuilder.round_polygon_corners(base_rect, 0.40, 5)
-		vector_terrain.call("add_land", rounded)
-	else:
-		for gz in range(grid_height):
-			for gx in range(grid_width):
+	if vector_terrain == null:
+		vector_terrain = VectorTerrainFieldScript.new()
+	vector_terrain.call("clear")
+
+	var half_w: float = (float(grid_width) * CELL_SIZE) * 0.5 - 0.20
+	var half_h: float = (float(grid_height) * CELL_SIZE) * 0.5 - 0.20
+	var min_half: float = minf(half_w, half_h)
+
+	match template_id:
+		"atol":
+			var outer_rect: PackedVector2Array = PackedVector2Array([
+				Vector2(-half_w, -half_h),
+				Vector2(half_w, -half_h),
+				Vector2(half_w, half_h),
+				Vector2(-half_w, half_h)
+			])
+			vector_terrain.call("add_land", outer_rect)
+			var hole_r: float = maxf(1.2, min_half * 0.42)
+			var inner_hole: PackedVector2Array = BrushPatterns.get_circle_polygon(Vector2.ZERO, hole_r, 24)
+			vector_terrain.call("carve_water", inner_hole)
+			# Posiciona o spawn na faixa sul do atol (terra firme garantida)
+			var south_z: float = (half_h + hole_r) * 0.5
+			spawn_cell = LevelJsonLoader.world_to_grid(Vector3(0.0, 0.0, south_z), grid_width, grid_height, CELL_SIZE)
+
+		"gemeas":
+			var lobe_w: float = half_w * 0.44
+			var left_cx: float = -half_w + lobe_w
+			var right_cx: float = half_w - lobe_w
+			var left_rect: PackedVector2Array = PackedVector2Array([
+				Vector2(left_cx - lobe_w, -half_h),
+				Vector2(left_cx + lobe_w, -half_h),
+				Vector2(left_cx + lobe_w, half_h),
+				Vector2(left_cx - lobe_w, half_h)
+			])
+			var right_rect: PackedVector2Array = PackedVector2Array([
+				Vector2(right_cx - lobe_w, -half_h),
+				Vector2(right_cx + lobe_w, -half_h),
+				Vector2(right_cx + lobe_w, half_h),
+				Vector2(right_cx - lobe_w, half_h)
+			])
+			var bridge_half_h: float = maxf(1.2, half_h * 0.34)
+			var bridge_rect: PackedVector2Array = PackedVector2Array([
+				Vector2(left_cx, -bridge_half_h),
+				Vector2(right_cx, -bridge_half_h),
+				Vector2(right_cx, bridge_half_h),
+				Vector2(left_cx, bridge_half_h)
+			])
+			vector_terrain.call("add_land", left_rect)
+			vector_terrain.call("add_land", right_rect)
+			vector_terrain.call("add_land", bridge_rect)
+			spawn_cell = Vector2i(int(float(grid_width) / 2.0), int(float(grid_height) / 2.0))
+
+		"cruz_4":
+			var arm_w: float = maxf(1.6, min_half * 0.45)
+			var horiz_bar: PackedVector2Array = PackedVector2Array([
+				Vector2(-half_w, -arm_w),
+				Vector2(half_w, -arm_w),
+				Vector2(half_w, arm_w),
+				Vector2(-half_w, arm_w)
+			])
+			var vert_bar: PackedVector2Array = PackedVector2Array([
+				Vector2(-arm_w, -half_h),
+				Vector2(arm_w, -half_h),
+				Vector2(arm_w, half_h),
+				Vector2(-arm_w, half_h)
+			])
+			vector_terrain.call("add_land", horiz_bar)
+			vector_terrain.call("add_land", vert_bar)
+			spawn_cell = Vector2i(int(float(grid_width) / 2.0), int(float(grid_height) / 2.0))
+
+		"estrela":
+			var star_poly: PackedVector2Array = PackedVector2Array()
+			var points_count: int = 5
+			var outer_r: float = min_half * 0.96
+			var inner_r: float = min_half * 0.52
+			for i in range(points_count * 2):
+				var angle: float = -PI * 0.5 + float(i) * PI / float(points_count)
+				var r: float = outer_r if (i % 2 == 0) else inner_r
+				star_poly.append(Vector2(cos(angle) * r, sin(angle) * r))
+			vector_terrain.call("add_land", star_poly)
+			spawn_cell = Vector2i(int(float(grid_width) / 2.0), int(float(grid_height) / 2.0))
+
+		"meia_lua":
+			var base_rect: PackedVector2Array = PackedVector2Array([
+				Vector2(-half_w, -half_h),
+				Vector2(half_w, -half_h),
+				Vector2(half_w, half_h),
+				Vector2(-half_w, half_h)
+			])
+			vector_terrain.call("add_land", base_rect)
+			var bay_r: float = min_half * 0.58
+			var bay_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(Vector2(0.0, -half_h * 0.65), bay_r, 24)
+			vector_terrain.call("carve_water", bay_poly)
+			var south_pos: Vector3 = Vector3(0.0, 0.0, half_h * 0.45)
+			spawn_cell = LevelJsonLoader.world_to_grid(south_pos, grid_width, grid_height, CELL_SIZE)
+
+		_: # "retangulo"
+			var rect_poly: PackedVector2Array = PackedVector2Array([
+				Vector2(-half_w, -half_h),
+				Vector2(half_w, -half_h),
+				Vector2(half_w, half_h),
+				Vector2(-half_w, half_h)
+			])
+			vector_terrain.call("add_land", rect_poly)
+			spawn_cell = Vector2i(int(float(grid_width) / 2.0), int(float(grid_height) / 2.0))
+
+	vector_terrain.call("set_corner_radius", current_corner_radius)
+	# Sincroniza células discretas aproximadas em terrain_grid para métricas e retrocompatibilidade
+	for gz in range(grid_height):
+		for gx in range(grid_width):
+			var w_pos: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, grid_width, grid_height, CELL_SIZE)
+			if bool(vector_terrain.call("is_point_on_land", Vector2(w_pos.x, w_pos.z))):
 				terrain_grid[Vector2i(gx, gz)] = {
 					"tile_id": "island_center",
 					"rot": 0,
 					"auto": true
 				}
-	spawn_cell = Vector2i(int(float(grid_width) / 2.0), int(float(grid_height) / 2.0))
+
+	# Remove objetos que tenham ficado sobre a água após aplicar o novo formato de ilha
+	var objs_to_remove: Array[Vector2i] = []
+	for ok: Variant in object_grid.keys():
+		var oc: Vector2i = ok as Vector2i
+		var owp: Vector3 = LevelJsonLoader.grid_to_world(oc.x, oc.y, grid_width, grid_height, CELL_SIZE)
+		if not bool(vector_terrain.call("is_point_on_land", Vector2(owp.x, owp.z))):
+			objs_to_remove.append(oc)
+	for rc: Vector2i in objs_to_remove:
+		object_grid.erase(rc)
+
 	_rebuild_3d_world()
 	_sync_all_ui()
-	ui.show_toast("🏝️ Ilha 3D base gerada com falésias e bordas!", Color(0.28, 0.88, 0.48))
+	if ui != null:
+		ui.show_toast("🏝️ Template '%s' gerado com sucesso!" % template_id, Color(0.28, 0.88, 0.48))
+
+func save_level_as(target_lvl_id: int) -> void:
+	var clamped_id: int = clampi(target_lvl_id, 1, 200)
+	current_level_id = clamped_id
+	if ui != null and ui.has_method("get_configured_time_limit"):
+		time_limit = ui.get_configured_time_limit()
+	IslandAutotiler.apply_autotile(terrain_grid)
+	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+	var ok: bool = LevelSerializer.save_level_json(
+		current_level_id,
+		"Fase %02d" % current_level_id,
+		time_limit,
+		grid_width,
+		grid_height,
+		spawn_cell,
+		spawn_rot,
+		terrain_grid,
+		object_grid,
+		veg_field,
+		vector_grass,
+		configured_goals,
+		CELL_SIZE,
+		vector_terrain
+	)
+	if ok:
+		_mark_dirty(false)
+		_sync_all_ui(false)
+		if ui != null:
+			ui.show_toast("📋 Fase duplicada e salva como Fase %02d! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.30, 0.90, 1.0))
+	else:
+		if ui != null:
+			ui.show_toast("❌ Erro ao salvar cópia na Fase %02d!" % current_level_id, Color(0.95, 0.3, 0.3))
 
 func _on_clear_terrain() -> void:
 	_push_undo_snapshot()

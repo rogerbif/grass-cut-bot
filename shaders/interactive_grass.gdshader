@@ -128,10 +128,11 @@ void vertex() {
 
 void fragment() {
 	// Gradiente vertical de altura foliar (Base escura visível no corpo inferior -> Topo iluminado na ponta)
-	float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
-	float h = clamp(raw_h, 0.0, 1.0);
-	// Curva quadrática que mantém color_base bem visível até ~45% da altura da folha antes de subir para color_light
-	float grad_t = smoothstep(0.10, 0.92, h * h);
+	// Se a malha possuir cores de vértice assadas (ex: Trigo com gradiente folha a folha), utiliza COLOR.r
+	float leaf_h = (COLOR.a > 0.001) ? COLOR.r : (invert_height ? (1.0 - UV.y) : UV.y);
+	float h = clamp(leaf_h, 0.0, 1.0);
+	// Curva suave que mantém color_base visível na inserção da folha e sobe para color_light na ponta
+	float grad_t = (COLOR.a > 0.001) ? smoothstep(0.05, 0.95, h) : smoothstep(0.10, 0.92, h * h);
 	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
 	if (OUTPUT_IS_SRGB) {
 		// Compensa o mix Linear + ACES Tonemap do pipeline Mobile quando em gl_compatibility (Web)
