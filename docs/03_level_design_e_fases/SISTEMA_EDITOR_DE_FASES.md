@@ -130,9 +130,11 @@ O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suport
 | Comando | Atalho | Função |
 | :--- | :---: | :--- |
 | **Pincel / Carimbo** | `1` ou `B` | Pinta na camada ativa com o formato de pincel selecionado. |
+| **Linha Reta / Ponte Vetorial** | `Shift + Clique` | Nas camadas vetoriais (Terreno e Grama), conecta o último ponto clicado até o cursor com uma ponte/faixa reta (ou abre um canal reto se estiver na Borracha), com preview holográfico em tempo real. |
 | **Borracha** | `2`, `E` ou **Clique Direito** | Apaga células da camada ativa (cava água no terreno ou remove plantas). |
-| **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular. |
+| **Retângulo (Box Fill)** | `3` ou `F` | Arraste de $A \to B$ para preencher uma área retangular no Terreno Vetorial, na Grama Vetorial (com recorte costeiro) ou nos Objetos (segure `Shift` para recortar/apagar em caixa). |
 | **Posicionar Spawn** | `4` | Define a célula inicial do robô cortador. |
+| **Escala Rápida no Mouse** | `Ctrl + Scroll` ou `Alt + Scroll` | Ajusta o tamanho do pincel (`1` a `20`) diretamente na roda do mouse sem mover o zoom da câmera. |
 | **Modo Espelho / Simetria** | `X` | Alterna os modos de simetria: Desligado $\to$ Horizontal (X) $\to$ Vertical (Z) $\to$ Quádruplo (X+Z) $\to$ Desligado, desenhando em tempo real com linhas guias e preview holográfico simultâneo. |
 | **Modo Escala do Pincel (Padrão)** | `S` | Seleciona o modo de ajuste de **Escala** (ferramenta padrão inicial) e direciona os atalhos `[` e `]` para tamanho. |
 | **Modo Rotação** | `R` | Seleciona o modo de **Rotação** e direciona os atalhos `[` e `]` para giro ($+5^\circ$, ou $+25^\circ$ com `Shift`; $+90^\circ$ no terreno). |

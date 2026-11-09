@@ -982,7 +982,7 @@ func _build_bottom_bar() -> void:
 	_interactive_panels.append(bot_panel)
 
 	lbl_status = Label.new()
-	lbl_status.text = "Célula: [0, 0]  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [X]: Espelho  |  [Alt+Esq/5]: Pipeta  |  [6/M]: Seleção  |  [F1]: Playtest"
+	lbl_status.text = "Célula: [0, 0]  |  Esq: Pintar  |  [Shift+Clique]: Linha Reta  |  Dir (Clique): Apagar  |  Setas/Dir (Arrastar): Câmera  |  [Ctrl+Scroll / S]: Escala  |  [R]: Girar  |  [X]: Espelho  |  [F1]: Playtest"
 	lbl_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_status.add_theme_font_size_override("font_size", 13)
 	lbl_status.add_theme_color_override("font_color", Color(0.85, 0.92, 0.98))
@@ -1594,7 +1594,7 @@ func update_status_bar(cell: Vector2i, in_bounds: bool, world_pos: Vector3) -> v
 	if lbl_status == null:
 		return
 	var cell_str: String = "[%d, %d]" % [cell.x, cell.y] if in_bounds else "[Fora da Grade]"
-	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  Dir: Borracha  |  Setas/Meio: Câmera  |  [S]: Escala (+/-)  |  [R]: Girar (±5°/±25°)  |  [X]: Espelho  |  [F1]: Playtest" % [
+	lbl_status.text = "Célula: %s  |  Pos: (%.1f, %.1f)  |  Esq: Pintar  |  [Shift+Clique]: Linha Reta  |  [Ctrl+Scroll / S]: Escala  |  [R]: Girar  |  [X]: Espelho  |  [F1]: Playtest" % [
 		cell_str, world_pos.x, world_pos.z
 	]
 

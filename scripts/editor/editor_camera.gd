@@ -62,7 +62,7 @@ func handle_camera_input(event: InputEvent, ui_has_focus: bool, mouse_over_ui: b
 				return mb.button_index == MOUSE_BUTTON_MIDDLE
 			elif not mb.pressed:
 				is_panning_mouse = false
-		elif not mouse_over_ui and not ui_has_focus and not Input.is_key_pressed(KEY_ALT):
+		elif not mouse_over_ui and not ui_has_focus and not Input.is_key_pressed(KEY_ALT) and not Input.is_key_pressed(KEY_CTRL):
 			if mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
 				target_distance = clampf(target_distance - zoom_step, min_distance, max_distance)
 				return true

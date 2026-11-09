@@ -21,8 +21,8 @@ const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tuli
 const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 
-const CUTTER_SCENE: PackedScene = preload("res://scenes/cutter/cutter.tscn")
-const JOYSTICK_SCENE: PackedScene = preload("res://scenes/ui/floating_joystick.tscn")
+const CUTTER_SCENE_PATH: String = "res://scenes/cutter/cutter.tscn"
+const JOYSTICK_SCENE_PATH: String = "res://scenes/ui/floating_joystick.tscn"
 const MAX_UNDO_STEPS: int = 30
 const CELL_SIZE: float = 0.40
 const COASTAL_GRASS_CORRIDOR: float = 0.48
@@ -144,6 +144,8 @@ var rmb_dragged: bool = false
 var is_box_dragging: bool = false
 var box_start_cell: Vector2i = Vector2i.ZERO
 var _stroke_modified: bool = false
+var _last_vector_click_pos: Vector2 = Vector2.ZERO
+var _has_last_vector_click: bool = false
 
 var _undo_stack: Array[Dictionary] = []
 var _redo_stack: Array[Dictionary] = []
@@ -160,16 +162,21 @@ func _ready() -> void:
 	_build_spawn_marker_mesh()
 	_connect_ui_signals()
 
-	if GameManager != null:
-		GameManager.current_state = GameManager.GameState.READY
-		GameManager.time_updated.connect(_on_game_time_updated)
-		GameManager.goal_updated.connect(_on_game_goal_updated)
-		GameManager.level_won.connect(_on_playtest_won)
-		GameManager.level_lost.connect(_on_playtest_lost)
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null:
+		gm.set("current_state", 0) # GameState.READY
+		if gm.has_signal("time_updated"):
+			gm.connect("time_updated", _on_game_time_updated)
+		if gm.has_signal("goal_updated"):
+			gm.connect("goal_updated", _on_game_goal_updated)
+		if gm.has_signal("level_won"):
+			gm.connect("level_won", _on_playtest_won)
+		if gm.has_signal("level_lost"):
+			gm.connect("level_lost", _on_playtest_lost)
 
 	# Carrega Fase 1 (ou cria a Fase 1 canônica em formato de ilha se não existir JSON ainda)
 	vector_terrain = VectorTerrainFieldScript.new()
-	var start_lvl: int = GameManager.current_level if GameManager != null else 1
+	var start_lvl: int = int(gm.get("current_level")) if gm != null else 1
 	_load_or_init_level(start_lvl)
 	_sync_all_ui()
 	if ui != null:
@@ -273,7 +280,8 @@ func _connect_ui_signals() -> void:
 
 	ui.layer_changed.connect(func(l_idx: int) -> void:
 		active_layer = l_idx
-		_sync_all_ui()
+		_has_last_vector_click = false
+		_sync_all_ui(false)
 		_refresh_hover_preview()
 	)
 	ui.tool_changed.connect(func(t_idx: int) -> void:
@@ -365,7 +373,7 @@ func _rotate_active_step_dir(direction: int, is_shift: bool) -> void:
 func _rotate_active_step() -> void:
 	_rotate_active_step_dir(1, false)
 
-func _sync_all_ui() -> void:
+func _sync_all_ui(recalc_goals: bool = true) -> void:
 	if ui == null:
 		return
 	_update_layers_transparency()
@@ -383,7 +391,8 @@ func _sync_all_ui() -> void:
 		mirror_mode
 	)
 	ui.update_level_header(current_level_id, grid_width, grid_height, time_limit)
-	ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
+	if recalc_goals:
+		ui.update_goals_summary(terrain_grid.size(), object_grid, veg_field, vector_grass)
 
 func _input(event: InputEvent) -> void:
 	# Ignora eventos sintéticos de touch gerados pelo emulate_touch_from_mouse no modo Edição
@@ -460,6 +469,10 @@ func _input(event: InputEvent) -> void:
 						toggle_mirror_mode()
 					KEY_G:
 						toggle_grid_visibility()
+					KEY_SHIFT:
+						_refresh_hover_preview()
+		elif not ke.echo and ke.keycode == KEY_SHIFT and not is_playtesting:
+			_refresh_hover_preview()
 
 	if is_playtesting:
 		return
@@ -468,17 +481,17 @@ func _input(event: InputEvent) -> void:
 	var over_ui: bool = ui.is_mouse_over_ui(mouse_pos) if ui != null else false
 	var text_focus: bool = ui.has_text_focus() if ui != null else false
 
-	# Alt + Scroll ajusta tamanho do pincel
-	if event is InputEventMouseButton and Input.is_key_pressed(KEY_ALT) and not over_ui:
+	# Ctrl + Scroll ou Alt + Scroll ajusta tamanho do pincel
+	if event is InputEventMouseButton and (Input.is_key_pressed(KEY_ALT) or Input.is_key_pressed(KEY_CTRL)) and not over_ui:
 		var mb_alt: InputEventMouseButton = event as InputEventMouseButton
 		if mb_alt.pressed and mb_alt.button_index == MOUSE_BUTTON_WHEEL_UP:
 			brush_size = clampi(brush_size + 1, 1, 20)
-			_sync_all_ui()
+			_sync_all_ui(false)
 			_refresh_hover_preview()
 			return
 		elif mb_alt.pressed and mb_alt.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			brush_size = clampi(brush_size - 1, 1, 20)
-			_sync_all_ui()
+			_sync_all_ui(false)
 			_refresh_hover_preview()
 			return
 
@@ -527,32 +540,30 @@ func _input(event: InputEvent) -> void:
 					if is_hover_in_bounds:
 						_push_undo_snapshot()
 						_place_spawn_at(hovered_cell)
-				elif active_tool == ToolMode.BRUSH:
-					_push_undo_snapshot()
-					is_painting_lmb = true
-					_stroke_modified = false
-					if active_layer == EditLayer.GRASS or active_layer == EditLayer.TERRAIN:
-						if active_shape != BrushPatterns.ShapeType.SINGLE:
-							_apply_brush_at(hovered_cell, false)
-						else:
-							_freehand_points.clear()
-							_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
-							_refresh_hover_preview()
+				elif active_tool == ToolMode.BRUSH or active_tool == ToolMode.ERASER:
+					var is_erase_tool: bool = (active_tool == ToolMode.ERASER)
+					var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
+					if (active_layer == EditLayer.GRASS or active_layer == EditLayer.TERRAIN) and Input.is_key_pressed(KEY_SHIFT) and _has_last_vector_click:
+						_push_undo_snapshot()
+						_apply_straight_line_at(_last_vector_click_pos, hit_2d, is_erase_tool)
+						_last_vector_click_pos = hit_2d
+						_has_last_vector_click = true
+						_refresh_hover_preview()
 					else:
-						_apply_brush_at(hovered_cell, false)
-				elif active_tool == ToolMode.ERASER:
-					_push_undo_snapshot()
-					is_painting_lmb = true
-					_stroke_modified = false
-					if active_layer == EditLayer.GRASS or active_layer == EditLayer.TERRAIN:
-						if active_shape != BrushPatterns.ShapeType.SINGLE:
-							_apply_brush_at(hovered_cell, true)
+						_push_undo_snapshot()
+						is_painting_lmb = true
+						_stroke_modified = false
+						if active_layer == EditLayer.GRASS or active_layer == EditLayer.TERRAIN:
+							_last_vector_click_pos = hit_2d
+							_has_last_vector_click = true
+							if active_shape != BrushPatterns.ShapeType.SINGLE:
+								_apply_brush_at(hovered_cell, is_erase_tool)
+							else:
+								_freehand_points.clear()
+								_freehand_points.append(hit_2d)
+								_refresh_hover_preview()
 						else:
-							_freehand_points.clear()
-							_freehand_points.append(Vector2(last_world_hit.x, last_world_hit.z))
-							_refresh_hover_preview()
-					else:
-						_apply_brush_at(hovered_cell, true)
+							_apply_brush_at(hovered_cell, is_erase_tool)
 			elif not mb.pressed:
 				if is_box_dragging:
 					is_box_dragging = false
@@ -564,11 +575,14 @@ func _input(event: InputEvent) -> void:
 						if active_shape == BrushPatterns.ShapeType.SINGLE:
 							var is_erase: bool = (active_tool == ToolMode.ERASER)
 							_apply_brush_at(hovered_cell, is_erase)
+						_last_vector_click_pos = Vector2(last_world_hit.x, last_world_hit.z)
+						_has_last_vector_click = true
 						_freehand_points.clear()
+						_sync_all_ui(true)
 						_refresh_hover_preview()
 					elif _stroke_modified:
 						_rebuild_3d_world()
-						_sync_all_ui()
+						_sync_all_ui(true)
 
 		elif mb.button_index == MOUSE_BUTTON_RIGHT:
 			if mb.pressed and not over_ui:
@@ -667,6 +681,25 @@ func _get_safe_coastal_island_polygons() -> Array[PackedVector2Array]:
 				safe_polys.append(ip)
 	return safe_polys
 
+func _get_box_vector_polygon(start_c: Vector2i, end_c: Vector2i) -> PackedVector2Array:
+	var min_gx: int = clampi(mini(start_c.x, end_c.x), 0, grid_width - 1)
+	var max_gx: int = clampi(maxi(start_c.x, end_c.x), 0, grid_width - 1)
+	var min_gz: int = clampi(mini(start_c.y, end_c.y), 0, grid_height - 1)
+	var max_gz: int = clampi(maxi(start_c.y, end_c.y), 0, grid_height - 1)
+	var p_min: Vector3 = LevelJsonLoader.grid_to_world(min_gx, min_gz, grid_width, grid_height, CELL_SIZE)
+	var p_max: Vector3 = LevelJsonLoader.grid_to_world(max_gx, max_gz, grid_width, grid_height, CELL_SIZE)
+	var half_c: float = CELL_SIZE * 0.5
+	var x0: float = p_min.x - half_c
+	var z0: float = p_min.z - half_c
+	var x1: float = p_max.x + half_c
+	var z1: float = p_max.z + half_c
+	return PackedVector2Array([
+		Vector2(x0, z0),
+		Vector2(x1, z0),
+		Vector2(x1, z1),
+		Vector2(x0, z1)
+	])
+
 func _refresh_hover_preview() -> void:
 	if grid_overlay == null or is_playtesting:
 		return
@@ -679,6 +712,12 @@ func _refresh_hover_preview() -> void:
 
 	var fill_col: Color = Color(0.2, 1.0, 0.55, 0.38)
 	var line_col: Color = Color(0.4, 1.0, 0.75, 0.95)
+	var is_shift_straight: bool = (
+		Input.is_key_pressed(KEY_SHIFT)
+		and _has_last_vector_click
+		and not is_painting_lmb
+		and (active_tool == ToolMode.BRUSH or active_tool == ToolMode.ERASER)
+	)
 
 	if active_layer == EditLayer.TERRAIN and active_tool != ToolMode.SPAWN:
 		# Camada de Terreno com preview holográfico vetorial
@@ -687,11 +726,20 @@ func _refresh_hover_preview() -> void:
 		if active_tool == ToolMode.ERASER or is_erasing_rmb:
 			fill_col = Color(0.25, 0.65, 0.95, 0.45)
 			line_col = Color(0.40, 0.85, 1.0, 0.95)
+		elif active_tool == ToolMode.BOX_FILL:
+			fill_col = Color(1.0, 0.82, 0.2, 0.40)
+			line_col = Color(1.0, 0.92, 0.4, 0.95)
 
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 		var preview_poly: PackedVector2Array = PackedVector2Array()
 
-		if active_shape != BrushPatterns.ShapeType.SINGLE:
+		if active_tool == ToolMode.BOX_FILL:
+			var sc: Vector2i = box_start_cell if is_box_dragging else hovered_cell
+			preview_poly = _get_box_vector_polygon(sc, hovered_cell)
+		elif is_shift_straight:
+			var bridge_w: float = float(brush_size) * 0.80
+			preview_poly = BrushPatterns.create_ribbon_polygon([_last_vector_click_pos, hit_2d], bridge_w)
+		elif active_shape != BrushPatterns.ShapeType.SINGLE:
 			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
@@ -710,11 +758,20 @@ func _refresh_hover_preview() -> void:
 		if active_tool == ToolMode.ERASER or is_erasing_rmb:
 			fill_col = Color(1.0, 0.28, 0.28, 0.42)
 			line_col = Color(1.0, 0.55, 0.55, 0.95)
+		elif active_tool == ToolMode.BOX_FILL:
+			fill_col = Color(1.0, 0.82, 0.2, 0.40)
+			line_col = Color(1.0, 0.92, 0.4, 0.95)
 
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
 		var preview_poly: PackedVector2Array = PackedVector2Array()
 
-		if active_shape != BrushPatterns.ShapeType.SINGLE:
+		if active_tool == ToolMode.BOX_FILL:
+			var sc: Vector2i = box_start_cell if is_box_dragging else hovered_cell
+			preview_poly = _get_box_vector_polygon(sc, hovered_cell)
+		elif is_shift_straight:
+			var bridge_w: float = float(brush_size) * 0.80
+			preview_poly = BrushPatterns.create_ribbon_polygon([_last_vector_click_pos, hit_2d], bridge_w)
+		elif active_shape != BrushPatterns.ShapeType.SINGLE:
 			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
@@ -781,39 +838,21 @@ func _refresh_hover_preview() -> void:
 
 	grid_overlay.update_brush_preview(preview_cells, hovered_cell, current_rot_deg, fill_col, line_col, clearance_r)
 
-func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
-	if not is_hover_in_bounds:
+func _apply_vector_polygon_to_active_layer(poly: PackedVector2Array, erase_mode: bool, recalc_goals: bool, center_cell: Vector2i = Vector2i(-1, -1)) -> void:
+	if poly.size() < 3:
 		return
+	var all_polys: Array[PackedVector2Array] = _get_mirrored_polygons(poly)
 
-	if active_layer == EditLayer.GRASS and active_tool != ToolMode.SPAWN:
+	if active_layer == EditLayer.GRASS:
 		if vector_grass == null:
 			return
-
-		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
-		var poly: PackedVector2Array = PackedVector2Array()
-
-		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
-		elif _freehand_points.size() >= 2:
-			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
-			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
-		else:
-			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
-
-		if poly.size() < 3:
-			return
-
-		var all_polys: Array[PackedVector2Array] = _get_mirrored_polygons(poly)
-
 		for pi in range(all_polys.size()):
 			var p_target: PackedVector2Array = all_polys[pi]
-
 			if erase_mode:
 				vector_grass.call("clip_shapes", p_target)
-				if object_grid.has(center):
-					object_grid.erase(center)
+				if center_cell.x >= 0 and object_grid.has(center_cell):
+					object_grid.erase(center_cell)
 			else:
-				# Garante corredor costeiro afastado da borda da ilha ao colocar grama
 				var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
 				var polys_to_add: Array[PackedVector2Array] = []
 				if not safe_polys.is_empty():
@@ -840,38 +879,16 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 									"rot": 0,
 									"auto": true
 								}
-
 		_stroke_modified = true
 		_rebuild_3d_world()
-		_sync_all_ui()
-		return
-
-	if active_layer == EditLayer.TERRAIN and active_tool != ToolMode.SPAWN:
+		_sync_all_ui(recalc_goals)
+	elif active_layer == EditLayer.TERRAIN:
 		if vector_terrain == null:
 			return
-
-		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
-		var poly: PackedVector2Array = PackedVector2Array()
-
-		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
-		elif _freehand_points.size() >= 2:
-			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
-			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
-		else:
-			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
-
-		if poly.size() < 3:
-			return
-
-		var all_polys: Array[PackedVector2Array] = _get_mirrored_polygons(poly)
-
 		for pi in range(all_polys.size()):
 			var p_target: PackedVector2Array = all_polys[pi]
-
 			if erase_mode:
 				vector_terrain.call("carve_water", p_target)
-				# Limpa vegetação e objetos que caíram na água recortada
 				if vector_grass != null:
 					vector_grass.call("clip_shapes", p_target)
 				var to_remove: Array = []
@@ -884,10 +901,48 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 					object_grid.erase(ok)
 			else:
 				vector_terrain.call("add_land", p_target)
-
+				var aabb: Rect2 = _compute_aabb_2d(p_target)
+				var min_gx: int = clampi(int(floori((aabb.position.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+				var max_gx: int = clampi(int(ceili((aabb.end.x + float(grid_width) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_width - 1)
+				var min_gz: int = clampi(int(floori((aabb.position.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+				var max_gz: int = clampi(int(ceili((aabb.end.y + float(grid_height) * CELL_SIZE * 0.5) / CELL_SIZE)), 0, grid_height - 1)
+				for gz: int in range(min_gz, max_gz + 1):
+					for gx: int in range(min_gx, max_gx + 1):
+						var bcell: Vector2i = Vector2i(gx, gz)
+						if not terrain_grid.has(bcell):
+							terrain_grid[bcell] = {
+								"tile_id": "island_center",
+								"rot": 0,
+								"auto": true
+							}
 		_stroke_modified = true
 		_rebuild_3d_world()
-		_sync_all_ui()
+		_sync_all_ui(recalc_goals)
+
+func _apply_straight_line_at(from_pt: Vector2, to_pt: Vector2, erase_mode: bool) -> void:
+	if not is_hover_in_bounds:
+		return
+	var bridge_w: float = float(brush_size) * 0.80
+	var poly: PackedVector2Array = BrushPatterns.create_ribbon_polygon([from_pt, to_pt], bridge_w)
+	_apply_vector_polygon_to_active_layer(poly, erase_mode, true, hovered_cell)
+
+func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
+	if not is_hover_in_bounds:
+		return
+
+	if (active_layer == EditLayer.GRASS or active_layer == EditLayer.TERRAIN) and active_tool != ToolMode.SPAWN:
+		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
+		var poly: PackedVector2Array = PackedVector2Array()
+
+		if active_shape != BrushPatterns.ShapeType.SINGLE:
+			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+		elif _freehand_points.size() >= 2:
+			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
+			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
+		else:
+			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+
+		_apply_vector_polygon_to_active_layer(poly, erase_mode, not is_painting_lmb, center)
 		return
 
 	# Camada de Terreno ou Objetos em blocos de 0.80m
@@ -907,9 +962,15 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 	if changed_any:
 		_stroke_modified = true
 		_rebuild_3d_world()
-		_sync_all_ui()
+		_sync_all_ui(not is_painting_lmb)
 
 func _apply_box_fill(start_c: Vector2i, end_c: Vector2i) -> void:
+	if active_layer == EditLayer.TERRAIN or active_layer == EditLayer.GRASS:
+		var box_poly: PackedVector2Array = _get_box_vector_polygon(start_c, end_c)
+		var erase_box: bool = Input.is_key_pressed(KEY_SHIFT)
+		_apply_vector_polygon_to_active_layer(box_poly, erase_box, true)
+		return
+
 	var cells: Array[Vector2i] = BrushPatterns.get_box_cells(start_c, end_c)
 	var changed_any: bool = false
 	for c in cells:
@@ -919,7 +980,7 @@ func _apply_box_fill(start_c: Vector2i, end_c: Vector2i) -> void:
 			changed_any = true
 	if changed_any:
 		_rebuild_3d_world()
-		_sync_all_ui()
+		_sync_all_ui(true)
 
 func _modify_single_cell(cell: Vector2i, erase_mode: bool, custom_rot: int = -1) -> bool:
 	if active_layer == EditLayer.TERRAIN:
@@ -1525,6 +1586,7 @@ func _on_level_load_requested(lvl_id: int) -> void:
 
 func _load_or_init_level(lvl_id: int) -> void:
 	current_level_id = lvl_id
+	_has_last_vector_click = false
 	_undo_stack.clear()
 	_redo_stack.clear()
 
@@ -1749,7 +1811,8 @@ func toggle_playtest() -> void:
 		_start_playtest()
 
 func _start_playtest() -> void:
-	if terrain_grid.is_empty():
+	var has_vector_land: bool = (vector_terrain != null and not bool(vector_terrain.call("is_empty")))
+	if terrain_grid.is_empty() and not has_vector_land:
 		ui.show_toast("⚠️ Crie pelo menos 1 bloco de ilha antes de testar!", Color(0.95, 0.65, 0.2))
 		return
 
@@ -1812,7 +1875,8 @@ func _start_playtest() -> void:
 		child_limits.queue_free()
 
 	# Instancia o Cortador
-	_playtest_cutter = CUTTER_SCENE.instantiate() as CharacterBody3D
+	var cutter_scene: PackedScene = load(CUTTER_SCENE_PATH) as PackedScene
+	_playtest_cutter = cutter_scene.instantiate() as CharacterBody3D
 	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
 	_playtest_cutter.position = Vector3(sp_world.x, 0.1, sp_world.z)
 	if _playtest_cutter.has_method("reset_orientation_to_camera"):
@@ -1824,14 +1888,16 @@ func _start_playtest() -> void:
 		_playtest_cutter.set("vegetation_grid", _active_veg_grid)
 
 	# Instancia o Joystick para suporte a mouse/touch e teclado WASD/Setas
-	_playtest_joystick = JOYSTICK_SCENE.instantiate() as Control
+	var joystick_scene: PackedScene = load(JOYSTICK_SCENE_PATH) as PackedScene
+	_playtest_joystick = joystick_scene.instantiate() as Control
 	canvas_layer.add_child(_playtest_joystick)
 	canvas_layer.move_child(_playtest_joystick, 0)
 	if _playtest_joystick.has_signal("joystick_moved"):
 		_playtest_joystick.connect("joystick_moved", Callable(_playtest_cutter, "set_input_direction"))
 
 	var goals: Dictionary = {}
-	if GameManager != null:
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null:
 		if not configured_goals.is_empty():
 			goals = configured_goals.duplicate()
 		elif not _last_editor_goals.is_empty():
@@ -1839,8 +1905,8 @@ func _start_playtest() -> void:
 		if goals.is_empty():
 			goals = { "grass": 1 }
 
-		GameManager.start_level(current_level_id, goals, time_limit)
-		ui.update_playtest_hud(GameManager.time_left, GameManager.goals)
+		gm.call("start_level", current_level_id, goals, time_limit)
+		ui.update_playtest_hud(float(gm.get("time_left")), gm.get("goals") as Dictionary)
 
 	if playtest_game_camera != null:
 		editor_camera.current = false
@@ -1864,8 +1930,9 @@ func _stop_playtest() -> void:
 		_playtest_cutter.queue_free()
 		_playtest_cutter = null
 
-	if GameManager != null:
-		GameManager.current_state = GameManager.GameState.READY
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null:
+		gm.set("current_state", 0) # GameState.READY
 
 	_reset_grass_shader_interaction()
 
@@ -1885,12 +1952,14 @@ func _stop_playtest() -> void:
 	ui.show_toast("🛠️ De volta ao modo Edição (Ilha restaurada)", Color(0.45, 0.85, 1.0))
 
 func _on_game_time_updated(t_left: float) -> void:
-	if is_playtesting and GameManager != null:
-		ui.update_playtest_hud(t_left, GameManager.goals)
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if is_playtesting and gm != null:
+		ui.update_playtest_hud(t_left, gm.get("goals") as Dictionary)
 
 func _on_game_goal_updated(_p_type: String, _rem: int, _target: int) -> void:
-	if is_playtesting and GameManager != null:
-		ui.update_playtest_hud(GameManager.time_left, GameManager.goals)
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if is_playtesting and gm != null:
+		ui.update_playtest_hud(float(gm.get("time_left")), gm.get("goals") as Dictionary)
 
 func _on_playtest_won(coins: int, _stars: int = 1) -> void:
 	if is_playtesting:
@@ -1904,7 +1973,8 @@ func _on_exit_to_game() -> void:
 	if is_playtesting:
 		_stop_playtest()
 	save_current_level_json()
-	if GameManager != null:
-		GameManager.current_level = current_level_id
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null:
+		gm.set("current_level", current_level_id)
 	_restore_mobile_window()
 	get_tree().change_scene_to_file("res://scenes/main.tscn")

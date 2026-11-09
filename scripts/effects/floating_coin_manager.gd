@@ -25,8 +25,9 @@ func _ready() -> void:
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_init_pool()
 	_sync_to_cutter()
-	if GameManager:
-		GameManager.coin_popup_requested.connect(_on_coin_popup_requested)
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null and gm.has_signal("coin_popup_requested"):
+		gm.connect("coin_popup_requested", _on_coin_popup_requested)
 
 
 func _process(_delta: float) -> void:

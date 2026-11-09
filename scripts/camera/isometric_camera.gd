@@ -39,16 +39,22 @@ func _ready() -> void:
 		target = get_node(target_path) as Node3D
 
 	var init_lvl: int = 1
-	if UpgradeManager != null:
-		init_lvl = UpgradeManager.blade_level
-		UpgradeManager.blade_level_changed.connect(_on_blade_level_changed)
+	var um: Node = get_node_or_null("/root/UpgradeManager")
+	if um != null:
+		init_lvl = int(um.get("blade_level"))
+		if um.has_signal("blade_level_changed"):
+			um.connect("blade_level_changed", _on_blade_level_changed)
 
 	_apply_blade_level_zoom(init_lvl, false)
 
-	if GameManager != null:
-		GameManager.camera_shake_requested.connect(_on_shake_requested)
-		GameManager.level_won.connect(_on_level_won)
-		GameManager.state_changed.connect(_on_state_changed)
+	var gm: Node = get_node_or_null("/root/GameManager")
+	if gm != null:
+		if gm.has_signal("camera_shake_requested"):
+			gm.connect("camera_shake_requested", _on_shake_requested)
+		if gm.has_signal("level_won"):
+			gm.connect("level_won", _on_level_won)
+		if gm.has_signal("state_changed"):
+			gm.connect("state_changed", _on_state_changed)
 
 	# Configura e trava a orientacao isometrica inicial
 	if target:
@@ -85,7 +91,7 @@ func _on_blade_level_changed(new_level: int, _is_max: bool) -> void:
 	_apply_blade_level_zoom(new_level, true)
 
 func _on_state_changed(new_state: int) -> void:
-	if new_state == GameManager.GameState.PLAYING:
+	if new_state == 1: # GameManager.GameState.PLAYING
 		reset_cam()
 
 func _on_level_won(_coins: int, _stars: int) -> void:
@@ -115,7 +121,8 @@ func reset_cam() -> void:
 		_victory_tween.kill()
 	if (target == null or not is_instance_valid(target)) and has_node(target_path):
 		target = get_node(target_path) as Node3D
-	var lvl: int = UpgradeManager.blade_level if UpgradeManager != null else 1
+	var um: Node = get_node_or_null("/root/UpgradeManager")
+	var lvl: int = int(um.get("blade_level")) if um != null else 1
 	_apply_blade_level_zoom(lvl, false)
 	if target and is_instance_valid(target):
 		look_at_from_position(target.global_position + _current_gameplay_offset, target.global_position, Vector3.UP)
