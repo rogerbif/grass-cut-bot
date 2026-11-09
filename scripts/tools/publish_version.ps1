@@ -13,18 +13,13 @@ param(
     [string]$NotesPt = "",
     [string]$NotesEn = "",
 
-    [ValidateSet("GooglePlay", "Itch", "All")]
-    [string]$Target = "GooglePlay",
+    [ValidateSet("All", "GooglePlay", "Itch")]
+    [string]$Target = "All",
 
-    [switch]$Itch,
     [switch]$NoGit
 )
 
 $ErrorActionPreference = "Stop"
-
-if ($Itch -and $Target -eq "GooglePlay") {
-    $Target = "All"
-}
 
 $rootDir = (Resolve-Path "$PSScriptRoot\..\..").Path
 $gameVersionFile = "$rootDir\scripts\core\game_version.gd"

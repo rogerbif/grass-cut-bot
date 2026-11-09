@@ -39,19 +39,24 @@ Esta melhoria conecta a exportação Web do Godot 4 (`grasscutbot_Web`) à estei
   6. Exibe status com o link público direto: `https://bifgames.itch.io/grass-cut-bot`.
 
 ### 2.3. Integração Mestre (`publish.ps1` e `scripts/tools/publish_version.ps1`)
-- Novos parâmetros:
-  - `-Target GooglePlay|Itch|All`: Permite selecionar o escopo do deploy (padrão: `GooglePlay`).
-  - `-Itch`: Switch facilitador que ativa o deploy no itch.io mantendo o Google Play ativo (`Target = "All"`).
+- **Padrão Unificado Duplo (`-Target All`):** Por padrão, qualquer ativação da rotina `publish.ps1`, `/publicar-versao` ou "publicar atualização" compila e publica SIMULTANEAMENTE tanto no Android (Google Play) quanto no itch.io (HTML5).
+- Opções de escopo:
+  - `-Target All` (Padrão): Deploy duplo (Google Play + itch.io).
+  - `-Target GooglePlay`: Publica apenas no Google Play Console.
+  - `-Target Itch`: Publica apenas no itch.io (HTML5).
 - Exemplos de novos fluxos de uso:
   ```powershell
-  # Publica apenas no itch.io com bump de Patch:
+  # Publicação padrão dupla (Android + itch.io) com bump Patch:
+  .\publish.ps1 -Bump Patch
+
+  # Publicação padrão dupla com bump Minor:
+  .\publish.ps1 -Bump Minor
+
+  # Re-publica a versão atual em ambos sem bump:
+  .\publish.ps1 -Bump None
+
+  # Publica exclusivamente no itch.io:
   .\publish.ps1 -Target Itch -Bump Patch
-
-  # Publica em ambos (Google Play + itch.io) com 1 comando:
-  .\publish.ps1 -Itch -Bump Patch
-
-  # Re-publica a versão atual sem bump no itch.io:
-  .\publish.ps1 -Bump None -Target Itch
   ```
 
 ### 2.4. Atualização de Documentação Canônica & Skill
