@@ -11,9 +11,10 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
 | Marco de Publicação | Fases Canônicas | Status Atual | Foco Estratégico & Retenção |
 | :--- | :---: | :---: | :--- |
 | **🚀 MVP / Soft Launch** | **20 Fases** | ✅ **Concluído e Validado** | Validação de engajamento primário, sensação do joystick *one-thumb*, curva de dificuldade dos 5 Tiers e taxa de 60 FPS estáveis em aparelhos Android de entrada. |
-| **🌟 Lançamento Global — Mundo 1 (Ilhas Tropicais)** | **40 Fases Canônicas** | ✅ **Concluído e Auditado** | 40 fases canônicas serializadas em JSON v4, divididas em 4 Tiers com grandes ilhas e mega-ilhas interligadas pelo mapa do arquipélago. O **Ciclo Mestre (New Game+)** garante rejogabilidade infinita aos jogadores que concluírem o nível 40. |
-| **🌴 Expansão Total do Mundo 1: Ilhas Tropicais** | **100 Fases Revisadas** | ⏳ **Meta Canônica do Mundo 1** | O Mundo 1 compreenderá exatamente **100 fases autorais, criadas e revisadas**. O jogador vivencia a maestria completa do arquipélago tropical com desafios botânicos graduais. |
-| **🌋 Desbloqueio do Mundo 2 (Próximo Tema)** | **Novo Mundo (+100 Fases)** | 🔒 **Condicionado à Conclusão do Mundo 1** | **Diretriz Canônica Invariante:** O **Mundo 2** (ex: *Oásis das Dunas / Cânions de Areia* ou *Arquipélago Ártico*) será criado **exclusivamente após a entrega, revisão e aprovação completa de todas as 100 fases do Mundo 1: Ilhas Tropicais**. |
+| **🌟 Lançamento Global — Mundo 1 (Ilhas Tropicais Diurno)** | **40 Fases Canônicas** | ✅ **Concluído e Auditado** | 40 fases canônicas serializadas em JSON v4, divididas em 4 Tiers com grandes ilhas e mega-ilhas interligadas pelo mapa do arquipélago. O **Ciclo Mestre (New Game+)** garante rejogabilidade infinita aos jogadores que concluírem o nível 40. |
+| **🌴 Expansão Total do Mundo 1: Ilhas Tropicais (Diurno)** | **100 Fases Revisadas** | ⏳ **Meta Canônica do Mundo 1** | O Mundo 1 compreenderá exatamente **100 fases autorais, criadas e revisadas**, todas sob o tema diurno clássico (sol a pino, céu ciano e mar turquesa). **Sem variações atmosféricas dentro do mesmo mundo:** a identidade visual é 100% coesa e imersiva ao longo de todo o primeiro arquipélago. |
+| **🌇 Desbloqueio do Mundo 2: Sunset / Ilhas do Entardecer** | **100 Novas Fases (101 a 200)** | 🔒 **Condicionado à Conclusão do Mundo 1** | **Diretriz Canônica Invariante:** As variações atmosféricas e de iluminação constituem **Mundos Próprios**. O **Mundo 2 (Mundo Sunset / Entardecer Dourado)** será criado **exclusivamente após a entrega, revisão e aprovação completa de todas as 100 fases do Mundo 1**. |
+| **🌌 Desbloqueio do Mundo 3: Noite Tropical / Night World** | **100 Novas Fases (201 a 300)** | 🔒 **Condicionado à Conclusão do Mundo 2** | Terceiro mundo canônico com temática noturna completa (céu estrelado, reflexos lunares no mar e farol do cortador), criado apenas após 100 fases criadas e revisadas no Mundo 2. |
 
 ---
 
@@ -47,27 +48,27 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
 
 ---
 
-## 🌅 3. Variabilidade Visual de Atmosfera no Mundo 1: Ilhas Tropicais (Alto Impacto / Custo Zero de GPU)
+## 🌅 3. Arquitetura de Mundos Temáticos: Atmosferas como Novos Mundos
 
-### 3.1 Diretriz Canônica de Mundos: Mundo 1 até 100 Fases
-A arquitetura macro do jogo baseia-se na conclusão completa e curada de **Mundos Temáticos**:
-- O mundo atual é o **Mundo 1: Ilhas Tropicais (O Grande Arquipélago)**.
-- O Mundo 1 compreenderá exatamente **100 fases autorais, criadas e revisadas** (atualmente as primeiras 40 fases canônicas já estão totalmente estruturadas).
-- **Regra de Transição:** O **Mundo 2** (próximo tema/bioma, ex: *Oásis das Dunas / Cânions de Areia* ou *Arquipélago Glacial*) **será criado estritamente após a conclusão, auditoria e revisão das 100 fases do Mundo 1**.
+### 3.1 Diretriz Canônica: Sem Variantes Atmosféricas no Mesmo Mundo
+Para preservar a consistência visual, imersão temática e identidade clara de progressão:
+- **Não haverá alternância de atmosferas ou horários do dia dentro de um mesmo mundo.**
+- Cada atmosfera, clima ou momento do dia (Diurno, Sunset, Noturno, etc.) constitui um **Mundo Temático Próprio e Completo**.
+- Cada mundo é dimensionado para um conjunto sólido de **100 fases autorais, criadas e revisadas**.
 
-### 3.2 Ciclos Atmosféricos dentro do Mundo 1 (Ilhas Tropicais)
-Para manter o frescor estético, a sensação de passagem do tempo e evitar monotonia ao longo das **100 fases do Mundo 1**, sem trocar o bioma base tropical e sem nenhum impacto negativo de performance na GPU mobile, a atmosfera é modulada em **4 grandes blocos de 25 fases** alterando apenas iluminação direcional, cor do mar e céu procedural:
+### 3.2 O Roteiro Sequencial de Mundos Canônicos
 
-1. **☀️ Bloco 1 (Fases 01 a 25) — Ilhas Tropicais Diurnas (Manhã Solar / Sol a Pino):**
-   - Céu azul ciano limpo e límpido, oceano turquesa vibrante (`#46E6FF`), luz solar a pino com sombras nítidas e acolhedoras.
-2. **🌇 Bloco 2 (Fases 26 a 50) — Entardecer Dourado Tropical (Golden Hour / Pôr do Sol):**
-   - Céu alaranjado suave com névoa quente, oceano em tom âmbar/cobre suave, luz solar inclinada com sombras longas e acolhedoras.
-3. **🌌 Bloco 3 (Fases 51 a 75) — Noite Tropical Estrelada (Tropical Night & Vaga-lumes):**
-   - Céu azul-marinho profundo pontilhado de estrelas, água marinha noturna com reflexos lunares suaves, farol sutil do Cutter Bit iluminando a grama frontal e partículas de vaga-lumes flutuantes sobre a vegetação.
-4. **🌸 Bloco 4 (Fases 76 a 100) — Alvorada Mística / Névoa das Ilhas (Twilight Dawn):**
-   - Céu em gradiente suave de rosa matinal, lilás e dourado, névoa suave nos horizontes oceânicos, mar calmo em azul celeste e iluminação sublime de ápice da maestria rumo à Fase 100.
-
-Ao concluir a **Fase 100**, o jogador atinge a consagração do Mundo 1 e desbloqueia o portal de transição para o **Mundo 2**.
+1. **☀️ Mundo 1: Ilhas Tropicais Diurnas (Fases 01 a 100):**
+   - **Atmosfera Exclusiva:** Dia tropical ensolarado em todas as 100 fases. Céu azul ciano límpido, sol a pino com sombras nítidas e acolhedoras, mar turquesa vibrante (`#46E6FF`).
+   - **Escopo:** Atualmente conta com as 40 fases canônicas criadas e auditadas; expandirá até atingir a meta de **100 fases criadas e revisadas**.
+2. **🌇 Mundo 2: Ilhas do Entardecer Dourado / Sunset World (Fases 101 a 200):**
+   - **Atmosfera Exclusiva:** Ambiente completo de pôr do sol / golden hour em todas as 100 fases. Céu alaranjado suave com névoa quente, mar em tons âmbar/cobre suave e luz solar baixa com sombras longas e acolhedoras.
+   - **Regra Canônica de Liberação:** O Mundo 2 começará a ser construído **estritamente após a conclusão, auditoria e revisão das 100 fases do Mundo 1**.
+3. **🌌 Mundo 3: Noite Tropical Estrelada / Night World (Fases 201 a 300):**
+   - **Atmosfera Exclusiva:** Ambiente noturno completo em todas as 100 fases. Céu azul-marinho profundo pontilhado de estrelas, mar escuro com reflexos lunares, partículas de vaga-lumes sobre os gramados e farol sutil do Cutter Bit iluminando a frente de corte.
+   - **Regra Canônica de Liberação:** Criado **exclusivamente após a conclusão e revisão das 100 fases do Mundo 2**.
+4. **🌺 Mundos Futuros (Mundo 4+):**
+   - Novos mundos conceituais (ex: *Mundo Alvorada/Twilight*, *Oásis das Dunas*, *Arquipélago Glacial*), sempre respeitando a cadência de 100 fases revisadas por mundo.
 
 ---
 

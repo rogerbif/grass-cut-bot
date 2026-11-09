@@ -85,9 +85,9 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (433 a 689 tiles):**
    - O ápice de escala do primeiro bloco do Mundo 1 com as maiores ilhas do jogo ($20.0\text{m}$ a $21.6\text{m}$), finalizando no monumental *Grande Arquipélago Mestre* (Fase 40).
 5. **Roteiro Canônico de Expansão (Fases 41 a 100 do Mundo 1):**
-   - O Mundo 1 (Ilhas Tropicais) compreenderá exatamente **100 fases criadas, balanceadas e revisadas**.
-   - A atmosfera é modulada em 4 ciclos visuais de 25 fases: Fases 01-25 (Diurno), Fases 26-50 (Golden Hour), Fases 51-75 (Noite Estrelada) e Fases 76-100 (Alvorada Mística).
-   - **Regra Canônica de Transição:** O **Mundo 2** (próximo bioma/cenário temático) **será criado apenas após atingir 100 fases criadas e revisadas no Mundo 1**.
+   - O Mundo 1 (Ilhas Tropicais Diurnas) compreenderá exatamente **100 fases autorais, criadas, balanceadas e revisadas**.
+   - **Sem variantes atmosféricas no mesmo mundo:** Toda a progressão do Mundo 1 ocorre na ambientação diurna tropical clássica (sol a pino, mar turquesa e céu ciano limpo).
+   - **Regra Canônica de Transição:** As variações de horário/atmosfera constituem mundos próprios. O **Mundo 2 (Sunset / Ilhas do Entardecer Dourado)** será criado **exclusivamente após atingir 100 fases criadas e revisadas no Mundo 1**. Seguido posteriormente pelo **Mundo 3 (Noite Tropical / Night World)** após 100 fases no Mundo 2.
 
 ---
 
