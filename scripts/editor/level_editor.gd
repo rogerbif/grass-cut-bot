@@ -368,6 +368,7 @@ func _rotate_active_step() -> void:
 func _sync_all_ui() -> void:
 	if ui == null:
 		return
+	_update_layers_transparency()
 	ui.sync_state(
 		active_layer,
 		active_tool,
@@ -1291,6 +1292,33 @@ func _build_editor_vector_ground() -> void:
 		plants_container.add_child(mi)
 		vt_idx += 1
 
+	_update_layers_transparency()
+
+func _update_layers_transparency() -> void:
+	var terrain_t: float = 0.0
+	var grass_t: float = 0.0
+	var objects_t: float = 0.0
+
+	if not is_playtesting:
+		terrain_t = 0.0 if active_layer == EditLayer.TERRAIN else 0.5
+		grass_t = 0.0 if active_layer == EditLayer.GRASS else 0.5
+		objects_t = 0.0 if active_layer == EditLayer.OBJECTS else 0.5
+
+	if island_tiles_container != null:
+		_set_container_transparency(island_tiles_container, terrain_t)
+	if coastal_limits_body != null:
+		_set_container_transparency(coastal_limits_body, terrain_t)
+	if plants_container != null:
+		_set_container_transparency(plants_container, grass_t)
+	if obstacles_container != null:
+		_set_container_transparency(obstacles_container, objects_t)
+
+static func _set_container_transparency(node: Node, alpha_transparency: float) -> void:
+	if node is GeometryInstance3D:
+		(node as GeometryInstance3D).transparency = alpha_transparency
+	for child: Node in node.get_children():
+		_set_container_transparency(child, alpha_transparency)
+
 func _push_undo_snapshot() -> void:
 	var snap: Dictionary = {
 		"width": grid_width,
@@ -1736,6 +1764,7 @@ func _start_playtest() -> void:
 	grid_overlay.visible = false
 	spawn_marker_visual.visible = false
 	ui.set_playtest_mode(true)
+	_update_layers_transparency()
 
 	# 1. Limpa malhas vetoriais temporárias de edição
 	for c: Node in plants_container.get_children():

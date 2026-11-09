@@ -120,15 +120,8 @@ static func build_island_mesh(
 			outer = _reverse_polygon(outer)
 
 		# 2. Triangulação da tampa superior (Teto de Grama em Y = 0.0m)
-		var polys_to_triangulate: Array[PackedVector2Array] = [outer]
-		if not holes.is_empty():
-			for h: PackedVector2Array in holes:
-				if h.size() >= 3:
-					var new_polys: Array[PackedVector2Array] = []
-					for p: PackedVector2Array in polys_to_triangulate:
-						var clipped: Array[PackedVector2Array] = Geometry2D.clip_polygons(p, h)
-						new_polys.append_array(clipped)
-					polys_to_triangulate = new_polys
+		# Furos internos são subtraídos por bissecção para garantir polígonos simples sem furos (trianguláveis)
+		var polys_to_triangulate: Array[PackedVector2Array] = _clip_cap_with_holes(outer, holes)
 
 		for p_cap: PackedVector2Array in polys_to_triangulate:
 			if p_cap.size() < 3:
@@ -270,6 +263,69 @@ static func _build_perimeter_walls(
 		st.set_normal(wall_norm)
 		st.set_uv(UV_CLIFF_WALL)
 		st.add_vertex(bot_a)
+
+
+## Subtrai furos internos do polígono da tampa superior utilizando bissecção ortogonal
+## para garantir que o resultado contenha exclusivamente polígonos simples e trianguláveis
+static func _clip_cap_with_holes(outer: PackedVector2Array, holes: Array[PackedVector2Array]) -> Array[PackedVector2Array]:
+	if holes.is_empty():
+		return [outer]
+
+	var current_polys: Array[PackedVector2Array] = [outer]
+	for h: PackedVector2Array in holes:
+		if h.size() < 3:
+			continue
+		var h_cw: PackedVector2Array = h
+		if not Geometry2D.is_polygon_clockwise(h_cw):
+			h_cw = _reverse_polygon(h_cw)
+
+		var h_center: Vector2 = Vector2.ZERO
+		for pt in h:
+			h_center += pt
+		h_center /= float(h.size())
+
+		var next_polys: Array[PackedVector2Array] = []
+		for p: PackedVector2Array in current_polys:
+			var inter: Array[PackedVector2Array] = Geometry2D.intersect_polygons(p, h_cw)
+			if inter.is_empty():
+				next_polys.append(p)
+				continue
+
+			var p_aabb: Rect2 = Rect2(p[0], Vector2.ZERO)
+			for pt in p:
+				p_aabb = p_aabb.expand(pt)
+
+			# Bissecta p pelo centro do furo
+			var left_box: PackedVector2Array = PackedVector2Array([
+				Vector2(p_aabb.position.x - 2.0, p_aabb.position.y - 2.0),
+				Vector2(h_center.x, p_aabb.position.y - 2.0),
+				Vector2(h_center.x, p_aabb.end.y + 2.0),
+				Vector2(p_aabb.position.x - 2.0, p_aabb.end.y + 2.0)
+			])
+			var right_box: PackedVector2Array = PackedVector2Array([
+				Vector2(h_center.x, p_aabb.position.y - 2.0),
+				Vector2(p_aabb.end.x + 2.0, p_aabb.position.y - 2.0),
+				Vector2(p_aabb.end.x + 2.0, p_aabb.end.y + 2.0),
+				Vector2(h_center.x, p_aabb.end.y + 2.0)
+			])
+
+			var left_halves: Array[PackedVector2Array] = Geometry2D.intersect_polygons(p, left_box)
+			var right_halves: Array[PackedVector2Array] = Geometry2D.intersect_polygons(p, right_box)
+
+			for half: PackedVector2Array in left_halves:
+				var clipped: Array[PackedVector2Array] = Geometry2D.clip_polygons(half, h_cw)
+				for cp: PackedVector2Array in clipped:
+					if cp.size() >= 3:
+						next_polys.append(cp)
+			for half: PackedVector2Array in right_halves:
+				var clipped: Array[PackedVector2Array] = Geometry2D.clip_polygons(half, h_cw)
+				for cp: PackedVector2Array in clipped:
+					if cp.size() >= 3:
+						next_polys.append(cp)
+
+		current_polys = next_polys
+
+	return current_polys
 
 
 ## Constrói a fita de espuma costeira contínua (CoastalFoamRibbon)
