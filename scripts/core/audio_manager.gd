@@ -219,7 +219,7 @@ func play_cut_sfx(is_special: bool = false) -> void:
 		player.pitch_scale = randf_range(0.95, 1.05)
 	else:
 		player.stream = SFX_GRASS_CUT
-		player.volume_db = 0.0
+		player.volume_db = -6.0
 		player.pitch_scale = randf_range(0.92, 1.08)
 	player.play()
 
