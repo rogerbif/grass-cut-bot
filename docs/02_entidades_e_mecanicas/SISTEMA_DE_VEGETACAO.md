@@ -187,3 +187,7 @@ As aparas de corte utilizam o pool _particle_pool em `Plant` (scripts/plants/pla
 - **Densidade Otimizada (-20%):** Emissão calibrada em 14 aparas por corte de grama (8 corpo + 6 ponta) e 13 fragmentos por corte de flor (6 pétalas + 3 miolo + 2 caule + 2 folha).
 - **Escala Ampliada (+25%):** scale_amount_min = 1.06 e scale_amount_max = 1.44 com scale_amount_curve de sustentação e queda suave.
 - **Trajetória e Física:** Velocidade inicial contida (initial_velocity_min = 2.2, max = 4.1), gravidade $-9.8\text{m/s}²$ e rotação angular 3D (-280° a +280°/s), garantindo que as aparas tombam deitadas no ar como pétalas.
+### H. Gradiente Vertical de Altura Foliar em Todas as Gramas (Melhoria 221)
+O shader espacial interactive_grass.gdshader calcula a elevação contínua folha a folha no espaço UV (aw_h = invert_height ? (1.0 - UV.y) : UV.y) desacoplada da fase de balanço assada no canal R.
+- **Interpolação de Altura:** A curva smoothstep(0.04, 0.88, v_leaf_h) aplica \%$ de color_base nas raízes e inserção no solo, transicionando organicamente para color_light no ápice.
+- **Volume e Contraste 3D:** Cada folha do tufo possui separação e profundidade visual, eliminando o visual plano monocromático e ancorando a vegetação com sombras ricas no solo.
