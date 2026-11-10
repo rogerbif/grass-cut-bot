@@ -1,4 +1,4 @@
-# Sistema de Vegetação e Colheita 🌾🌸
+﻿# Sistema de Vegetação e Colheita 🌾🌸
 
 Este documento define as especificações das espécies vegetais, mecânica de resistência, ciclo de vida dos tufos e geração de partículas em **Grass Cut Bot**.
 
@@ -180,3 +180,10 @@ A flor de Margarida (`flower_03_daisy.glb`) conta com corola de 360° com 16 pé
 
 
 
+
+### G. Sistema de Partículas de Corte e Aparas de Grama (Melhorias 218 e 220)
+As aparas de corte utilizam o pool _particle_pool em `Plant` (scripts/plants/plant.gd) calibrado para gameplay mobile responsivo a 60 FPS:
+- **Geometria das Aparas de Grama:** Modeladas no plano horizontal $ com vinco central sutil em $+Y$, simulando lâminas de folhas ceifadas picadas ao meio (_grass_blade_mesh ~0.15m x 0.038m e _grass_blade_tip_mesh ~0.11m x 0.03m).
+- **Densidade Otimizada (-20%):** Emissão calibrada em 14 aparas por corte de grama (8 corpo + 6 ponta) e 13 fragmentos por corte de flor (6 pétalas + 3 miolo + 2 caule + 2 folha).
+- **Escala Ampliada (+25%):** scale_amount_min = 1.06 e scale_amount_max = 1.44 com scale_amount_curve de sustentação e queda suave.
+- **Trajetória e Física:** Velocidade inicial contida (initial_velocity_min = 2.2, max = 4.1), gravidade $-9.8\text{m/s}²$ e rotação angular 3D (-280° a +280°/s), garantindo que as aparas tombam deitadas no ar como pétalas.

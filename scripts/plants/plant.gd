@@ -443,9 +443,9 @@ static func _emit_sub_burst(scene_root: Node, pos: Vector3, mesh: Mesh, col: Col
 static func spawn_grass_cut_particles(scene_root: Node, world_pos: Vector3, col: Color) -> void:
 	_ensure_particle_meshes()
 	var blade_col: Color = col.lightened(0.12)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.16, 0.0), _grass_blade_mesh, blade_col, 10)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.16, 0.0), _grass_blade_mesh, blade_col, 8)
 	var tip_col: Color = col.lightened(0.28)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.16, 0.0), _grass_blade_tip_mesh, tip_col, 8)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.16, 0.0), _grass_blade_tip_mesh, tip_col, 6)
 
 ## Emissão para Flores: Círculos das cores de pétala e miolo, mais pedaços verdes de caule (quadrados) e folhas (triângulos)
 static func spawn_flower_cut_particles(scene_root: Node, world_pos: Vector3, flower_type: String) -> void:
@@ -456,18 +456,18 @@ static func spawn_flower_cut_particles(scene_root: Node, world_pos: Vector3, flo
 	var s_col: Color = FLOWER_STEM_COLOR
 
 	# Círculos das cores da flor (pétala e miolo)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.22, 0.0), _circle_mesh, p_col, 8)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.22, 0.0), _circle_mesh, c_col, 4)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.22, 0.0), _circle_mesh, p_col, 6)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.22, 0.0), _circle_mesh, c_col, 3)
 
 	# Fragmentos verdes: caule (quadrado) e folha (triângulo)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.15, 0.0), _square_mesh, s_col, 3)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.15, 0.0), _triangle_mesh, s_col, 3)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.15, 0.0), _square_mesh, s_col, 2)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.15, 0.0), _triangle_mesh, s_col, 2)
 
 ## Explosão parcial de pétalas e folha para hits intermediários de flor
 static func spawn_flower_petal_burst(scene_root: Node, world_pos: Vector3, flower_type: String) -> void:
 	_ensure_particle_meshes()
 	var cols: Dictionary = get_flower_colors(flower_type)
-	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.25, 0.0), _circle_mesh, cols["petal"] as Color, 6)
+	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.25, 0.0), _circle_mesh, cols["petal"] as Color, 5)
 	_emit_sub_burst(scene_root, world_pos + Vector3(0.0, 0.18, 0.0), _triangle_mesh, FLOWER_STEM_COLOR, 2)
 
 ## Resolução universal da chave base de espécie para qualquer variação de flor
@@ -571,7 +571,7 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
-		p.amount = 10
+		p.amount = 8
 		p.lifetime = 0.72
 		p.one_shot = true
 		p.explosiveness = 0.95
@@ -594,8 +594,8 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.tangential_accel_max = 1.8
 		p.damping_min = 0.6
 		p.damping_max = 1.8
-		p.scale_amount_min = 0.85
-		p.scale_amount_max = 1.15
+		p.scale_amount_min = 1.06 # Aumentado em +25% (0.85 * 1.25)
+		p.scale_amount_max = 1.44 # Aumentado em +25% (1.15 * 1.25)
 		p.scale_amount_curve = _scale_curve
 		scene_root.add_child(p)
 		_particle_pool.append(p)
