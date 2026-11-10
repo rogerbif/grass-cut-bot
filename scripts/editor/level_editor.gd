@@ -118,6 +118,18 @@ var active_adjust_mode: int = QuickAdjustMode.SCALE
 var active_terrain_id: String = "auto_island"
 var active_grass_id: String = "grass_green"
 var active_object_id: String = "rock"
+var brush_custom_params: Dictionary = {
+	"star_points": 5,
+	"star_inner_ratio": 0.45,
+	"cross_thickness": 0.35,
+	"ring_hole_ratio": 0.50,
+	"image_id": "paw",
+	"image_invert": false,
+	"image_epsilon": 1.5
+}
+
+func get_current_brush_params() -> Dictionary:
+	return brush_custom_params
 
 # Matrizes de dados do nível em memória
 # terrain_grid: Vector2i -> { "tile_id": String, "rot": int, "auto": bool }
@@ -312,6 +324,12 @@ func _connect_ui_signals() -> void:
 		_sync_all_ui()
 		_refresh_hover_preview()
 	)
+	if ui.has_signal("brush_custom_params_changed"):
+		ui.brush_custom_params_changed.connect(func(new_params: Dictionary) -> void:
+			for k_var: Variant in new_params.keys():
+				brush_custom_params[String(k_var)] = new_params[k_var]
+			_refresh_hover_preview()
+		)
 	ui.brush_size_changed.connect(func(delta_sz: int) -> void:
 		active_adjust_mode = QuickAdjustMode.SCALE
 		_adjust_scale(delta_sz)
@@ -787,24 +805,24 @@ func _refresh_hover_preview() -> void:
 			line_col = Color(1.0, 0.92, 0.4, 0.95)
 
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
-		var preview_poly: PackedVector2Array = PackedVector2Array()
+		var preview_polys: Array[PackedVector2Array] = []
 
 		if active_tool == ToolMode.BOX_FILL:
 			var sc: Vector2i = box_start_cell if is_box_dragging else hovered_cell
-			preview_poly = _get_box_vector_polygon(sc, hovered_cell)
+			preview_polys = [_get_box_vector_polygon(sc, hovered_cell)]
 		elif is_shift_straight:
 			var bridge_w: float = float(brush_size) * 0.80
-			preview_poly = BrushPatterns.create_ribbon_polygon([_last_vector_click_pos, hit_2d], bridge_w)
+			preview_polys = [BrushPatterns.create_ribbon_polygon([_last_vector_click_pos, hit_2d], bridge_w)]
 		elif active_shape != BrushPatterns.ShapeType.SINGLE:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+			preview_polys = BrushPatterns.get_vector_stamp_polygons(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params)
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
-			preview_poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
+			preview_polys = [BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)]
 		else:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+			preview_polys = BrushPatterns.get_vector_stamp_polygons(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params)
 
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
-		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
+		grid_overlay.call("update_vector_polygons_preview", preview_polys, line_col, fill_col)
 		return
 
 	if active_layer == EditLayer.GRASS and active_tool != ToolMode.SPAWN:
@@ -819,36 +837,36 @@ func _refresh_hover_preview() -> void:
 			line_col = Color(1.0, 0.92, 0.4, 0.95)
 
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
-		var preview_poly: PackedVector2Array = PackedVector2Array()
+		var preview_polys: Array[PackedVector2Array] = []
 
 		if active_tool == ToolMode.BOX_FILL:
 			var sc: Vector2i = box_start_cell if is_box_dragging else hovered_cell
-			preview_poly = _get_box_vector_polygon(sc, hovered_cell)
+			preview_polys = [_get_box_vector_polygon(sc, hovered_cell)]
 		elif is_shift_straight:
 			var bridge_w: float = float(brush_size) * 0.80
-			preview_poly = BrushPatterns.create_ribbon_polygon([_last_vector_click_pos, hit_2d], bridge_w)
+			preview_polys = [BrushPatterns.create_ribbon_polygon([_last_vector_click_pos, hit_2d], bridge_w)]
 		elif active_shape != BrushPatterns.ShapeType.SINGLE:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+			preview_polys = BrushPatterns.get_vector_stamp_polygons(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params)
 		elif is_painting_lmb and _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
-			preview_poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
+			preview_polys = [BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)]
 		else:
-			preview_poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+			preview_polys = BrushPatterns.get_vector_stamp_polygons(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params)
 
 		# Recorta o preview ao corredor costeiro seguro
-		if preview_poly.size() >= 3 and not (active_tool == ToolMode.ERASER or is_erasing_rmb):
+		if not preview_polys.is_empty() and not (active_tool == ToolMode.ERASER or is_erasing_rmb):
 			var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
 			if not safe_polys.is_empty():
-				var clipped_prev: Array[PackedVector2Array] = []
-				for sp: PackedVector2Array in safe_polys:
-					clipped_prev.append_array(Geometry2D.intersect_polygons(preview_poly, sp))
-				if not clipped_prev.is_empty():
-					preview_poly = clipped_prev[0]
-				else:
-					preview_poly.clear()
+				var clipped_all: Array[PackedVector2Array] = []
+				for pp: PackedVector2Array in preview_polys:
+					if pp.size() < 3:
+						continue
+					for sp: PackedVector2Array in safe_polys:
+						clipped_all.append_array(Geometry2D.intersect_polygons(pp, sp))
+				preview_polys = clipped_all
 
 		grid_overlay.update_brush_preview(preview_cells, Vector2i(-1, -1), current_rot_deg, Color.TRANSPARENT, Color.TRANSPARENT)
-		grid_overlay.call("update_vector_preview", preview_poly, line_col, fill_col)
+		grid_overlay.call("update_vector_polygons_preview", preview_polys, line_col, fill_col)
 		return
 
 	# Camada de Terreno ou Objetos (em blocos refinados de 0.40m)
@@ -883,7 +901,7 @@ func _refresh_hover_preview() -> void:
 			line_col = Color(0.4, 1.0, 0.75, 0.95)
 
 		var mirror_info: Array[Dictionary] = _get_mirrored_cells(hovered_cell, current_rot_deg)
-		var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
+		var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size, brush_custom_params)
 		for m_item in mirror_info:
 			var m_center: Vector2i = m_item["cell"] as Vector2i
 			for off in offsets:
@@ -993,22 +1011,40 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 
 	if (active_layer == EditLayer.GRASS or active_layer == EditLayer.TERRAIN) and active_tool != ToolMode.SPAWN:
 		var hit_2d: Vector2 = Vector2(last_world_hit.x, last_world_hit.z)
-		var poly: PackedVector2Array = PackedVector2Array()
 
+		if active_shape == BrushPatterns.ShapeType.RING:
+			var ring_polys: Array[PackedVector2Array] = BrushPatterns.get_vector_stamp_polygons(
+				active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params
+			)
+			if ring_polys.size() >= 2:
+				_apply_vector_polygon_to_active_layer(ring_polys[0], erase_mode, false, center)
+				_apply_vector_polygon_to_active_layer(ring_polys[1], not erase_mode, not is_painting_lmb, center)
+				return
+
+		if active_shape == BrushPatterns.ShapeType.IMAGE_STAMP:
+			var img_polys: Array[PackedVector2Array] = BrushPatterns.get_vector_stamp_polygons(
+				active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params
+			)
+			for idx_p: int in range(img_polys.size()):
+				var is_last: bool = (idx_p == img_polys.size() - 1) and (not is_painting_lmb)
+				_apply_vector_polygon_to_active_layer(img_polys[idx_p], erase_mode, is_last, center)
+			return
+
+		var poly: PackedVector2Array = PackedVector2Array()
 		if active_shape != BrushPatterns.ShapeType.SINGLE:
-			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+			poly = BrushPatterns.get_vector_stamp_polygon(active_shape, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params)
 		elif _freehand_points.size() >= 2:
 			var ribbon_w: float = float(brush_size) * 0.18 + 0.12
 			poly = BrushPatterns.create_ribbon_polygon(_freehand_points, ribbon_w)
 		else:
-			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius)
+			poly = BrushPatterns.get_vector_stamp_polygon(BrushPatterns.ShapeType.CIRCLE, brush_size, hit_2d, float(current_rot_deg), current_corner_radius, brush_custom_params)
 
 		_apply_vector_polygon_to_active_layer(poly, erase_mode, not is_painting_lmb, center)
 		return
 
 	# Camada de Terreno ou Objetos em blocos de 0.80m
 	var mirror_info: Array[Dictionary] = _get_mirrored_cells(center, current_rot_deg)
-	var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size)
+	var offsets: Array[Vector2i] = BrushPatterns.get_brush_offsets(active_shape, brush_size, brush_custom_params)
 	var changed_any: bool = false
 	for m_item in mirror_info:
 		var m_center: Vector2i = m_item["cell"] as Vector2i

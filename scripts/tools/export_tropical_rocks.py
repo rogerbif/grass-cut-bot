@@ -126,17 +126,13 @@ def export_all_rocks():
 
         uv_layer = src_obj.data.uv_layers.active.data if src_obj.data.uv_layers.active else None
 
-        # Criar Vertex Colors assados
-        bm = bmesh.new()
-        bm.from_mesh(src_obj.data)
+        # Limpar todos os atributos de cor legados
+        while len(src_obj.data.color_attributes) > 0:
+            src_obj.data.color_attributes.remove(src_obj.data.color_attributes[0])
 
-        while len(bm.loops.layers.color) > 0:
-            bm.loops.layers.color.remove(bm.loops.layers.color[0])
-        while len(bm.loops.layers.float_color) > 0:
-            bm.loops.layers.float_color.remove(bm.loops.layers.float_color[0])
-        color_lay = bm.loops.layers.float_color.new("Color")
+        color_attr = src_obj.data.color_attributes.new(name="Color", type='FLOAT_COLOR', domain='CORNER')
 
-        z_coords = [v.co.z for v in bm.verts]
+        z_coords = [v.co.z for v in src_obj.data.vertices]
         z_min = min(z_coords)
         z_max = max(z_coords)
         z_range = max(z_max - z_min, 0.001)
@@ -144,53 +140,51 @@ def export_all_rocks():
         stone_base = cfg["stone_color"]
         moss_col = cfg["moss_color"]
 
-        for f in bm.faces:
-            # Determinar se a face é de musgo
+        moss_count = 0
+        for poly in src_obj.data.polygons:
             is_face_moss = False
             if has_moss and uv_layer and pixels:
-                # Amostra a cor UV da face
-                loop_idx = f.loops[0].index
-                uv = uv_layer[loop_idx].uv
+                first_loop = poly.loop_indices[0]
+                uv = uv_layer[first_loop].uv
                 px = int(uv.x * img_w) % img_w
                 py = int(uv.y * img_h) % img_h
                 idx = (py * img_w + px) * 4
                 g_val = pixels[idx + 1]
                 r_val = pixels[idx]
-                # No atlas, faces de musgo tem G nitidamente maior que R
-                if g_val > r_val + 0.12 and g_val > 0.30:
+                if g_val > r_val + 0.08 and g_val > 0.30:
                     is_face_moss = True
+                    moss_count += 1
 
-            for l in f.loops:
-                v_z = l.vert.co.z
+            for loop_idx in poly.loop_indices:
+                vert_idx = src_obj.data.loops[loop_idx].vertex_index
+                v_z = src_obj.data.vertices[vert_idx].co.z
                 height_t = (v_z - z_min) / z_range
-                # Gradiente Toon suave da base para o topo (sombra de contato)
                 shade = 0.72 + 0.28 * height_t
 
                 if is_face_moss and moss_col:
-                    # Musgo verde com topo iluminado
                     r = moss_col[0] * shade
                     g = moss_col[1] * shade
                     b = moss_col[2] * shade
                 else:
-                    # Pedra com sombra na base
                     r = stone_base[0] * shade
                     g = stone_base[1] * shade
                     b = stone_base[2] * shade
 
-                l[color_lay] = (r, g, b, 1.0)
+                color_attr.data[loop_idx].color = (r, g, b, 1.0)
 
-        bm.to_mesh(src_obj.data)
-        bm.free()
-        src_obj.data.color_attributes.active_color = src_obj.data.color_attributes["Color"]
+        print(f"Objeto {cfg['source_name']}: total polys={len(src_obj.data.polygons)}, moss_polys={moss_count}")
+
+        src_obj.data.color_attributes.active_color = color_attr
         src_obj.data.update()
 
-        # Material neutro limpo para o glTF (Mandamento 13)
+        # Material conectado com Vertex Color para o glTF (Mandamento 13)
         clean_mat = bpy.data.materials.new(name="Mat_Rock")
         clean_mat.use_nodes = True
         bsdf = clean_mat.node_tree.nodes.get("Principled BSDF")
-        if bsdf:
-            bsdf.inputs["Base Color"].default_value = (1.0, 1.0, 1.0, 1.0)
-            bsdf.inputs["Roughness"].default_value = 0.95
+        col_node = clean_mat.node_tree.nodes.new(type="ShaderNodeVertexColor")
+        col_node.layer_name = "Color"
+        clean_mat.node_tree.links.new(col_node.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.95
         src_obj.data.materials.clear()
         src_obj.data.materials.append(clean_mat)
 

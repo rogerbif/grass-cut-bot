@@ -163,6 +163,7 @@ signal toggle_3d_grass_preview_requested()
 signal save_and_load_level_requested(level_id: int)
 signal island_template_requested(template_id: String)
 signal save_as_requested(target_level_id: int)
+signal brush_custom_params_changed(params: Dictionary)
 
 const ISLAND_TEMPLATES_META: Array[Dictionary] = [
 	{ "id": "retangulo", "label": "⬛ Ilha Retangular Clássica" },
@@ -200,6 +201,33 @@ var left_panel_node: PanelContainer
 var right_panel_node: PanelContainer
 var lbl_shapes_node: Label
 var grid_shapes_node: GridContainer
+var brush_custom_params_box: PanelContainer
+var box_star_params: VBoxContainer
+var spin_star_points: SpinBox
+var slider_star_inner: HSlider
+var lbl_star_inner_val: Label
+var box_cross_params: VBoxContainer
+var slider_cross_thick: HSlider
+var lbl_cross_thick_val: Label
+var box_ring_params: VBoxContainer
+var slider_ring_hole: HSlider
+var lbl_ring_hole_val: Label
+var box_image_params: VBoxContainer
+var grid_image_presets: GridContainer
+var image_preset_buttons: Dictionary = {}
+var chk_image_invert: CheckBox
+var slider_image_eps: HSlider
+var lbl_image_eps_val: Label
+var file_dialog_brush_png: FileDialog
+var _current_brush_params: Dictionary = {
+	"star_points": 5,
+	"star_inner_ratio": 0.45,
+	"cross_thickness": 0.35,
+	"ring_hole_ratio": 0.50,
+	"image_id": "paw",
+	"image_invert": false,
+	"image_epsilon": 1.5
+}
 var clean_screen_mode: bool = false
 var corner_radius_container: VBoxContainer
 var spin_corner_radius: SpinBox
@@ -662,6 +690,196 @@ func _build_left_panel() -> void:
 		s_btn.pressed.connect(func() -> void: brush_shape_changed.emit(s_id))
 		grid_shapes.add_child(s_btn)
 		shape_buttons[s_id] = s_btn
+
+	# 3.05 Subpainel Contextual de Customização da Forma (Estrela, Cruz, Anel, Imagem P&B)
+	brush_custom_params_box = PanelContainer.new()
+	brush_custom_params_box.visible = false
+	brush_custom_params_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.12, 0.18, 0.90), Color(0.35, 0.75, 0.98, 0.65), 8))
+	vbox.add_child(brush_custom_params_box)
+
+	var vbox_cp: VBoxContainer = VBoxContainer.new()
+	vbox_cp.add_theme_constant_override("separation", 6)
+	brush_custom_params_box.add_child(vbox_cp)
+
+	# --- A) Parâmetros de Estrela (Pontas 3..16 + Raio Interno 15%..100%) ---
+	box_star_params = VBoxContainer.new()
+	box_star_params.add_theme_constant_override("separation", 4)
+	vbox_cp.add_child(box_star_params)
+
+	var hbox_sp: HBoxContainer = HBoxContainer.new()
+	box_star_params.add_child(hbox_sp)
+
+	var lbl_sp: Label = Label.new()
+	lbl_sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl_sp.text = "⭐ Pontas da Estrela:"
+	lbl_sp.add_theme_font_size_override("font_size", 12)
+	lbl_sp.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35))
+	hbox_sp.add_child(lbl_sp)
+
+	spin_star_points = SpinBox.new()
+	spin_star_points.min_value = 3
+	spin_star_points.max_value = 16
+	spin_star_points.step = 1
+	spin_star_points.value = 5
+	spin_star_points.custom_minimum_size = Vector2(76, 28)
+	spin_star_points.value_changed.connect(func(v: float) -> void:
+		_current_brush_params["star_points"] = int(v)
+		brush_custom_params_changed.emit(_current_brush_params.duplicate())
+	)
+	hbox_sp.add_child(spin_star_points)
+
+	var hbox_sp_quick: HBoxContainer = HBoxContainer.new()
+	hbox_sp_quick.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_sp_quick.add_theme_constant_override("separation", 4)
+	box_star_params.add_child(hbox_sp_quick)
+	for pt_preset: int in [3, 4, 5, 6, 8, 12]:
+		var b_pt: Button = _create_styled_button("%d" % pt_preset, Color(0.95, 0.80, 0.28), Vector2(34, 24))
+		b_pt.add_theme_font_size_override("font_size", 11)
+		b_pt.pressed.connect(func() -> void:
+			spin_star_points.value = float(pt_preset)
+		)
+		hbox_sp_quick.add_child(b_pt)
+
+	var hbox_si: HBoxContainer = HBoxContainer.new()
+	box_star_params.add_child(hbox_si)
+
+	lbl_star_inner_val = Label.new()
+	lbl_star_inner_val.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl_star_inner_val.text = "📐 Fundo / Pontas: 45%"
+	lbl_star_inner_val.add_theme_font_size_override("font_size", 11)
+	lbl_star_inner_val.add_theme_color_override("font_color", Color(0.82, 0.90, 1.0))
+	hbox_si.add_child(lbl_star_inner_val)
+
+	var btn_poly_reg: Button = _create_styled_button("⬡ Polígono", Color(0.40, 0.85, 0.95), Vector2(78, 22))
+	btn_poly_reg.add_theme_font_size_override("font_size", 10)
+	btn_poly_reg.tooltip_text = "Transforma a estrela em um Polígono Regular de N lados (Triângulo, Pentágono, Hexágono, Octógono)"
+	btn_poly_reg.pressed.connect(func() -> void:
+		slider_star_inner.value = 1.0
+	)
+	hbox_si.add_child(btn_poly_reg)
+
+	slider_star_inner = HSlider.new()
+	slider_star_inner.min_value = 0.15
+	slider_star_inner.max_value = 1.00
+	slider_star_inner.step = 0.05
+	slider_star_inner.value = 0.45
+	slider_star_inner.value_changed.connect(func(v: float) -> void:
+		_current_brush_params["star_inner_ratio"] = v
+		lbl_star_inner_val.text = "📐 Polígono Regular (%d lados)" % int(spin_star_points.value) if v >= 0.99 else ("📐 Fundo / Pontas: %d%%" % int(roundf(v * 100.0)))
+		brush_custom_params_changed.emit(_current_brush_params.duplicate())
+	)
+	box_star_params.add_child(slider_star_inner)
+
+	# --- B) Parâmetros de Cruz (Espessura do Braço 15%..75%) ---
+	box_cross_params = VBoxContainer.new()
+	box_cross_params.add_theme_constant_override("separation", 4)
+	vbox_cp.add_child(box_cross_params)
+
+	lbl_cross_thick_val = Label.new()
+	lbl_cross_thick_val.text = "➕ Espessura da Cruz: 35%"
+	lbl_cross_thick_val.add_theme_font_size_override("font_size", 12)
+	lbl_cross_thick_val.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))
+	box_cross_params.add_child(lbl_cross_thick_val)
+
+	slider_cross_thick = HSlider.new()
+	slider_cross_thick.min_value = 0.15
+	slider_cross_thick.max_value = 0.75
+	slider_cross_thick.step = 0.05
+	slider_cross_thick.value = 0.35
+	slider_cross_thick.value_changed.connect(func(v: float) -> void:
+		_current_brush_params["cross_thickness"] = v
+		lbl_cross_thick_val.text = "➕ Espessura da Cruz: %d%%" % int(roundf(v * 100.0))
+		brush_custom_params_changed.emit(_current_brush_params.duplicate())
+	)
+	box_cross_params.add_child(slider_cross_thick)
+
+	# --- C) Parâmetros de Anel / Rosquinha (Furo Interno 20%..85%) ---
+	box_ring_params = VBoxContainer.new()
+	box_ring_params.add_theme_constant_override("separation", 4)
+	vbox_cp.add_child(box_ring_params)
+
+	lbl_ring_hole_val = Label.new()
+	lbl_ring_hole_val.text = "🍩 Furo Central do Anel: 50%"
+	lbl_ring_hole_val.add_theme_font_size_override("font_size", 12)
+	lbl_ring_hole_val.add_theme_color_override("font_color", Color(0.95, 0.82, 0.45))
+	box_ring_params.add_child(lbl_ring_hole_val)
+
+	slider_ring_hole = HSlider.new()
+	slider_ring_hole.min_value = 0.20
+	slider_ring_hole.max_value = 0.85
+	slider_ring_hole.step = 0.05
+	slider_ring_hole.value = 0.50
+	slider_ring_hole.value_changed.connect(func(v: float) -> void:
+		_current_brush_params["ring_hole_ratio"] = v
+		lbl_ring_hole_val.text = "🍩 Furo Central do Anel: %d%%" % int(roundf(v * 100.0))
+		brush_custom_params_changed.emit(_current_brush_params.duplicate())
+	)
+	box_ring_params.add_child(slider_ring_hole)
+
+	# --- D) Parâmetros de Pincel por Imagem P&B (BitMap) ---
+	box_image_params = VBoxContainer.new()
+	box_image_params.add_theme_constant_override("separation", 5)
+	vbox_cp.add_child(box_image_params)
+
+	var lbl_img_hdr: Label = Label.new()
+	lbl_img_hdr.text = "🖼️ MÁSCARA PRETO E BRANCO (BitMap)"
+	lbl_img_hdr.add_theme_font_size_override("font_size", 11)
+	lbl_img_hdr.add_theme_color_override("font_color", Color(0.55, 0.92, 1.0))
+	box_image_params.add_child(lbl_img_hdr)
+
+	grid_image_presets = GridContainer.new()
+	grid_image_presets.columns = 2
+	grid_image_presets.add_theme_constant_override("h_separation", 4)
+	grid_image_presets.add_theme_constant_override("v_separation", 4)
+	box_image_params.add_child(grid_image_presets)
+
+	for pm in BrushPatterns.IMAGE_PRESETS_META:
+		var pid: String = String(pm["id"])
+		var b_img: Button = _create_styled_button(String(pm["name"]), Color(0.40, 0.82, 0.95), Vector2(114, 28))
+		b_img.add_theme_font_size_override("font_size", 12)
+		b_img.pressed.connect(func() -> void:
+			_select_image_brush(pid)
+		)
+		grid_image_presets.add_child(b_img)
+		image_preset_buttons[pid] = b_img
+
+	var btn_import_png: Button = _create_styled_button("📂 Carregar Imagem PNG/JPG...", Color(0.35, 0.92, 0.60), Vector2(0, 30))
+	btn_import_png.add_theme_font_size_override("font_size", 12)
+	btn_import_png.tooltip_text = "Seleciona qualquer imagem Preto e Branco ou PNG com transparência do seu computador para virar um pincel vetorial!"
+	btn_import_png.pressed.connect(func() -> void:
+		if file_dialog_brush_png != null:
+			file_dialog_brush_png.popup_centered(Vector2i(640, 440))
+	)
+	box_image_params.add_child(btn_import_png)
+
+	chk_image_invert = CheckBox.new()
+	chk_image_invert.text = "🔄 Inverter Preto ⇄ Branco"
+	chk_image_invert.add_theme_font_size_override("font_size", 12)
+	chk_image_invert.toggled.connect(func(pressed: bool) -> void:
+		_current_brush_params["image_invert"] = pressed
+		brush_custom_params_changed.emit(_current_brush_params.duplicate())
+	)
+	box_image_params.add_child(chk_image_invert)
+
+	lbl_image_eps_val = Label.new()
+	lbl_image_eps_val.text = "✨ Suavização de Borda: 1.5px"
+	lbl_image_eps_val.add_theme_font_size_override("font_size", 11)
+	lbl_image_eps_val.add_theme_color_override("font_color", Color(0.80, 0.88, 0.95))
+	box_image_params.add_child(lbl_image_eps_val)
+
+	slider_image_eps = HSlider.new()
+	slider_image_eps.min_value = 0.5
+	slider_image_eps.max_value = 4.0
+	slider_image_eps.step = 0.25
+	slider_image_eps.value = 1.5
+	slider_image_eps.value_changed.connect(func(v: float) -> void:
+		_current_brush_params["image_epsilon"] = v
+		lbl_image_eps_val.text = "✨ Suavização de Borda: %.2fpx" % v
+		brush_custom_params_changed.emit(_current_brush_params.duplicate())
+	)
+	box_image_params.add_child(slider_image_eps)
+
+	_build_brush_file_dialog()
 
 	# 3.1 Opção de Corner Radius para a ferramenta de Quadrado
 	corner_radius_container = VBoxContainer.new()
@@ -1410,6 +1628,25 @@ func sync_state(
 	if grid_shapes_node != null:
 		grid_shapes_node.visible = uses_brush_shape
 
+	if brush_custom_params_box != null:
+		var show_star: bool = uses_brush_shape and (active_shape == BrushPatterns.ShapeType.STAR)
+		var show_cross: bool = uses_brush_shape and (active_shape == BrushPatterns.ShapeType.CROSS)
+		var show_ring: bool = uses_brush_shape and (active_shape == BrushPatterns.ShapeType.RING)
+		var show_img: bool = uses_brush_shape and (active_shape == BrushPatterns.ShapeType.IMAGE_STAMP)
+		if box_star_params != null:
+			box_star_params.visible = show_star
+		if box_cross_params != null:
+			box_cross_params.visible = show_cross
+		if box_ring_params != null:
+			box_ring_params.visible = show_ring
+		if box_image_params != null:
+			box_image_params.visible = show_img
+			var cur_img_id: String = String(_current_brush_params.get("image_id", "paw"))
+			for pid_k: Variant in image_preset_buttons.keys():
+				var pid_str: String = String(pid_k)
+				_set_button_selected(image_preset_buttons[pid_str] as Button, cur_img_id == pid_str, Color(0.40, 0.82, 0.95))
+		brush_custom_params_box.visible = (show_star or show_cross or show_ring or show_img)
+
 	if corner_radius_container != null:
 		corner_radius_container.visible = (active_layer == 0)
 
@@ -1933,6 +2170,25 @@ func toggle_clean_screen_mode() -> bool:
 	if right_panel_node != null:
 		right_panel_node.visible = not clean_screen_mode
 	return clean_screen_mode
+
+func _select_image_brush(img_id: String) -> void:
+	_current_brush_params["image_id"] = img_id
+	for pid_k: Variant in image_preset_buttons.keys():
+		var pid_str: String = String(pid_k)
+		_set_button_selected(image_preset_buttons[pid_str] as Button, img_id == pid_str, Color(0.40, 0.82, 0.95))
+	brush_custom_params_changed.emit(_current_brush_params.duplicate())
+
+func _build_brush_file_dialog() -> void:
+	file_dialog_brush_png = FileDialog.new()
+	file_dialog_brush_png.title = "🖼️ Selecionar Imagem P&B para Pincel"
+	file_dialog_brush_png.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	file_dialog_brush_png.access = FileDialog.ACCESS_FILESYSTEM
+	file_dialog_brush_png.filters = PackedStringArray(["*.png, *.jpg, *.jpeg, *.webp ; Imagens de Pincel"])
+	file_dialog_brush_png.file_selected.connect(func(path: String) -> void:
+		_select_image_brush(path)
+		show_toast("🖼️ Pincel de imagem carregado: %s" % path.get_file(), Color(0.35, 0.95, 0.65))
+	)
+	add_child(file_dialog_brush_png)
 
 
 
