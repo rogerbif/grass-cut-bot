@@ -356,7 +356,7 @@ func _make_goal_card(plant_type: String, amount: int, card_w: float) -> Control:
 
 	var icon_sz: float = clampf(card_w - 14.0, 38.0, 44.0)
 	vbox.add_child(GoalIconFactory.build_goal_icon(plant_type, icon_sz))
-	var amount_lbl: Label = _make_label(str(amount), 16, COL_WHITE)
+	var amount_lbl: Label = _make_label(str(amount), 18, COL_WHITE)
 	amount_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(amount_lbl)
 	return card

@@ -184,9 +184,9 @@ func _on_goal_updated(plant_type: String, remaining: int, target: int) -> void:
 
 func _create_goal_card(plant_type: String, target: int) -> void:
 	var card_panel: PanelContainer = PanelContainer.new()
-	# Card vertical proporcional com a arte do badge (76x72)
-	card_panel.custom_minimum_size = Vector2(74, 82)
-	card_panel.pivot_offset = Vector2(37, 41)
+	# Card vertical proporcional com a arte do badge (74x84)
+	card_panel.custom_minimum_size = Vector2(74, 84)
+	card_panel.pivot_offset = Vector2(37, 42)
 	card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
@@ -255,7 +255,7 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	count_lbl.text = str(target)
 	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	count_lbl.add_theme_font_size_override("font_size", 16)
+	count_lbl.add_theme_font_size_override("font_size", 20)
 	count_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
 	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
