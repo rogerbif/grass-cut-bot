@@ -7,7 +7,7 @@ from mathutils import Vector, Matrix
 blend_path = r"C:\Users\User\OneDrive\Documentos\3D_Blender\wheat.blend"
 output_glb_path = r"C:\Users\User\OneDrive\Documentos\grass-cut-bot\assets\models\wheat_01.glb"
 
-print("--- Remodelando Espiga de Trigo em Blender ---")
+print("--- Remodelando Espiga e Caule de Trigo em Blender ---")
 bpy.ops.wm.open_mainfile(filepath=blend_path)
 
 wheat = bpy.data.objects.get("wheat_01")
@@ -18,35 +18,52 @@ me = wheat.data
 bm = bmesh.new()
 bm.from_mesh(me)
 
-# 1. Remover a gaiola oca obsoleta acima de Z = 0.82m
-old_spike_faces = [f for f in bm.faces if any(v.co.z > 0.82 for v in f.verts)]
-print(f"Removendo {len(old_spike_faces)} faces da gaiola antiga...")
-bmesh.ops.delete(bm, geom=old_spike_faces, context='FACES')
+# 1. Remover a espiga/ráquis antiga (Z >= 0.80m) preservando as folhas laterais abaixo de 0.80m
+top_faces = [f for f in bm.faces if any(v.co.z >= 0.80 for v in f.verts)]
+print(f"Removendo {len(top_faces)} faces da regiao superior da espiga antiga...")
+bmesh.ops.delete(bm, geom=top_faces, context='FACES')
 
 # Limpar vertices soltos
 loose_verts = [v for v in bm.verts if len(v.link_faces) == 0]
 bmesh.ops.delete(bm, geom=loose_verts, context='VERTS')
 
-# 2. Construir o ráquis central cilíndrico de Z = 0.80m a Z = 1.12m
-rachis_steps = 10
-rachis_verts = []
-for i in range(rachis_steps + 1):
-    t = i / float(rachis_steps)
-    z = 0.80 + t * 0.32
-    radius = 0.009 * (1.0 - t * 0.40)
+# 2. Construir o caule central (colmo) contínuo do solo (Z = 0.0m) até o ápice da espiga (Z = 1.12m)
+stem_steps = 32
+num_sides = 6
+stem_rings = []
+for i in range(stem_steps + 1):
+    t = i / float(stem_steps)
+    z = t * 1.12
+    if z <= 0.80:
+        u = z / 0.80
+        # Diâmetro de ~2.4cm na base afunilando para ~1.8cm na base da espiga
+        radius = 0.012 - u * (0.012 - 0.009)
+    else:
+        u = (z - 0.80) / 0.32
+        # Ráquis da espiga afunilando para ~0.9cm no ápice
+        radius = 0.009 - u * (0.009 - 0.0045)
+    
     ring = []
-    for a in range(4):
-        ang = a * (math.pi / 2.0)
+    for s in range(num_sides):
+        ang = s * (2.0 * math.pi / float(num_sides))
         v = bm.verts.new((math.cos(ang) * radius, math.sin(ang) * radius, z))
         ring.append(v)
-    rachis_verts.append(ring)
+    stem_rings.append(ring)
 
-for i in range(rachis_steps):
-    r0 = rachis_verts[i]
-    r1 = rachis_verts[i+1]
-    for a in range(4):
-        a_next = (a + 1) % 4
-        bm.faces.new((r0[a], r0[a_next], r1[a_next], r1[a]))
+# Criar faces quadriláteras do cilindro hexagonal contínuo
+for i in range(stem_steps):
+    r0 = stem_rings[i]
+    r1 = stem_rings[i + 1]
+    for s in range(num_sides):
+        s_next = (s + 1) % num_sides
+        bm.faces.new((r0[s], r0[s_next], r1[s_next], r1[s]))
+
+# Fechamento inferior no solo (Z = 0.0)
+v_bottom_center = bm.verts.new((0.0, 0.0, 0.0))
+r_base = stem_rings[0]
+for s in range(num_sides):
+    s_next = (s + 1) % num_sides
+    bm.faces.new((v_bottom_center, r_base[s_next], r_base[s]))
 
 # 3. Modelar 11 níveis de espiguetas/grãos 3D em espinha de peixe (herringbone/braided)
 num_tiers = 11
@@ -71,7 +88,7 @@ for tier in range(num_tiers):
         perp_x = -dir_y
         perp_y = dir_x
         
-        # Inclinação vertical para cima de ~42 graus
+        # Inclinação vertical para cima de ~41 graus
         tilt = math.radians(41.0)
         slant_h = math.cos(tilt) * grain_len
         slant_z = math.sin(tilt) * grain_len
@@ -136,45 +153,41 @@ bm.faces.new((v_tt, v_tf, v_tr))
 bm.faces.new((v_tt, v_tr, v_tback))
 bm.faces.new((v_tt, v_tback, v_tl))
 
-# 5. Mapear camada UV contínua de 0.0 (solo) a 1.0 (topo da espiga)
+# Suavizar normais em todas as faces
+for f in bm.faces:
+    f.smooth = True
+
 bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
 
+# 5. Mapear camada UV contínua e Cores de Vértice (Gradiente 30% mais escuro e base escura)
 uv_layer = bm.loops.layers.uv.verify()
-# Obter min e max Z para normalização de UV
+color_layer = bm.loops.layers.color.verify()
+
 all_z = [v.co.z for v in bm.verts]
 min_z = min(all_z)
 max_z = max(all_z)
 height_span = max(max_z - min_z, 0.001)
 
-# Camada de Vertex Colors (Color Layer) para assar gradientes ricos
-color_layer = bm.loops.layers.color.verify()
-
 for f in bm.faces:
     for loop in f.loops:
         v = loop.vert
-        # UV.y de 1.0 (solo) a 0.0 (topo) alinhado com invert_height = true do trigo
-        norm_h = (v.co.z - min_z) / height_span
-        # U centrado, V invertido de 1.0 a 0.0
+        norm_h = max(0.0, min(1.0, (v.co.z - min_z) / height_span))
+        # UV.y de 1.0 (solo) a 0.0 (topo) alinhado com invert_height = true
         loop[uv_layer].uv = Vector((0.5, 1.0 - norm_h))
         
-        # Color coding:
-        # COLOR.r = altura normalizada ou gradiente de luz
-        # Grãos da espiga (Z > 0.80): tom dourado rico (0.95, 0.85, 0.3)
-        # Fendas e ráquis: tom âmbar mais escuro (0.75, 0.50, 0.1)
-        # Caule inferior (Z < 0.80): gradiente de âmbar base para dourado
+        # COLOR.r é a altura canônica estrita para o shader (0.0 no solo até 1.0 no topo)
+        # COLOR.g e COLOR.b adicionam leve oclusão de ambiente nas fendas
         if v.co.z > 0.80:
-            # Distância ao ráquis central para escurecer as fendas internas
-            dist_center = math.sqrt(v.co.x**2 + v.co.y**2)
-            crevice_factor = min(dist_center / 0.025, 1.0)
-            col_r = 0.70 + 0.30 * crevice_factor
-            col_g = 0.55 + 0.35 * crevice_factor
-            col_b = 0.10 + 0.25 * crevice_factor
+            dist_c = math.sqrt(v.co.x**2 + v.co.y**2)
+            crevice = min(dist_c / 0.025, 1.0)
+            col_r = norm_h
+            col_g = 0.50 + 0.35 * crevice
+            col_b = 0.10 + 0.25 * crevice
             loop[color_layer] = (col_r, col_g, col_b, 1.0)
         else:
-            stem_t = v.co.z / 0.80
-            col_r = 0.45 + 0.45 * stem_t
-            col_g = 0.30 + 0.45 * stem_t
-            col_b = 0.05 + 0.15 * stem_t
+            col_r = norm_h
+            col_g = 0.35 + 0.45 * norm_h
+            col_b = 0.05 + 0.20 * norm_h
             loop[color_layer] = (col_r, col_g, col_b, 1.0)
 
 bm.to_mesh(me)
@@ -188,20 +201,20 @@ bpy.ops.wm.save_mainfile(filepath=blend_path)
 print("wheat.blend salvo com sucesso.")
 
 # 7. Exportar glTF canônico para assets/models/wheat_01.glb
-# Selecionar apenas o objeto wheat_01
 for o in bpy.data.objects:
     o.select_set(False)
 
 wheat.select_set(True)
 bpy.context.view_layer.objects.active = wheat
 
-# Forçar materiais limpos com albedo neutro/dourado
+# Material Blender fosco 30% mais escuro
 mat = bpy.data.materials.get("M_Wheat_Default")
 if not mat:
     mat = bpy.data.materials.new("M_Wheat_Default")
 mat.use_nodes = True
 bsdf = mat.node_tree.nodes.get("Principled BSDF")
-bsdf.inputs['Base Color'].default_value = (0.96, 0.77, 0.19, 1.0)
+# Cor 30% mais escura: (0.67, 0.54, 0.13, 1.0)
+bsdf.inputs['Base Color'].default_value = (0.67, 0.54, 0.13, 1.0)
 bsdf.inputs['Roughness'].default_value = 0.90
 wheat.data.materials.clear()
 wheat.data.materials.append(mat)

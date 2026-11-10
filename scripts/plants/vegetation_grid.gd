@@ -1372,7 +1372,7 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 			if col_variant is Color:
 				return col_variant as Color
 	if v_type == "wheat":
-		return Color(0.98, 0.78, 0.14, 1.0)
+		return Color(0.69, 0.55, 0.10, 1.0)
 	if v_type.begins_with("flower_rose"):
 		var r_cols: Dictionary = PlantScript.get_flower_colors(v_type)
 		return r_cols.get("petal", Color(1.0, 0.08, 0.35, 1.0))

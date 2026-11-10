@@ -1,4 +1,4 @@
-﻿# Sistema de Vegetação e Colheita 🌾🌸
+# Sistema de Vegetação e Colheita 🌾🌸
 
 Este documento define as especificações das espécies vegetais, mecânica de resistência, ciclo de vida dos tufos e geração de partículas em **Grass Cut Bot**.
 
@@ -191,7 +191,9 @@ As aparas de corte utilizam o pool _particle_pool em `Plant` (scripts/plants/pla
 O shader espacial interactive_grass.gdshader calcula a elevação contínua folha a folha no espaço UV (aw_h = invert_height ? (1.0 - UV.y) : UV.y) desacoplada da fase de balanço assada no canal R.
 - **Interpolação de Altura:** A curva smoothstep(0.04, 0.88, v_leaf_h) aplica \%$ de color_base nas raízes e inserção no solo, transicionando organicamente para color_light no ápice.
 - **Volume e Contraste 3D:** Cada folha do tufo possui separação e profundidade visual, eliminando o visual plano monocromático e ancorando a vegetação com sombras ricas no solo.
-### I. Espiga de Trigo 3D em Espinha de Peixe (Melhoria 222)
-A malha wheat_01.glb conta com espiga 100% geométrica em 3D Low Poly (308 vértices e 299 polígonos):
-- **Anatomia em Escama:** Ráquis dorsal central de .80\text{m}$ a .12\text{m}$, 11 níveis de grãos diamantados sobrepostos em pares alternados e aristas superiores.
-- **Iluminação 3D Facetada:** O shader interactive_grass.gdshader preserva as normais geométricas reais da espiga quando invert_height == true, destacando individualmente cada semente ao sol com fendas sombreadas em tom âmbar quente.
+### I. Espiga de Trigo 3D e Caule Central Contínuo (Melhorias 225 e 226)
+A malha `wheat_01.glb` conta com anatomia botânica 100% geométrica em 3D Low Poly (463 vértices e 457 polígonos):
+- **Caule Central (Colmo) Contínuo:** Haste cilíndrica hexagonal que sobe continuamente desde o solo ($Z = 0.00\text{m}$) até o topo da espiga ($Z = 1.12\text{m}$), unindo o solo a todas as folhas laterais originais e ao ráquis da espiga, eliminando folíolos flutuantes.
+- **Espiga em Espinha de Peixe:** Ráquis dorsal central, 11 níveis de grãos diamantados volumosos (8 facetas cada) sobrepostos em pares alternados inclinados a 41° para cima e aristas superiores.
+- **Calibração Cromática 30% Mais Escura:** Cores equilibradas em tom mel dourado encorpado (`color_light = Color(0.70, 0.62, 0.18)`) com base âmbar profunda no solo (`color_base = Color(0.27, 0.15, 0.04)`), garantindo alto contraste e leitura limpa em iluminação tropical.
+- **Iluminação 3D Facetada:** O shader `interactive_grass.gdshader` preserva as normais geométricas reais da espiga quando `invert_height == true`, destacando individualmente cada semente ao sol com fendas sombreadas em tom âmbar quente.
