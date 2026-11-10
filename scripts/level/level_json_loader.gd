@@ -72,8 +72,16 @@ const OBJECT_SCENES: Dictionary = {
 	"flower_bed": preload("res://scenes/plants/flower_bed.tscn"),
 	"flower_bed_blue": preload("res://scenes/plants/flower_bed.tscn"),
 	"flower_bed_white": preload("res://scenes/plants/flower_bed.tscn"),
-	"rock": preload("res://scenes/obstacles/rock.tscn")
+	"rock": preload("res://scenes/obstacles/rock.tscn"),
+	"rock_slate": preload("res://scenes/obstacles/rock.tscn"),
+	"rock_moss": preload("res://scenes/obstacles/rock_moss.tscn"),
+	"rock_spire": preload("res://scenes/obstacles/rock_spire.tscn"),
+	"rock_moss_spire": preload("res://scenes/obstacles/rock_moss_spire.tscn"),
+	"rock_sandstone": preload("res://scenes/obstacles/rock_sandstone.tscn"),
+	"rock_boulder": preload("res://scenes/obstacles/rock_boulder.tscn")
 }
+
+const SCENE_MAP: Dictionary = OBJECT_SCENES
 
 static func grid_to_world(gx: int, gz: int, width: int, height: int, cell_size: float = DEFAULT_CELL_SIZE) -> Vector3:
 	var offset_x: float = -(float(width) * cell_size) / 2.0 + (cell_size / 2.0)

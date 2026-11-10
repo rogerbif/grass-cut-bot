@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/rock_boulder.glb" id="1_model"]
+[ext_resource type="Material" path="res://shaders/rock_toon_material.tres" id="2_mat"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_rock"]
+height = 0.8
+radius = 0.18
+
+[node name="RockBoulder" type="StaticBody3D" groups=["obstacles"]]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("CylinderShape3D_rock")
+
+[node name="VisualMesh" type="Node3D" parent="."]
+
+[node name="RockModel" parent="VisualMesh" instance=ExtResource("1_model")]
+
+[node name="rock_export" parent="VisualMesh/RockModel" index="0"]
+material_override = ExtResource("2_mat")

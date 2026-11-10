@@ -855,7 +855,7 @@ func _refresh_hover_preview() -> void:
 	grid_overlay.call("update_vector_preview", PackedVector2Array(), Color.TRANSPARENT, Color.TRANSPARENT)
 
 	var clearance_r: float = 0.0
-	if active_layer == EditLayer.OBJECTS and active_object_id == "rock" and active_tool != ToolMode.ERASER:
+	if active_layer == EditLayer.OBJECTS and active_object_id.begins_with("rock") and active_tool != ToolMode.ERASER:
 		clearance_r = ROCK_CLEARANCE_RADIUS
 	elif active_tool == ToolMode.SPAWN:
 		clearance_r = SPAWN_CLEARANCE_RADIUS
@@ -1024,7 +1024,7 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 		_stroke_modified = true
 		if active_layer == EditLayer.OBJECTS:
 			_rebuild_objects_3d()
-			if active_object_id == "rock" or erase_mode:
+			if active_object_id.begins_with("rock") or erase_mode:
 				_rebuild_grass_3d()
 			_update_layers_transparency()
 		else:
@@ -1048,7 +1048,7 @@ func _apply_box_fill(start_c: Vector2i, end_c: Vector2i) -> void:
 	if changed_any:
 		if active_layer == EditLayer.OBJECTS:
 			_rebuild_objects_3d()
-			if active_object_id == "rock":
+			if active_object_id.begins_with("rock"):
 				_rebuild_grass_3d()
 			_update_layers_transparency()
 		else:
@@ -1110,12 +1110,12 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool, custom_rot: int = -1)
 				return true
 
 			# Se for flor ou trigo, impede colocação dentro do raio de 1.40m de qualquer rocha
-			if active_object_id != "rock":
+			if not active_object_id.begins_with("rock"):
 				var target_world: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				for o_c: Variant in object_grid.keys():
 					var oc_pos: Vector2i = o_c as Vector2i
 					var o_info: Dictionary = object_grid[oc_pos] as Dictionary
-					if String(o_info.get("type", "")) == "rock":
+					if String(o_info.get("type", "")).begins_with("rock"):
 						var r_world: Vector3 = LevelJsonLoader.grid_to_world(oc_pos.x, oc_pos.y, grid_width, grid_height, CELL_SIZE)
 						var dist_xz: float = Vector2(target_world.x - r_world.x, target_world.z - r_world.z).length()
 						if dist_xz <= ROCK_CLEARANCE_RADIUS:
@@ -1137,7 +1137,7 @@ func _modify_single_cell(cell: Vector2i, erase_mode: bool, custom_rot: int = -1)
 			}
 
 			# Se for rocha, limpa grama e plantas no raio da maior serra (1.40m)
-			if active_object_id == "rock":
+			if active_object_id.begins_with("rock"):
 				var r_pos: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				var rock_clear_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
 					Vector2(r_pos.x, r_pos.z),
@@ -1323,8 +1323,9 @@ func _rebuild_objects_3d() -> void:
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock":
-			var r_inst: Node3D = ROCK_SCENE.instantiate() as Node3D
+		if o_type.begins_with("rock"):
+			var scene_res: PackedScene = LevelJsonLoader.OBJECT_SCENES.get(o_type, ROCK_SCENE) as PackedScene
+			var r_inst: Node3D = scene_res.instantiate() as Node3D
 			if r_inst != null:
 				r_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 				r_inst.rotation_degrees.y = float(entry.get("rot", 0))
@@ -1390,7 +1391,7 @@ func _build_editor_vector_ground() -> void:
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock":
+		if o_type.begins_with("rock"):
 			var r_world: Vector3 = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
 			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
 				Vector2(r_world.x, r_world.z),
@@ -1581,7 +1582,7 @@ func calculate_recommended_time_limit() -> float:
 	for k_var: Variant in object_grid.keys():
 		var e: Dictionary = object_grid[k_var] as Dictionary
 		var ot: String = String(e.get("type", ""))
-		if ot == "rock":
+		if ot.begins_with("rock"):
 			rock_count += 1
 		elif ot.begins_with("flower"):
 			extra_hit_seconds += 0.45
@@ -1793,7 +1794,7 @@ func _apply_flood_fill_at(cell: Vector2i, hit_2d: Vector2, replace_all: bool = f
 		for c_key: Variant in object_grid.keys():
 			var c_pos: Vector2i = c_key as Vector2i
 			var entry: Dictionary = object_grid[c_pos] as Dictionary
-			if String(entry.get("type", "")) == "rock":
+			if String(entry.get("type", "")).begins_with("rock"):
 				var r_world: Vector3 = LevelJsonLoader.grid_to_world(c_pos.x, c_pos.y, grid_width, grid_height, CELL_SIZE)
 				var r_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(Vector2(r_world.x, r_world.z), ROCK_CLEARANCE_RADIUS)
 				vector_grass.call("clip_shapes", r_poly)
@@ -2011,7 +2012,7 @@ func validate_level_before_save() -> Array[String]:
 	for k_var: Variant in object_grid.keys():
 		var oc: Vector2i = k_var as Vector2i
 		var entry: Dictionary = object_grid[oc] as Dictionary
-		if String(entry.get("type", "")) == "rock":
+		if String(entry.get("type", "")).begins_with("rock"):
 			var rw: Vector3 = LevelJsonLoader.grid_to_world(oc.x, oc.y, grid_width, grid_height, CELL_SIZE)
 			if Vector2(rw.x - sp_world.x, rw.z - sp_world.z).length() < 0.85:
 				warnings.append("⚠️ Rocha colidindo com o Spawn do Robô!")
@@ -2241,7 +2242,7 @@ func _load_or_init_level(lvl_id: int) -> void:
 				var d: Dictionary = item as Dictionary
 				var o_type: String = String(d.get("type", ""))
 				# Só guarda em object_grid os objetos discretos de tile: rock, flower e wheat
-				if o_type == "rock" or o_type.begins_with("flower") or o_type == "wheat":
+				if o_type.begins_with("rock") or o_type.begins_with("flower") or o_type == "wheat":
 					var ogx: int = int(d.get("gx", 0))
 					var ogz: int = int(d.get("gz", 0))
 					var c: Vector2i = Vector2i(ogx * 2, ogz * 2) if is_legacy_080 else Vector2i(ogx, ogz)
@@ -2440,7 +2441,7 @@ func _start_playtest() -> void:
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
-		if o_type == "rock" or o_type.begins_with("flower") or o_type == "wheat":
+		if o_type.begins_with("rock") or o_type.begins_with("flower") or o_type == "wheat":
 			veg_json["objects"].append({
 				"gx": cell.x,
 				"gz": cell.y,

@@ -1158,15 +1158,23 @@ func _create_variation_card(v_data: Dictionary) -> Button:
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(vbox)
 
-	var is_rose: bool = v_id.begins_with("flower_rose")
-	var swatch: FlowerColorSwatch = FlowerColorSwatch.new(
-		v_data.get("inner_color", Color.WHITE) as Color,
-		v_data.get("petal_color", Color.WHITE) as Color,
-		v_data.get("center_color", Color.YELLOW) as Color,
-		is_rose
-	)
-	swatch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	vbox.add_child(swatch)
+	var is_rock: bool = v_id.begins_with("rock")
+	if is_rock:
+		var icon_lbl: Label = Label.new()
+		icon_lbl.text = String(v_data.get("icon", "🪨"))
+		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_lbl.add_theme_font_size_override("font_size", 16)
+		vbox.add_child(icon_lbl)
+	else:
+		var is_rose: bool = v_id.begins_with("flower_rose")
+		var swatch: FlowerColorSwatch = FlowerColorSwatch.new(
+			v_data.get("inner_color", Color.WHITE) as Color,
+			v_data.get("petal_color", Color.WHITE) as Color,
+			v_data.get("center_color", Color.YELLOW) as Color,
+			is_rose
+		)
+		swatch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		vbox.add_child(swatch)
 
 	var lbl: Label = Label.new()
 	lbl.text = String(v_data.get("name", ""))
@@ -1250,7 +1258,10 @@ func _update_variations_dock(active_layer: int, active_object_id: String) -> voi
 	if lbl_variations_title != null:
 		var base_item: Dictionary = TilePaletteDB.get_item_by_id(base_id)
 		var base_name: String = String(base_item.get("name", "FLOR"))
-		lbl_variations_title.text = "🎨 VARIAÇÕES DE COR (%s):" % base_name.to_upper()
+		if base_id == "rock":
+			lbl_variations_title.text = "🪨 VARIAÇÕES DE ROCHA (ILHAS TROPICAIS):"
+		else:
+			lbl_variations_title.text = "🎨 VARIAÇÕES DE COR (%s):" % base_name.to_upper()
 
 	if _current_variation_base_id != base_id:
 		_current_variation_base_id = base_id
@@ -1577,7 +1588,7 @@ func update_goals_summary(
 				flower_by_type["flower"] = int(flower_by_type.get("flower", 0)) + 1
 		elif t == "wheat":
 			wheat_tufts += 1
-		elif t == "rock":
+		elif t.begins_with("rock"):
 			rock_c += 1
 
 	var any_goals_present: bool = false

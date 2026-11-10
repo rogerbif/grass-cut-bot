@@ -476,10 +476,10 @@ func build_from_level_json(
 			var gx: int = int(od.get("gx", 0))
 			var gz: int = int(od.get("gz", 0))
 			var o_rot: int = int(od.get("rot", 0))
-			if o_type == "rock":
+			if o_type.begins_with("rock"):
 				var base_pos: Vector3 = LevelJsonLoader.grid_to_world(gx, gz, width, height, cell_size)
 				rock_cells[Vector2i(gx, gz)] = true
-				var rock_inst: Node3D = LevelJsonLoader.instantiate_object_node("rock", o_rot)
+				var rock_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, o_rot)
 				if rock_inst != null:
 					rock_inst.position = base_pos
 					if obstacles_container != null:

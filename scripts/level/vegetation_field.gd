@@ -137,7 +137,7 @@ func from_legacy_objects(objects_arr: Array, w_blocks: int, h_blocks: int) -> vo
 		var gx: int = int(od.get("gx", 0))
 		var gz: int = int(od.get("gz", 0))
 		var o_type: String = String(od.get("type", ""))
-		if o_type == "" or o_type == "rock" or o_type == "cutter_spawn":
+		if o_type == "" or o_type.begins_with("rock") or o_type == "cutter_spawn":
 			continue
 
 		var base_cx: int = gx * SUB_PER_BLOCK

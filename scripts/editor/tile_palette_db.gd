@@ -477,6 +477,62 @@ const ITEM_VARIATIONS: Dictionary = {
 			"center_color": Color(1.0, 0.85, 0.15, 1.0),
 			"material_path": "res://shaders/flower_bed_white_material.tres"
 		}
+	],
+	"rock": [
+		{
+			"id": "rock",
+			"name": "Ardósia",
+			"full_name": "Rocha Ardósia",
+			"icon": "🪨",
+			"color": Color(0.48, 0.52, 0.58),
+			"category": "obstacle",
+			"material_path": ""
+		},
+		{
+			"id": "rock_moss",
+			"name": "Musgo",
+			"full_name": "Rocha com Musgo",
+			"icon": "🌿",
+			"color": Color(0.28, 0.72, 0.32),
+			"category": "obstacle",
+			"material_path": ""
+		},
+		{
+			"id": "rock_spire",
+			"name": "Monólito",
+			"full_name": "Monólito Pontiagudo",
+			"icon": "⛰️",
+			"color": Color(0.42, 0.46, 0.52),
+			"category": "obstacle",
+			"material_path": ""
+		},
+		{
+			"id": "rock_moss_spire",
+			"name": "Monólito Musgo",
+			"full_name": "Monólito com Musgo",
+			"icon": "🪴",
+			"color": Color(0.32, 0.68, 0.36),
+			"category": "obstacle",
+			"material_path": ""
+		},
+		{
+			"id": "rock_sandstone",
+			"name": "Arenito",
+			"full_name": "Arenito de Praia",
+			"icon": "🏜️",
+			"color": Color(0.82, 0.48, 0.26),
+			"category": "obstacle",
+			"material_path": ""
+		},
+		{
+			"id": "rock_boulder",
+			"name": "Boulder",
+			"full_name": "Boulder Costeiro",
+			"icon": "🌑",
+			"color": Color(0.36, 0.40, 0.46),
+			"category": "obstacle",
+			"material_path": ""
+		}
 	]
 }
 
@@ -514,13 +570,15 @@ static func get_item_by_id(id_str: String) -> Dictionary:
 			return item
 	var v_data: Dictionary = get_variation_data(id_str)
 	if not v_data.is_empty():
+		var v_color: Color = v_data.get("color", v_data.get("petal_color", Color.WHITE)) as Color
+		var v_cat: String = String(v_data.get("category", "plant"))
 		return {
 			"id": v_data["id"],
 			"name": v_data["full_name"],
 			"icon": v_data["icon"],
-			"color": v_data["petal_color"],
-			"goal_key": id_str,
-			"category": "plant"
+			"color": v_color,
+			"goal_key": id_str if v_cat != "obstacle" else "",
+			"category": v_cat
 		}
 	return {}
 

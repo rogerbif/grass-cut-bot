@@ -355,7 +355,7 @@ func build_miniature_from_json(lvl: int) -> void:
 		var local_oz: float = offset_z + float(ogz) * cell_size
 		var base_pos: Vector3 = Vector3(local_ox, 0.0, local_oz)
 
-		if otype == "rock":
+		if otype.begins_with("rock"):
 			var r_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(orot)))
 			_rock_transforms.append(Transform3D(r_basis, base_pos))
 
@@ -420,7 +420,7 @@ func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: 
 
 	# Remove polígonos sob rochas para manter recorte estético limpo
 	for obj_item: Variant in objects_arr:
-		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
+		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")).begins_with("rock"):
 			var rx: int = int((obj_item as Dictionary).get("gx", 0))
 			var rz: int = int((obj_item as Dictionary).get("gz", 0))
 			var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
@@ -492,7 +492,7 @@ func _ensure_3d_veg_built() -> void:
 		vector_field.call("from_dict_list", data["grass_vectors"] as Array)
 
 		for obj_item: Variant in objects_arr:
-			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")).begins_with("rock"):
 				var rx: int = int((obj_item as Dictionary).get("gx", 0))
 				var rz: int = int((obj_item as Dictionary).get("gz", 0))
 				var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
@@ -574,7 +574,7 @@ func _ensure_3d_veg_built() -> void:
 			veg_field.call("from_legacy_objects", objects_arr, width, height)
 
 		for obj_item: Variant in objects_arr:
-			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")) == "rock":
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")).begins_with("rock"):
 				var rx: int = int((obj_item as Dictionary).get("gx", 0))
 				var rz: int = int((obj_item as Dictionary).get("gz", 0))
 				for dz: int in range(4):
