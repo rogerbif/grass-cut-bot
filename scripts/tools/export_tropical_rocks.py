@@ -12,15 +12,15 @@ ROCKS_CONFIG = [
         "output_path": "assets/models/rock_moss.glb",
         "target_width": 0.70,
         "type": "moss",
-        "stone_color": (0.35, 0.38, 0.44),     # Cinza ardósia Toon
-        "moss_color": (0.24, 0.72, 0.28)       # Verde esmeralda tropical vivo
+        "stone_color": (0.28, 0.31, 0.36),     # Ardósia tropical profunda
+        "moss_color": (0.16, 0.68, 0.22)       # Verde esmeralda vivo tropical
     },
     {
         "source_name": "RB3_GRADIENT_0",
         "output_path": "assets/models/rock_spire.glb",
         "target_width": 0.68,
         "type": "slate",
-        "stone_color": (0.38, 0.42, 0.48),     # Cinza ardósia pilar
+        "stone_color": (0.30, 0.33, 0.38),     # Ardósia monólito
         "moss_color": None
     },
     {
@@ -28,15 +28,15 @@ ROCKS_CONFIG = [
         "output_path": "assets/models/rock_moss_spire.glb",
         "target_width": 0.68,
         "type": "moss",
-        "stone_color": (0.38, 0.42, 0.48),
-        "moss_color": (0.24, 0.72, 0.28)
+        "stone_color": (0.28, 0.31, 0.36),
+        "moss_color": (0.16, 0.68, 0.22)
     },
     {
         "source_name": "RG1_GRADIENT_0",
         "output_path": "assets/models/rock_sandstone.glb",
         "target_width": 0.72,
         "type": "sandstone",
-        "stone_color": (0.80, 0.46, 0.26),     # Terracota arenito solar quente
+        "stone_color": (0.85, 0.50, 0.26),     # Terracota arenito solar quente
         "moss_color": None
     },
     {
@@ -44,7 +44,7 @@ ROCKS_CONFIG = [
         "output_path": "assets/models/rock_boulder.glb",
         "target_width": 0.70,
         "type": "slate",
-        "stone_color": (0.34, 0.37, 0.42),     # Basalto polido arredondado
+        "stone_color": (0.26, 0.29, 0.34),     # Basalto costeiro polido
         "moss_color": None
     }
 ]
@@ -59,12 +59,10 @@ def export_all_rocks():
             print(f"ERRO: Objeto {cfg['source_name']} não encontrado!")
             continue
 
-        # Desvincular de pais
+        # Desvincular de pais mantendo a orientação de mundo original
+        mw = src_obj.matrix_world.copy()
         src_obj.parent = None
-
-        # Rotação 270 graus em X para assentar a base plana em Z=0 e topo para cima
-        m_rot = Matrix.Rotation(math.radians(270), 4, 'X')
-        src_obj.matrix_world = m_rot @ src_obj.matrix_world
+        src_obj.matrix_world = mw
         bpy.context.view_layer.update()
 
         # Isolar apenas este objeto: deletar todos os outros
@@ -72,7 +70,7 @@ def export_all_rocks():
             if o != src_obj:
                 bpy.data.objects.remove(o, do_unlink=True)
 
-        # Aplicar transformação de rotação
+        # Aplicar transformação de rotação mantendo a orientação anatômica ereta
         bpy.context.view_layer.objects.active = src_obj
         src_obj.select_set(True)
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)

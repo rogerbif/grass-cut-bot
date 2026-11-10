@@ -27,16 +27,24 @@ Para proporcionar uma experiência limpa, solar, fluida e de altíssima performa
 
 ---
 
-## 2. Obstáculos Sólidos: Rochas Low Poly (`rock.tscn`)
+## 2. Obstáculos Sólidos: Família de Rochas Tropicais (6 Variantes)
 
-As rochas atuam como barreiras táticas que obrigam o jogador a contornar o cenário e planejar linhas eficientes de corte contra o relógio:
+As rochas atuam como barreiras táticas que obrigam o jogador a contornar o cenário e planejar linhas eficientes de corte contra o relógio. O ecossistema de obstáculos dispõe de uma família de 6 espécies estilizadas do primeiro mundo de ilhas tropicais:
+
+1. **Ardósia Clássica (`rock` / `scenes/obstacles/rock.tscn`):** Monólito ardósia cinza original (`Color(0.42, 0.46, 0.5)`), base canônica e 100% retrocompatível com as fases existentes.
+2. **Rocha com Manto de Musgo (`rock_moss` / `scenes/obstacles/rock_moss.tscn`):** Rocha ardósia com platô superior coberto por manto verde esmeralda tropical vivo (`assets/models/rock_moss.glb`).
+3. **Monólito Ardósia (`rock_spire` / `scenes/obstacles/rock_spire.tscn`):** Pilar vertical pontiagudo de ardósia facetada (`assets/models/rock_spire.glb`).
+4. **Monólito com Musgo (`rock_moss_spire` / `scenes/obstacles/rock_moss_spire.tscn`):** Monólito encimado por densa vegetação tropical no cume (`assets/models/rock_moss_spire.glb`).
+5. **Arenito Solar de Praia (`rock_sandstone` / `scenes/obstacles/rock_sandstone.tscn`):** Rocha em tom terracota / arenito dourado de praia tropical (`assets/models/rock_sandstone.glb`).
+6. **Boulder Costeiro (`rock_boulder` / `scenes/obstacles/rock_boulder.tscn`):** Rocha arredondada e polida pelas ondas marinhas em tom basalto escuro (`assets/models/rock_boulder.glb`).
+
 - **Corpo e Colisão:**
   - Instanciadas como `StaticBody3D` pertencentes ao grupo `"obstacles"`.
-  - Camada de colisão: `Layer 4: Obstacles` (`collision_layer = 8`).
-  - Colisor: `CylinderShape3D(radius = 0.18m, height = 0.8m)` (reduzido em 50% de $0.36\text{m}$ para $0.18\text{m}$, permitindo manobras ágeis e evitando colisões invisíveis de perímetro).
-- **Composição Visual 3D Oficial (`rock.glb`):**
-  - Modelo 3D oficial facetado low-poly exportado do Blender (`Prop_Rock` / `assets/models/rock.glb`), substituindo os blocos primitivos BoxMesh provisórios.
-  - Material canônico do jogo: `StandardMaterial3D` fosco com acabamento cinza ardósia (`Color(0.42, 0.46, 0.5)` e `roughness = 0.95`), mantendo a identidade visual estabelecida.
+  - Camada de colisão: `Layer 4: Obstacles` (`collision_layer = 8`, `collision_mask = 0`).
+  - Colisor padronizado: `CylinderShape3D(radius = 0.18m, height = 0.8m)` centralizado em `Y = 0.4m`, permitindo manobras ágeis e evitando colisões invisíveis de perímetro.
+- **Material Canônico Toon Fosco (`shaders/rock_toon_material.tres`):**
+  - Shading Toon cel-shaded (`diffuse_mode = TOON`, `specular_mode = TOON`, `roughness = 0.95`, `metallic_specular = 0.12`).
+  - Vértices assados com cores lineares (`vertex_color_use_as_albedo = true`), dispensando texturas rasterizadas e garantindo compatibilidade total com o compilador mobile.
 - **Interação com a Serra:**
   - A colisão física é estanque (o cortador desliza nas faces tangenciais ou ricocheteia frontalmente).
   - Colisões frontais com velocidade disparam o estado de choque com faíscas e recuo elástico do cortador.
