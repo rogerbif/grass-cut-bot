@@ -292,7 +292,8 @@ func build_miniature_from_json(lvl: int) -> void:
 	var offset_z: float = -(float(height) * cell_size) / 2.0 + (cell_size / 2.0)
 
 	var terrain_arr: Array = data.get("terrain", []) as Array
-	if terrain_arr.is_empty():
+	var raw_island_polys: Array = data.get("island_polygons", []) as Array
+	if terrain_arr.is_empty() and raw_island_polys.is_empty():
 		if fallback_mesh != null:
 			fallback_mesh.visible = true
 		return
@@ -315,9 +316,10 @@ func build_miniature_from_json(lvl: int) -> void:
 		if bot_anchor != null:
 			bot_anchor.position = Vector3(sp_world.x, -0.052, sp_world.z)
 
-	# 1. Constrói a miniatura unificada da ilha via IslandMeshBuilder (1 Draw Call)
+	# 1. Constrói a miniatura unificada da ilha via IslandMeshBuilder (1 Draw Call, incluindo lagos internos)
 	var island_polys: Array[PackedVector2Array] = LevelJsonLoader.get_island_polygons(data)
-	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys)
+	var island_holes: Array[PackedVector2Array] = LevelJsonLoader.get_island_holes(data)
+	var island_mesh: ArrayMesh = IslandMeshBuilder.build_island_mesh(island_polys, island_holes)
 	if island_mesh != null:
 		var mini_mi: MeshInstance3D = MeshInstance3D.new()
 		mini_mi.name = "MiniIslandMesh"

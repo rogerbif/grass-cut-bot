@@ -196,6 +196,11 @@ var btn_layer_objects: Button
 var btn_vis_layers: Dictionary = {}
 var tool_buttons: Dictionary = {}
 var shape_buttons: Dictionary = {}
+var left_panel_node: PanelContainer
+var right_panel_node: PanelContainer
+var lbl_shapes_node: Label
+var grid_shapes_node: GridContainer
+var clean_screen_mode: bool = false
 var corner_radius_container: VBoxContainer
 var spin_corner_radius: SpinBox
 var terrain_buttons: Dictionary = {}
@@ -485,20 +490,15 @@ func _build_top_bar() -> void:
 
 	hbox.add_child(VSeparator.new())
 
-	var btn_island: Button = _create_styled_button("🏝️ Ilha Base", Color(0.28, 0.80, 0.45))
-	btn_island.tooltip_text = "Preenche a grade com uma ilha 3D retangular completa com falésias e bordas"
-	btn_island.pressed.connect(func() -> void: generate_base_island_requested.emit())
-	hbox.add_child(btn_island)
-
 	menu_island_templates = MenuButton.new()
-	menu_island_templates.text = "📐 Templates ▾"
+	menu_island_templates.text = "🏝️ Templates ▾"
 	menu_island_templates.flat = false
 	menu_island_templates.custom_minimum_size = Vector2(0, 34)
 	menu_island_templates.focus_mode = Control.FOCUS_NONE
-	menu_island_templates.tooltip_text = "Escolher um formato pré-pronto de ilha (Atol, Gêmeas, Cruz, Estrela, Meia-Lua)"
+	menu_island_templates.tooltip_text = "Gerar um formato pré-pronto de ilha (Retangular, Atol, Gêmeas, Cruz, Estrela, Meia-Lua)"
 	menu_island_templates.add_theme_font_size_override("font_size", 14)
 	menu_island_templates.add_theme_color_override("font_color", Color.WHITE)
-	var accent_tpl: Color = Color(0.25, 0.78, 0.65)
+	var accent_tpl: Color = Color(0.28, 0.80, 0.45)
 	menu_island_templates.add_theme_stylebox_override("normal", _make_btn_style(Color(0.14, 0.18, 0.22, 0.95), accent_tpl.darkened(0.25)))
 	menu_island_templates.add_theme_stylebox_override("hover", _make_btn_style(accent_tpl.darkened(0.55), accent_tpl.lightened(0.2)))
 	menu_island_templates.add_theme_stylebox_override("pressed", _make_btn_style(accent_tpl.darkened(0.35), Color.WHITE))
@@ -536,11 +536,6 @@ func _build_top_bar() -> void:
 	)
 	hbox.add_child(btn_save_as)
 
-	var btn_bake: Button = _create_styled_button("📦 Bake .tscn", Color(0.65, 0.45, 0.95))
-	btn_bake.tooltip_text = "Exporta também como cena nativa res://scenes/levels/level_XX.tscn"
-	btn_bake.pressed.connect(func() -> void: bake_tscn_requested.emit())
-	hbox.add_child(btn_bake)
-
 	var btn_play: Button = _create_styled_button("▶️ Testar [F1]", Color(1.0, 0.75, 0.15))
 	btn_play.pressed.connect(func() -> void: playtest_toggled.emit())
 	hbox.add_child(btn_play)
@@ -552,6 +547,7 @@ func _build_top_bar() -> void:
 
 func _build_left_panel() -> void:
 	var left_panel: PanelContainer = PanelContainer.new()
+	left_panel_node = left_panel
 	left_panel.set_anchors_preset(Control.PRESET_LEFT_WIDE)
 	left_panel.offset_left = 12
 	left_panel.offset_top = 70
@@ -647,12 +643,14 @@ func _build_left_panel() -> void:
 
 	# 3. Formatos de Pincel / Carimbo
 	var lbl_shapes: Label = Label.new()
+	lbl_shapes_node = lbl_shapes
 	lbl_shapes.text = "FORMATO DO PINCEL / CARIMBO"
 	lbl_shapes.add_theme_font_size_override("font_size", 13)
 	lbl_shapes.add_theme_color_override("font_color", Color(0.55, 0.88, 1.0))
 	vbox.add_child(lbl_shapes)
 
 	var grid_shapes: GridContainer = GridContainer.new()
+	grid_shapes_node = grid_shapes
 	grid_shapes.columns = 2
 	grid_shapes.add_theme_constant_override("h_separation", 6)
 	grid_shapes.add_theme_constant_override("v_separation", 6)
@@ -816,6 +814,7 @@ func _build_left_panel() -> void:
 
 func _build_right_panel() -> void:
 	var right_panel: PanelContainer = PanelContainer.new()
+	right_panel_node = right_panel
 	right_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
 	right_panel.offset_left = -376
 	right_panel.offset_top = 70
@@ -874,7 +873,7 @@ func _build_right_panel() -> void:
 	section_terrain.add_child(btn_clear_ter)
 
 	var lbl_presets: Label = Label.new()
-	lbl_presets.text = "CARIMBOS RÁPIDOS DE ILHA:"
+	lbl_presets.text = "GALERIA DE TEMPLATES DE ILHA:"
 	lbl_presets.add_theme_font_size_override("font_size", 11)
 	lbl_presets.add_theme_color_override("font_color", Color(0.65, 0.85, 0.95))
 	section_terrain.add_child(lbl_presets)
@@ -886,20 +885,14 @@ func _build_right_panel() -> void:
 	grid_stamps.add_theme_constant_override("v_separation", 6)
 	section_terrain.add_child(grid_stamps)
 
-	var stamp_items: Array[Dictionary] = [
-		{ "id": 1, "name": "🟡 Ilha Redonda", "color": Color(0.25, 0.85, 0.50) },
-		{ "id": 2, "name": "🟦 Ilha Retangular", "color": Color(0.30, 0.75, 0.85) },
-		{ "id": 0, "name": "〰️ Pincel / Fita", "color": Color(0.85, 0.65, 0.35) },
-		{ "id": 3, "name": "⭐ Ilha Estrela", "color": Color(0.95, 0.80, 0.25) }
-	]
-	for si in stamp_items:
-		var s_id: int = int(si["id"])
-		var sb: Button = _create_styled_button(String(si["name"]), si["color"] as Color, Vector2(0, 30))
+	for tpl in ISLAND_TEMPLATES_META:
+		var t_id: String = String(tpl["id"])
+		var sb: Button = _create_styled_button(String(tpl["label"]), Color(0.28, 0.80, 0.55), Vector2(0, 32))
 		sb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sb.clip_text = true
 		sb.add_theme_font_size_override("font_size", 11)
 		sb.pressed.connect(func() -> void:
-			brush_shape_changed.emit(s_id)
-			tool_changed.emit(0)
+			island_template_requested.emit(t_id)
 		)
 		grid_stamps.add_child(sb)
 
@@ -1400,6 +1393,12 @@ func sync_state(
 		var sid: int = int(s_id)
 		_set_button_selected(shape_buttons[sid] as Button, active_shape == sid, Color(0.45, 0.75, 0.98))
 
+	var uses_brush_shape: bool = (active_tool == 0 or active_tool == 1)
+	if lbl_shapes_node != null:
+		lbl_shapes_node.visible = uses_brush_shape
+	if grid_shapes_node != null:
+		grid_shapes_node.visible = uses_brush_shape
+
 	if corner_radius_container != null:
 		corner_radius_container.visible = (active_layer == 0)
 
@@ -1454,11 +1453,14 @@ func sync_state(
 			btn_rot_right.text = "] ▶"
 
 	if panel_scale_box != null:
+		panel_scale_box.visible = uses_brush_shape
 		var is_scale: bool = (adjust_mode == 1)
 		var border_col: Color = Color(0.25, 0.95, 0.5, 0.9) if is_scale else Color(0.2, 0.35, 0.5, 0.4)
 		panel_scale_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.16, 0.8), border_col, 8))
 
 	if panel_rotate_box != null:
+		var uses_rot: bool = (active_tool == 3) or (uses_brush_shape and (active_layer == 2 or (active_shape != 0 and active_shape != 2)))
+		panel_rotate_box.visible = uses_rot
 		var is_rot: bool = (adjust_mode == 0)
 		var border_col: Color = Color(0.25, 0.95, 0.5, 0.9) if is_rot else Color(0.2, 0.35, 0.5, 0.4)
 		panel_rotate_box.add_theme_stylebox_override("panel", _make_panel_style(Color(0.08, 0.11, 0.16, 0.8), border_col, 8))
@@ -1912,5 +1914,14 @@ func open_save_as_dialog(suggested_id: int = -1) -> void:
 	spin_save_as_target.value = float(clampi(target_id, 1, 200))
 	_update_save_as_status_label(int(spin_save_as_target.value))
 	save_as_dialog.popup_centered(Vector2i(440, 170))
+
+func toggle_clean_screen_mode() -> bool:
+	clean_screen_mode = not clean_screen_mode
+	if left_panel_node != null:
+		left_panel_node.visible = not clean_screen_mode
+	if right_panel_node != null:
+		right_panel_node.visible = not clean_screen_mode
+	return clean_screen_mode
+
 
 

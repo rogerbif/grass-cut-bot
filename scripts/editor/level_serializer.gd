@@ -158,16 +158,99 @@ static func save_level_json(
 	LevelCardDataScript.clear_cache()
 
 	var json_str: String = JSON.stringify(payload, "\t")
+	if json_str.length() < 20:
+		push_error("Erro crítico: payload JSON inválido ou vazio para a Fase %02d" % level_id)
+		return false
+
+	# 1. Se o arquivo já existir, grava cópia de segurança em user://editor_backups/
+	if FileAccess.file_exists(path):
+		var prev_str: String = FileAccess.get_file_as_string(path)
+		if prev_str.length() > 20:
+			var bak_dir: String = "user://editor_backups"
+			if not DirAccess.dir_exists_absolute(bak_dir):
+				DirAccess.make_dir_recursive_absolute(bak_dir)
+			var bak_path: String = "%s/level_%02d_bak.json" % [bak_dir, level_id]
+			var bak_file: FileAccess = FileAccess.open(bak_path, FileAccess.WRITE)
+			if bak_file != null:
+				bak_file.store_string(prev_str)
+				bak_file.flush()
+				bak_file.close()
+
+	# 2. Gravação Atômica via arquivo temporário (.tmp)
+	var global_target: String = ProjectSettings.globalize_path(path)
+	var global_tmp: String = global_target + ".tmp"
+	var tmp_file: FileAccess = FileAccess.open(global_tmp, FileAccess.WRITE)
+	if tmp_file != null:
+		tmp_file.store_string(json_str)
+		tmp_file.flush()
+		tmp_file.close()
+		var verify_str: String = FileAccess.get_file_as_string(global_tmp)
+		if verify_str.length() >= json_str.length():
+			var final_f: FileAccess = FileAccess.open(global_target, FileAccess.WRITE)
+			if final_f != null:
+				final_f.store_string(json_str)
+				final_f.flush()
+				final_f.close()
+				DirAccess.remove_absolute(global_tmp)
+				return true
+		DirAccess.remove_absolute(global_tmp)
+
+	# Fallback direto caso o sistema de arquivos virtual bloqueie o .tmp
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
-		var global_path: String = ProjectSettings.globalize_path(path)
-		file = FileAccess.open(global_path, FileAccess.WRITE)
+		file = FileAccess.open(global_target, FileAccess.WRITE)
 	if file == null:
 		push_error("Erro crítico ao gravar JSON de nível: %s (err: %d)" % [path, FileAccess.get_open_error()])
 		return false
 	file.store_string(json_str)
 	file.flush()
 	file.close()
+	return true
+
+
+static func save_autosave_snapshot(
+	level_id: int,
+	time_limit: float,
+	grid_width: int,
+	grid_height: int,
+	spawn_cell: Vector2i,
+	spawn_rot: int,
+	object_grid: Dictionary,
+	vector_field: RefCounted = null,
+	custom_goals: Dictionary = {},
+	cell_size: float = CELL_SIZE,
+	vector_terrain: RefCounted = null
+) -> bool:
+	var vt_dict: Dictionary = vector_terrain.call("to_dict") if (vector_terrain != null and vector_terrain.has_method("to_dict")) else {}
+	var objects_list: Array[Dictionary] = []
+	for k: Variant in object_grid.keys():
+		var c: Vector2i = k as Vector2i
+		var entry: Dictionary = object_grid[c] as Dictionary
+		objects_list.append({
+			"gx": c.x,
+			"gz": c.y,
+			"type": String(entry.get("type", "")),
+			"rot": int(entry.get("rot", 0))
+		})
+	var snap: Dictionary = {
+		"version": 5,
+		"level_id": level_id,
+		"timestamp": int(Time.get_unix_time_from_system()),
+		"time_limit": time_limit,
+		"grid": { "cell_size": cell_size, "width": grid_width, "height": grid_height },
+		"spawn": { "gx": spawn_cell.x, "gz": spawn_cell.y, "rot": spawn_rot },
+		"island_polygons": vt_dict.get("island_polygons", []),
+		"island_holes": vt_dict.get("island_holes", []),
+		"objects": objects_list,
+		"grass_vectors": vector_field.call("to_dict_list") if (vector_field != null and vector_field.has_method("to_dict_list")) else [],
+		"goals": custom_goals
+	}
+	var f: FileAccess = FileAccess.open("user://editor_autosave.json", FileAccess.WRITE)
+	if f == null:
+		return false
+	f.store_string(JSON.stringify(snap, "\t"))
+	f.flush()
+	f.close()
 	return true
 
 

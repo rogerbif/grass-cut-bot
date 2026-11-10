@@ -152,6 +152,10 @@ var _last_editor_goals: Dictionary = {}
 var is_dirty: bool = false
 var layer_visible: Dictionary = { 0: true, 1: true, 2: true }
 var preview_3d_grass: bool = false
+var _cached_safe_coastal_polys: Array[PackedVector2Array] = []
+var _coastal_cache_dirty: bool = true
+var _autosave_timer: float = 0.0
+const AUTOSAVE_INTERVAL_SEC: float = 45.0
 
 var is_playtesting: bool = false
 var _playtest_cutter: CharacterBody3D = null
@@ -496,6 +500,12 @@ func _input(event: InputEvent) -> void:
 						toggle_mirror_mode()
 					KEY_G:
 						toggle_grid_visibility()
+					KEY_TAB:
+						if ui != null and ui.has_method("toggle_clean_screen_mode"):
+							var is_clean: bool = bool(ui.call("toggle_clean_screen_mode"))
+							ui.show_toast("🖥️ Modo Tela Limpa: %s [Tab]" % ("ON" if is_clean else "OFF"), Color(0.45, 0.90, 1.0))
+						get_viewport().set_input_as_handled()
+						return
 					KEY_SHIFT:
 						_refresh_hover_preview()
 		elif not ke.echo and ke.keycode == KEY_SHIFT and not is_playtesting:
@@ -691,6 +701,9 @@ func _compute_aabb_2d(poly: PackedVector2Array) -> Rect2:
 
 
 func _get_safe_coastal_island_polygons() -> Array[PackedVector2Array]:
+	if not _coastal_cache_dirty:
+		return _cached_safe_coastal_polys
+
 	var safe_polys: Array[PackedVector2Array] = []
 	var island_polys: Array[PackedVector2Array] = []
 	if vector_terrain != null and not vector_terrain.is_empty():
@@ -701,6 +714,8 @@ func _get_safe_coastal_island_polygons() -> Array[PackedVector2Array]:
 			var cell: Vector2i = cell_key as Vector2i
 			terrain_list.append({ "gx": cell.x, "gz": cell.y })
 		if terrain_list.is_empty():
+			_cached_safe_coastal_polys = safe_polys
+			_coastal_cache_dirty = false
 			return safe_polys
 		island_polys = IslandMeshBuilder.convert_tile_grid_to_polygons(
 			terrain_list, grid_width, grid_height, CELL_SIZE
@@ -718,6 +733,8 @@ func _get_safe_coastal_island_polygons() -> Array[PackedVector2Array]:
 		for ip: PackedVector2Array in inset_arr:
 			if ip.size() >= 3:
 				safe_polys.append(ip)
+	_cached_safe_coastal_polys = safe_polys
+	_coastal_cache_dirty = false
 	return safe_polys
 
 func _get_box_vector_polygon(start_c: Vector2i, end_c: Vector2i) -> PackedVector2Array:
@@ -885,12 +902,14 @@ func _apply_vector_polygon_to_active_layer(poly: PackedVector2Array, erase_mode:
 	if active_layer == EditLayer.GRASS:
 		if vector_grass == null:
 			return
+		var erased_object: bool = false
 		for pi in range(all_polys.size()):
 			var p_target: PackedVector2Array = all_polys[pi]
 			if erase_mode:
 				vector_grass.call("clip_shapes", p_target)
 				if center_cell.x >= 0 and object_grid.has(center_cell):
 					object_grid.erase(center_cell)
+					erased_object = true
 			else:
 				var safe_polys: Array[PackedVector2Array] = _get_safe_coastal_island_polygons()
 				var polys_to_add: Array[PackedVector2Array] = []
@@ -919,7 +938,10 @@ func _apply_vector_polygon_to_active_layer(poly: PackedVector2Array, erase_mode:
 									"auto": true
 								}
 		_stroke_modified = true
-		_rebuild_3d_world()
+		if erased_object:
+			_rebuild_objects_3d()
+		_rebuild_grass_3d()
+		_update_layers_transparency()
 		_sync_all_ui(recalc_goals)
 	elif active_layer == EditLayer.TERRAIN:
 		if vector_terrain == null:
@@ -1000,7 +1022,13 @@ func _apply_brush_at(center: Vector2i, erase_mode: bool) -> void:
 
 	if changed_any:
 		_stroke_modified = true
-		_rebuild_3d_world()
+		if active_layer == EditLayer.OBJECTS:
+			_rebuild_objects_3d()
+			if active_object_id == "rock" or erase_mode:
+				_rebuild_grass_3d()
+			_update_layers_transparency()
+		else:
+			_rebuild_3d_world()
 		_sync_all_ui(not is_painting_lmb)
 
 func _apply_box_fill(start_c: Vector2i, end_c: Vector2i) -> void:
@@ -1018,7 +1046,13 @@ func _apply_box_fill(start_c: Vector2i, end_c: Vector2i) -> void:
 		if _modify_single_cell(c, false):
 			changed_any = true
 	if changed_any:
-		_rebuild_3d_world()
+		if active_layer == EditLayer.OBJECTS:
+			_rebuild_objects_3d()
+			if active_object_id == "rock":
+				_rebuild_grass_3d()
+			_update_layers_transparency()
+		else:
+			_rebuild_3d_world()
 		_sync_all_ui(true)
 
 func _modify_single_cell(cell: Vector2i, erase_mode: bool, custom_rot: int = -1) -> bool:
@@ -1229,24 +1263,22 @@ func _place_spawn_at(cell: Vector2i) -> void:
 	ui.show_toast("🤖 Spawn posicionado em [%d, %d]" % [cell.x, cell.y], Color(1.0, 0.85, 0.2))
 
 func _rebuild_3d_world() -> void:
-	# 1. Aplica Auto-Tile inteligente na ilha
+	_rebuild_terrain_3d()
+	_rebuild_objects_3d()
+	_rebuild_grass_3d()
+	_update_layers_transparency()
+
+func _rebuild_terrain_3d() -> void:
+	_coastal_cache_dirty = true
 	IslandAutotiler.apply_autotile(terrain_grid)
 
-	# 2. Limpa containers 3D imediatamente da árvore antes de liberar memória
 	for c in island_tiles_container.get_children():
 		island_tiles_container.remove_child(c)
 		c.queue_free()
 	for c in coastal_limits_body.get_children():
 		coastal_limits_body.remove_child(c)
 		c.queue_free()
-	for c in plants_container.get_children():
-		plants_container.remove_child(c)
-		c.queue_free()
-	for c in obstacles_container.get_children():
-		obstacles_container.remove_child(c)
-		c.queue_free()
 
-	# 3. Constrói a malha procedural única da ilha (1 Draw Call sem frestas)
 	var island_polys: Array[PackedVector2Array] = []
 	var island_holes: Array[PackedVector2Array] = []
 
@@ -1271,7 +1303,6 @@ func _rebuild_3d_world() -> void:
 		island_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		island_tiles_container.add_child(island_mi)
 
-	# 4. Constrói barreiras invisíveis de contenção costeira (Layer 1) e fita de espuma contínua
 	IslandMeshBuilder.build_coastal_colliders(coastal_limits_body, island_polys, island_holes)
 
 	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys, island_holes)
@@ -1283,7 +1314,11 @@ func _rebuild_3d_world() -> void:
 		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		coastal_limits_body.add_child(foam_inst)
 
-	# 5. Instancia obstáculos (Rochas 3D) em obstacles_container
+func _rebuild_objects_3d() -> void:
+	for c in obstacles_container.get_children():
+		obstacles_container.remove_child(c)
+		c.queue_free()
+
 	for cell_key: Variant in object_grid.keys():
 		var cell: Vector2i = cell_key as Vector2i
 		var entry: Dictionary = object_grid[cell] as Dictionary
@@ -1328,14 +1363,13 @@ func _rebuild_3d_world() -> void:
 				w_inst.rotation_degrees.y = float(entry.get("rot", 0))
 				obstacles_container.add_child(w_inst)
 
-	# 6. Constrói a prancheta vetorial plana colorida (Modo Edição Instantâneo, <0.5ms)
-	_build_editor_vector_ground()
-
-	# 7. Posiciona indicador visual do Spawn
 	if spawn_marker_visual != null:
 		var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
 		spawn_marker_visual.position = Vector3(sp_world.x, 0.02, sp_world.z)
 		spawn_marker_visual.rotation_degrees.y = float(spawn_rot)
+
+func _rebuild_grass_3d() -> void:
+	_build_editor_vector_ground()
 
 
 func _build_editor_vector_ground() -> void:
@@ -1692,7 +1726,8 @@ func _apply_flood_fill_at(cell: Vector2i, hit_2d: Vector2, replace_all: bool = f
 						ui.show_toast("ℹ️ Esta mancha já é do tipo %s (use Shift+Clique para preencher toda a ilha)." % active_grass_id, Color(0.65, 0.85, 1.0))
 					return
 				if bool(vector_grass.call("recolor_shape_at_point", hit_2d, active_grass_id)):
-					_rebuild_3d_world()
+					_rebuild_grass_3d()
+					_update_layers_transparency()
 					_sync_all_ui()
 					if ui != null:
 						ui.show_toast("🪣 Mancha recolorida: %s -> %s" % [existing_type, active_grass_id], Color(0.35, 0.95, 0.65))
@@ -1766,7 +1801,8 @@ func _apply_flood_fill_at(cell: Vector2i, hit_2d: Vector2, replace_all: bool = f
 		var sp_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(Vector2(sp_world.x, sp_world.z), SPAWN_CLEARANCE_RADIUS)
 		vector_grass.call("clip_shapes", sp_poly)
 
-		_rebuild_3d_world()
+		_rebuild_grass_3d()
+		_update_layers_transparency()
 		_sync_all_ui()
 		if ui != null:
 			ui.show_toast("🪣 Ilha preenchida com %s!" % active_grass_id, Color(0.35, 0.95, 0.65))
@@ -1790,7 +1826,8 @@ func _apply_flood_fill_at(cell: Vector2i, hit_2d: Vector2, replace_all: bool = f
 				object_grid[c_vec] = e_dict
 				replaced_count += 1
 		if replaced_count > 0:
-			_rebuild_3d_world()
+			_rebuild_objects_3d()
+			_update_layers_transparency()
 			_sync_all_ui()
 			if ui != null:
 				ui.show_toast("🪣 %d objeto(s) '%s' substituídos por '%s'!" % [replaced_count, old_type, active_object_id], Color(0.35, 0.95, 0.65))
@@ -1931,6 +1968,71 @@ func apply_island_template(template_id: String) -> void:
 	if ui != null:
 		ui.show_toast("🏝️ Template '%s' gerado com sucesso!" % template_id, Color(0.28, 0.88, 0.48))
 
+func _process(delta: float) -> void:
+	if is_playtesting:
+		return
+	if is_dirty:
+		_autosave_timer += delta
+		if _autosave_timer >= AUTOSAVE_INTERVAL_SEC:
+			_autosave_timer = 0.0
+			_perform_autosave()
+	else:
+		_autosave_timer = 0.0
+
+func _perform_autosave() -> bool:
+	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+	return LevelSerializer.save_autosave_snapshot(
+		current_level_id,
+		time_limit,
+		grid_width,
+		grid_height,
+		spawn_cell,
+		spawn_rot,
+		object_grid,
+		vector_grass,
+		configured_goals,
+		CELL_SIZE,
+		vector_terrain
+	)
+
+func validate_level_before_save() -> Array[String]:
+	var warnings: Array[String] = []
+	var sp_world: Vector3 = LevelJsonLoader.grid_to_world(spawn_cell.x, spawn_cell.y, grid_width, grid_height, CELL_SIZE)
+	var sp_2d: Vector2 = Vector2(sp_world.x, sp_world.z)
+	var spawn_on_land: bool = false
+	if vector_terrain != null and not bool(vector_terrain.call("is_empty")):
+		spawn_on_land = bool(vector_terrain.call("is_point_on_land", sp_2d))
+	elif terrain_grid.has(spawn_cell):
+		spawn_on_land = true
+
+	if not spawn_on_land:
+		warnings.append("⚠️ Spawn do Robô está sobre a água!")
+
+	for k_var: Variant in object_grid.keys():
+		var oc: Vector2i = k_var as Vector2i
+		var entry: Dictionary = object_grid[oc] as Dictionary
+		if String(entry.get("type", "")) == "rock":
+			var rw: Vector3 = LevelJsonLoader.grid_to_world(oc.x, oc.y, grid_width, grid_height, CELL_SIZE)
+			if Vector2(rw.x - sp_world.x, rw.z - sp_world.z).length() < 0.85:
+				warnings.append("⚠️ Rocha colidindo com o Spawn do Robô!")
+				break
+
+	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+	var has_any_plant: bool = false
+	if vector_grass != null and not (vector_grass.call("get_shapes") as Array).is_empty():
+		has_any_plant = true
+	else:
+		for k_var: Variant in object_grid.keys():
+			var e_dict: Dictionary = object_grid[k_var] as Dictionary
+			var ot: String = String(e_dict.get("type", ""))
+			if ot.begins_with("flower") or ot == "wheat":
+				has_any_plant = true
+				break
+	if configured_goals.is_empty() and not has_any_plant:
+		warnings.append("⚠️ Fase sem nenhuma vegetação ou meta!")
+
+	return warnings
+
 func save_level_as(target_lvl_id: int) -> void:
 	var clamped_id: int = clampi(target_lvl_id, 1, 200)
 	current_level_id = clamped_id
@@ -1938,6 +2040,7 @@ func save_level_as(target_lvl_id: int) -> void:
 		time_limit = ui.get_configured_time_limit()
 	IslandAutotiler.apply_autotile(terrain_grid)
 	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+	var warnings: Array[String] = validate_level_before_save()
 	var ok: bool = LevelSerializer.save_level_json(
 		current_level_id,
 		"Fase %02d" % current_level_id,
@@ -1958,7 +2061,10 @@ func save_level_as(target_lvl_id: int) -> void:
 		_mark_dirty(false)
 		_sync_all_ui(false)
 		if ui != null:
-			ui.show_toast("📋 Fase duplicada e salva como Fase %02d! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.30, 0.90, 1.0))
+			if not warnings.is_empty():
+				ui.show_toast("📋 Salvo Fase %02d com aviso: %s" % [current_level_id, warnings[0]], Color(1.0, 0.80, 0.25))
+			else:
+				ui.show_toast("📋 Fase duplicada e salva como Fase %02d! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.30, 0.90, 1.0))
 	else:
 		if ui != null:
 			ui.show_toast("❌ Erro ao salvar cópia na Fase %02d!" % current_level_id, Color(0.95, 0.3, 0.3))
@@ -2238,6 +2344,7 @@ func save_current_level_json() -> void:
 		time_limit = ui.get_configured_time_limit()
 	IslandAutotiler.apply_autotile(terrain_grid)
 	var configured_goals: Dictionary = ui.get_configured_goals() if ui != null and ui.has_method("get_configured_goals") else {}
+	var warnings: Array[String] = validate_level_before_save()
 	var ok: bool = LevelSerializer.save_level_json(
 		current_level_id,
 		"Fase %02d" % current_level_id,
@@ -2256,9 +2363,14 @@ func save_current_level_json() -> void:
 	)
 	if ok:
 		_mark_dirty(false)
-		ui.show_toast("💾 Fase %02d salva! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.25, 0.95, 0.5))
+		if ui != null:
+			if not warnings.is_empty():
+				ui.show_toast("💾 Salvo Fase %02d (%s)" % [current_level_id, warnings[0]], Color(1.0, 0.80, 0.25))
+			else:
+				ui.show_toast("💾 Fase %02d salva! (⏱️ %.0fs)" % [current_level_id, time_limit], Color(0.25, 0.95, 0.5))
 	else:
-		ui.show_toast("❌ Erro ao salvar JSON da fase!", Color(0.95, 0.3, 0.3))
+		if ui != null:
+			ui.show_toast("❌ Erro ao salvar JSON da fase!", Color(0.95, 0.3, 0.3))
 
 func bake_current_level_tscn() -> void:
 	if ui != null and ui.has_method("get_configured_time_limit"):
@@ -2296,6 +2408,8 @@ func _start_playtest() -> void:
 	if terrain_grid.is_empty() and not has_vector_land:
 		ui.show_toast("⚠️ Crie pelo menos 1 bloco de ilha antes de testar!", Color(0.95, 0.65, 0.2))
 		return
+
+	_perform_autosave()
 
 	if ui != null and ui.has_method("get_configured_time_limit"):
 		time_limit = ui.get_configured_time_limit()
