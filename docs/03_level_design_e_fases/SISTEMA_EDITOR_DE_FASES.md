@@ -121,16 +121,18 @@ Para garantir liberdade criativa, precisão no posicionamento e facilidade na ed
 
 ---
 
-## 3. Pincéis e Carimbos de Formas Analíticas (`brush_patterns.gd`)
+## 3. Pincéis e Carimbos de Formas Analíticas, Paramétricas e por Imagem P&B (`brush_patterns.gd`)
 
-O editor inclui formatos matemáticos com escala ajustável (`1` a `20`), suporte a offsets em passos de $0.20\text{m}$ para vegetação orgânica e preview holográfico em tempo real sobre a grade (`grid_overlay.gd`):
+O editor inclui formatos matemáticos, paramétricos e baseados em máscara de imagem P&B com escala ajustável (`1` a `20`), suporte a múltiplos polígonos simultâneos (`get_vector_stamp_polygons`) e preview holográfico em tempo real sobre a grade (`grid_overlay.gd`):
 - `⏺️ Único (1x1)`
 - `⬛ Quadrado`
 - `⚪ Círculo Analítico` (projeção contínua $dx^2 + dz^2 \le R^2$, eliminando pontas em cruz)
 - `🔶 Losango` ($|dx| + |dz| \le R$)
 - `❤️ Coração` (Equação implícita cardióide contínua)
-- `⭐ Estrela` (Modulação radial de 5 pontas)
-- `➕ Cruz`
+- `⭐ Estrela Paramétrica` (Customizável em tempo real no painel esquerdo: **Pontas de `3` a `16`** + **Profundidade/Raio Interno de `15%` a `100%`**, incluindo botão rápido **`⬡ Polígono`** que transforma a estrela em Triângulo, Pentágono, Hexágono, Octógono, etc.)
+- `➕ Cruz Paramétrica` (Customizável em tempo real: **Espessura do Braço de `15%` a `75%`**)
+- `🍩 Anel / Furo` (Customizável em tempo real: **Furo Central de `20%` a `85%`** — adiciona o círculo externo e vaza automaticamente o furo interno em 1 clique no Terreno ou na Grama)
+- `🖼️ Imagem P&B (BitMap)` (Vetorização nativa via `BitMap.opaque_to_polygons` com cache $O(1)$, **6 presets prontos** — `🐾 Patinha`, `🌀 Espiral`, `🌙 Meia-Lua`, `⚡ Raio`, `🍀 Trevo`, `🧩 Puzzle` — mais botão **`📂 Carregar Imagem PNG/JPG...`** do computador, **`🔄 Inverter Preto ⇄ Branco`** e **`✨ Suavização de Borda`** de `0.5px` a `4.0px`). Suporta formas compostas (ex.: a Patinha gera 5 ilhotas independentes em 1 clique!).
 
 ---
 
