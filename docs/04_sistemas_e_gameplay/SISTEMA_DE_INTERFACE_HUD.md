@@ -67,7 +67,7 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
 - **3 Placas Superiores Flutuantes (`TopCluster`):**
   1. **Banner de Título (`banner_defeat_title.svg`):** Alterna dinamicamente entre `TEMPO ESGOTADO!` (ícone `icon_stopwatch_red.svg`) quando `reason == "time_up"` e `ROBÔ QUEBRADO!` (ícone `icon_robot_broken_red.svg`) quando `reason == "robot_broken"`.
   2. **Placa de Progresso do Corte (`banner_defeat_progress.svg`):** Moldura chanfrada com colchetes rosa-neon e circuito ciano, exibindo `« PROGRESSO DO CORTE: XX% »` e barra arredondada rosa com pontos digitais.
-  3. **Placa de Objetivos (`banner_defeat_goals.svg`):** Exibe todas as metas da fase lado a lado com ícone da Coleção e formato `atual / total` (ex: `54 / 60`, `88 / 100`, `55 / 70`), acompanhada abaixo pelo indicador de perda de vida (`❤️ -1 (X/5)`).
+  3. **Placa de Objetivos (`banner_defeat_goals.svg`):** Exibe todas as metas da fase lado a lado com ícone da Coleção e formato `atual / total` (ex: `54 / 60`, `88 / 100`, `55 / 70`), acompanhada abaixo pelo indicador centralizado em duas linhas de perda de vida (`[Coração Partido icon_heart_broken.svg] -1` na primeira linha e `X/5` na segunda linha).
 - **Barra de Ações Inferior Simétrica (`BottomBar`):**
   - Linha secundária (`SecondaryHBox`): botão esquerdo `MENU` (`btn_menu_secondary.svg`) e botão direito `PEGAR MAIS TEMPO` (+15s na derrota por tempo) ou `CONSERTAR ROBÔ` (restaura o robô na derrota por quebra), limitado a 1 continue por tentativa (`can_grant_extra_time()`), devolvendo a vida consumida na tentativa atual.
   - Linha principal: botão heroico verde-esmeralda neon `REINICIAR ↻` (`btn_next_level.svg` + `icon_refresh_dark.svg`).

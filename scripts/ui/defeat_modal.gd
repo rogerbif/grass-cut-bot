@@ -31,7 +31,7 @@ const TEX_ICON_ALERT: Texture2D = preload("res://assets/ui/defeat/icon_alert_tri
 const TEX_ICON_TV: Texture2D = preload("res://assets/ui/defeat/icon_tv_play_cyan.svg")
 const TEX_ICON_HOME: Texture2D = preload("res://assets/ui/victory/icon_home_cyan.svg")
 const TEX_ICON_REFRESH_DARK: Texture2D = preload("res://assets/ui/defeat/icon_refresh_dark.svg")
-const TEX_ICON_HEART: Texture2D = preload("res://assets/icons/icon_heart.svg")
+const TEX_ICON_HEART_BROKEN: Texture2D = preload("res://assets/ui/defeat/icon_heart_broken.svg")
 
 const COL_WHITE: Color = Color(1.0, 1.0, 1.0, 1.0)
 const COL_TITLE_RED: Color = Color(1.0, 0.31, 0.34, 1.0)
@@ -53,6 +53,7 @@ var _progress_fill: Panel = null
 var _progress_track: Panel = null
 var _goals_hbox: HBoxContainer = null
 var _life_lost_lbl: Label = null
+var _life_remaining_lbl: Label = null
 
 var _menu_btn: TextureButton = null
 var _menu_lbl: Label = null
@@ -123,7 +124,7 @@ func open(reason_or_progress: Variant = "time_up", progress_or_goals: Variant = 
 
 	_top_cluster.modulate.a = 0.0
 	_top_cluster.offset_top = 12.0
-	_top_cluster.offset_bottom = 352.0
+	_top_cluster.offset_bottom = 430.0
 
 	_bottom_bar.modulate.a = 0.0
 	_bottom_bar.offset_top = -110.0
@@ -134,7 +135,7 @@ func open(reason_or_progress: Variant = "time_up", progress_or_goals: Variant = 
 	_anim_tween.set_parallel(true)
 	_anim_tween.tween_property(_top_cluster, "modulate:a", 1.0, 0.24)
 	_anim_tween.tween_property(_top_cluster, "offset_top", 54.0, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_anim_tween.tween_property(_top_cluster, "offset_bottom", 394.0, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_anim_tween.tween_property(_top_cluster, "offset_bottom", 472.0, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	_anim_tween.tween_property(_bottom_bar, "modulate:a", 1.0, 0.24)
 	_anim_tween.tween_property(_bottom_bar, "offset_top", -228.0, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -318,18 +319,33 @@ func _build_ui() -> void:
 	_goals_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	goals_banner.add_child(_goals_hbox)
 
-	# --- Feedback de Vida Perdida (-1 ❤️) ---
-	var life_hbox: HBoxContainer = HBoxContainer.new()
-	life_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	life_hbox.add_theme_constant_override("separation", 8)
-	life_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_top_cluster.add_child(life_hbox)
+	# --- Feedback de Vida Perdida em 2 Linhas Centralizadas:
+	# Linha 1: [Coração Partido] -1
+	# Linha 2: 4/5
+	var life_vbox: VBoxContainer = VBoxContainer.new()
+	life_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	life_vbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	life_vbox.add_theme_constant_override("separation", 2)
+	life_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_top_cluster.add_child(life_vbox)
 
-	life_hbox.add_child(_make_icon(TEX_ICON_HEART, Vector2(22.0, 22.0)))
-	_life_lost_lbl = _make_label("-1", 17, COL_LIFE_LOST)
-	_life_lost_lbl.add_theme_constant_override("outline_size", 6)
-	_life_lost_lbl.add_theme_color_override("font_outline_color", Color(0.04, 0.06, 0.12, 0.95))
-	life_hbox.add_child(_life_lost_lbl)
+	var life_top_hbox: HBoxContainer = HBoxContainer.new()
+	life_top_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	life_top_hbox.add_theme_constant_override("separation", 10)
+	life_top_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	life_vbox.add_child(life_top_hbox)
+
+	life_top_hbox.add_child(_make_icon(TEX_ICON_HEART_BROKEN, Vector2(52.0, 52.0)))
+	_life_lost_lbl = _make_label("-1", 38, COL_TITLE_RED)
+	_life_lost_lbl.add_theme_constant_override("outline_size", 10)
+	_life_lost_lbl.add_theme_color_override("font_outline_color", Color(0.05, 0.08, 0.16, 0.98))
+	life_top_hbox.add_child(_life_lost_lbl)
+
+	_life_remaining_lbl = _make_label("4/5", 30, COL_WHITE)
+	_life_remaining_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_life_remaining_lbl.add_theme_constant_override("outline_size", 9)
+	_life_remaining_lbl.add_theme_color_override("font_outline_color", Color(0.05, 0.08, 0.16, 0.98))
+	life_vbox.add_child(_life_remaining_lbl)
 
 	# ==========================================================================
 	# 2. BARRA INFERIOR DE AÇÕES (MENU | PEGAR MAIS TEMPO / CONSERTAR | REINICIAR)
@@ -478,14 +494,15 @@ func _add_goal_item(plant_type: String, current_val: int, target_val: int) -> vo
 
 
 func _update_life_lost_badge() -> void:
-	if _life_lost_lbl == null:
-		return
 	var save_mgr: Node = get_node_or_null("/root/SaveManager")
-	var cur_lives: int = 5
+	var cur_lives: int = 4
 	var max_lives: int = 5
 	if save_mgr != null and save_mgr.has_method("get_lives"):
 		cur_lives = int(save_mgr.call("get_lives"))
-	_life_lost_lbl.text = "-1  (%d/%d)" % [cur_lives, max_lives]
+	if _life_lost_lbl != null:
+		_life_lost_lbl.text = "-1"
+	if _life_remaining_lbl != null:
+		_life_remaining_lbl.text = "%d/%d" % [cur_lives, max_lives]
 
 
 func _retranslate_ui() -> void:
