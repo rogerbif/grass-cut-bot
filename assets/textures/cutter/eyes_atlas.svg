@@ -32,12 +32,12 @@
 
   <!-- 2: SAD - Coluna 0 (X: 0..1024) -->
   <g id="frame_2_sad">
-    <!-- Olho Esquerdo: Semicírculo voltado para baixo com pálpebra caída -->
-    <path d="M 120 490 C 120 600 344 600 344 490 Z" class="glow-shape" />
-    <path d="M 104 460 L 360 500" class="stroke-shape" stroke-width="26" />
-    <!-- Olho Direito -->
-    <path d="M 680 490 C 680 600 904 600 904 490 Z" class="glow-shape" />
-    <path d="M 664 500 L 920 460" class="stroke-shape" stroke-width="26" />
+    <!-- Olho Esquerdo: Arco triste curvado com gota de lágrima externa -->
+    <path d="M 124 492 Q 232 582 340 492" class="stroke-shape" stroke-width="44" />
+    <path d="M 110 535 C 90 572 88 608 112 618 C 136 626 144 590 126 545 Z" class="glow-shape" />
+    <!-- Olho Direito: Arco triste curvado com gota de lágrima externa -->
+    <path d="M 684 492 Q 792 582 900 492" class="stroke-shape" stroke-width="44" />
+    <path d="M 914 535 C 934 572 936 608 912 618 C 888 626 880 590 898 545 Z" class="glow-shape" />
   </g>
 
   <!-- 3: ANGRY - Coluna 1 (X: 1024..2048) -->

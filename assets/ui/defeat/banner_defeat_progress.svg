@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 118" width="612" height="118">
+  <defs>
+    <linearGradient id="prog_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d1e38" stop-opacity="0.96"/>
+      <stop offset="100%" stop-color="#071122" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="cyan_rim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f5e1"/>
+      <stop offset="50%" stop-color="#00b4ff"/>
+      <stop offset="100%" stop-color="#00f5e1"/>
+    </linearGradient>
+    <linearGradient id="pink_bracket" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff477e"/>
+      <stop offset="100%" stop-color="#ff2a6d"/>
+    </linearGradient>
+    <filter id="prog_glow" x="-6%" y="-12%" width="112%" height="124%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000814" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#prog_glow)">
+    <!-- Colchetes Angulares Rosa/Magenta Externos (Inferiores e Superiores Direitos) -->
+    <polygon points="434,6 566,6 604,44 604,76 566,112 456,112 466,102 560,102 592,70 592,48 560,16 444,16"
+             fill="url(#pink_bracket)" opacity="0.92"/>
+    <polygon points="178,112 46,112 8,76 8,44 46,6 156,6 146,16 52,16 20,48 20,70 52,102 168,102"
+             fill="url(#pink_bracket)" opacity="0.92"/>
+
+    <!-- Abas Superiores Ciano com Listras -->
+    <polygon points="48,14 60,4 166,4 176,14" fill="#00f0ff"/>
+    <g fill="#07162c" opacity="0.8">
+      <polygon points="68,6 73,6 69,12 64,12"/>
+      <polygon points="77,6 82,6 78,12 73,12"/>
+      <polygon points="86,6 91,6 87,12 82,12"/>
+      <polygon points="95,6 100,6 96,12 91,12"/>
+    </g>
+
+    <!-- Placa Principal Chanfrada -->
+    <polygon points="48,14 564,14 592,42 592,76 564,104 48,104 20,76 20,42"
+             fill="url(#prog_bg)"
+             stroke="url(#cyan_rim)"
+             stroke-width="3"
+             stroke-linejoin="round"/>
+
+    <!-- Contorno Interno Fino -->
+    <polygon points="52,20 560,20 584,44 584,74 560,98 52,98 28,74 28,44"
+             fill="none"
+             stroke="#00f0ff"
+             stroke-width="1"
+             stroke-opacity="0.32"/>
+
+    <!-- Trilhas de Circuito Internas -->
+    <g stroke="#00e5ff" stroke-width="1.6" stroke-opacity="0.55" fill="none" stroke-linecap="round">
+      <polyline points="54,28 112,28 120,22 152,22"/>
+      <circle cx="152" cy="22" r="2.5" fill="#00f5e1"/>
+      <polyline points="558,28 500,28 492,22 460,22"/>
+      <circle cx="460" cy="22" r="2.5" fill="#00f5e1"/>
+    </g>
+
+    <!-- Chevrons Laterais << e >> -->
+    <g stroke="#9d4edd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <polyline points="68,36 60,44 68,52"/>
+      <polyline points="78,36 70,44 78,52"/>
+      <polyline points="534,36 542,44 534,52"/>
+      <polyline points="544,36 552,44 544,52"/>
+    </g>
+  </g>
+</svg>

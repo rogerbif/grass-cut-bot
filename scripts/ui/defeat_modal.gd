@@ -1,57 +1,71 @@
 class_name DefeatModal
 extends Control
 
-## Modal de Derrota (Game Over) com Estética Cyberpunk Neon.
-## Exibe o progresso do corte, as metas restantes e três ações: Repetir Fase,
-## Pegar Mais Tempo (placeholder de anúncio recompensado, 1 uso por tentativa) e Menu Inicial.
+## Tela de Derrota Flutuante Cyber-Mecha (Tempo Esgotado & Robô Quebrado).
+## Mantém o centro da tela 100% livre para exibir o close-up 3D do robô cabisbaixo soltando fumaça,
+## com 3 placas superiores (Título de Alerta, Progresso do Corte e Metas X/Y) e barra inferior
+## simétrica (MENU, PEGAR MAIS TEMPO / CONSERTAR ROBÔ e botão heroico verde REINICIAR).
 ## Roda com process_mode = PROCESS_MODE_ALWAYS e constrói tudo programaticamente (Guardrail 13).
 
 signal retry_requested
 signal extra_time_requested
+signal repair_robot_requested
 signal menu_requested
 
 const EXTRA_TIME_SECONDS: float = 15.0
-const NEAR_WIN_THRESHOLD: float = 0.70
 
-const TEX_CARD_BG: Texture2D = preload("res://assets/ui/defeat/card_defeat_bg.svg")
-const TEX_BTN_RETRY_N: Texture2D = preload("res://assets/ui/defeat/btn_retry_normal.svg")
-const TEX_BTN_RETRY_P: Texture2D = preload("res://assets/ui/defeat/btn_retry_pressed.svg")
-const TEX_BTN_EXTRA_N: Texture2D = preload("res://assets/ui/defeat/btn_extra_time_normal.svg")
-const TEX_BTN_EXTRA_P: Texture2D = preload("res://assets/ui/defeat/btn_extra_time_pressed.svg")
-const TEX_BTN_MENU_N: Texture2D = preload("res://assets/ui/pause/btn_menu_normal.svg")
-const TEX_BTN_MENU_P: Texture2D = preload("res://assets/ui/pause/btn_menu_pressed.svg")
+const TEX_BANNER_TITLE: Texture2D = preload("res://assets/ui/defeat/banner_defeat_title.svg")
+const TEX_BANNER_PROGRESS: Texture2D = preload("res://assets/ui/defeat/banner_defeat_progress.svg")
+const TEX_BANNER_GOALS: Texture2D = preload("res://assets/ui/defeat/banner_defeat_goals.svg")
+
+const TEX_BTN_MENU_N: Texture2D = preload("res://assets/ui/victory/btn_menu_secondary.svg")
+const TEX_BTN_MENU_P: Texture2D = preload("res://assets/ui/victory/btn_menu_secondary_pressed.svg")
+const TEX_BTN_EXTRA_N: Texture2D = preload("res://assets/ui/victory/btn_repeat_secondary.svg")
+const TEX_BTN_EXTRA_P: Texture2D = preload("res://assets/ui/victory/btn_repeat_secondary_pressed.svg")
+const TEX_BTN_RETRY_N: Texture2D = preload("res://assets/ui/victory/btn_next_level.svg")
+const TEX_BTN_RETRY_P: Texture2D = preload("res://assets/ui/victory/btn_next_level_pressed.svg")
 
 const TEX_ICON_STOPWATCH: Texture2D = preload("res://assets/ui/defeat/icon_stopwatch_red.svg")
+const TEX_ICON_ROBOT_BROKEN: Texture2D = preload("res://assets/ui/defeat/icon_robot_broken_red.svg")
 const TEX_ICON_ALERT: Texture2D = preload("res://assets/ui/defeat/icon_alert_triangle_red.svg")
 const TEX_ICON_TV: Texture2D = preload("res://assets/ui/defeat/icon_tv_play_cyan.svg")
-const TEX_ICON_RETRY: Texture2D = preload("res://assets/ui/defeat/icon_restart_orange.svg")
-const TEX_ICON_HOME: Texture2D = preload("res://assets/icons/navbar/nav_icon_home.svg")
+const TEX_ICON_HOME: Texture2D = preload("res://assets/ui/victory/icon_home_cyan.svg")
+const TEX_ICON_REFRESH_DARK: Texture2D = preload("res://assets/ui/defeat/icon_refresh_dark.svg")
+const TEX_ICON_HEART: Texture2D = preload("res://assets/icons/icon_heart.svg")
 
 const COL_WHITE: Color = Color(1.0, 1.0, 1.0, 1.0)
-const COL_TITLE_RED: Color = Color(1.0, 0.30, 0.32, 1.0)
-const COL_SUBTITLE: Color = Color(0.86, 0.92, 1.0, 1.0)
-const COL_PERCENT: Color = Color(1.0, 0.86, 0.30, 1.0)
-const COL_GLOW_RED: Color = Color(1.0, 0.25, 0.30, 1.0)
-
-const CARD_W: float = 440.0
-const CARD_H: float = 488.0
+const COL_TITLE_RED: Color = Color(1.0, 0.31, 0.34, 1.0)
+const COL_PERCENT: Color = Color(1.0, 0.85, 0.28, 1.0)
+const COL_DARK_PETROL: Color = Color(0.027, 0.11, 0.16, 1.0)
+const COL_GOAL_DONE: Color = Color(0.35, 1.0, 0.58, 1.0)
+const COL_LIFE_LOST: Color = Color(1.0, 0.45, 0.52, 1.0)
 
 var _font: SystemFont = null
-var _backdrop: ColorRect = null
-var _card_panel: PanelContainer = null
+var _touch_Catcher: Control = null
+var _top_cluster: VBoxContainer = null
+var _bottom_bar: VBoxContainer = null
+
+var _left_title_icon: TextureRect = null
 var _title_lbl: Label = null
-var _subtitle_lbl: Label = null
 var _cut_prog_lbl: Label = null
 var _percent_lbl: Label = null
-var _progress_bar: TextureProgressBar = null
+var _progress_fill: Panel = null
+var _progress_track: Panel = null
 var _goals_hbox: HBoxContainer = null
-var _retry_btn: Button = null
-var _extra_btn: Button = null
-var _menu_btn: Button = null
+var _life_lost_lbl: Label = null
 
-var _fade_tween: Tween = null
-var _glow_tween: Tween = null
+var _menu_btn: TextureButton = null
+var _menu_lbl: Label = null
+var _extra_btn: TextureButton = null
+var _extra_lbl: Label = null
+var _retry_btn: TextureButton = null
+var _retry_lbl: Label = null
+
+var _current_reason: String = "time_up"
+var _current_progress: float = 0.0
+var _anim_tween: Tween = null
 var _is_closing: bool = false
+
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
@@ -69,281 +83,419 @@ func _ready() -> void:
 	_build_ui()
 
 
-## Abre o modal com os dados da derrota.
-func open(progress: float, remaining_goals: Dictionary, can_extend: bool) -> void:
+## Abre a tela de derrota flutuante com suporte a "time_up" e "robot_broken".
+func open(reason_or_progress: Variant = "time_up", progress_or_goals: Variant = 0.0, goals_or_extend: Variant = [], can_extend_opt: bool = true) -> void:
 	visible = true
 	_is_closing = false
 
-	var pct: int = roundi(clampf(progress, 0.0, 1.0) * 100.0)
-	_percent_lbl.text = "%d%%" % pct
-	_progress_bar.value = float(pct)
-	_subtitle_lbl.text = tr("DEFEAT_SUBTITLE_CLOSE") if progress >= NEAR_WIN_THRESHOLD else tr("DEFEAT_SUBTITLE_TRY_AGAIN")
-	_extra_btn.visible = can_extend
-	_populate_goals(remaining_goals)
+	# Compatibilidade flexível de assinatura:
+	# open(reason: String, progress: float, goals_summary: Array, can_extend: bool)
+	# ou legado open(progress: float, remaining_goals: Dictionary, can_extend: bool)
+	var goals_data: Variant = []
+	var can_extend: bool = true
 
-	if _fade_tween != null and _fade_tween.is_valid():
-		_fade_tween.kill()
+	if typeof(reason_or_progress) == TYPE_STRING:
+		_current_reason = String(reason_or_progress)
+		_current_progress = clampf(float(progress_or_goals), 0.0, 1.0)
+		goals_data = goals_or_extend
+		can_extend = can_extend_opt
+	else:
+		_current_reason = "time_up"
+		_current_progress = clampf(float(reason_or_progress), 0.0, 1.0)
+		goals_data = progress_or_goals
+		can_extend = bool(goals_or_extend)
 
-	_card_panel.pivot_offset = Vector2(CARD_W * 0.5, CARD_H * 0.5)
-	_card_panel.scale = Vector2(0.85, 0.85)
-	_card_panel.modulate = Color(1.0, 1.0, 1.0, 0.0)
-	_backdrop.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	_update_reason_visuals()
 
-	_fade_tween = create_tween()
-	_fade_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	_fade_tween.set_parallel(true)
-	_fade_tween.tween_property(_backdrop, "modulate:a", 1.0, 0.20)
-	_fade_tween.tween_property(_card_panel, "modulate:a", 1.0, 0.20)
-	_fade_tween.tween_property(_card_panel, "scale", Vector2.ONE, 0.26).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var pct: int = roundi(_current_progress * 100.0)
+	if _percent_lbl != null:
+		_percent_lbl.text = "%d%%" % pct
+	_update_progress_bar_width(_current_progress)
 
-	# Pulso sutil de brilho vermelho no card (leve para mobile)
-	if _glow_tween != null and _glow_tween.is_valid():
-		_glow_tween.kill()
-	_glow_tween = create_tween()
-	_glow_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	_glow_tween.set_loops()
-	_glow_tween.tween_property(_card_panel, "self_modulate", Color(1.12, 0.92, 0.92, 1.0), 0.9).set_trans(Tween.TRANS_SINE)
-	_glow_tween.tween_property(_card_panel, "self_modulate", Color.WHITE, 0.9).set_trans(Tween.TRANS_SINE)
+	if _extra_btn != null:
+		_extra_btn.visible = can_extend
+
+	_populate_goals(goals_data)
+	_update_life_lost_badge()
+
+	if _anim_tween != null and _anim_tween.is_valid():
+		_anim_tween.kill()
+
+	_top_cluster.modulate.a = 0.0
+	_top_cluster.offset_top = 12.0
+	_top_cluster.offset_bottom = 352.0
+
+	_bottom_bar.modulate.a = 0.0
+	_bottom_bar.offset_top = -110.0
+	_bottom_bar.offset_bottom = 86.0
+
+	_anim_tween = create_tween()
+	_anim_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_anim_tween.set_parallel(true)
+	_anim_tween.tween_property(_top_cluster, "modulate:a", 1.0, 0.24)
+	_anim_tween.tween_property(_top_cluster, "offset_top", 54.0, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_anim_tween.tween_property(_top_cluster, "offset_bottom", 394.0, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	_anim_tween.tween_property(_bottom_bar, "modulate:a", 1.0, 0.24)
+	_anim_tween.tween_property(_bottom_bar, "offset_top", -228.0, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_anim_tween.tween_property(_bottom_bar, "offset_bottom", -32.0, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	var vib_on: bool = true
-	if SaveManager != null:
-		vib_on = bool(SaveManager.get_setting("vib_enabled", true))
-	if vib_on:
+	var save_mgr: Node = get_node_or_null("/root/SaveManager")
+	if save_mgr != null and save_mgr.has_method("get_setting"):
+		vib_on = bool(save_mgr.call("get_setting", "vib_enabled", true))
+	if vib_on and (OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")):
 		Input.vibrate_handheld(40)
 
 
-## Fecha o modal com Shrink + Fade Out.
 func close() -> void:
 	if _is_closing or not visible:
 		return
 	_is_closing = true
 
-	if _glow_tween != null and _glow_tween.is_valid():
-		_glow_tween.kill()
-	if _fade_tween != null and _fade_tween.is_valid():
-		_fade_tween.kill()
+	if _anim_tween != null and _anim_tween.is_valid():
+		_anim_tween.kill()
 
-	_fade_tween = create_tween()
-	_fade_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	_fade_tween.set_parallel(true)
-	_fade_tween.tween_property(_backdrop, "modulate:a", 0.0, 0.14)
-	_fade_tween.tween_property(_card_panel, "modulate:a", 0.0, 0.14)
-	_fade_tween.tween_property(_card_panel, "scale", Vector2(0.85, 0.85), 0.14).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	_fade_tween.chain().tween_callback(func() -> void:
+	_anim_tween = create_tween()
+	_anim_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_anim_tween.set_parallel(true)
+	_anim_tween.tween_property(_top_cluster, "modulate:a", 0.0, 0.15)
+	_anim_tween.tween_property(_bottom_bar, "modulate:a", 0.0, 0.15)
+	_anim_tween.chain().tween_callback(func() -> void:
 		visible = false
 		_is_closing = false
-		_card_panel.self_modulate = Color.WHITE
 	)
 
 
 func _build_ui() -> void:
-	# Backdrop escuro: absorve toques (derrota exige decisão, não fecha ao tocar fora)
-	_backdrop = ColorRect.new()
-	_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_backdrop.color = Color(0.03, 0.02, 0.06, 0.72)
-	_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
-	add_child(_backdrop)
+	# Camada transparente que bloqueia cliques no cenário durante a tela de derrota,
+	# mantendo o robô 3D totalmente visível e sem escurecimento opaco.
+	_touch_Catcher = Control.new()
+	_touch_Catcher.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_touch_Catcher.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(_touch_Catcher)
 
-	_card_panel = PanelContainer.new()
-	_card_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_card_panel.offset_left = -CARD_W * 0.5
-	_card_panel.offset_top = -CARD_H * 0.5
-	_card_panel.offset_right = CARD_W * 0.5
-	_card_panel.offset_bottom = CARD_H * 0.5
-	_card_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_card_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_card_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	# ==========================================================================
+	# 1. CLUSTER SUPERIOR FLUTUANTE (3 PLACAS CYBER-MECHA)
+	# ==========================================================================
+	_top_cluster = VBoxContainer.new()
+	_top_cluster.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_top_cluster.offset_left = -310.0
+	_top_cluster.offset_top = 54.0
+	_top_cluster.offset_right = 310.0
+	_top_cluster.offset_bottom = 394.0
+	_top_cluster.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_top_cluster.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_top_cluster.alignment = BoxContainer.ALIGNMENT_BEGIN
+	_top_cluster.add_theme_constant_override("separation", 12)
+	add_child(_top_cluster)
 
-	var card_sb: StyleBoxTexture = StyleBoxTexture.new()
-	card_sb.texture = TEX_CARD_BG
-	card_sb.texture_margin_left = 36.0
-	card_sb.texture_margin_right = 36.0
-	card_sb.texture_margin_top = 40.0
-	card_sb.texture_margin_bottom = 40.0
-	card_sb.content_margin_left = 20.0
-	card_sb.content_margin_right = 20.0
-	card_sb.content_margin_top = 22.0
-	card_sb.content_margin_bottom = 14.0
-	_card_panel.add_theme_stylebox_override("panel", card_sb)
-	add_child(_card_panel)
+	# --- Placa 1: Banner de Título (TEMPO ESGOTADO! / ROBÔ QUEBRADO!) ---
+	var title_banner: Control = Control.new()
+	title_banner.custom_minimum_size = Vector2(600.0, 90.0)
+	title_banner.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	title_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_top_cluster.add_child(title_banner)
 
-	var main_vbox: VBoxContainer = VBoxContainer.new()
-	main_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	main_vbox.add_theme_constant_override("separation", 12)
-	_card_panel.add_child(main_vbox)
+	var title_bg: TextureRect = TextureRect.new()
+	title_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	title_bg.texture = TEX_BANNER_TITLE
+	title_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	title_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_banner.add_child(title_bg)
 
-	# 1. Cabeçalho: [cronômetro] Tempo Esgotado! [alerta]
-	var header_hbox: HBoxContainer = HBoxContainer.new()
-	header_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	header_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	header_hbox.add_theme_constant_override("separation", 10)
-	main_vbox.add_child(header_hbox)
+	var title_hbox: HBoxContainer = HBoxContainer.new()
+	title_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	title_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	title_hbox.add_theme_constant_override("separation", 14)
+	title_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_banner.add_child(title_hbox)
 
-	header_hbox.add_child(_make_icon(TEX_ICON_STOPWATCH, Vector2(58.0, 58.0)))
+	_left_title_icon = _make_icon(TEX_ICON_STOPWATCH, Vector2(52.0, 52.0))
+	title_hbox.add_child(_left_title_icon)
 
-	_title_lbl = _make_label(tr("HUD_DEFEAT_TITLE"), 28, COL_TITLE_RED)
-	_title_lbl.add_theme_constant_override("line_spacing", -4)
-	header_hbox.add_child(_title_lbl)
+	_title_lbl = _make_label(tr("HUD_DEFEAT_TITLE"), 29, COL_TITLE_RED)
+	_title_lbl.add_theme_constant_override("outline_size", 8)
+	_title_lbl.add_theme_color_override("font_outline_color", Color(0.08, 0.02, 0.05, 0.95))
+	title_hbox.add_child(_title_lbl)
 
-	header_hbox.add_child(_make_icon(TEX_ICON_ALERT, Vector2(38.0, 38.0)))
+	title_hbox.add_child(_make_icon(TEX_ICON_ALERT, Vector2(36.0, 36.0)))
 
-	# 2. Subtítulo dinâmico
-	_subtitle_lbl = _make_label("", 17, COL_SUBTITLE)
-	_subtitle_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	main_vbox.add_child(_subtitle_lbl)
+	# --- Placa 2: Progresso do Corte ---
+	var prog_banner: Control = Control.new()
+	prog_banner.custom_minimum_size = Vector2(612.0, 114.0)
+	prog_banner.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	prog_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_top_cluster.add_child(prog_banner)
 
-	# 3. Painel de progresso do corte
-	var prog_panel: PanelContainer = PanelContainer.new()
-	prog_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var prog_sb: StyleBoxFlat = StyleBoxFlat.new()
-	prog_sb.bg_color = Color(0.05, 0.08, 0.16, 0.85)
-	prog_sb.set_corner_radius_all(12)
-	prog_sb.set_border_width_all(1)
-	prog_sb.border_color = Color(0.35, 0.40, 0.65, 0.45)
-	prog_sb.content_margin_left = 16.0
-	prog_sb.content_margin_right = 16.0
-	prog_sb.content_margin_top = 10.0
-	prog_sb.content_margin_bottom = 10.0
-	prog_panel.add_theme_stylebox_override("panel", prog_sb)
-	main_vbox.add_child(prog_panel)
+	var prog_bg: TextureRect = TextureRect.new()
+	prog_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	prog_bg.texture = TEX_BANNER_PROGRESS
+	prog_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	prog_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	prog_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	prog_banner.add_child(prog_bg)
 
 	var prog_vbox: VBoxContainer = VBoxContainer.new()
+	prog_vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	prog_vbox.offset_left = 74.0
+	prog_vbox.offset_right = -74.0
+	prog_vbox.offset_top = 24.0
+	prog_vbox.offset_bottom = -22.0
+	prog_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	prog_vbox.add_theme_constant_override("separation", 10)
 	prog_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	prog_vbox.add_theme_constant_override("separation", 8)
-	prog_panel.add_child(prog_vbox)
+	prog_banner.add_child(prog_vbox)
 
-	var prog_title_hbox: HBoxContainer = HBoxContainer.new()
-	prog_title_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	prog_title_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	prog_title_hbox.add_theme_constant_override("separation", 6)
-	prog_vbox.add_child(prog_title_hbox)
-	_cut_prog_lbl = _make_label(tr("DEFEAT_CUT_PROGRESS"), 16, COL_WHITE)
-	prog_title_hbox.add_child(_cut_prog_lbl)
-	_percent_lbl = _make_label("0%", 17, COL_PERCENT)
-	prog_title_hbox.add_child(_percent_lbl)
+	var prog_header_hbox: HBoxContainer = HBoxContainer.new()
+	prog_header_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	prog_header_hbox.add_theme_constant_override("separation", 6)
+	prog_header_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	prog_vbox.add_child(prog_header_hbox)
 
-	_progress_bar = _make_progress_bar()
-	prog_vbox.add_child(_progress_bar)
+	_cut_prog_lbl = _make_label(tr("DEFEAT_CUT_PROGRESS").to_upper(), 18, COL_WHITE)
+	prog_header_hbox.add_child(_cut_prog_lbl)
+
+	_percent_lbl = _make_label("0%", 19, COL_PERCENT)
+	prog_header_hbox.add_child(_percent_lbl)
+
+	# Trilho arredondado da barra de progresso com partículas/pontos digitais
+	_progress_track = Panel.new()
+	_progress_track.custom_minimum_size = Vector2(464.0, 20.0)
+	_progress_track.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_progress_track.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var track_sb: StyleBoxFlat = StyleBoxFlat.new()
+	track_sb.bg_color = Color(0.08, 0.11, 0.22, 0.95)
+	track_sb.set_corner_radius_all(10)
+	_progress_track.add_theme_stylebox_override("panel", track_sb)
+	prog_vbox.add_child(_progress_track)
+
+	# Pontos digitais decorativos no trilho (fiéis à imagem de referência)
+	var dot_offsets: Array[Vector2] = [
+		Vector2(180.0, 12.0), Vector2(212.0, 6.0), Vector2(220.0, 13.0),
+		Vector2(268.0, 13.0), Vector2(315.0, 7.0), Vector2(338.0, 13.0),
+		Vector2(350.0, 13.0), Vector2(396.0, 11.0)
+	]
+	for d_pos: Vector2 in dot_offsets:
+		var dot: ColorRect = ColorRect.new()
+		dot.size = Vector2(4.0, 3.0)
+		dot.position = d_pos
+		dot.color = Color(1.0, 0.28, 0.52, 0.65)
+		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_progress_track.add_child(dot)
+
+	_progress_fill = Panel.new()
+	_progress_fill.position = Vector2.ZERO
+	_progress_fill.size = Vector2(0.0, 20.0)
+	_progress_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var fill_sb: StyleBoxFlat = StyleBoxFlat.new()
+	fill_sb.bg_color = Color(1.0, 0.30, 0.44, 1.0)
+	fill_sb.set_corner_radius_all(10)
+	_progress_fill.add_theme_stylebox_override("panel", fill_sb)
+	_progress_track.add_child(_progress_fill)
+
+	# --- Placa 3: Metas da Fase (54 / 60   88 / 100   55 / 70) ---
+	var goals_banner: Control = Control.new()
+	goals_banner.custom_minimum_size = Vector2(616.0, 74.0)
+	goals_banner.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	goals_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_top_cluster.add_child(goals_banner)
+
+	var goals_bg: TextureRect = TextureRect.new()
+	goals_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	goals_bg.texture = TEX_BANNER_GOALS
+	goals_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	goals_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	goals_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	goals_banner.add_child(goals_bg)
 
 	_goals_hbox = HBoxContainer.new()
-	_goals_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_goals_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_goals_hbox.offset_top = 4.0
 	_goals_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	_goals_hbox.add_theme_constant_override("separation", 28)
-	prog_vbox.add_child(_goals_hbox)
+	_goals_hbox.add_theme_constant_override("separation", 34)
+	_goals_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	goals_banner.add_child(_goals_hbox)
 
-	# 4. Botões de ação
-	_retry_btn = _make_action_button(tr("HUD_RETRY"), TEX_ICON_RETRY, TEX_BTN_RETRY_N, TEX_BTN_RETRY_P, 22)
-	_retry_btn.pressed.connect(_on_retry_pressed)
-	main_vbox.add_child(_retry_btn)
+	# --- Feedback de Vida Perdida (-1 ❤️) ---
+	var life_hbox: HBoxContainer = HBoxContainer.new()
+	life_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	life_hbox.add_theme_constant_override("separation", 8)
+	life_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_top_cluster.add_child(life_hbox)
 
-	_extra_btn = _make_action_button(tr("DEFEAT_BTN_EXTRA_TIME"), TEX_ICON_TV, TEX_BTN_EXTRA_N, TEX_BTN_EXTRA_P, 20)
-	_extra_btn.pressed.connect(_on_extra_pressed)
-	main_vbox.add_child(_extra_btn)
+	life_hbox.add_child(_make_icon(TEX_ICON_HEART, Vector2(22.0, 22.0)))
+	_life_lost_lbl = _make_label("-1", 17, COL_LIFE_LOST)
+	_life_lost_lbl.add_theme_constant_override("outline_size", 6)
+	_life_lost_lbl.add_theme_color_override("font_outline_color", Color(0.04, 0.06, 0.12, 0.95))
+	life_hbox.add_child(_life_lost_lbl)
 
-	_menu_btn = _make_action_button(tr("HUD_MAIN_MENU"), TEX_ICON_HOME, TEX_BTN_MENU_N, TEX_BTN_MENU_P, 22)
+	# ==========================================================================
+	# 2. BARRA INFERIOR DE AÇÕES (MENU | PEGAR MAIS TEMPO / CONSERTAR | REINICIAR)
+	# ==========================================================================
+	_bottom_bar = VBoxContainer.new()
+	_bottom_bar.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	_bottom_bar.offset_left = 36.0
+	_bottom_bar.offset_top = -228.0
+	_bottom_bar.offset_right = -36.0
+	_bottom_bar.offset_bottom = -32.0
+	_bottom_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_bottom_bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_bottom_bar.alignment = BoxContainer.ALIGNMENT_CENTER
+	_bottom_bar.add_theme_constant_override("separation", 12)
+	add_child(_bottom_bar)
+
+	var secondary_hbox: HBoxContainer = HBoxContainer.new()
+	secondary_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	secondary_hbox.add_theme_constant_override("separation", 20)
+	_bottom_bar.add_child(secondary_hbox)
+
+	# Botão Esquerdo: MENU
+	_menu_btn = _make_secondary_button(TEX_BTN_MENU_N, TEX_BTN_MENU_P, TEX_ICON_HOME, tr("BTN_MENU").to_upper(), 21)
+	_menu_lbl = _menu_btn.get_meta("label") as Label
 	_menu_btn.pressed.connect(_on_menu_pressed)
-	main_vbox.add_child(_menu_btn)
+	secondary_hbox.add_child(_menu_btn)
+
+	# Botão Direito: PEGAR MAIS TEMPO / CONSERTAR ROBÔ
+	_extra_btn = _make_secondary_button(TEX_BTN_EXTRA_N, TEX_BTN_EXTRA_P, TEX_ICON_TV, tr("DEFEAT_BTN_EXTRA_TIME").to_upper(), 18)
+	_extra_lbl = _extra_btn.get_meta("label") as Label
+	_extra_btn.pressed.connect(_on_extra_pressed)
+	secondary_hbox.add_child(_extra_btn)
+
+	# Botão Principal Inferior: REINICIAR ↻
+	_retry_btn = TextureButton.new()
+	_retry_btn.custom_minimum_size = Vector2(648.0, 106.0)
+	_retry_btn.focus_mode = Control.FOCUS_NONE
+	_retry_btn.texture_normal = TEX_BTN_RETRY_N
+	_retry_btn.texture_pressed = TEX_BTN_RETRY_P
+	_retry_btn.ignore_texture_size = true
+	_retry_btn.stretch_mode = TextureButton.STRETCH_SCALE
+	_retry_btn.pressed.connect(_on_retry_pressed)
+	_bottom_bar.add_child(_retry_btn)
+
+	var retry_box: HBoxContainer = HBoxContainer.new()
+	retry_box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	retry_box.offset_bottom = -8.0
+	retry_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	retry_box.add_theme_constant_override("separation", 12)
+	retry_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_retry_btn.add_child(retry_box)
+
+	_retry_lbl = _make_label(tr("HUD_RETRY").to_upper(), 28, COL_DARK_PETROL)
+	_retry_lbl.add_theme_color_override("font_shadow_color", Color(1.0, 1.0, 1.0, 0.25))
+	retry_box.add_child(_retry_lbl)
+
+	retry_box.add_child(_make_icon(TEX_ICON_REFRESH_DARK, Vector2(30.0, 30.0)))
 
 
-func _make_progress_bar() -> TextureProgressBar:
-	var bar: TextureProgressBar = TextureProgressBar.new()
-	bar.min_value = 0.0
-	bar.max_value = 100.0
-	bar.step = 1.0
-	bar.custom_minimum_size = Vector2(0.0, 12.0)
-	bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	bar.nine_patch_stretch = true
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var under_grad: Gradient = Gradient.new()
-	under_grad.set_color(0, Color(0.10, 0.12, 0.22, 1.0))
-	under_grad.set_color(1, Color(0.10, 0.12, 0.22, 1.0))
-	var under_tex: GradientTexture2D = GradientTexture2D.new()
-	under_tex.gradient = under_grad
-	under_tex.width = 64
-	under_tex.height = 12
-
-	var fill_grad: Gradient = Gradient.new()
-	fill_grad.set_color(0, Color(1.0, 0.22, 0.50, 1.0))
-	fill_grad.set_color(1, Color(1.0, 0.85, 0.25, 1.0))
-	var fill_tex: GradientTexture2D = GradientTexture2D.new()
-	fill_tex.gradient = fill_grad
-	fill_tex.width = 256
-	fill_tex.height = 12
-	fill_tex.fill_from = Vector2(0.0, 0.5)
-	fill_tex.fill_to = Vector2(1.0, 0.5)
-
-	bar.texture_under = under_tex
-	bar.texture_progress = fill_tex
-	return bar
-
-
-func _populate_goals(remaining_goals: Dictionary) -> void:
-	for child: Node in _goals_hbox.get_children():
-		_goals_hbox.remove_child(child)
-		child.queue_free()
-	for key: Variant in remaining_goals.keys():
-		var item: HBoxContainer = HBoxContainer.new()
-		item.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		item.add_theme_constant_override("separation", 6)
-		item.add_child(GoalIconFactory.build_goal_icon(String(key), 30.0))
-		item.add_child(_make_label(str(int(remaining_goals[key])), 16, COL_WHITE))
-		_goals_hbox.add_child(item)
-	_goals_hbox.visible = not remaining_goals.is_empty()
-
-
-func _make_action_button(txt: String, icon_tex: Texture2D, tex_n: Texture2D, tex_p: Texture2D, font_size: int, icon_tint: Color = Color.WHITE) -> Button:
-	var btn: Button = Button.new()
-	btn.custom_minimum_size = Vector2(0.0, 58.0)
+func _make_secondary_button(tex_n: Texture2D, tex_p: Texture2D, icon_tex: Texture2D, txt: String, font_size: int) -> TextureButton:
+	var btn: TextureButton = TextureButton.new()
+	btn.custom_minimum_size = Vector2(314.0, 82.0)
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.focus_mode = Control.FOCUS_NONE
-
-	var sb_n: StyleBoxTexture = _make_btn_style(tex_n)
-	var sb_p: StyleBoxTexture = _make_btn_style(tex_p)
-	btn.add_theme_stylebox_override("normal", sb_n)
-	btn.add_theme_stylebox_override("hover", sb_n)
-	btn.add_theme_stylebox_override("pressed", sb_p)
-	btn.add_theme_stylebox_override("focus", sb_n)
+	btn.texture_normal = tex_n
+	btn.texture_pressed = tex_p
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_SCALE
 
 	var hbox: HBoxContainer = HBoxContainer.new()
 	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.offset_left = 12.0
+	hbox.offset_right = -12.0
+	hbox.offset_bottom = -4.0
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.add_theme_constant_override("separation", 12)
+	hbox.add_theme_constant_override("separation", 10)
 	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(hbox)
 
-	var btn_icon: TextureRect = _make_icon(icon_tex, Vector2(26.0, 26.0))
-	btn_icon.modulate = icon_tint
-	hbox.add_child(btn_icon)
+	hbox.add_child(_make_icon(icon_tex, Vector2(26.0, 26.0)))
 	var lbl: Label = _make_label(txt, font_size, COL_WHITE)
 	hbox.add_child(lbl)
 	btn.set_meta("label", lbl)
 	return btn
 
-func _retranslate_ui() -> void:
+
+func _update_reason_visuals() -> void:
+	var is_broken: bool = (_current_reason == "robot_broken")
+	if _left_title_icon != null:
+		_left_title_icon.texture = TEX_ICON_ROBOT_BROKEN if is_broken else TEX_ICON_STOPWATCH
 	if _title_lbl != null:
-		_title_lbl.text = tr("HUD_DEFEAT_TITLE")
+		_title_lbl.text = tr("HUD_DEFEAT_ROBOT_BROKEN") if is_broken else tr("HUD_DEFEAT_TITLE")
+	if _extra_lbl != null:
+		_extra_lbl.text = (tr("DEFEAT_BTN_REPAIR_ROBOT") if is_broken else tr("DEFEAT_BTN_EXTRA_TIME")).to_upper()
+
+
+func _update_progress_bar_width(ratio: float) -> void:
+	if _progress_fill == null or _progress_track == null:
+		return
+	var max_w: float = 464.0
+	var fill_w: float = clampf(ratio, 0.0, 1.0) * max_w
+	if ratio > 0.0 and fill_w < 20.0:
+		fill_w = 20.0
+	_progress_fill.size = Vector2(fill_w, 20.0)
+
+
+func _populate_goals(goals_data: Variant) -> void:
+	if _goals_hbox == null:
+		return
+	for child: Node in _goals_hbox.get_children():
+		_goals_hbox.remove_child(child)
+		child.queue_free()
+
+	if goals_data is Array:
+		var arr: Array = goals_data as Array
+		for entry: Variant in arr:
+			if entry is Dictionary:
+				var d: Dictionary = entry as Dictionary
+				var p_type: String = String(d.get("plant_type", "grass_green"))
+				var cur: int = int(d.get("current", 0))
+				var tgt: int = int(d.get("target", 0))
+				_add_goal_item(p_type, cur, tgt)
+	elif goals_data is Dictionary:
+		var dict: Dictionary = goals_data as Dictionary
+		for key: Variant in dict.keys():
+			var rem: int = int(dict[key])
+			_add_goal_item(String(key), 0, rem)
+
+
+func _add_goal_item(plant_type: String, current_val: int, target_val: int) -> void:
+	var item: HBoxContainer = HBoxContainer.new()
+	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	item.alignment = BoxContainer.ALIGNMENT_CENTER
+	item.add_theme_constant_override("separation", 8)
+
+	item.add_child(GoalIconFactory.build_goal_icon(plant_type, 36.0))
+
+	var is_done: bool = (target_val > 0 and current_val >= target_val)
+	var col: Color = COL_GOAL_DONE if is_done else COL_WHITE
+	var lbl: Label = _make_label("%d / %d" % [current_val, target_val], 21, col)
+	lbl.add_theme_constant_override("outline_size", 6)
+	lbl.add_theme_color_override("font_outline_color", Color(0.03, 0.06, 0.14, 0.95))
+	item.add_child(lbl)
+
+	_goals_hbox.add_child(item)
+
+
+func _update_life_lost_badge() -> void:
+	if _life_lost_lbl == null:
+		return
+	var save_mgr: Node = get_node_or_null("/root/SaveManager")
+	var cur_lives: int = 5
+	var max_lives: int = 5
+	if save_mgr != null and save_mgr.has_method("get_lives"):
+		cur_lives = int(save_mgr.call("get_lives"))
+	_life_lost_lbl.text = "-1  (%d/%d)" % [cur_lives, max_lives]
+
+
+func _retranslate_ui() -> void:
+	_update_reason_visuals()
 	if _cut_prog_lbl != null:
-		_cut_prog_lbl.text = tr("DEFEAT_CUT_PROGRESS")
-	if _retry_btn != null and _retry_btn.has_meta("label"):
-		(_retry_btn.get_meta("label") as Label).text = tr("HUD_RETRY")
-	if _extra_btn != null and _extra_btn.has_meta("label"):
-		(_extra_btn.get_meta("label") as Label).text = tr("DEFEAT_BTN_EXTRA_TIME")
-	if _menu_btn != null and _menu_btn.has_meta("label"):
-		(_menu_btn.get_meta("label") as Label).text = tr("HUD_MAIN_MENU")
-	if _subtitle_lbl != null and visible:
-		_subtitle_lbl.text = tr("DEFEAT_SUBTITLE_CLOSE") if (_progress_bar != null and _progress_bar.value >= NEAR_WIN_THRESHOLD * 100.0) else tr("DEFEAT_SUBTITLE_TRY_AGAIN")
-
-
-func _make_btn_style(tex: Texture2D) -> StyleBoxTexture:
-	var sb: StyleBoxTexture = StyleBoxTexture.new()
-	sb.texture = tex
-	sb.texture_margin_left = 18.0
-	sb.texture_margin_right = 18.0
-	sb.texture_margin_top = 18.0
-	sb.texture_margin_bottom = 18.0
-	sb.content_margin_left = 14.0
-	sb.content_margin_right = 14.0
-	return sb
+		_cut_prog_lbl.text = tr("DEFEAT_CUT_PROGRESS").to_upper()
+	if _menu_lbl != null:
+		_menu_lbl.text = tr("BTN_MENU").to_upper()
+	if _retry_lbl != null:
+		_retry_lbl.text = tr("HUD_RETRY").to_upper()
 
 
 func _make_icon(tex: Texture2D, icon_size: Vector2) -> TextureRect:
@@ -365,16 +517,17 @@ func _make_label(txt: String, font_size: int, color: Color) -> Label:
 	lbl.add_theme_font_override("font", _font)
 	lbl.add_theme_font_size_override("font_size", font_size)
 	lbl.add_theme_color_override("font_color", color)
-	lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
-	lbl.add_theme_constant_override("shadow_offset_y", 1)
+	lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.55))
+	lbl.add_theme_constant_override("shadow_offset_y", 2)
 	return lbl
 
 
 func _on_retry_pressed() -> void:
 	if _is_closing:
 		return
-	if AudioManager != null:
-		AudioManager.play_sfx("confirm")
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "confirm")
 	close()
 	retry_requested.emit()
 
@@ -382,16 +535,21 @@ func _on_retry_pressed() -> void:
 func _on_extra_pressed() -> void:
 	if _is_closing:
 		return
-	if AudioManager != null:
-		AudioManager.play_sfx("confirm")
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "confirm")
 	close()
-	extra_time_requested.emit()
+	if _current_reason == "robot_broken":
+		repair_robot_requested.emit()
+	else:
+		extra_time_requested.emit()
 
 
 func _on_menu_pressed() -> void:
 	if _is_closing:
 		return
-	if AudioManager != null:
-		AudioManager.play_sfx("confirm")
+	var audio_mgr: Node = get_node_or_null("/root/AudioManager")
+	if audio_mgr != null and audio_mgr.has_method("play_sfx"):
+		audio_mgr.call("play_sfx", "confirm")
 	close()
 	menu_requested.emit()

@@ -197,6 +197,9 @@ func _on_game_state_changed(new_state: int) -> void:
 	elif new_state == GameManager.GameState.GAME_OVER:
 		play_defeat_reaction()
 	elif new_state == GameManager.GameState.PLAYING:
+		_blade_penalty_cooldown = 1.8
+		if defeat_puff_particles != null:
+			defeat_puff_particles.emitting = false
 		reset_orientation_to_camera()
 		var blade_bar_node: Node3D = get_node_or_null("BladeProgressBar") as Node3D
 		if blade_bar_node != null:
@@ -347,27 +350,38 @@ func play_defeat_reaction() -> void:
 	velocity = Vector3.ZERO
 	input_direction = Vector2.ZERO
 
+	var blade_bar: Node3D = get_node_or_null("BladeProgressBar") as Node3D
+	if blade_bar != null:
+		blade_bar.visible = false
+
 	if robot_eyes != null:
 		robot_eyes.trigger_defeat_reaction()
 
 	if defeat_puff_particles != null:
+		defeat_puff_particles.one_shot = false
 		defeat_puff_particles.restart()
 		defeat_puff_particles.emitting = true
 
 	# Desacelera a lâmina suavemente até parar
 	var blade_decel_tween: Tween = create_tween()
-	blade_decel_tween.tween_property(self, "current_blade_speed", 0.0, 1.2).set_trans(Tween.TRANS_SINE)
+	blade_decel_tween.tween_property(self, "current_blade_speed", 0.0, 1.0).set_trans(Tween.TRANS_SINE)
 
-	# Postura cabisbaixa: inclina para a frente, abaixa suspensão e pende a cabeça
+	# Postura cabisbaixa em ângulo 3/4 frontal para a câmera em close-up
+	current_pitch = 0.0
+	current_roll = 0.0
+	shock_compression = 0.0
 	if _defeat_tween != null and _defeat_tween.is_valid():
 		_defeat_tween.kill()
 
 	_defeat_tween = create_tween().set_parallel(true)
 	if robot_body != null:
-		_defeat_tween.tween_property(robot_body, "rotation:x", deg_to_rad(10.0), 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		_defeat_tween.tween_property(robot_body, "position:y", initial_body_y - 0.05, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(robot_body, "rotation:y", deg_to_rad(-18.0), 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(robot_body, "rotation:x", deg_to_rad(10.0), 0.75).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(robot_body, "rotation:z", deg_to_rad(-4.0), 0.75).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(robot_body, "position:y", initial_body_y - 0.05, 0.75).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	if head_node != null:
-		_defeat_tween.tween_property(head_node, "rotation:x", deg_to_rad(18.0), 0.9).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(head_node, "rotation:y", deg_to_rad(6.0), 0.75).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_defeat_tween.tween_property(head_node, "rotation:x", deg_to_rad(18.0), 0.85).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _update_shader_globals() -> void:
 	var interact_radius: float = _cached_blade_radius + 0.95
@@ -866,12 +880,16 @@ func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO)
 		AudioManager.play_sfx("slap_rock")
 
 	# Penalidade na lâmina: dedução fixa de 1.000 XP com cooldown defensivo de 1.2s
+	# Se já estiver no Nível 1 ao bater na pedra, o robô quebra e dispara derrota imediata!
 	if _blade_penalty_cooldown <= 0.0:
 		_blade_penalty_cooldown = 1.2
+		var broke_at_lvl_1: bool = false
 		if UpgradeManager != null:
-			UpgradeManager.penalize_blade_hit()
+			broke_at_lvl_1 = UpgradeManager.penalize_blade_hit()
 		if blade_progress_bar != null:
 			blade_progress_bar.play_penalty_reaction()
+		if broke_at_lvl_1 and GameManager != null and GameManager.has_method("trigger_robot_broken"):
+			GameManager.trigger_robot_broken()
 
 func _sync_initial_overlaps() -> void:
 	if blade_area == null or not blade_area.monitoring:

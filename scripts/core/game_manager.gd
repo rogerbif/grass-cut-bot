@@ -15,6 +15,9 @@ signal goal_item_collected(plant_type: String, world_pos: Vector3)
 
 enum GameState { READY, PLAYING, PAUSED, VICTORY, GAME_OVER }
 
+const DEFEAT_REASON_TIME_UP: String = "time_up"
+const DEFEAT_REASON_ROBOT_BROKEN: String = "robot_broken"
+
 var current_state: GameState = GameState.READY
 var current_level: int = 1
 
@@ -23,6 +26,7 @@ var time_left: float = 90.0
 var level_coins: int = 0
 var _is_victory_pending: bool = false
 var _extra_time_used: bool = false
+var last_defeat_reason: String = DEFEAT_REASON_TIME_UP
 
 # Estrutura de metas: { "grass": {"target": 60, "current": 0}, "flower": ... }
 var goals: Dictionary = {}
@@ -100,7 +104,7 @@ func _process(delta: float) -> void:
 		if time_left < 0.0:
 			time_left = 0.0
 			time_updated.emit(time_left)
-			_check_game_over("Tempo esgotado!")
+			_check_game_over(DEFEAT_REASON_TIME_UP)
 		else:
 			time_updated.emit(time_left)
 
@@ -257,23 +261,64 @@ func get_remaining_goals() -> Dictionary:
 			result[String(plant_type)] = rem
 	return result
 
-## Permite usar o "Pegar Mais Tempo" apenas uma vez por tentativa e somente em derrota por tempo.
+## Retorna o resumo de todas as metas da fase na ordem de exibição: [{"plant_type": key, "current": cur, "target": tgt}]
+func get_goals_summary() -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	for plant_type: Variant in goals.keys():
+		var g: Dictionary = goals[plant_type] as Dictionary
+		var tgt: int = int(g.get("target", 0))
+		var cur: int = mini(int(g.get("current", 0)), tgt)
+		list.append({
+			"plant_type": String(plant_type),
+			"current": cur,
+			"target": tgt
+		})
+	return list
+
+## Permite usar a ação de continuar ("Pegar Mais Tempo" ou "Consertar Robô") apenas uma vez por tentativa.
 func can_grant_extra_time() -> bool:
 	return current_state == GameState.GAME_OVER and not _extra_time_used
 
-## Concede tempo extra e retoma a fase (ponto de integração futuro para anúncio recompensado).
+## Concede tempo extra e retoma a fase (restaurando a vida consumida na tentativa atual).
 func grant_extra_time(seconds: float) -> void:
 	if not can_grant_extra_time():
 		return
 	_extra_time_used = true
+	if SaveManager != null:
+		SaveManager.add_lives(1)
 	time_left = seconds
 	current_state = GameState.PLAYING
 	get_tree().paused = false
 	time_updated.emit(time_left)
 	state_changed.emit(current_state)
 
+## Conserta o robô quebrado no Nível 1 e retoma a fase (restaurando a vida consumida na tentativa atual).
+func repair_robot_and_continue() -> void:
+	if not can_grant_extra_time():
+		return
+	_extra_time_used = true
+	if SaveManager != null:
+		SaveManager.add_lives(1)
+	if time_left < 5.0:
+		time_left = 5.0
+	current_state = GameState.PLAYING
+	get_tree().paused = false
+	time_updated.emit(time_left)
+	state_changed.emit(current_state)
+
+## Dispara derrota imediata quando o robô quebra a lâmina ao bater em uma pedra no Nível 1.
+func trigger_robot_broken() -> void:
+	if current_state != GameState.PLAYING or _is_victory_pending:
+		return
+	_check_game_over(DEFEAT_REASON_ROBOT_BROKEN)
+
 func _check_game_over(reason: String) -> void:
+	if current_state == GameState.GAME_OVER or current_state == GameState.VICTORY:
+		return
 	current_state = GameState.GAME_OVER
+	last_defeat_reason = reason
+	if SaveManager != null:
+		SaveManager.consume_life()
 	if AudioManager != null:
 		AudioManager.stop_countdown_alert()
 		AudioManager.play_sfx("defeat")

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 94" width="600" height="94">
+  <defs>
+    <linearGradient id="bg_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d213d" stop-opacity="0.96"/>
+      <stop offset="50%" stop-color="#081529" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#061020" stop-opacity="0.99"/>
+    </linearGradient>
+    <linearGradient id="rim_cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#0095ff"/>
+      <stop offset="100%" stop-color="#00e5ff"/>
+    </linearGradient>
+    <linearGradient id="tab_cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f2ff"/>
+      <stop offset="100%" stop-color="#00b4d8"/>
+    </linearGradient>
+    <filter id="glow" x="-6%" y="-12%" width="112%" height="124%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000814" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#glow)">
+    <!-- Abas Superiores Ciano com Listras Técnicas -->
+    <polygon points="34,14 48,2 146,2 158,14" fill="url(#tab_cyan)"/>
+    <polygon points="442,14 454,2 552,2 566,14" fill="url(#tab_cyan)"/>
+    <!-- Listras nas abas superiores -->
+    <g fill="#06152d" opacity="0.75">
+      <polygon points="56,4 61,4 57,12 52,12"/>
+      <polygon points="65,4 70,4 66,12 61,12"/>
+      <polygon points="74,4 79,4 75,12 70,12"/>
+      <polygon points="83,4 88,4 84,12 79,12"/>
+      <polygon points="512,4 517,4 513,12 508,12"/>
+      <polygon points="521,4 526,4 522,12 517,12"/>
+      <polygon points="530,4 535,4 531,12 526,12"/>
+      <polygon points="539,4 544,4 540,12 535,12"/>
+    </g>
+
+    <!-- Abas Inferiores Escuras Chanfradas -->
+    <polygon points="42,80 54,90 160,90 172,80" fill="#051329" stroke="#00a8e8" stroke-width="1.5"/>
+    <polygon points="428,80 440,90 546,90 558,80" fill="#051329" stroke="#00a8e8" stroke-width="1.5"/>
+
+    <!-- Corpo Principal Octogonal Chanfrado -->
+    <polygon points="24,14 576,14 594,32 594,64 576,82 24,82 6,64 6,32"
+             fill="url(#bg_grad)"
+             stroke="url(#rim_cyan)"
+             stroke-width="2.6"
+             stroke-linejoin="round"/>
+
+    <!-- Contorno Interno Sutil -->
+    <polygon points="28,19 572,19 588,35 588,61 572,77 28,77 12,61 12,35"
+             fill="none"
+             stroke="#00d2ff"
+             stroke-width="1"
+             stroke-opacity="0.30"/>
+
+    <!-- Trilhas de Circuito Esquerda -->
+    <g stroke="#00d2ff" stroke-width="1.8" stroke-opacity="0.55" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20,42 52,42 62,32 88,32"/>
+      <polyline points="28,56 64,56 74,64 102,64"/>
+      <circle cx="88" cy="32" r="2.8" fill="#00f2ff"/>
+      <circle cx="102" cy="64" r="2.8" fill="#00f2ff"/>
+    </g>
+
+    <!-- Trilhas de Circuito Direita -->
+    <g stroke="#00d2ff" stroke-width="1.8" stroke-opacity="0.55" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="580,42 548,42 538,32 512,32"/>
+      <polyline points="572,56 536,56 526,64 498,64"/>
+      <circle cx="512" cy="32" r="2.8" fill="#00f2ff"/>
+      <circle cx="498" cy="64" r="2.8" fill="#00f2ff"/>
+    </g>
+  </g>
+</svg>

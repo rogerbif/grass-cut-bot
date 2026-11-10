@@ -53,6 +53,8 @@ func _ready() -> void:
 			gm.connect("camera_shake_requested", _on_shake_requested)
 		if gm.has_signal("level_won"):
 			gm.connect("level_won", _on_level_won)
+		if gm.has_signal("level_lost"):
+			gm.connect("level_lost", _on_level_lost)
 		if gm.has_signal("state_changed"):
 			gm.connect("state_changed", _on_state_changed)
 
@@ -95,6 +97,9 @@ func _on_state_changed(new_state: int) -> void:
 		reset_cam()
 
 func _on_level_won(_coins: int, _stars: int) -> void:
+	transition_to_victory_cam()
+
+func _on_level_lost(_reason: String) -> void:
 	transition_to_victory_cam()
 
 func transition_to_victory_cam() -> void:

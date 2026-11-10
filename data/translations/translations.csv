@@ -1,4 +1,4 @@
-﻿keys,pt_BR,en,es
+keys,pt_BR,en,es
 NAV_HOME,Início,Home,Inicio
 NAV_WORKSHOP,Oficina,Workshop,Taller
 NAV_HERBARIUM,Herbário,Herbarium,Herbario
@@ -39,6 +39,7 @@ HUD_MAIN_MENU,MENU INICIAL,MAIN MENU,MENÚ INICIAL
 HUD_NEXT_LEVEL,PRÓXIMA FASE,NEXT LEVEL,SIGUIENTE NIVEL
 HUD_VICTORY_TITLE,VITÓRIA!,VICTORY!,¡VICTORIA!
 HUD_DEFEAT_TITLE,TEMPO ESGOTADO!,TIME'S UP!,¡TIEMPO AGOTADO!
+HUD_DEFEAT_ROBOT_BROKEN,ROBÔ QUEBRADO!,ROBOT BROKEN!,¡ROBOT ROTO!
 HUD_GOAL_COMPLETED,Meta Concluída!,Goal Completed!,¡Objetivo Completado!
 HUD_LEVEL_LABEL,Fase %d,Level %d,Nivel %d
 HUD_LEVEL_TITLE,FASE %d,LEVEL %d,NIVEL %d
@@ -50,6 +51,10 @@ DEFEAT_CUT_PROGRESS,Progresso do Corte:,Mowing Progress:,Progreso del Corte:
 DEFEAT_SUBTITLE_CLOSE,Faltou pouco para concluir a fase!,Almost cleared the level!,¡Faltó poco para completar el nivel!
 DEFEAT_SUBTITLE_TRY_AGAIN,Continue tentando você consegue!,Keep trying you can do it!,¡Sigue intentando tú puedes!
 DEFEAT_BTN_EXTRA_TIME,Pegar Mais Tempo,Get Extra Time,Obtener Más Tiempo
+DEFEAT_BTN_REPAIR_ROBOT,Consertar Robô,Repair Robot,Reparar Robot
+STORE_REFILL_LIVES_TITLE,Recarga de Vidas (+5 Vidas),Lives Refill (+5 Lives),Recarga de Vidas (+5 Vidas)
+STORE_LIVES_REGEN_FMT,"Vidas: %d/%d • +1 em %02d:%02d","Lives: %d/%d • +1 in %02d:%02d","Vidas: %d/%d • +1 en %02d:%02d"
+LIVES_FULL,Vidas Cheias (5/5),Full Lives (5/5),Vidas Llenas (5/5)
 EXIT_MODAL_TITLE,SAIR DO JOGO?,EXIT GAME?,¿SALIR DEL JUEGO?
 EXIT_MODAL_MSG,"Seu progresso e moedas estão salvos. Deseja realmente sair?","Your progress and coins are saved. Do you really want to exit?","Tu progreso y monedas están guardados. ¿Realmente deseas salir?"
 EXIT_MODAL_CONTINUE,CONTINUAR JOGANDO,CONTINUE PLAYING,CONTINUAR JUGANDO

@@ -56,6 +56,8 @@ func _ready() -> void:
 
 	if SaveManager != null:
 		SaveManager.save_reset.connect(_on_save_reset)
+		if SaveManager.has_signal("lives_changed"):
+			SaveManager.lives_changed.connect(func(_cur: int, _max: int) -> void: _update_top_bar())
 
 	# Detecta fases e constrói o arquipélago 3D
 	_detect_levels_and_build_archipelago()
@@ -390,7 +392,13 @@ func _update_top_bar() -> void:
 	if coin_badge != null and UpgradeManager != null:
 		coin_badge.set_value_text(str(UpgradeManager.total_coins))
 	if life_badge != null:
-		life_badge.set_value_text("5 Max")
+		var cur_lives: int = 5
+		if SaveManager != null and SaveManager.has_method("get_lives"):
+			cur_lives = SaveManager.get_lives()
+		if cur_lives >= 5:
+			life_badge.set_value_text("5 Max")
+		else:
+			life_badge.set_value_text("%d/5" % cur_lives)
 
 func _on_badge_plus_pressed() -> void:
 	# Abre a aba da Loja (Store = 3) diretamente via bottom_nav
@@ -399,6 +407,13 @@ func _on_badge_plus_pressed() -> void:
 
 
 func _on_play_level_requested(lvl_to_play: int) -> void:
+	if SaveManager != null and SaveManager.has_method("get_lives") and SaveManager.get_lives() <= 0:
+		if AudioManager != null:
+			AudioManager.play_sfx("denied")
+		if bottom_nav != null and bottom_nav.has_method("select_tab"):
+			bottom_nav.call("select_tab", 3)
+		return
+
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	if GameManager != null:

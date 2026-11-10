@@ -117,6 +117,8 @@ func _ready() -> void:
 	if defeat_modal != null:
 		defeat_modal.connect("retry_requested", _on_restart_pressed)
 		defeat_modal.connect("extra_time_requested", _on_extra_time_requested)
+		if defeat_modal.has_signal("repair_robot_requested"):
+			defeat_modal.connect("repair_robot_requested", _on_repair_robot_requested)
 		defeat_modal.connect("menu_requested", _on_menu_pressed)
 
 	_connect_button($WorkshopModal/Panel/VBox/CloseBtn, _on_close_workshop_pressed)
@@ -393,6 +395,13 @@ func _on_resume_pressed() -> void:
 func _on_restart_pressed() -> void:
 	if _is_restarting:
 		return
+	if SaveManager != null and SaveManager.has_method("get_lives") and SaveManager.get_lives() <= 0:
+		if AudioManager != null:
+			AudioManager.play_sfx("denied")
+			AudioManager.stop_engine()
+		get_tree().paused = false
+		get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
+		return
 	_is_restarting = true
 	if top_bar != null:
 		top_bar.visible = true
@@ -487,7 +496,8 @@ func _on_level_lost(reason: String) -> void:
 	get_tree().create_timer(0.65, true, false, true).timeout.connect(func() -> void:
 		if GameManager.current_state != GameManager.GameState.GAME_OVER:
 			return
-		defeat_modal.call("open", GameManager.get_progress_ratio(), GameManager.get_remaining_goals(), GameManager.can_grant_extra_time())
+		var goals_summary: Array[Dictionary] = GameManager.get_goals_summary() if GameManager.has_method("get_goals_summary") else []
+		defeat_modal.call("open", reason, GameManager.get_progress_ratio(), goals_summary, GameManager.can_grant_extra_time())
 	)
 
 ## Placeholder de anúncio recompensado: concede tempo extra e retoma a fase (1 uso por tentativa).
@@ -498,6 +508,16 @@ func _on_extra_time_requested() -> void:
 		top_bar.visible = true
 	_last_displayed_total_seconds = -1
 	GameManager.grant_extra_time(DEFEAT_EXTRA_TIME_SECONDS)
+
+## Conserta o robô quebrado e retoma a fase (1 uso por tentativa).
+func _on_repair_robot_requested() -> void:
+	if not GameManager.can_grant_extra_time():
+		return
+	if top_bar != null:
+		top_bar.visible = true
+	_last_displayed_total_seconds = -1
+	if GameManager.has_method("repair_robot_and_continue"):
+		GameManager.repair_robot_and_continue()
 
 func _on_open_workshop_pressed() -> void:
 	if AudioManager != null:

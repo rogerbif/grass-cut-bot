@@ -7,20 +7,35 @@ signal save_loaded
 signal save_reset
 signal plant_harvested(species_key: String, new_count: int)
 signal milestone_claimed(species_key: String, milestone_level: int, reward: int)
+signal lives_changed(current_lives: int, max_lives: int)
 
 const SAVE_PATH: String = "user://savegame.json"
 const TEMP_PATH: String = "user://savegame.tmp"
 const BAK_PATH: String = "user://savegame.bak"
 const CURRENT_SAVE_VERSION: String = "1.0"
 
+const MAX_LIVES: int = 5
+const LIFE_REGEN_SECONDS: int = 1200 # 20 minutos por vida (1200 segundos)
+const LIFE_REFILL_COST_COINS: int = 1000
+
 var save_data: Dictionary = {}
 var is_initialized: bool = false
+var _life_regen_tick_accum: float = 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	load_game()
+	_refresh_lives_regen(true)
 	apply_saved_locale()
 	is_initialized = true
+
+func _process(delta: float) -> void:
+	if not is_initialized:
+		return
+	_life_regen_tick_accum += delta
+	if _life_regen_tick_accum >= 1.0:
+		_life_regen_tick_accum = 0.0
+		_refresh_lives_regen(true)
 
 func _notification(what: int) -> void:
 	# Persiste estado ao sair ou pausar no Android/Desktop
@@ -44,7 +59,9 @@ func get_default_save() -> Dictionary:
 		"player": {
 			"total_coins": 0,
 			"max_unlocked_level": 1,
-			"last_played_level": 1
+			"last_played_level": 1,
+			"lives": MAX_LIVES,
+			"last_life_timestamp": 0
 		},
 		"upgrades": {
 			"blade_level": 1,
@@ -443,3 +460,95 @@ func reset_to_defaults() -> void:
 
 	save_game()
 	save_reset.emit()
+	lives_changed.emit(MAX_LIVES, MAX_LIVES)
+
+# ==============================================================================
+# Sistema de 5 Vidas (Recarga Automática a cada 20 min + Compra na Loja)
+# ==============================================================================
+
+func _refresh_lives_regen(save_if_changed: bool = true) -> void:
+	var pl: Dictionary = save_data.get("player", {}) as Dictionary
+	var cur_lives: int = clampi(int(pl.get("lives", MAX_LIVES)), 0, MAX_LIVES)
+	var last_ts: int = int(pl.get("last_life_timestamp", 0))
+	var now_ts: int = int(Time.get_unix_time_from_system())
+
+	if cur_lives >= MAX_LIVES:
+		if last_ts != 0:
+			pl["lives"] = MAX_LIVES
+			pl["last_life_timestamp"] = 0
+			save_data["player"] = pl
+			if save_if_changed:
+				save_game()
+		return
+
+	if last_ts <= 0:
+		pl["last_life_timestamp"] = now_ts
+		save_data["player"] = pl
+		if save_if_changed:
+			save_game()
+		return
+
+	var elapsed: int = maxi(0, now_ts - last_ts)
+	if elapsed >= LIFE_REGEN_SECONDS:
+		var gained: int = int(floor(float(elapsed) / float(LIFE_REGEN_SECONDS)))
+		var new_lives: int = mini(MAX_LIVES, cur_lives + gained)
+		pl["lives"] = new_lives
+		if new_lives >= MAX_LIVES:
+			pl["last_life_timestamp"] = 0
+		else:
+			pl["last_life_timestamp"] = last_ts + (gained * LIFE_REGEN_SECONDS)
+		save_data["player"] = pl
+		if save_if_changed:
+			save_game()
+		lives_changed.emit(new_lives, MAX_LIVES)
+
+func get_lives() -> int:
+	_refresh_lives_regen(true)
+	var pl: Dictionary = save_data.get("player", {}) as Dictionary
+	return clampi(int(pl.get("lives", MAX_LIVES)), 0, MAX_LIVES)
+
+func get_seconds_to_next_life() -> int:
+	_refresh_lives_regen(false)
+	var pl: Dictionary = save_data.get("player", {}) as Dictionary
+	var cur_lives: int = clampi(int(pl.get("lives", MAX_LIVES)), 0, MAX_LIVES)
+	if cur_lives >= MAX_LIVES:
+		return 0
+	var last_ts: int = int(pl.get("last_life_timestamp", 0))
+	var now_ts: int = int(Time.get_unix_time_from_system())
+	if last_ts <= 0:
+		return LIFE_REGEN_SECONDS
+	var elapsed: int = maxi(0, now_ts - last_ts)
+	return maxi(0, LIFE_REGEN_SECONDS - elapsed)
+
+func consume_life() -> bool:
+	_refresh_lives_regen(false)
+	var pl: Dictionary = save_data.get("player", {}) as Dictionary
+	var cur_lives: int = clampi(int(pl.get("lives", MAX_LIVES)), 0, MAX_LIVES)
+	if cur_lives <= 0:
+		return false
+	var was_full: bool = (cur_lives >= MAX_LIVES)
+	cur_lives -= 1
+	pl["lives"] = cur_lives
+	if was_full or int(pl.get("last_life_timestamp", 0)) <= 0:
+		pl["last_life_timestamp"] = int(Time.get_unix_time_from_system())
+	save_data["player"] = pl
+	save_game()
+	lives_changed.emit(cur_lives, MAX_LIVES)
+	return true
+
+func add_lives(amount: int) -> void:
+	if amount <= 0:
+		return
+	_refresh_lives_regen(false)
+	var pl: Dictionary = save_data.get("player", {}) as Dictionary
+	var cur_lives: int = clampi(int(pl.get("lives", MAX_LIVES)), 0, MAX_LIVES)
+	var new_lives: int = clampi(cur_lives + amount, 0, MAX_LIVES)
+	pl["lives"] = new_lives
+	if new_lives >= MAX_LIVES:
+		pl["last_life_timestamp"] = 0
+	save_data["player"] = pl
+	save_game()
+	lives_changed.emit(new_lives, MAX_LIVES)
+
+func refill_lives_full() -> void:
+	add_lives(MAX_LIVES)

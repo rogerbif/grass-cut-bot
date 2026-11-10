@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 76" width="620" height="76">
+  <defs>
+    <linearGradient id="goals_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d213d" stop-opacity="0.96"/>
+      <stop offset="100%" stop-color="#071224" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="goals_rim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f2fe"/>
+      <stop offset="50%" stop-color="#00a8e8"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+    <filter id="goals_glow" x="-5%" y="-12%" width="110%" height="124%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000814" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#goals_glow)">
+    <!-- Abas Superiores Ciano com Listras -->
+    <polygon points="36,12 48,2 146,2 158,12" fill="#00f2fe"/>
+    <polygon points="462,12 474,2 572,2 584,12" fill="#00f2fe"/>
+    <g fill="#06152d" opacity="0.78">
+      <polygon points="58,4 63,4 59,10 54,10"/>
+      <polygon points="67,4 72,4 68,10 63,10"/>
+      <polygon points="76,4 81,4 77,10 72,10"/>
+      <polygon points="85,4 90,4 86,10 81,10"/>
+      <polygon points="530,4 535,4 531,10 526,10"/>
+      <polygon points="539,4 544,4 540,10 535,10"/>
+      <polygon points="548,4 553,4 549,10 544,10"/>
+      <polygon points="557,4 562,4 558,10 553,10"/>
+    </g>
+
+    <!-- Placa Principal Octogonal Chanfrada -->
+    <polygon points="24,12 596,12 614,30 614,52 596,70 24,70 6,52 6,30"
+             fill="url(#goals_bg)"
+             stroke="url(#goals_rim)"
+             stroke-width="2.5"
+             stroke-linejoin="round"/>
+
+    <!-- Linha de Brilho Superior -->
+    <line x1="30" y1="16" x2="590" y2="16" stroke="#80ffdb" stroke-width="1" opacity="0.28"/>
+  </g>
+</svg>

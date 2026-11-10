@@ -38,6 +38,7 @@ uniform float roughness : hint_range(0.0, 1.0) = 0.90;
 uniform float specular : hint_range(0.0, 1.0) = 0.10;
 
 varying vec3 v_geo_normal_view;
+varying float v_leaf_h;
 
 void vertex() {
 	// Converte para coordenadas globais de mundo
@@ -46,7 +47,11 @@ void vertex() {
 	// Altura normalizada da folha: 0.0 na raiz até 1.0 na ponta
 	// Se invert_height for true (como no modelo wheat_01.glb), inverte o UV.y para ancorar a raiz no solo
 	float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
+	if (invert_height && COLOR.r > 0.001) {
+		raw_h = COLOR.r;
+	}
 	float h = clamp(raw_h, 0.0, 1.0);
+	v_leaf_h = h;
 
 	// A base da folha fica 100% estática, agindo rigorosamente como uma dobradiça/eixo na raiz.
 	// Vértices abaixo de 6% de altura possuem deslocamento rigorosamente zero.
@@ -128,11 +133,9 @@ void vertex() {
 
 void fragment() {
 	// Gradiente vertical de altura foliar (Base escura visível no corpo inferior -> Topo iluminado na ponta)
-	// Se a malha possuir cores de vértice assadas (ex: Trigo com gradiente folha a folha), utiliza COLOR.r
-	float leaf_h = (COLOR.a > 0.001) ? COLOR.r : (invert_height ? (1.0 - UV.y) : UV.y);
-	float h = clamp(leaf_h, 0.0, 1.0);
-	// Curva suave que mantém color_base visível na inserção da folha e sobe para color_light na ponta
-	float grad_t = (COLOR.a > 0.001) ? smoothstep(0.05, 0.95, h) : smoothstep(0.10, 0.92, h * h);
+	float h = clamp(v_leaf_h, 0.0, 1.0);
+	// Curva suave que mantém color_base rica na raiz/inserção da folha e sobe gradualmente para color_light na ponta
+	float grad_t = smoothstep(0.04, 0.88, h);
 	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
 	if (OUTPUT_IS_SRGB) {
 		// Compensa o mix Linear + ACES Tonemap do pipeline Mobile quando em gl_compatibility (Web)

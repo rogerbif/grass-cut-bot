@@ -133,7 +133,7 @@ Ao colidir contra obstáculos sólidos (como rochas do grupo `"obstacles"`), sej
 4. **Compressão da Suspensão:** O chassi sofre afundamento vertical repentino (`shock_compression = -0.045`), transmitindo o recuo físico da batida mecânica.
 5. **Emissão de Faíscas no Ponto de Contato:** O nó `SparkParticles` é reposicionado exatamente no ponto de fricção dente-de-serra contra rocha (`top_level = true`) e ativado instantaneamente.
 6. **Vibração Tátil e Tremer de Câmera:** O `GameManager` emite vibração de 60ms (`Input.vibrate_handheld(60)`) e solicita um camera shake de intensidade 0.35 por 0.2s.
-7. **Penalidade de XP por Colisão (-1.000 XP):** A colisão aciona `UpgradeManager.penalize_blade_hit(1000.0)` com cooldown defensivo de 1.2s. O bot perde exatamente 1.000 XP acumulados. Se a perda exceder o XP do nível atual, sofre despromoção progressiva; se estiver no Nível 10 MAX, desce para o Nível 9 com 500 XP; no Nível 1, apenas tem seu XP zerado.
+7. **Penalidade de XP por Colisão (-1.000 XP) e Quebra no Nível 1 ("Última Chance"):** A colisão aciona `UpgradeManager.penalize_blade_hit(1000.0)` com cooldown defensivo de 1.2s. Se o robô estiver no Nível 2 ou superior, perde 1.000 XP e, caso alcance o Nível 1, trava no Nível 1 com 0 XP como "última chance" sem quebrar na mesma batida. Se o robô **já estiver no Nível 1** ao colidir com a rocha, o Nível 1 quebra (`penalize_blade_hit()` retorna `true`), disparando derrota imediata por `"robot_broken"` (`GameManager.trigger_robot_broken()`) e descontando 1 das 5 vidas.
 
 ---
 

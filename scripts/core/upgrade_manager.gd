@@ -128,9 +128,22 @@ func add_blade_xp(amount: float) -> void:
 	if leveled_up and SaveManager != null:
 		SaveManager.save_game()
 
+## Aplica a penalidade de colisão na lâmina.
+## Retorna true se o robô já estava no Nível 1 ao bater e portanto QUEBROU, ou false se sobreviveu (desceu até o Nível 1 como última chance).
 func penalize_blade_hit(penalty_amount: float = BLADE_ROCK_PENALTY_XP) -> bool:
-	var remaining_penalty: float = penalty_amount
 	var old_level: int = blade_level
+
+	# Se já estava no Nível 1 ao colidir na pedra, o Nível 1 quebra e causa derrota!
+	if old_level <= 1:
+		blade_level = 1
+		blade_xp = 0.0
+		blade_penalized.emit(blade_level)
+		blade_xp_changed.emit(blade_xp, get_xp_required_for_next_level(), get_progress_ratio())
+		if SaveManager != null:
+			SaveManager.save_game()
+		return true
+
+	var remaining_penalty: float = penalty_amount
 
 	# Se estiver no nível máximo (10), transiciona para o nível 9 com barra cheia antes de descontar
 	if blade_level >= MAX_BLADE_LEVEL:
@@ -146,9 +159,13 @@ func penalize_blade_hit(penalty_amount: float = BLADE_ROCK_PENALTY_XP) -> bool:
 			blade_xp = 0.0
 			if blade_level > 1:
 				blade_level -= 1
-				blade_xp = get_xp_required_for_next_level()
+				if blade_level == 1:
+					# Trava no Nível 1 com 0 XP como "última chance" sem quebrar na mesma batida
+					blade_xp = 0.0
+					remaining_penalty = 0.0
+				else:
+					blade_xp = get_xp_required_for_next_level()
 			else:
-				# Nível 1 com XP esgotado, cessa dedução
 				blade_xp = 0.0
 				remaining_penalty = 0.0
 
@@ -159,7 +176,7 @@ func penalize_blade_hit(penalty_amount: float = BLADE_ROCK_PENALTY_XP) -> bool:
 
 	if SaveManager != null:
 		SaveManager.save_game()
-	return true
+	return false
 
 # Valores de Gameplay Calibrados
 const MAX_BLADE_RADIUS: float = 1.40

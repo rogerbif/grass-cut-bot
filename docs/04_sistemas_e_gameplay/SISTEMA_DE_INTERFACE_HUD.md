@@ -61,12 +61,16 @@ Todos os modais rodam com `process_mode = PROCESS_MODE_ALWAYS` para continuar re
   - Linha superior (`SecondaryRow`, `separation = 24`): botões `MENU` (`btn_menu_secondary.svg`, `268x66` px, azul-marinho com borda ciano) e `REPETIR` (`btn_repeat_secondary.svg`, `268x66` px, azul-violeta com borda roxa), alinhados exatamente com a largura total do botão inferior (`268 + 24 + 268 = 560px`).
   - Linha inferior: botão heroico verde-esmeralda neon `PRÓXIMA FASE ▶` (`btn_next_level.svg`, `560x96` px) com colchetes tecnológicos externos e texto em azul-petróleo escuro.
 
-### 2.3 Modal de Derrota Cyberpunk Neon (`DefeatModal`)
-- Componente modular `scenes/ui/defeat_modal.tscn` + `scripts/ui/defeat_modal.gd` (`process_mode = ALWAYS`, UI construída programaticamente, SVGs em `assets/ui/defeat/`), instanciado no `hud.tscn` e aberto por `HUD._on_level_lost()` após o delay de 0.65s (o robô mantém a reação expressiva de derrota: postura cabisbaixa, olhos `SAD`, fumaça e inércia da lâmina).
-- Card chanfrado com borda vermelha/roxa neon, pulso sutil de brilho e animação **Grow + Fade In / Shrink + Fade Out**. O toque no backdrop **não fecha** (derrota exige decisão).
-- Conteúdo dinâmico: título `Tempo Esgotado!` com cronômetro vermelho e alerta; subtítulo `Faltou pouco para concluir a fase!` (progresso ≥ 70%) ou `Continue tentando, você consegue!`; painel **Progresso do Corte** (% via `GameManager.get_progress_ratio()`, barra gradiente rosa→amarelo) e metas restantes com ícones da Coleção (`GameManager.get_remaining_goals()` + `GoalIconFactory`).
-- Ações: `Repetir Fase` (reinicia), `Pegar Mais Tempo` (placeholder de anúncio recompensado: `GameManager.grant_extra_time(15.0)` retoma a fase com +15s, **1 uso por tentativa** via `can_grant_extra_time()`; oculto após usado) e `Menu Inicial`.
-- Háptico curto (`Input.vibrate_handheld(40)`) ao abrir, respeitando `vib_enabled`.
+### 2.3 Tela de Derrota Flutuante Cyber-Mecha (`DefeatModal`)
+- Componente modular `scenes/ui/defeat_modal.tscn` + `scripts/ui/defeat_modal.gd` (`process_mode = ALWAYS`, UI construída programaticamente, SVGs em `assets/ui/defeat/`), instanciado no `hud.tscn` e aberto por `HUD._on_level_lost(reason)` após o delay de 0.65s.
+- **Close-Up 3D sem Card Opaco:** Assim como na Vitória, a câmera aproxima-se suavemente do robô (`transition_to_victory_cam()`), a `BladeProgressBar3D` é ocultada e o centro da tela fica 100% livre mostrando o robô cabisbaixo em ângulo 3/4, olhos de LED chorando (`SAD` com gotas de lágrima em `eyes_atlas.svg`), fumaça contínua (`DefeatPuffParticles`) e lâmina desacelerando.
+- **3 Placas Superiores Flutuantes (`TopCluster`):**
+  1. **Banner de Título (`banner_defeat_title.svg`):** Alterna dinamicamente entre `TEMPO ESGOTADO!` (ícone `icon_stopwatch_red.svg`) quando `reason == "time_up"` e `ROBÔ QUEBRADO!` (ícone `icon_robot_broken_red.svg`) quando `reason == "robot_broken"`.
+  2. **Placa de Progresso do Corte (`banner_defeat_progress.svg`):** Moldura chanfrada com colchetes rosa-neon e circuito ciano, exibindo `« PROGRESSO DO CORTE: XX% »` e barra arredondada rosa com pontos digitais.
+  3. **Placa de Objetivos (`banner_defeat_goals.svg`):** Exibe todas as metas da fase lado a lado com ícone da Coleção e formato `atual / total` (ex: `54 / 60`, `88 / 100`, `55 / 70`), acompanhada abaixo pelo indicador de perda de vida (`❤️ -1 (X/5)`).
+- **Barra de Ações Inferior Simétrica (`BottomBar`):**
+  - Linha secundária (`SecondaryHBox`): botão esquerdo `MENU` (`btn_menu_secondary.svg`) e botão direito `PEGAR MAIS TEMPO` (+15s na derrota por tempo) ou `CONSERTAR ROBÔ` (restaura o robô na derrota por quebra), limitado a 1 continue por tentativa (`can_grant_extra_time()`), devolvendo a vida consumida na tentativa atual.
+  - Linha principal: botão heroico verde-esmeralda neon `REINICIAR ↻` (`btn_next_level.svg` + `icon_refresh_dark.svg`).
 
 ---
 ## 3. Menu Inicial / Hub Principal (`res://scenes/menu/main_menu.tscn`)
