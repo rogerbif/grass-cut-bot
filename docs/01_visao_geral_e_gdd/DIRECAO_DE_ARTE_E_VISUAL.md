@@ -34,7 +34,7 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
 | **Grama Vermelha Rubi** | `#F25459` / `#85262B` | 🔴 Vermelho Pastel Suave | Variação calma para zonas quentes. |
 | **Grama Preta Vulcânica** | `#1C1C21` / `#0D0D10` | ⚫ Grafite Escuro | Grama estilizada para cenários dramáticos. |
 | **Piso Aparado (Cortado)** | `#2E6930` / `#1B5E20` | 🟩 Verde Profundo | Revelado após a passagem da serra (sensação de gramado limpo). |
-| **Trigo Maduro (Meta 2x)** | `#FFA000` / `#FFB300` | 🌾 Dourado Ouro | Vegetação resistente de 2 golpes com maior valor e cota. |
+| **Trigo Maduro (Meta 2x)** | `#B39E2E` / `#45260A` | 🌾 Dourado Âmbar Encorpado | Vegetação resistente de 2 golpes com caule central contínuo e espiga em espinha de peixe (Melhorias 225 e 226). |
 | **Falésia e Borda da Ilha** | `#BE6D40` / `#773E1E` | 🏖️ Terracota Quente | Delimitação da ilha com contraste acolhedor contra o mar. |
 | **Flores do Campo (Nobre)** | `#E91E63` / `#C2185B` | 🌸 Magenta Vibrante | Vegetação nobre de alto valor econômico (5 moedas). |
 | **Carcaça do Robô** | `#F5A623` / `#F7A81B` | 🟨 Amarelo Industrial | Carcaça externa em ABS/Policarbonato (cabeça, paralamas, deck). |
@@ -68,10 +68,11 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
   - `color_light = Color(0.42, 0.88, 0.46)` (Grama verde) / Paletas dedicadas para Amarela, Azul, Roxa, Branca, Vermelha, Preta e Trigo
   - `color_base = Color(0.10, 0.30, 0.15)`
   - `color_shadow = Color(0.18, 0.50, 0.25)`
-  - `rim_color = Color(0.85, 1.00, 0.65)`
+  - **Trigo Maduro (interactive_wheat_material.tres):** `color_light = Color(0.70, 0.62, 0.18)`, `color_base = Color(0.27, 0.15, 0.04)`, `color_shadow = Color(0.48, 0.32, 0.08)` (-30% de brilho para tom mel dourado maduro sem superexposição Toon).
+  - `rim_color = Color(0.85, 1.00, 0.65)` (Grama) / `Color(0.70, 0.66, 0.49)` (Trigo)
   - `toon_ramp_offset = 0.50`
   - `toon_ramp_smoothness = 0.28`
-  - `vertical_gradient_mix = 0.85`
+  - `vertical_gradient_mix = 0.85` (Grama) / `0.95` (Trigo)
   - `use_rim = false`
   - `roughness = 0.90`
 - **Solo da Ilha (Island Ground Canônico):**
