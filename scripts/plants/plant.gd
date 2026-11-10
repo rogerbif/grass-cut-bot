@@ -160,35 +160,40 @@ static func _ensure_particle_meshes() -> void:
 			st.set_normal(n); st.set_uv(Vector2(0.5 + 0.5 * cos(a1), 0.5 + 0.5 * sin(a1))); st.add_vertex(Vector3(cos(a1) * r, sin(a1) * r, 0.0))
 		_circle_mesh = st.commit()
 
-	# Malha 3D de pedaço chanfrado de lâmina de grama (cut_leaf_piece)
+	# Malha 3D de pedaço chanfrado de lâmina de grama picada (deitada no plano XZ, estilo pétalas)
 	if _grass_blade_mesh == null:
-		if ResourceLoader.exists("res://assets/models/cut_leaf_piece.obj"):
-			var loaded_res = load("res://assets/models/cut_leaf_piece.obj")
-			if loaded_res is Mesh:
-				_grass_blade_mesh = loaded_res as Mesh
-		if _grass_blade_mesh == null:
-			var st: SurfaceTool = SurfaceTool.new()
-			st.begin(Mesh.PRIMITIVE_TRIANGLES)
-			var n: Vector3 = Vector3(0.0, 0.0, 1.0)
-			var v0 := Vector3(-0.055, -0.22, 0.0)
-			var v1 := Vector3(0.050, -0.19, 0.0)
-			var v2 := Vector3(0.040, 0.02, 0.012)
-			var v3 := Vector3(-0.040, 0.02, -0.012)
-			var v4 := Vector3(0.005, 0.26, 0.0)
-			st.set_normal(n); st.add_vertex(v0); st.add_vertex(v1); st.add_vertex(v2)
-			st.set_normal(n); st.add_vertex(v0); st.add_vertex(v2); st.add_vertex(v3)
-			st.set_normal(n); st.add_vertex(v3); st.add_vertex(v2); st.add_vertex(v4)
-			_grass_blade_mesh = st.commit()
+		var st: SurfaceTool = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var n_up: Vector3 = Vector3(0.0, 1.0, 0.0)
+		# Apara de meio de folha dobrada com vinco central (comprimento ~0.12m, largura ~0.03m)
+		var c0 := Vector3(0.0, 0.005, -0.060)
+		var c1 := Vector3(0.0, 0.005, 0.060)
+		var l0 := Vector3(-0.015, 0.0, -0.055)
+		var l1 := Vector3(-0.013, 0.0, 0.055)
+		var r0 := Vector3(0.015, 0.0, -0.055)
+		var r1 := Vector3(0.013, 0.0, 0.055)
+		# Aba esquerda
+		st.set_normal(n_up); st.add_vertex(l0); st.add_vertex(c0); st.add_vertex(c1)
+		st.set_normal(n_up); st.add_vertex(l0); st.add_vertex(c1); st.add_vertex(l1)
+		# Aba direita
+		st.set_normal(n_up); st.add_vertex(c0); st.add_vertex(r0); st.add_vertex(r1)
+		st.set_normal(n_up); st.add_vertex(c0); st.add_vertex(r1); st.add_vertex(c1)
+		_grass_blade_mesh = st.commit()
 
-	# Ponta menor chanfrada de folha de grama
+	# Ponta menor chanfrada de folha picada (deitada no plano XZ)
 	if _grass_blade_tip_mesh == null:
 		var st: SurfaceTool = SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var n: Vector3 = Vector3(0.0, 0.0, 1.0)
-		var t0 := Vector3(-0.045, -0.12, -0.008)
-		var t1 := Vector3(0.045, -0.12, 0.008)
-		var t2 := Vector3(0.0, 0.18, 0.0)
-		st.set_normal(n); st.add_vertex(t0); st.add_vertex(t1); st.add_vertex(t2)
+		var n_up: Vector3 = Vector3(0.0, 1.0, 0.0)
+		# Ponta triangular afilada com vinco (comprimento ~0.09m, largura ~0.024m)
+		var tb0 := Vector3(0.0, 0.004, -0.045)
+		var tl0 := Vector3(-0.012, 0.0, -0.045)
+		var tr0 := Vector3(0.012, 0.0, -0.045)
+		var tip := Vector3(0.0, 0.002, 0.045)
+		# Aba esquerda da ponta
+		st.set_normal(n_up); st.add_vertex(tl0); st.add_vertex(tb0); st.add_vertex(tip)
+		# Aba direita da ponta
+		st.set_normal(n_up); st.add_vertex(tb0); st.add_vertex(tr0); st.add_vertex(tip)
 		_grass_blade_tip_mesh = st.commit()
 
 static func get_flower_colors(flower_type: String) -> Dictionary:
@@ -555,10 +560,10 @@ static func _init_particle_pool(scene_root: Node) -> void:
 
 	if _scale_curve == null:
 		_scale_curve = Curve.new()
-		_scale_curve.add_point(Vector2(0.0, 0.75))
-		_scale_curve.add_point(Vector2(0.12, 1.15))
-		_scale_curve.add_point(Vector2(0.65, 0.95))
-		_scale_curve.add_point(Vector2(1.0, 0.0), -3.0, 0.0)
+		_scale_curve.add_point(Vector2(0.0, 0.90))
+		_scale_curve.add_point(Vector2(0.15, 1.05))
+		_scale_curve.add_point(Vector2(0.72, 1.00))
+		_scale_curve.add_point(Vector2(1.0, 0.0), -2.8, 0.0)
 
 	for i: int in range(POOL_SIZE):
 		var p: CPUParticles3D = CPUParticles3D.new()
@@ -567,30 +572,30 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.emitting = false
 		p.amount = 10
-		p.lifetime = 0.85
+		p.lifetime = 0.72
 		p.one_shot = true
 		p.explosiveness = 0.95
 		p.mesh = _triangle_mesh
 		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
 		p.emission_sphere_radius = 0.16
-		p.particle_flag_rotate_y = false # Rotação 3D livre / tumbling
+		p.particle_flag_rotate_y = false
 		p.direction = Vector3(0.0, 1.0, 0.0)
-		p.spread = 78.0
-		p.gravity = Vector3(0.0, -8.2, 0.0) # Arco parabólico fluido e gracioso
-		p.initial_velocity_min = 2.8
-		p.initial_velocity_max = 5.2
-		p.angular_velocity_min = -540.0
-		p.angular_velocity_max = 540.0
+		p.spread = 72.0
+		p.gravity = Vector3(0.0, -9.8, 0.0) # Arco parabólico fluido e dinâmico (-20% altura de voo)
+		p.initial_velocity_min = 2.2
+		p.initial_velocity_max = 4.1
+		p.angular_velocity_min = -280.0
+		p.angular_velocity_max = 280.0
 		p.angle_min = -180.0
 		p.angle_max = 180.0
-		p.radial_accel_min = 1.4
-		p.radial_accel_max = 3.6
-		p.tangential_accel_min = -2.2
-		p.tangential_accel_max = 2.2
-		p.damping_min = 0.8
-		p.damping_max = 2.0
-		p.scale_amount_min = 1.15
-		p.scale_amount_max = 1.85
+		p.radial_accel_min = 1.2
+		p.radial_accel_max = 3.0
+		p.tangential_accel_min = -1.8
+		p.tangential_accel_max = 1.8
+		p.damping_min = 0.6
+		p.damping_max = 1.8
+		p.scale_amount_min = 0.85
+		p.scale_amount_max = 1.15
 		p.scale_amount_curve = _scale_curve
 		scene_root.add_child(p)
 		_particle_pool.append(p)

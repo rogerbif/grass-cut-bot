@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cyber_res_badge_01"]
+[gd_scene load_steps=5 format=3 uid="uid://cyber_res_badge_01"]
 
 [ext_resource type="Script" path="res://scripts/ui/cyber_resource_badge.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/topbar/btn_plus_square.svg" id="2_plus_normal"]
-[ext_resource type="Texture2D" path="res://assets/ui/topbar/btn_plus_square_pressed.svg" id="3_plus_pressed"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_plus.svg" id="2_plus"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
 
@@ -10,28 +9,46 @@
 font_names = PackedStringArray("Segoe UI", "Arial Black", "Montserrat", "sans-serif")
 font_weight = 900
 
-[node name="CyberResourceBadge" type="PanelContainer"]
-custom_minimum_size = Vector2(140, 52)
-offset_right = 140.0
+[node name="CyberResourceBadge" type="Button"]
+custom_minimum_size = Vector2(144, 52)
+offset_right = 144.0
 offset_bottom = 52.0
-theme_override_styles/panel = SubResource("StyleBoxEmpty_none")
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_none")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_none")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_none")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_none")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_none")
+flat = true
 script = ExtResource("1_script")
 
 [node name="Background" type="TextureRect" parent="."]
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Margin" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 8
+theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 4
 
 [node name="HBox" type="HBoxContainer" parent="Margin"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 8
 alignment = 1
 
@@ -47,6 +64,7 @@ stretch_mode = 5
 [node name="ValueLabel" type="Label" parent="Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
 theme_override_constants/shadow_offset_y = 1
@@ -55,13 +73,12 @@ theme_override_font_sizes/font_size = 23
 text = "0"
 vertical_alignment = 1
 
-[node name="BtnPlus" type="TextureButton" parent="Margin/HBox"]
-custom_minimum_size = Vector2(32, 32)
+[node name="PlusIcon" type="TextureRect" parent="Margin/HBox"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-focus_mode = 0
-texture_normal = ExtResource("2_plus_normal")
-texture_pressed = ExtResource("3_plus_pressed")
-ignore_texture_size = true
+mouse_filter = 2
+texture = ExtResource("2_plus")
+expand_mode = 1
 stretch_mode = 5
