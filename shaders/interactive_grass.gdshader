@@ -124,11 +124,15 @@ void vertex() {
 		VERTEX.y -= power * interact_power * 0.14 * bend_factor;
 	}
 
-	// Normal 3D radial por folha (usando dir_fwd horizontal assado em 360° + componente vertical)
-	// Garante que dentro de cada tufo haja folhas claramente iluminadas (color_light) e folhas sombreadas (color_shadow).
-	vec3 world_blade_dir = normalize((MODEL_MATRIX * vec4(dir_fwd, 0.0)).xyz);
-	vec3 blade_normal_world = normalize(mix(vec3(0.0, 1.0, 0.0), world_blade_dir, 0.80));
-	v_geo_normal_view = normalize((VIEW_MATRIX * vec4(blade_normal_world, 0.0)).xyz);
+	// Normal 3D: para o trigo (invert_height == true), preserva as normais geométricas reais dos grãos e aristas;
+	// para grama, utiliza normal radial folha a folha em 360°.
+	if (invert_height) {
+		v_geo_normal_view = normalize((VIEW_MATRIX * vec4((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz, 0.0)).xyz);
+	} else {
+		vec3 world_blade_dir = normalize((MODEL_MATRIX * vec4(dir_fwd, 0.0)).xyz);
+		vec3 blade_normal_world = normalize(mix(vec3(0.0, 1.0, 0.0), world_blade_dir, 0.80));
+		v_geo_normal_view = normalize((VIEW_MATRIX * vec4(blade_normal_world, 0.0)).xyz);
+	}
 }
 
 void fragment() {

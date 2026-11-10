@@ -37,3 +37,6 @@ package-lock.json
 # Arquivos de teste temporários na raiz
 test_*.png
 test_*.png.import
+
+__pycache__/
+*.pyc

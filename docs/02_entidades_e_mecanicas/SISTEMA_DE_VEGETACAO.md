@@ -191,3 +191,7 @@ As aparas de corte utilizam o pool _particle_pool em `Plant` (scripts/plants/pla
 O shader espacial interactive_grass.gdshader calcula a elevação contínua folha a folha no espaço UV (aw_h = invert_height ? (1.0 - UV.y) : UV.y) desacoplada da fase de balanço assada no canal R.
 - **Interpolação de Altura:** A curva smoothstep(0.04, 0.88, v_leaf_h) aplica \%$ de color_base nas raízes e inserção no solo, transicionando organicamente para color_light no ápice.
 - **Volume e Contraste 3D:** Cada folha do tufo possui separação e profundidade visual, eliminando o visual plano monocromático e ancorando a vegetação com sombras ricas no solo.
+### I. Espiga de Trigo 3D em Espinha de Peixe (Melhoria 222)
+A malha wheat_01.glb conta com espiga 100% geométrica em 3D Low Poly (308 vértices e 299 polígonos):
+- **Anatomia em Escama:** Ráquis dorsal central de .80\text{m}$ a .12\text{m}$, 11 níveis de grãos diamantados sobrepostos em pares alternados e aristas superiores.
+- **Iluminação 3D Facetada:** O shader interactive_grass.gdshader preserva as normais geométricas reais da espiga quando invert_height == true, destacando individualmente cada semente ao sol com fendas sombreadas em tom âmbar quente.
