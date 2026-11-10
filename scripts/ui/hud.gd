@@ -203,14 +203,14 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_theme_constant_override("margin_left", 4)
 	margin.add_theme_constant_override("margin_right", 4)
-	margin.add_theme_constant_override("margin_top", 3)
-	margin.add_theme_constant_override("margin_bottom", 3)
+	margin.add_theme_constant_override("margin_top", 6)
+	margin.add_theme_constant_override("margin_bottom", 6)
 	card_panel.add_child(margin)
 
 	var vbox: VBoxContainer = VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 1)
+	vbox.add_theme_constant_override("separation", -5 if target < 100 else 1)
 
 	# Ilustração botânica aumentada para preencher a área indicada do card (41px -> 56px)
 	var illus_container: Control = GoalIconFactory.build_goal_icon(plant_type, 56.0)
