@@ -203,6 +203,18 @@ static func get_all_species() -> Array[Dictionary]:
 			"milestones": FLOWER_MILESTONES
 		},
 		{
+			"key": "flower_gerbera",
+			"category": "flower",
+			"name": "Gérbera Tropical",
+			"icon": "🌺",
+			"color": Color(1.0, 0.35, 0.15, 1.0),
+			"origin_level": 11,
+			"hits": 3,
+			"reward_coins": 5,
+			"desc": "Flor tropical vibrante de pétalas abertas e miolo solar, abundante nos vales e clareiras.",
+			"milestones": FLOWER_MILESTONES
+		},
+		{
 			"key": "flower_bed",
 			"category": "flower",
 			"name": "Canteiro de Flores Mistas",

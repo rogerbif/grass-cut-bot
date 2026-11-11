@@ -667,6 +667,8 @@ func _ensure_3d_veg_built() -> void:
 				mm.mesh = VegetationGrid._flower_sunflower_mesh
 			elif v_type.begins_with("flower_tulip"):
 				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_tulip_mesh)
+			elif v_type.begins_with("flower_gerbera"):
+				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_gerbera_mesh)
 			elif v_type.begins_with("flower_bed"):
 				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_bed_mesh)
 			else:

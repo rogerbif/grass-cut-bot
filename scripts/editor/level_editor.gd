@@ -16,6 +16,7 @@ const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
 const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
 const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tulip.tscn")
+const FLOWER_GERBERA_SCENE: PackedScene = preload("res://scenes/plants/flower_gerbera.tscn")
 const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 const WHEAT_SCENE: PackedScene = preload("res://scenes/plants/wheat_tuft.tscn")
 
@@ -1374,9 +1375,11 @@ func _rebuild_objects_3d() -> void:
 				f_scene = FLOWER_DAISY_SCENE
 			elif o_type == "flower_sunflower":
 				f_scene = FLOWER_SUNFLOWER_SCENE
-			elif o_type == "flower_tulip":
+			elif o_type.begins_with("flower_tulip"):
 				f_scene = FLOWER_TULIP_SCENE
-			elif o_type == "flower_bed":
+			elif o_type.begins_with("flower_gerbera"):
+				f_scene = FLOWER_GERBERA_SCENE
+			elif o_type.begins_with("flower_bed"):
 				f_scene = FLOWER_BED_SCENE
 			var f_inst: Node3D = f_scene.instantiate() as Node3D
 			if f_inst != null:

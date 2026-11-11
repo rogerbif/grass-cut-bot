@@ -14,6 +14,7 @@ const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
 const FLOWER_SUNFLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_sunflower.tscn")
 const FLOWER_TULIP_SCENE: PackedScene = preload("res://scenes/plants/flower_tulip.tscn")
+const FLOWER_GERBERA_SCENE: PackedScene = preload("res://scenes/plants/flower_gerbera.tscn")
 const FLOWER_BED_SCENE: PackedScene = preload("res://scenes/plants/flower_bed.tscn")
 
 const GRASS_MATERIALS: Dictionary = {
@@ -53,6 +54,12 @@ const FLOWER_MATERIALS: Dictionary = {
 	"flower_tulip_yellow": preload("res://shaders/flower_tulip_yellow_material.tres"),
 	"flower_tulip_purple": preload("res://shaders/flower_tulip_purple_material.tres"),
 	"flower_tulip_orange": preload("res://shaders/flower_tulip_orange_material.tres"),
+	"flower_gerbera": preload("res://shaders/flower_gerbera_material.tres"),
+	"flower_gerbera_yellow": preload("res://shaders/flower_gerbera_yellow_material.tres"),
+	"flower_gerbera_purple": preload("res://shaders/flower_gerbera_purple_material.tres"),
+	"flower_gerbera_orange": preload("res://shaders/flower_gerbera_orange_material.tres"),
+	"flower_gerbera_pink": preload("res://shaders/flower_gerbera_pink_material.tres"),
+	"flower_gerbera_white": preload("res://shaders/flower_gerbera_white_material.tres"),
 	"flower_bed": preload("res://shaders/flower_bed_material.tres"),
 	"flower_bed_blue": preload("res://shaders/flower_bed_blue_material.tres"),
 	"flower_bed_white": preload("res://shaders/flower_bed_white_material.tres")
@@ -103,6 +110,12 @@ const VEG_TYPES: Array[String] = [
 	"flower_tulip_yellow",
 	"flower_tulip_purple",
 	"flower_tulip_orange",
+	"flower_gerbera",
+	"flower_gerbera_yellow",
+	"flower_gerbera_purple",
+	"flower_gerbera_orange",
+	"flower_gerbera_pink",
+	"flower_gerbera_white",
 	"flower_bed",
 	"flower_bed_blue",
 	"flower_bed_white"
@@ -126,6 +139,7 @@ static var _flower_rose_mesh: ArrayMesh = null
 static var _flower_daisy_mesh: ArrayMesh = null
 static var _flower_sunflower_mesh: ArrayMesh = null
 static var _flower_tulip_mesh: ArrayMesh = null
+static var _flower_gerbera_mesh: ArrayMesh = null
 static var _flower_bed_mesh: ArrayMesh = null
 static var _tile_meshes: Dictionary = {}
 
@@ -241,6 +255,14 @@ static func _ensure_static_meshes() -> void:
 	for t_var_key in ["flower_tulip_yellow", "flower_tulip_purple", "flower_tulip_orange"]:
 		if not _flower_variation_meshes.has(t_var_key):
 			_flower_variation_meshes[t_var_key] = _build_flower_combined_mesh(t_var_key, FLOWER_TULIP_SCENE)
+
+	if _flower_gerbera_mesh == null:
+		_flower_gerbera_mesh = _build_flower_combined_mesh("flower_gerbera", FLOWER_GERBERA_SCENE)
+		_flower_variation_meshes["flower_gerbera"] = _flower_gerbera_mesh
+
+	for g_var_key in ["flower_gerbera_yellow", "flower_gerbera_purple", "flower_gerbera_orange", "flower_gerbera_pink", "flower_gerbera_white"]:
+		if not _flower_variation_meshes.has(g_var_key):
+			_flower_variation_meshes[g_var_key] = _build_flower_combined_mesh(g_var_key, FLOWER_GERBERA_SCENE)
 
 	if _flower_bed_mesh == null:
 		_flower_bed_mesh = _build_flower_combined_mesh("flower_bed", FLOWER_BED_SCENE)
@@ -643,6 +665,8 @@ static func _resolve_clipping_color(v_type: String) -> Color:
 			return Color(0.82, 0.65, 0.08, 1.0)
 		"flower_tulip":
 			return Color(0.75, 0.12, 0.18, 1.0)
+		"flower_gerbera":
+			return Color(0.85, 0.22, 0.28, 1.0)
 		"flower_bed":
 			return Color(0.65, 0.28, 0.78, 1.0)
 		_:
@@ -847,6 +871,8 @@ func _build_from_vector_field(
 				mm.mesh = _flower_sunflower_mesh
 			elif v_type.begins_with("flower_tulip"):
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_tulip_mesh)
+			elif v_type.begins_with("flower_gerbera"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_gerbera_mesh)
 			elif v_type.begins_with("flower_bed"):
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_bed_mesh)
 			else:
@@ -1167,6 +1193,8 @@ func _build_from_vegetation_field(
 				mm.mesh = _flower_sunflower_mesh
 			elif v_type.begins_with("flower_tulip"):
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_tulip_mesh)
+			elif v_type.begins_with("flower_gerbera"):
+				mm.mesh = _flower_variation_meshes.get(v_type, _flower_gerbera_mesh)
 			elif v_type.begins_with("flower_bed"):
 				mm.mesh = _flower_variation_meshes.get(v_type, _flower_bed_mesh)
 			else:
@@ -1381,10 +1409,15 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 		return d_cols.get("petal", Color(1.0, 1.0, 1.0, 1.0))
 	if v_type == "flower_sunflower":
 		return Color(1.0, 0.88, 0.0, 1.0)
-	if v_type == "flower_tulip":
-		return Color(1.0, 0.08, 0.24, 1.0)
-	if v_type == "flower_bed":
-		return Color(0.88, 0.30, 1.0, 1.0)
+	if v_type.begins_with("flower_tulip"):
+		var t_cols: Dictionary = PlantScript.get_flower_colors(v_type)
+		return t_cols.get("petal", Color(1.0, 0.08, 0.24, 1.0))
+	if v_type.begins_with("flower_gerbera"):
+		var g_cols: Dictionary = PlantScript.get_flower_colors(v_type)
+		return g_cols.get("petal", Color(1.0, 0.12, 0.28, 1.0))
+	if v_type.begins_with("flower_bed"):
+		var b_cols: Dictionary = PlantScript.get_flower_colors(v_type)
+		return b_cols.get("petal", Color(0.88, 0.30, 1.0, 1.0))
 	if v_type == "flower":
 		return Color(1.0, 0.18, 0.65, 1.0)
 	return Color(0.30, 0.70, 0.32, 1.0)

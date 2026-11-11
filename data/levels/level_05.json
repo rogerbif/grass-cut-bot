@@ -1,19 +1,15 @@
 {
 	"card_goals": {
-		"flower_rose": 17,
-		"flower_rose_black": 12,
-		"flower_rose_yellow": 6,
-		"grass_black": 22,
-		"grass_blue": 99,
-		"grass_red": 20
+		"flower_rose": 27,
+		"flower_rose_black": 24,
+		"grass_black": 41,
+		"grass_red": 35
 	},
 	"goals": {
-		"flower_rose": 17,
-		"flower_rose_black": 12,
-		"flower_rose_yellow": 6,
-		"grass_black": 22,
-		"grass_blue": 99,
-		"grass_red": 20
+		"flower_rose": 27,
+		"flower_rose_black": 24,
+		"grass_black": 41,
+		"grass_red": 35
 	},
 	"grass_vectors": [
 		{
@@ -2332,48 +2328,6 @@
 			"type": "flower_rose"
 		},
 		{
-			"gx": 12,
-			"gz": 12,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 12,
-			"gz": 14,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 12,
-			"gz": 29,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 12,
-			"gz": 34,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 14,
-			"gz": 12,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 14,
-			"gz": 14,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 14,
-			"gz": 32,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
 			"gx": 15,
 			"gz": 39,
 			"rot": 0,
@@ -2386,72 +2340,6 @@
 			"type": "rock"
 		},
 		{
-			"gx": 17,
-			"gz": 17,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 17,
-			"gz": 29,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 17,
-			"gz": 34,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 19,
-			"gz": 19,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 19,
-			"gz": 27,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 27,
-			"gz": 19,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 27,
-			"gz": 27,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 29,
-			"gz": 17,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 29,
-			"gz": 29,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 31,
-			"gz": 31,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 31,
-			"gz": 34,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
 			"gx": 31,
 			"gz": 39,
 			"rot": 0,
@@ -2462,48 +2350,6 @@
 			"gz": 5,
 			"rot": 0,
 			"type": "rock"
-		},
-		{
-			"gx": 32,
-			"gz": 11,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 32,
-			"gz": 14,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 33,
-			"gz": 33,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 34,
-			"gz": 12,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 34,
-			"gz": 31,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 34,
-			"gz": 34,
-			"rot": 0,
-			"type": "flower_rose_yellow"
-		},
-		{
-			"gx": 36,
-			"gz": 14,
-			"rot": 0,
-			"type": "flower_rose_yellow"
 		},
 		{
 			"gx": 38,
@@ -13813,6 +13659,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 115.0,
+	"time_limit": 125.0,
 	"version": 5
 }

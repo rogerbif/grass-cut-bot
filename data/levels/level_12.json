@@ -1,12 +1,10 @@
 {
 	"card_goals": {
-		"flower_daisy_pink": 108,
-		"grass_black": 70,
+		"flower_daisy_pink": 96,
 		"grass_red": 109
 	},
 	"goals": {
-		"flower_daisy_pink": 108,
-		"grass_black": 70,
+		"flower_daisy_pink": 96,
 		"grass_red": 109
 	},
 	"grass_vectors": [
@@ -1291,12 +1289,6 @@
 		},
 		{
 			"gx": 2,
-			"gz": 12,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 2,
 			"gz": 13,
 			"rot": 0,
 			"type": "flower_daisy_pink"
@@ -1310,12 +1302,6 @@
 		{
 			"gx": 2,
 			"gz": 23,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 2,
-			"gz": 24,
 			"rot": 0,
 			"type": "flower_daisy_pink"
 		},
@@ -1346,12 +1332,6 @@
 		{
 			"gx": 3,
 			"gz": 2,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 3,
-			"gz": 3,
 			"rot": 0,
 			"type": "flower_daisy_pink"
 		},
@@ -1400,12 +1380,6 @@
 		{
 			"gx": 3,
 			"gz": 32,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 3,
-			"gz": 33,
 			"rot": 0,
 			"type": "flower_daisy_pink"
 		},
@@ -1507,12 +1481,6 @@
 		},
 		{
 			"gx": 11,
-			"gz": 2,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 11,
 			"gz": 3,
 			"rot": 0,
 			"type": "flower_daisy_pink"
@@ -1520,12 +1488,6 @@
 		{
 			"gx": 11,
 			"gz": 33,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 11,
-			"gz": 34,
 			"rot": 0,
 			"type": "flower_daisy_pink"
 		},
@@ -1627,12 +1589,6 @@
 		},
 		{
 			"gx": 25,
-			"gz": 2,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 25,
 			"gz": 3,
 			"rot": 0,
 			"type": "flower_daisy_pink"
@@ -1640,12 +1596,6 @@
 		{
 			"gx": 25,
 			"gz": 33,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 25,
-			"gz": 34,
 			"rot": 0,
 			"type": "flower_daisy_pink"
 		},
@@ -1747,12 +1697,6 @@
 		},
 		{
 			"gx": 33,
-			"gz": 3,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 33,
 			"gz": 4,
 			"rot": 0,
 			"type": "flower_daisy_pink"
@@ -1801,12 +1745,6 @@
 		},
 		{
 			"gx": 33,
-			"gz": 33,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 33,
 			"gz": 34,
 			"rot": 0,
 			"type": "flower_daisy_pink"
@@ -1837,12 +1775,6 @@
 		},
 		{
 			"gx": 34,
-			"gz": 12,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 34,
 			"gz": 13,
 			"rot": 0,
 			"type": "flower_daisy_pink"
@@ -1856,12 +1788,6 @@
 		{
 			"gx": 34,
 			"gz": 23,
-			"rot": 0,
-			"type": "flower_daisy_pink"
-		},
-		{
-			"gx": 34,
-			"gz": 24,
 			"rot": 0,
 			"type": "flower_daisy_pink"
 		},
@@ -11488,6 +11414,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 140.0,
+	"time_limit": 135.0,
 	"version": 5
 }

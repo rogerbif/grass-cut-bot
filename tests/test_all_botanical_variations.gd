@@ -16,6 +16,7 @@ func _initialize() -> void:
 		"flower_rose": 7,
 		"flower_daisy": 7,
 		"flower_tulip": 4,
+		"flower_gerbera": 6,
 		"flower_bed": 3
 	}
 

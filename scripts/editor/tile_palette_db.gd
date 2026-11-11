@@ -171,6 +171,14 @@ const OBJECT_ITEMS: Array[Dictionary] = [
 		"category": "plant"
 	},
 	{
+		"id": "flower_gerbera",
+		"name": "Gérbera",
+		"icon": "🌺",
+		"color": Color(1.0, 0.35, 0.15),
+		"goal_key": "flower_gerbera",
+		"category": "plant"
+	},
+	{
 		"id": "flower_bed",
 		"name": "Canteiro Florido",
 		"icon": "🪻",
@@ -444,6 +452,68 @@ const ITEM_VARIATIONS: Dictionary = {
 			"petal_color": Color(1.0, 0.45, 0.05, 1.0),
 			"center_color": Color(0.95, 0.85, 0.10, 1.0),
 			"material_path": "res://shaders/flower_tulip_orange_material.tres"
+		}
+	],
+	"flower_gerbera": [
+		{
+			"id": "flower_gerbera",
+			"name": "Rubi",
+			"full_name": "Gérbera Rubi",
+			"icon": "🌺",
+			"inner_color": Color(0.45, 0.04, 0.10, 1.0),
+			"petal_color": Color(1.0, 0.12, 0.28, 1.0),
+			"center_color": Color(0.85, 0.60, 0.05, 1.0),
+			"material_path": "res://shaders/flower_gerbera_material.tres"
+		},
+		{
+			"id": "flower_gerbera_yellow",
+			"name": "Solar",
+			"full_name": "Gérbera Solar",
+			"icon": "💛",
+			"inner_color": Color(0.65, 0.28, 0.02, 1.0),
+			"petal_color": Color(1.0, 0.88, 0.05, 1.0),
+			"center_color": Color(0.30, 0.15, 0.05, 1.0),
+			"material_path": "res://shaders/flower_gerbera_yellow_material.tres"
+		},
+		{
+			"id": "flower_gerbera_purple",
+			"name": "Real",
+			"full_name": "Gérbera Real",
+			"icon": "💜",
+			"inner_color": Color(0.35, 0.02, 0.40, 1.0),
+			"petal_color": Color(0.85, 0.15, 0.80, 1.0),
+			"center_color": Color(1.0, 0.85, 0.20, 1.0),
+			"material_path": "res://shaders/flower_gerbera_purple_material.tres"
+		},
+		{
+			"id": "flower_gerbera_orange",
+			"name": "Chama",
+			"full_name": "Gérbera Chama",
+			"icon": "🧡",
+			"inner_color": Color(0.55, 0.08, 0.05, 1.0),
+			"petal_color": Color(1.0, 0.45, 0.05, 1.0),
+			"center_color": Color(0.95, 0.85, 0.10, 1.0),
+			"material_path": "res://shaders/flower_gerbera_orange_material.tres"
+		},
+		{
+			"id": "flower_gerbera_pink",
+			"name": "Rosa",
+			"full_name": "Gérbera Rosa",
+			"icon": "🌸",
+			"inner_color": Color(0.60, 0.08, 0.35, 1.0),
+			"petal_color": Color(1.0, 0.40, 0.70, 1.0),
+			"center_color": Color(1.0, 0.85, 0.10, 1.0),
+			"material_path": "res://shaders/flower_gerbera_pink_material.tres"
+		},
+		{
+			"id": "flower_gerbera_white",
+			"name": "Branca",
+			"full_name": "Gérbera Branca",
+			"icon": "🤍",
+			"inner_color": Color(0.85, 0.85, 0.75, 1.0),
+			"petal_color": Color(1.0, 1.0, 1.0, 1.0),
+			"center_color": Color(0.85, 0.60, 0.05, 1.0),
+			"material_path": "res://shaders/flower_gerbera_white_material.tres"
 		}
 	],
 	"flower_bed": [

@@ -2,14 +2,14 @@
 	"card_goals": {
 		"flower": 52,
 		"flower_sunset": 31,
-		"grass_blue": 20,
-		"grass_yellow": 21
+		"grass_blue": 26,
+		"grass_yellow": 43
 	},
 	"goals": {
 		"flower": 52,
 		"flower_sunset": 31,
-		"grass_blue": 20,
-		"grass_yellow": 21
+		"grass_blue": 26,
+		"grass_yellow": 43
 	},
 	"grass_vectors": [
 		{
@@ -467,7 +467,7 @@
 		},
 		{
 			"holes": [],
-			"id": 15,
+			"id": 12,
 			"polygon": [
 				[
 					9.0,
@@ -490,7 +490,7 @@
 		},
 		{
 			"holes": [],
-			"id": 16,
+			"id": 13,
 			"polygon": [
 				[
 					9.0,
@@ -517,7 +517,7 @@
 		},
 		{
 			"holes": [],
-			"id": 19,
+			"id": 14,
 			"polygon": [
 				[
 					-9.5,
@@ -14408,6 +14408,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 135.0,
+	"time_limit": 150.0,
 	"version": 5
 }

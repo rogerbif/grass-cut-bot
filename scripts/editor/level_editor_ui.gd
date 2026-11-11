@@ -42,6 +42,13 @@ const GOALS_CATALOG: Array[Dictionary] = [
 	{ "key": "flower_tulip_yellow", "name": "💛 Tulipa Solar", "color": Color(1.0, 0.88, 0.05), "unit": "tulipas" },
 	{ "key": "flower_tulip_purple", "name": "💜 Tulipa Real", "color": Color(0.85, 0.15, 0.80), "unit": "tulipas" },
 	{ "key": "flower_tulip_orange", "name": "🧡 Tulipa Chama", "color": Color(1.0, 0.45, 0.05), "unit": "tulipas" },
+	# --- Gérberas Tropicais (6 Variações) ---
+	{ "key": "flower_gerbera", "name": "🌺 Gérbera Rubi", "color": Color(1.0, 0.12, 0.28), "unit": "gérberas" },
+	{ "key": "flower_gerbera_yellow", "name": "💛 Gérbera Solar", "color": Color(1.0, 0.88, 0.05), "unit": "gérberas" },
+	{ "key": "flower_gerbera_purple", "name": "💜 Gérbera Real", "color": Color(0.85, 0.15, 0.80), "unit": "gérberas" },
+	{ "key": "flower_gerbera_orange", "name": "🧡 Gérbera Chama", "color": Color(1.0, 0.45, 0.05), "unit": "gérberas" },
+	{ "key": "flower_gerbera_pink", "name": "🌸 Gérbera Rosa", "color": Color(1.0, 0.40, 0.70), "unit": "gérberas" },
+	{ "key": "flower_gerbera_white", "name": "🤍 Gérbera Branca", "color": Color(1.0, 1.0, 1.0), "unit": "gérberas" },
 	# --- Canteiros Floridos (3 Variações) ---
 	{ "key": "flower_bed", "name": "🪻 Canteiro Misto", "color": Color(0.92, 0.35, 1.0), "unit": "canteiros" },
 	{ "key": "flower_bed_blue", "name": "💠 Canteiro Celeste", "color": Color(0.15, 0.75, 1.0), "unit": "canteiros" },
@@ -2001,6 +2008,8 @@ func update_playtest_hud(time_left: float, goals: Dictionary) -> void:
 			icon = "🌻"
 		elif k_str.begins_with("flower_tulip"):
 			icon = "🌷"
+		elif k_str.begins_with("flower_gerbera"):
+			icon = "🌺"
 		elif k_str.begins_with("flower_bed"):
 			icon = "🪻"
 		elif k_str.begins_with("flower"):

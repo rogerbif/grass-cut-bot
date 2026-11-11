@@ -75,6 +75,7 @@ Este documento estabelece as diretrizes estéticas canônicas para o projeto **G
   - `vertical_gradient_mix = 0.85` (Grama) / `0.95` (Trigo)
   - `use_rim = false`
   - `roughness = 0.90`
+  - **Flores Cel-Shaded (flower_toon.gdshader):** 6 famílias botânicas distintas (Rosa Nobre, Margarida do Campo, Girassol Solar, Tulipa Imperial em cálice autêntico, Gérbera Tropical em flores radiadas e Canteiro Florido) com gradientes internos contrastantes, materiais independentes sem texture lookups e despetalação por etapas de colheita.
 - **Solo da Ilha (Island Ground Canônico):**
   - `ground_color = Color(0.14, 0.45, 0.19)`
   - `ground_brightness = 0.80` (Cor final albedo: `Color(0.112, 0.360, 0.152)`)

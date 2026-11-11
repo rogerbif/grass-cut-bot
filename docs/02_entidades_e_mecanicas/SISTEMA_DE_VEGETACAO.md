@@ -31,10 +31,16 @@ Este documento define as especificações das espécies vegetais, mecânica de r
 | **Rosa Pêssego Salmão** | `flower_rose_peach` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Miolo damasco dourado e pétalas pêssego com base terracota coral | Variação cromática nobre oficial com gradiente suave aprovado. |
 | **Margarida do Campo** | `flower_daisy` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas brancas | Modelo em 3 partes com miolo ouro vibrante. No Hit 1 ejeta 2 pétalas brancas e 1 folha no ar. Despetalação em 2 levas. |
 | **Girassol Solar** | `flower_sunflower` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar | Modelo em 3 partes com disco central avelã e pétalas em leque dourado. No Hit 1 ejeta 2 pétalas e 1 folha no ar. Ceifa fatal no 3º golpe. |
-| **Tulipa Imperial (Rubi)** | `flower_tulip` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas vermelho rubi com base vinho/bordeaux escuro profundo | Modelo em 3 partes com gradiente interno de alto contraste (`petal_inner_color`). Despetalação em 2 levas. |
-| **Tulipa Imperial Solar** | `flower_tulip_yellow` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar com base âmbar profundo | Variação cromática oficial de alto contraste. |
-| **Tulipa Imperial Real** | `flower_tulip_purple` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas violeta real com base amora escura | Variação cromática nobre oficial. |
-| **Tulipa Imperial Chama** | `flower_tulip_orange` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas laranja tangerina com base carmesim | Variação cromática quente oficial. |
+| **Tulipa Imperial (Rubi)** | `flower_tulip` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas vermelho rubi com base vinho/bordeaux escuro profundo | Modelo anatômico autêntico de tulipa (`flower_07_tulip.glb`) com gradiente interno de alto contraste. Despetalação em 2 levas. |
+| **Tulipa Imperial Solar** | `flower_tulip_yellow` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar com base âmbar profundo | Modelo anatômico unificado (`flower_07_tulip.glb`). Variação cromática oficial de alto contraste. |
+| **Tulipa Imperial Real** | `flower_tulip_purple` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas violeta real com base amora escura | Modelo anatômico unificado (`flower_07_tulip.glb`). Variação cromática nobre oficial. |
+| **Tulipa Imperial Chama** | `flower_tulip_orange` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas laranja tangerina com base carmesim | Modelo anatômico unificado (`flower_07_tulip.glb`). Variação cromática quente oficial. |
+| **Gérbera Tropical (Rubi)** | `flower_gerbera` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas vermelho coral vivo com miolo dourado âmbar | Modelo de 3 flores radiadas abertas (`flower_01.glb`). Nova espécie botânica oficial (Melhoria 227). |
+| **Gérbera Solar** | `flower_gerbera_yellow` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas amarelo solar intenso com miolo avelã | Variação cromática tropical oficial (`flower_01.glb`). |
+| **Gérbera Real** | `flower_gerbera_purple` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta/violeta com miolo carmim profundo | Variação cromática nobre oficial (`flower_01.glb`). |
+| **Gérbera Chama** | `flower_gerbera_orange` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas laranja fogo com miolo âmbar escuro | Variação cromática vibrante oficial (`flower_01.glb`). |
+| **Gérbera Rosa Tropical** | `flower_gerbera_pink` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas rosa chiclete tropical com miolo dourado | Variação cromática suave oficial (`flower_01.glb`). |
+| **Gérbera Branca Pura** | `flower_gerbera_white` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas branco puro níveo com miolo ouro | Variação cromática pura oficial (`flower_01.glb`). |
 | **Canteiro Florido (Misto)** | `flower_bed` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Pétalas magenta orquídea com base ameixa profunda e miolo dourado | Base alongada em +50% (altura total de 1.18m, mais alto que a grama). No Hit 1 ejeta 2 flores e 1 folha no ar. |
 | **Canteiro Florido Celeste** | `flower_bed_blue` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Flores ciano/azul elétrico com base marinho profundo | Variação ornamental oficial para ilhas litorâneas. |
 | **Canteiro Florido Alvorada** | `flower_bed_white` | 3 golpes | 1 físico = 1 meta = 5 🪙 | Flores branco perolado com base verde menta profunda | Variação ornamental oficial para jardins reais. |
@@ -197,3 +203,14 @@ A malha `wheat_01.glb` conta com anatomia botânica 100% geométrica em 3D Low P
 - **Espiga em Espinha de Peixe:** Ráquis dorsal central, 11 níveis de grãos diamantados volumosos (8 facetas cada) sobrepostos em pares alternados inclinados a 41° para cima e aristas superiores.
 - **Calibração Cromática 30% Mais Escura:** Cores equilibradas em tom mel dourado encorpado (`color_light = Color(0.70, 0.62, 0.18)`) com base âmbar profunda no solo (`color_base = Color(0.27, 0.15, 0.04)`), garantindo alto contraste e leitura limpa em iluminação tropical.
 - **Iluminação 3D Facetada:** O shader `interactive_grass.gdshader` preserva as normais geométricas reais da espiga quando `invert_height == true`, destacando individualmente cada semente ao sol com fendas sombreadas em tom âmbar quente.
+
+### J. Família de Gérberas Tropicais (`flower_gerbera`) e Unificação da Tulipa (Melhoria 227)
+- **Unificação da Tulipa Imperial (`flower_tulip`):** Todas as 4 variações cromáticas (*Rubi*, *Solar*, *Real*, *Chama*) compartilham estritamente o modelo anatômico autêntico em taça (`flower_07_tulip.glb`), corrigindo o roteamento de prefixo `begins_with()` no editor e preservando os gradientes de cor.
+- **Nova Espécie: Gérbera Tropical (`flower_gerbera` 🌺):** O modelo radiado com 3 flores abertas por tufo (`flower_01.glb`) foi promovido a uma espécie botânica autônoma com 6 variações vibrantes:
+  - `flower_gerbera`: Rubi / Coral (`#FF1F47`)
+  - `flower_gerbera_yellow`: Solar Dourada (`#FFE00D`)
+  - `flower_gerbera_purple`: Real Violeta (`#D926CC`)
+  - `flower_gerbera_orange`: Chama Alaranjada (`#FF730D`)
+  - `flower_gerbera_pink`: Rosa Tropical (`#FF66B2`)
+  - `flower_gerbera_white`: Branca Pura (`#FFFFFF`)
+- **Integração Total:** Suporte a MultiMesh no `VegetationGrid`, despetalação por etapas no `Plant`, registro no `PlantDatabase` (intro nível 11, 3 hits, 5 🪙), paleta visual e metas independentes no Editor de Fases e TopBar HUD.

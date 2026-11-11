@@ -1,13 +1,11 @@
 {
 	"card_goals": {
 		"flower_blue": 62,
-		"grass_blue": 116,
-		"grass_white": 95
+		"grass_white": 156
 	},
 	"goals": {
 		"flower_blue": 62,
-		"grass_blue": 116,
-		"grass_white": 95
+		"grass_white": 156
 	},
 	"grass_vectors": [
 		{

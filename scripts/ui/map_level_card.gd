@@ -31,6 +31,7 @@ const GOAL_ORDER: Array[String] = [
 	"flower_daisy", "flower_daisy_blue", "flower_daisy_orange", "flower_daisy_yellow", "flower_daisy_red", "flower_daisy_pink", "flower_daisy_bicolor",
 	"flower_sunflower",
 	"flower_tulip", "flower_tulip_yellow", "flower_tulip_purple", "flower_tulip_orange",
+	"flower_gerbera", "flower_gerbera_yellow", "flower_gerbera_purple", "flower_gerbera_orange", "flower_gerbera_pink", "flower_gerbera_white",
 	"flower_bed", "flower_bed_blue", "flower_bed_white"
 ]
 

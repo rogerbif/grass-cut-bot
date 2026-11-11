@@ -1,11 +1,9 @@
 {
 	"card_goals": {
-		"flower_bed": 4,
-		"grass_yellow": 54
+		"flower_bed": 16
 	},
 	"goals": {
-		"flower_bed": 4,
-		"grass_yellow": 54
+		"flower_bed": 16
 	},
 	"grass_vectors": [
 		{
