@@ -107,6 +107,25 @@ static func get_veg_types() -> PackedStringArray:
 
 static func _resolve_mesh_for_type(v_type: String) -> Mesh:
 	_ensure_static_meshes()
+	if v_type.begins_with("flower"):
+		if v_type.begins_with("flower_rose"):
+			return _flower_variation_meshes.get(v_type, _flower_rose_mesh) as Mesh
+		elif v_type.begins_with("flower_daisy"):
+			return _flower_variation_meshes.get(v_type, _flower_daisy_mesh) as Mesh
+		elif v_type == "flower_sunflower":
+			return _flower_sunflower_mesh
+		elif v_type.begins_with("flower_tulip"):
+			return _flower_variation_meshes.get(v_type, _flower_tulip_mesh) as Mesh
+		elif v_type.begins_with("flower_bed"):
+			return _flower_variation_meshes.get(v_type, _flower_bed_mesh) as Mesh
+		else:
+			return _flower_variation_meshes.get(v_type, _flower_mesh) as Mesh
+	elif v_type == "wheat":
+		return _wheat_mesh
+	elif v_type.begins_with("grass_"):
+		return _grass_mesh
+
+	# Fallback para novas espécies customizadas puras via recurso
 	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(v_type)
 	if sp_res != null and not sp_res.mesh_path.is_empty() and ResourceLoader.exists(sp_res.mesh_path):
 		var loaded_res: Resource = load(sp_res.mesh_path)
@@ -120,35 +139,24 @@ static func _resolve_mesh_for_type(v_type: String) -> Mesh:
 			if m != null:
 				return m
 
-	if v_type.begins_with("flower"):
-		if v_type.begins_with("flower_rose"):
-			return _flower_variation_meshes.get(v_type, _flower_rose_mesh) as Mesh
-		elif v_type.begins_with("flower_daisy"):
-			return _flower_variation_meshes.get(v_type, _flower_daisy_mesh) as Mesh
-		elif v_type == "flower_sunflower":
-			return _flower_sunflower_mesh
-		elif v_type.begins_with("flower_tulip"):
-			return _flower_variation_meshes.get(v_type, _flower_tulip_mesh) as Mesh
-		elif v_type.begins_with("flower_bed"):
-			return _flower_variation_meshes.get(v_type, _flower_bed_mesh) as Mesh
-		else:
-			return _flower_mesh
-	elif v_type == "wheat":
-		return _wheat_mesh
-	else:
-		return _grass_mesh
+	return _grass_mesh
 
 static func _resolve_material_for_type(v_type: String) -> Material:
+	# Flores e trigo utilizam múltiplos materiais embutidos por superfície no ArrayMesh
+	# (Pétalas, Folhas e Caule). MultiMeshInstance3D de flores e trigo NUNCA deve receber
+	# material_override no nó, pois o override sobrepõe e apaga os materiais das superfícies.
+	if v_type.begins_with("flower") or v_type == "wheat":
+		return null
+
+	if GRASS_MATERIALS.has(v_type):
+		return GRASS_MATERIALS[v_type] as Material
+
 	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(v_type)
 	if sp_res != null and not sp_res.material_path.is_empty() and ResourceLoader.exists(sp_res.material_path):
 		var mat: Resource = load(sp_res.material_path)
 		if mat is Material:
 			return mat as Material
 
-	if GRASS_MATERIALS.has(v_type):
-		return GRASS_MATERIALS[v_type] as Material
-	if FLOWER_MATERIALS.has(v_type):
-		return FLOWER_MATERIALS[v_type] as Material
 	return null
 
 const GRID_STEP: float = 0.40
