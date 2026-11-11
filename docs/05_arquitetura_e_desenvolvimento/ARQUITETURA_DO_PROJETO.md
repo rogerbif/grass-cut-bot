@@ -1,4 +1,4 @@
-# Arquitetura do Projeto Godot 4 🏗️📁
+# Arquitetura do Projeto Godot 4 🏗️📐
 
 Este documento descreve a organização modular de diretórios, a hierarquia de cenas e a distribuição de responsabilidades técnicas em **Grass Cut Bot**.
 
@@ -35,20 +35,22 @@ grass-cut-bot/
 │   ├── 03_level_design_e_fases/
 │   ├── 04_sistemas_e_gameplay/
 │   ├── 05_arquitetura_e_desenvolvimento/
-│   ├── historico_melhorias/   # Changelog perpétuo com 106+ relatórios técnicos
+│   ├── historico_melhorias/   # Changelog perpétuo com 238+ relatórios técnicos
 │   ├── MELHORIAS_FUTURAS.md   # Roadmap de novidades e Bot Arquiteto Mobile
 │   └── PROJETO_GRASS_CUT_BOT.md # Hub mestre dos 5 Pilares
-├── data/                      # Dados serializados do jogo
-│   ├── levels/                # Fases em formato JSON v3 (level_01.json a level_20.json)
+├── data/                      # Dados serializados e recursos Data-Driven do jogo
+│   ├── levels/                # Fases em formato JSON v3/v4 (level_01.json a level_40.json)
+│   ├── obstacles/             # Recursos ObstacleData (.tres) para catálogo data-driven de rochas
+│   ├── species/               # Recursos PlantSpeciesData (.tres) para herbário botânico
+│   ├── themes/                # Recursos IslandThemeData (.tres) para biomas e atmosferas
 │   └── translations/          # Tabela canônica de i18n (translations.csv -> *.translation)
 ├── scenes/                    # Cenas montadas (.tscn)
 │   ├── cutter/                # Cortador robótico (cutter.tscn)
 │   ├── editor/                # Editor de Fases PC Fullscreen e kit de tiles 3D de ilha
 │   ├── level/                 # Terrenos, oceano (water_ocean.tscn) e ilhas base
-│   ├── levels/                # Fases exportadas como cena Godot (level_01.tscn a level_20.tscn)
 │   ├── menu/                  # Menu Inicial (Hub Principal), Câmera Dual, Abas e Ilhas
-│   ├── obstacles/             # Rochas e barreiras (rock.tscn)
-│   ├── plants/                # Tufos de grama (7 cores), trigo e flores
+│   ├── obstacles/             # Rochas e barreiras (rock.tscn, rock_moss.tscn, etc.)
+│   ├── plants/                # Cenas base de vegetação (trigo, flores, grama)
 │   ├── ui/                    # Top HUD, joystick virtual, modais de pausa/vitória/derrota
 │   └── main.tscn              # Cena mestre de gameplay
 ├── scripts/                   # Código fonte GDScript (.gd) com tipagem estática e Zero Warnings
@@ -63,7 +65,9 @@ grass-cut-bot/
 │   ├── effects/               # Gerenciadores visuais 3D (floating_coin_manager.gd)
 │   ├── level/                 # level_controller.gd, level_json_loader.gd e vector_grass_field.gd
 │   ├── menu/                  # Scripts do Menu Inicial, câmera dual e navegação de abas
-│   ├── plants/                # vegetation_grid.gd (MultiMesh GPU) e plant.gd
+│   ├── obstacles/             # obstacle_database.gd e obstacle_data.gd
+│   ├── plants/                # vegetation_grid.gd (MultiMesh GPU), plant.gd e plant_database.gd
+│   ├── themes/                # island_theme_data.gd e theme_database.gd
 │   ├── tools/                 # Geradores automatizados, bump_version e validadores
 │   └── ui/                    # Controladores de HUD, modais e joystick flutuante
 ├── README.md                  # Vitrine oficial do repositório no GitHub
@@ -72,7 +76,7 @@ grass-cut-bot/
 ├── default_bus_layout.tres    # Configuração dos 3 barramentos de áudio da Godot
 ├── export_presets.cfg         # Configuração de exportação Android APK/AAB e Web (HTML5/Wasm)
 ├── icon.png                   # Ícone oficial de alta definição
-└── project.godot              # Arquivo de configuração central da Godot Engine 4 (v0.12.31-alpha)
+└── project.godot              # Arquivo de configuração central da Godot Engine 4
 ```
 
 ---
