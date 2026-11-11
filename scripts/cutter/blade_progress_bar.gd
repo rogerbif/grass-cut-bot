@@ -30,6 +30,7 @@ var _fill_tween: Tween = null
 func _ready() -> void:
 	# Desacopla a rotação e herança direta de transformação do chassi do robô
 	set_as_top_level(true)
+	rotation_degrees = Vector3(-40.0, 0.0, 0.0)
 	
 	var parent_node: Node = get_parent()
 	if parent_node is Node3D:
@@ -51,9 +52,14 @@ func _process(_delta: float) -> void:
 		# Mantém a barra posicionada fixa ao sul/abaixo do robô em coordenadas globais
 		global_position = _target_node.global_position + SCREEN_OFFSET
 
-	# Garante orientação de rotação estável alinhada à câmera isométrica (inclinada ~40 graus)
-	# para que a barra repouse com perspectiva perfeita e sem nunca girar com o bot
-	rotation_degrees = Vector3(-40.0, 0.0, 0.0)
+func _request_viewport_update() -> void:
+	if sub_viewport != null:
+		sub_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+func _set_progress_value(val: float) -> void:
+	if progress_bar != null:
+		progress_bar.value = val
+		_request_viewport_update()
 
 func _setup_styles() -> void:
 	if progress_bar == null:
@@ -69,6 +75,7 @@ func _setup_styles() -> void:
 		level_label.add_theme_constant_override("outline_size", 8)
 		level_label.add_theme_color_override("font_color", COLOR_LABEL_NORMAL)
 		level_label.add_theme_color_override("font_outline_color", COLOR_OUTLINE_NORMAL)
+	_request_viewport_update()
 
 func _on_blade_level_changed(new_level: int, is_max: bool) -> void:
 	var prev_lvl: int = _current_level
@@ -82,10 +89,12 @@ func _on_blade_level_changed(new_level: int, is_max: bool) -> void:
 func _on_blade_xp_changed(_current_xp: float, _max_xp: float, progress_ratio: float) -> void:
 	if _fill_tween != null and _fill_tween.is_valid():
 		_fill_tween.kill()
+	if progress_bar == null:
+		return
 	_fill_tween = create_tween()
 	var max_lvl: int = UpgradeManager.MAX_BLADE_LEVEL if UpgradeManager != null else 10
 	var target_val: float = 100.0 if (_is_max or _current_level >= max_lvl) else (progress_ratio * 100.0)
-	_fill_tween.tween_property(progress_bar, "value", target_val, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_fill_tween.tween_method(_set_progress_value, progress_bar.value, target_val, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _on_blade_penalized(_new_level: int) -> void:
 	play_penalty_reaction()
@@ -116,6 +125,7 @@ func _update_visual_theme() -> void:
 			crown_icon.visible = false
 		if star_icon != null:
 			star_icon.visible = false
+	_request_viewport_update()
 
 func play_level_up_reaction() -> void:
 	if sprite_3d == null:

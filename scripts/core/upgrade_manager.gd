@@ -126,7 +126,10 @@ func add_blade_xp(amount: float) -> void:
 
 	blade_xp_changed.emit(blade_xp, get_xp_required_for_next_level(), get_progress_ratio())
 	if leveled_up and SaveManager != null:
-		SaveManager.save_game()
+		if SaveManager.has_method("save_game_deferred"):
+			SaveManager.save_game_deferred()
+		else:
+			SaveManager.save_game()
 
 ## Aplica a penalidade de colisão na lâmina.
 ## Retorna true se o robô já estava no Nível 1 ao bater e portanto QUEBROU, ou false se sobreviveu (desceu até o Nível 1 como última chance).
@@ -140,7 +143,10 @@ func penalize_blade_hit(penalty_amount: float = BLADE_ROCK_PENALTY_XP) -> bool:
 		blade_penalized.emit(blade_level)
 		blade_xp_changed.emit(blade_xp, get_xp_required_for_next_level(), get_progress_ratio())
 		if SaveManager != null:
-			SaveManager.save_game()
+			if SaveManager.has_method("save_game_deferred"):
+				SaveManager.save_game_deferred()
+			else:
+				SaveManager.save_game()
 		return true
 
 	var remaining_penalty: float = penalty_amount
@@ -175,7 +181,10 @@ func penalize_blade_hit(penalty_amount: float = BLADE_ROCK_PENALTY_XP) -> bool:
 	blade_xp_changed.emit(blade_xp, get_xp_required_for_next_level(), get_progress_ratio())
 
 	if SaveManager != null:
-		SaveManager.save_game()
+		if SaveManager.has_method("save_game_deferred"):
+			SaveManager.save_game_deferred()
+		else:
+			SaveManager.save_game()
 	return false
 
 # Valores de Gameplay Calibrados

@@ -34,9 +34,9 @@ static func _get_outline_material() -> ShaderMaterial:
 	return _outline_material
 
 
-static func _get_composite_silhouette(plant_type: String, cat: String) -> Texture2D:
-	if _silhouette_cache.has(plant_type):
-		return _silhouette_cache[plant_type] as Texture2D
+static func _get_composite_silhouette(_plant_type: String, cat: String) -> Texture2D:
+	if _silhouette_cache.has(cat):
+		return _silhouette_cache[cat] as Texture2D
 
 	var tex_base: Texture2D = null
 	var tex_top: Texture2D = null
@@ -112,7 +112,7 @@ static func _get_composite_silhouette(plant_type: String, cat: String) -> Textur
 				img.set_pixel(x, y, Color(1, 1, 1, 1))
 
 	var composite_tex: ImageTexture = ImageTexture.create_from_image(img)
-	_silhouette_cache[plant_type] = composite_tex
+	_silhouette_cache[cat] = composite_tex
 	return composite_tex
 
 

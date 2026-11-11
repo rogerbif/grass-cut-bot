@@ -21,6 +21,7 @@ const LIFE_REFILL_COST_COINS: int = 1000
 var save_data: Dictionary = {}
 var is_initialized: bool = false
 var _life_regen_tick_accum: float = 0.0
+var _save_pending: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -196,7 +197,18 @@ func _apply_loaded_data_to_systems() -> void:
 
 	apply_saved_locale()
 
+func save_game_deferred() -> void:
+	if _save_pending:
+		return
+	_save_pending = true
+	call_deferred("_flush_deferred_save")
+
+func _flush_deferred_save() -> void:
+	if _save_pending:
+		save_game()
+
 func save_game() -> bool:
+	_save_pending = false
 	if save_data.is_empty():
 		save_data = get_default_save()
 

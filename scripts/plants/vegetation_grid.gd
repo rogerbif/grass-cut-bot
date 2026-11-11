@@ -60,15 +60,6 @@ const FLOWER_MATERIALS: Dictionary = {
 const FLOWER_LEAVES_MATERIAL: Material = preload("res://shaders/interactive_flower_leaves_material.tres")
 const FLOWER_STEM_MATERIAL: Material = preload("res://shaders/interactive_flower_stem_material.tres")
 
-const TILE_MODELS: Dictionary = {
-	"island_center": preload("res://assets/models/tiles/tile_island_center.glb"),
-	"island_edge": preload("res://assets/models/tiles/tile_island_edge.glb"),
-	"island_corner_out": preload("res://assets/models/tiles/tile_island_corner_out.glb"),
-	"island_corner_in": preload("res://assets/models/tiles/tile_island_corner_in.glb"),
-	"island_end": preload("res://assets/models/tiles/tile_island_end.glb"),
-	"island_dirt": preload("res://assets/models/tiles/tile_island_dirt.glb")
-}
-
 const VEG_TYPES: Array[String] = [
 	"grass_green",
 	"grass_yellow",
@@ -127,7 +118,6 @@ static var _flower_daisy_mesh: ArrayMesh = null
 static var _flower_sunflower_mesh: ArrayMesh = null
 static var _flower_tulip_mesh: ArrayMesh = null
 static var _flower_bed_mesh: ArrayMesh = null
-static var _tile_meshes: Dictionary = {}
 
 # Dados por planta (SoA - Structure of Arrays para zero overhead de nós)
 var _positions: PackedVector3Array = PackedVector3Array()
@@ -249,18 +239,6 @@ static func _ensure_static_meshes() -> void:
 	for b_var_key in ["flower_bed_blue", "flower_bed_white"]:
 		if not _flower_variation_meshes.has(b_var_key):
 			_flower_variation_meshes[b_var_key] = _build_flower_combined_mesh(b_var_key, FLOWER_BED_SCENE)
-
-	if _tile_meshes.is_empty():
-		var model_scale_xform: Transform3D = Transform3D().scaled(Vector3(1.0, 2.0, 1.0))
-		for tile_key: Variant in TILE_MODELS.keys():
-			var t_id: String = String(tile_key)
-			var packed: PackedScene = TILE_MODELS[t_id] as PackedScene
-			if packed == null:
-				continue
-			var tile_inst: Node = packed.instantiate()
-			var combined: ArrayMesh = _build_combined_mesh_from_hierarchy(tile_inst, model_scale_xform)
-			_tile_meshes[t_id] = combined
-			tile_inst.free()
 
 
 static func _build_flower_combined_mesh(flower_type: String, packed_scene: PackedScene) -> ArrayMesh:
@@ -834,6 +812,13 @@ func _build_from_vector_field(
 		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
 		var count: int = entry_list.size()
 
+		if count <= 0:
+			_veg_multimeshes[mmi_idx] = null
+			_veg_mmi_nodes[mmi_idx] = null
+			_clipping_multimeshes[mmi_idx] = null
+			_clipping_mmi_nodes[mmi_idx] = null
+			continue
+
 		var is_flower: bool = v_type.begins_with("flower")
 		var mm: MultiMesh = MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -871,7 +856,7 @@ func _build_from_vector_field(
 		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
 		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
 		clip_mm.instance_count = count
-		clip_mm.visible_instance_count = -1
+		clip_mm.visible_instance_count = 0
 
 		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
 		clip_mmi.name = "ClippingsMMI_%s" % v_type
@@ -916,7 +901,6 @@ func _build_from_vector_field(
 			var inst_basis: Basis = Basis(Vector3.UP, plant_rot) * Basis.from_scale(scale_vec)
 			var xform: Transform3D = Transform3D(inst_basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
-			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
 			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, plant_rot), pos)
 
@@ -1421,6 +1405,14 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	var particles_spawned_this_frame: int = 0
 	var new_shaking_tufts: PackedInt32Array = PackedInt32Array()
 	var first_hit_recoil: Vector3 = Vector3.ZERO
+	var tree_node: SceneTree = get_tree()
+	var s_root: Node = tree_node.current_scene if (tree_node != null and tree_node.current_scene != null) else self
+	var am_node: Node = get_node_or_null("/root/AudioManager") if is_inside_tree() else null
+	var sm_node: Node = get_node_or_null("/root/SaveManager") if is_inside_tree() else null
+	var um_node: Node = get_node_or_null("/root/UpgradeManager") if is_inside_tree() else null
+	var xp_gained_this_frame: float = 0.0
+	var any_hit_feedback: bool = false
+	var any_tuft_cut: bool = false
 
 	for cx: int in range(min_cx, max_cx + 1):
 		for cz: int in range(min_cz, max_cz + 1):
@@ -1472,11 +1464,18 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 
 				if new_hp <= 0:
 					_is_cut[p_idx] = 1
+					any_tuft_cut = true
+					any_hit_feedback = true
 					if mm != null:
 						mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 					var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 					if clip_mm != null:
-						clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
+						var c_idx: int = _clipping_counts[mmi_idx]
+						if c_idx < clip_mm.instance_count:
+							clip_mm.set_instance_transform(c_idx, _cut_transforms[p_idx])
+							c_idx += 1
+							_clipping_counts[mmi_idx] = c_idx
+							clip_mm.visible_instance_count = c_idx
 					if particles_spawned_this_frame < 8:
 						var max_p_dist: float = blade_radius * 0.75
 						var dist_xz: float = sqrt(dx * dx + dz * dz)
@@ -1485,8 +1484,6 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							var ratio: float = max_p_dist / dist_xz
 							safe_p_pos = Vector3(center.x + dx * ratio, p_pos.y, center.z + dz * ratio)
 						var p_key_part: String = _plant_keys[p_idx]
-						var tree_node: SceneTree = get_tree()
-						var s_root: Node = tree_node.current_scene if tree_node != null else self
 						if p_key_part.begins_with("flower"):
 							PlantScript.spawn_flower_cut_particles(s_root, safe_p_pos, p_key_part)
 							PlantScript.spawn_flower_detach_pieces(s_root, _initial_transforms[p_idx], p_key_part)
@@ -1494,37 +1491,23 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							PlantScript.spawn_grass_cut_particles(s_root, safe_p_pos, _particle_colors[p_idx])
 						particles_spawned_this_frame += 1
 
-					# Feedback audiovisual e háptico imediato para o corte físico de qualquer vegetação
-					var am_node: Node = get_node_or_null("/root/AudioManager")
-					if am_node != null and am_node.has_method("play_cut_sfx"):
-						am_node.call("play_cut_sfx", false)
-					if gm != null and gm.has_method("trigger_haptic_cut"):
-						gm.call("trigger_haptic_cut")
-
 					# Atualização de metas e concessão de XP da lâmina: Trigo (3 XP), Flores (5 XP), Grama (1 XP)
 					var p_key: String = _plant_keys[p_idx]
-					var sm_node: Node = get_node_or_null("/root/SaveManager")
 					if sm_node != null and sm_node.has_method("record_plant_harvest"):
 						sm_node.call("record_plant_harvest", p_key, 1)
 
-					var um_node: Node = get_node_or_null("/root/UpgradeManager")
-					if um_node != null and um_node.has_method("add_blade_xp"):
-						if p_key == "wheat":
-							um_node.call("add_blade_xp", 3.0)
-						elif p_key.begins_with("flower"):
-							um_node.call("add_blade_xp", 5.0)
-						else:
-							um_node.call("add_blade_xp", 1.0)
-
 					if p_key == "wheat":
+						xp_gained_this_frame += 3.0
 						_remaining_physical_wheat = maxi(0, _remaining_physical_wheat - 1)
 						if gm != null:
 							gm.call("register_cut", "wheat", 3, p_pos)
 					elif p_key.begins_with("flower"):
+						xp_gained_this_frame += 5.0
 						_remaining_physical_flower = maxi(0, _remaining_physical_flower - 1)
 						if gm != null:
 							gm.call("register_cut", p_key, 5, p_pos)
 					else:
+						xp_gained_this_frame += 1.0
 						# Qualquer tipo/cor de grama (contabilizada por cor específica ou genérica)
 						_remaining_physical_grass = maxi(0, _remaining_physical_grass - 1)
 						var g_rem: int = maxi(0, int(_remaining_grass_by_type.get(p_key, 0)) - 1)
@@ -1546,40 +1529,9 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 								gm.call("register_cut", target_goal, 1, p_pos)
 
 						_grass_cut_accumulator_by_type[p_key] = acc
-
-					# Proteção anti-trava por categoria independente:
-					if _remaining_physical_wheat <= 0 and _get_remaining_goal_safe("wheat") > 0:
-						if gm != null:
-							while _get_remaining_goal_safe("wheat") > 0:
-								gm.call("register_cut", "wheat", 3, Vector3.ZERO)
-					if _remaining_physical_flower <= 0 and gm != null:
-						var gm_goals: Variant = gm.get("goals")
-						if gm_goals is Dictionary:
-							for g_key_var: Variant in (gm_goals as Dictionary).keys():
-								var g_key_str: String = String(g_key_var)
-								if g_key_str.begins_with("flower"):
-									while _get_remaining_goal_safe(g_key_str) > 0:
-										gm.call("register_cut", g_key_str, 5, Vector3.ZERO)
-					if gm != null:
-						for g_type_key: Variant in _remaining_grass_by_type.keys():
-							var gt_str: String = String(g_type_key)
-							if int(_remaining_grass_by_type[gt_str]) <= 0:
-								var g_target: String = gt_str
-								if not _has_goal_safe(gt_str) and _has_goal_safe("grass"):
-									g_target = "grass"
-								while _get_remaining_goal_safe(g_target) > 0:
-									gm.call("register_cut", g_target, 1, Vector3.ZERO)
 				else:
 					var p_key: String = _plant_keys[p_idx]
-					var tree_node: SceneTree = get_tree()
-					var s_root: Node = tree_node.current_scene if tree_node != null else self
-
-					# Feedback audiovisual e háptico imediato para o golpe parcial
-					var am_node: Node = get_node_or_null("/root/AudioManager")
-					if am_node != null and am_node.has_method("play_cut_sfx"):
-						am_node.call("play_cut_sfx", false)
-					if gm != null and gm.has_method("trigger_haptic_cut"):
-						gm.call("trigger_haptic_cut")
+					any_hit_feedback = true
 
 					if mm != null:
 						if p_key.begins_with("flower"):
@@ -1597,9 +1549,39 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							init_xform.origin
 						)
 						mm.set_instance_transform(inst_idx, squash_xform)
-					var tree: SceneTree = get_tree()
-					if tree != null:
-						tree.create_timer(0.08).timeout.connect(_restore_plant_transform.bind(p_idx))
+					if tree_node != null:
+						tree_node.create_timer(0.08).timeout.connect(_restore_plant_transform.bind(p_idx))
+
+	if any_hit_feedback:
+		if am_node != null and am_node.has_method("play_cut_sfx"):
+			am_node.call("play_cut_sfx", false)
+		if gm != null and gm.has_method("trigger_haptic_cut"):
+			gm.call("trigger_haptic_cut")
+
+	if xp_gained_this_frame > 0.0 and um_node != null and um_node.has_method("add_blade_xp"):
+		um_node.call("add_blade_xp", xp_gained_this_frame)
+
+	if any_tuft_cut and gm != null:
+		# Proteção anti-trava por categoria independente executada 1x ao final do frame de corte:
+		if _remaining_physical_wheat <= 0 and _get_remaining_goal_safe("wheat") > 0:
+			while _get_remaining_goal_safe("wheat") > 0:
+				gm.call("register_cut", "wheat", 3, Vector3.ZERO)
+		if _remaining_physical_flower <= 0:
+			var gm_goals: Variant = gm.get("goals")
+			if gm_goals is Dictionary:
+				for g_key_var: Variant in (gm_goals as Dictionary).keys():
+					var g_key_str: String = String(g_key_var)
+					if g_key_str.begins_with("flower"):
+						while _get_remaining_goal_safe(g_key_str) > 0:
+							gm.call("register_cut", g_key_str, 5, Vector3.ZERO)
+		for g_type_key: Variant in _remaining_grass_by_type.keys():
+			var gt_str: String = String(g_type_key)
+			if int(_remaining_grass_by_type[gt_str]) <= 0:
+				var g_target: String = gt_str
+				if not _has_goal_safe(gt_str) and _has_goal_safe("grass"):
+					g_target = "grass"
+				while _get_remaining_goal_safe(g_target) > 0:
+					gm.call("register_cut", g_target, 1, Vector3.ZERO)
 
 	# Restaura qualquer tufo que estava tremendo no frame anterior mas não está mais em contato
 	for old_p_idx: int in _actively_shaking_tufts:
@@ -1690,6 +1672,9 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 	var step: int = maxi(1, density_step)
 	_last_density_step = step
 
+	for mmi_idx: int in range(_clipping_counts.size()):
+		_clipping_counts[mmi_idx] = 0
+
 	var total: int = _positions.size()
 	for p_idx: int in range(total):
 		var visible_by_density: bool = vegetation_on and (p_idx % step == 0)
@@ -1704,21 +1689,20 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 		if _is_cut[p_idx] == 0 and _is_hidden_by_density[p_idx] == 0:
 			mm.set_instance_transform(inst_idx, _initial_transforms[p_idx])
-			if clip_mm != null:
-				clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 		elif _is_cut[p_idx] == 1 and _is_hidden_by_density[p_idx] == 0:
 			mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 			if clip_mm != null:
-				clip_mm.set_instance_transform(inst_idx, _cut_transforms[p_idx])
+				var c_idx: int = _clipping_counts[mmi_idx]
+				if c_idx < clip_mm.instance_count:
+					clip_mm.set_instance_transform(c_idx, _cut_transforms[p_idx])
+					_clipping_counts[mmi_idx] = c_idx + 1
 		else:
 			mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
-			if clip_mm != null:
-				clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
 
 	for mmi_idx: int in range(_clipping_multimeshes.size()):
 		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 		if clip_mm != null:
-			clip_mm.visible_instance_count = 0 if not vegetation_on else -1
+			clip_mm.visible_instance_count = 0 if not vegetation_on else _clipping_counts[mmi_idx]
 
 
 func reset_all_plants() -> void:
@@ -1753,7 +1737,7 @@ func reset_all_plants() -> void:
 			_clipping_counts[mmi_idx] = 0
 		var clip_mm: MultiMesh = _clipping_multimeshes[mmi_idx]
 		if clip_mm != null:
-			clip_mm.visible_instance_count = -1
+			clip_mm.visible_instance_count = 0
 
 	set_benchmark_visibility(_last_vegetation_on, _last_density_step)
 

@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 	_flight_timer += delta
 	_velocity.y -= GRAVITY * delta
 	global_position += _velocity * delta
-	_rot_basis = (Basis(_spin_axis, _spin_speed * delta) * _rot_basis).orthonormalized()
+	_rot_basis = Basis(_spin_axis, _spin_speed * delta) * _rot_basis
 	basis = _rot_basis.scaled(Vector3.ONE * _base_scale)
 
 	# Toca o solo (somente na descida) ou estourou o tempo máximo de voo

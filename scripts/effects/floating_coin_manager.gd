@@ -23,6 +23,8 @@ var _cached_cutter: CharacterBody3D = null
 
 func _ready() -> void:
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	set_process(false)
+	set_physics_process(false)
 	_init_pool()
 	_sync_to_cutter()
 	var gm: Node = get_node_or_null("/root/GameManager")
@@ -31,10 +33,6 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	_sync_to_cutter()
-
-
-func _physics_process(_delta: float) -> void:
 	_sync_to_cutter()
 
 
