@@ -1,239 +1,122 @@
 class_name PlantDatabase
 extends RefCounted
 
-## Catálogo Canônico das 15 Espécies Botânicas do Grass Cut Bot.
-## Define metadados, categorias, cores temáticas, fase de origem e 10 níveis de marcos de maestria.
+## Catálogo Data-Driven das Espécies Botânicas do Grass Cut Bot.
+## Realiza auto-descoberta dinâmica de recursos PlantSpeciesData em res://data/species/.
+## Qualquer novo arquivo .tres colocado nessa pasta é automaticamente assimilado pelo jogo,
+## mantendo retrocompatibilidade total com as APIs baseadas em Dictionary existentes.
 
+const PlantSpeciesDataScript = preload("res://scripts/plants/plant_species_data.gd")
 const TilePaletteDBScript = preload("res://scripts/editor/tile_palette_db.gd")
+const SPECIES_DIR: String = "res://data/species"
 
-const GRASS_MILESTONES: Array[Dictionary] = [
-	{ "level": 1, "target": 50, "reward": 10, "title": "Brotamento" },
-	{ "level": 2, "target": 150, "reward": 20, "title": "Aparador Iniciante" },
-	{ "level": 3, "target": 350, "reward": 35, "title": "Ceifador Ágil" },
-	{ "level": 4, "target": 700, "reward": 50, "title": "Jardineiro Dedicado" },
-	{ "level": 5, "target": 1200, "reward": 75, "title": "Podador Experiente" },
-	{ "level": 6, "target": 2000, "reward": 100, "title": "Trator dos Prados" },
-	{ "level": 7, "target": 3200, "reward": 150, "title": "Ceifa Implacável" },
-	{ "level": 8, "target": 5000, "reward": 200, "title": "Guardião da Grama" },
-	{ "level": 9, "target": 7500, "reward": 300, "title": "Lenda dos Gramados" },
-	{ "level": 10, "target": 10000, "reward": 500, "title": "Mestre da Clorofila" }
-]
-
-const CROP_MILESTONES: Array[Dictionary] = [
-	{ "level": 1, "target": 15, "reward": 15, "title": "Primeira Colheita" },
-	{ "level": 2, "target": 40, "reward": 25, "title": "Ceifador do Campo" },
-	{ "level": 3, "target": 80, "reward": 40, "title": "Colheita de Ouro" },
-	{ "level": 4, "target": 150, "reward": 60, "title": "Agrônomo da Ilha" },
-	{ "level": 5, "target": 250, "reward": 90, "title": "Moagem Precisa" },
-	{ "level": 6, "target": 400, "reward": 130, "title": "Celeiro Farto" },
-	{ "level": 7, "target": 650, "reward": 180, "title": "Colheita Dourada" },
-	{ "level": 8, "target": 1000, "reward": 250, "title": "Ceifa dos Ventos" },
-	{ "level": 9, "target": 1500, "reward": 350, "title": "Patrono da Espiga" },
-	{ "level": 10, "target": 2200, "reward": 600, "title": "Grão-Mestre da Seara" }
-]
-
-const FLOWER_MILESTONES: Array[Dictionary] = [
-	{ "level": 1, "target": 10, "reward": 20, "title": "Florista Amador" },
-	{ "level": 2, "target": 25, "reward": 35, "title": "Aroma Suave" },
-	{ "level": 3, "target": 50, "reward": 50, "title": "Despetalador Hábil" },
-	{ "level": 4, "target": 90, "reward": 80, "title": "Buquê Nobre" },
-	{ "level": 5, "target": 150, "reward": 120, "title": "Jardineiro Botânico" },
-	{ "level": 6, "target": 240, "reward": 170, "title": "Pétalas de Aço" },
-	{ "level": 7, "target": 380, "reward": 230, "title": "Conservador Floral" },
-	{ "level": 8, "target": 600, "reward": 320, "title": "Orvalho Real" },
-	{ "level": 9, "target": 900, "reward": 450, "title": "Mestre Botânico" },
-	{ "level": 10, "target": 1300, "reward": 750, "title": "Guardião das Pétalas" }
-]
-
+# Caches centrais O(1)
+static var _resources: Array[PlantSpeciesData] = []
+static var _resources_by_key: Dictionary = {}
 static var _species_cache: Array[Dictionary] = []
 static var _species_by_key: Dictionary = {}
 
-static func get_all_species() -> Array[Dictionary]:
-	if not _species_cache.is_empty():
-		return _species_cache
+## Força o recarregamento do catálogo botânico a partir do disco
+static func reload_species() -> void:
+	_resources.clear()
+	_resources_by_key.clear()
+	_species_cache.clear()
+	_species_by_key.clear()
+	_load_resources()
 
-	_species_cache = [
-		# --- 1. GRAMAS (7 Cores) ---
-		{
-			"key": "grass_green",
-			"category": "grass",
-			"name": "Grama Verde Esmeralda",
-			"icon": "🌱",
-			"color": Color(0.28, 0.81, 0.10, 1.0),
-			"origin_level": 1,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "A vegetação nativa mais abundante do arquipélago. Macia e relaxante ao toque da lâmina.",
-			"milestones": GRASS_MILESTONES
-		},
-		{
-			"key": "grass_yellow",
-			"category": "grass",
-			"name": "Grama Dourada Solar",
-			"icon": "🌾",
-			"color": Color(0.95, 0.82, 0.15, 1.0),
-			"origin_level": 1,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "Aquecida pela luz do sol do meio-dia, colore clareiras e canteiros ensolarados.",
-			"milestones": GRASS_MILESTONES
-		},
-		{
-			"key": "grass_blue",
-			"category": "grass",
-			"name": "Grama Azul Costeira",
-			"icon": "🌊",
-			"color": Color(0.18, 0.58, 0.92, 1.0),
-			"origin_level": 2,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "Nutrida pela maresia do oceano turquesa, cresce vigorosa à beira das falésias.",
-			"milestones": GRASS_MILESTONES
-		},
-		{
-			"key": "grass_purple",
-			"category": "grass",
-			"name": "Grama Violeta Crepúsculo",
-			"icon": "🔮",
-			"color": Color(0.62, 0.31, 0.87, 1.0),
-			"origin_level": 4,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "Espécie exótica aromática que reflete os tons mágicos do entardecer nas ilhas.",
-			"milestones": GRASS_MILESTONES
-		},
-		{
-			"key": "grass_white",
-			"category": "grass",
-			"name": "Grama Branca Cristalina",
-			"icon": "❄️",
-			"color": Color(0.88, 0.88, 0.92, 1.0),
-			"origin_level": 5,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "Folhas de textura aveludada clara que formam mosaicos geométricos deslumbrantes.",
-			"milestones": GRASS_MILESTONES
-		},
-		{
-			"key": "grass_red",
-			"category": "grass",
-			"name": "Grama Carmesim Vulcânica",
-			"icon": "🔥",
-			"color": Color(0.90, 0.22, 0.27, 1.0),
-			"origin_level": 8,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "Brota sobre solos ricos e quentes com vigor ardente e coloração rubra viva.",
-			"milestones": GRASS_MILESTONES
-		},
-		{
-			"key": "grass_black",
-			"category": "grass",
-			"name": "Grama Negra Obsidiana",
-			"icon": "🌑",
-			"color": Color(0.24, 0.24, 0.30, 1.0),
-			"origin_level": 12,
-			"hits": 1,
-			"reward_coins": 1,
-			"desc": "Rara e imponente, cresce nas rochas escuras das ilhas vulcânicas mais profundas.",
-			"milestones": GRASS_MILESTONES
-		},
+## Garante que os recursos estejam carregados em cache
+static func _ensure_loaded() -> void:
+	if _resources.is_empty():
+		_load_resources()
 
-		# --- 2. CULTURAS AGRÍCOLAS (1 Espécie) ---
-		{
-			"key": "wheat",
-			"category": "crop",
-			"name": "Trigo Dourado Enraizado",
-			"icon": "🌾",
-			"color": Color(0.91, 0.77, 0.42, 1.0),
-			"origin_level": 3,
-			"hits": 2,
-			"reward_coins": 3,
-			"desc": "Haste agrícola rígida de 2 golpes com sementes valiosas. Requer precisão e potência.",
-			"milestones": CROP_MILESTONES
-		},
+## Varre res://data/species/ via DirAccess e carrega todos os .tres dinamicamente
+static func _load_resources() -> void:
+	_resources.clear()
+	_resources_by_key.clear()
+	_species_cache.clear()
+	_species_by_key.clear()
 
-		# --- 3. FLORES NOBRES & CANTEIROS (5 Espécies) ---
-		{
-			"key": "flower_daisy",
-			"category": "flower",
-			"name": "Margarida Silvestre",
-			"icon": "🌼",
-			"color": Color(0.95, 0.95, 0.80, 1.0),
-			"origin_level": 4,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "Pétalas brancas com miolo amarelo brilhante. Despetala em 3 golpes concedendo alto valor.",
-			"milestones": FLOWER_MILESTONES
-		},
-		{
-			"key": "flower_rose",
-			"category": "flower",
-			"name": "Rosa",
-			"icon": "🌹",
-			"color": Color(0.90, 0.15, 0.28, 1.0),
-			"origin_level": 5,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "A nobreza dos jardins da ilha. Pétalas encorpadas de fragrância intensa e valiosa.",
-			"milestones": FLOWER_MILESTONES
-		},
-		{
-			"key": "flower_sunflower",
-			"category": "flower",
-			"name": "Girassol Radiante",
-			"icon": "🌻",
-			"color": Color(1.0, 0.72, 0.01, 1.0),
-			"origin_level": 5,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "Imponente disco solar que acompanha o movimento do sol sobre as águas do arquipélago.",
-			"milestones": FLOWER_MILESTONES
-		},
-		{
-			"key": "flower_tulip",
-			"category": "flower",
-			"name": "Tulipa Imperial",
-			"icon": "🌷",
-			"color": Color(0.97, 0.15, 0.52, 1.0),
-			"origin_level": 9,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "Cálice real magenta que adorna alamedas e caminhos cerimoniais das grandes ilhas.",
-			"milestones": FLOWER_MILESTONES
-		},
-		{
-			"key": "flower_bed",
-			"category": "flower",
-			"name": "Canteiro de Flores Mistas",
-			"icon": "🪻",
-			"color": Color(0.55, 0.25, 0.75, 1.0),
-			"origin_level": 15,
-			"hits": 3,
-			"reward_coins": 5,
-			"desc": "Arranjo ornamental denso reunindo múltiplos botões aromáticos em uma só jardineira.",
-			"milestones": FLOWER_MILESTONES
-		}
-	]
+	var dir: DirAccess = DirAccess.open(SPECIES_DIR)
+	if dir != null:
+		dir.list_dir_begin()
+		var file_name: String = dir.get_next()
+		while file_name != "":
+			if not dir.current_is_dir() and file_name.ends_with(".tres"):
+				var res_path: String = "%s/%s" % [SPECIES_DIR, file_name]
+				var res: Resource = load(res_path)
+				if res is PlantSpeciesData:
+					var p_res: PlantSpeciesData = res as PlantSpeciesData
+					if not p_res.key.is_empty():
+						_resources.append(p_res)
+						_resources_by_key[p_res.key] = p_res
+			file_name = dir.get_next()
+		dir.list_dir_end()
 
-	# Ordena todas as 13 espécies de forma crescente pela fase de origem (origin_level)
-	_species_cache.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		var lvl_a: int = int(a.get("origin_level", 1))
-		var lvl_b: int = int(b.get("origin_level", 1))
-		return lvl_a < lvl_b
+	# Ordena as espécies de forma crescente pelo origin_level (e alfabética em caso de empate)
+	_resources.sort_custom(func(a: PlantSpeciesData, b: PlantSpeciesData) -> bool:
+		if a.origin_level != b.origin_level:
+			return a.origin_level < b.origin_level
+		return a.key < b.key
 	)
 
-	_species_by_key.clear()
-	for s: Dictionary in _species_cache:
-		_species_by_key[String(s["key"])] = s
+	# Popula os caches de Dictionary para retrocompatibilidade
+	for r: PlantSpeciesData in _resources:
+		var d: Dictionary = r.to_dict()
+		_species_cache.append(d)
+		_species_by_key[r.key] = d
 
+## Retorna a lista de todas as instâncias PlantSpeciesData registradas
+static func get_all_resources() -> Array[PlantSpeciesData]:
+	_ensure_loaded()
+	return _resources
+
+## Retorna uma instância PlantSpeciesData pelo seu identificador de chave
+static func get_resource(key: String) -> PlantSpeciesData:
+	_ensure_loaded()
+	if _resources_by_key.has(key):
+		return _resources_by_key[key] as PlantSpeciesData
+	return null
+
+## Registra dinamicamente uma espécie customizada em tempo de execução
+static func register_custom_species(res: PlantSpeciesData) -> void:
+	if res == null or res.key.is_empty():
+		return
+	_ensure_loaded()
+	_resources_by_key[res.key] = res
+	var d: Dictionary = res.to_dict()
+	_species_by_key[res.key] = d
+
+	var found: bool = false
+	for i in range(_resources.size()):
+		if _resources[i].key == res.key:
+			_resources[i] = res
+			_species_cache[i] = d
+			found = true
+			break
+	if not found:
+		_resources.append(res)
+		_species_cache.append(d)
+		_resources.sort_custom(func(a: PlantSpeciesData, b: PlantSpeciesData) -> bool:
+			if a.origin_level != b.origin_level:
+				return a.origin_level < b.origin_level
+			return a.key < b.key
+		)
+		_species_cache.clear()
+		for r in _resources:
+			_species_cache.append(r.to_dict())
+
+## Retorna todas as espécies como Dictionaries (API retrocompatível)
+static func get_all_species() -> Array[Dictionary]:
+	_ensure_loaded()
 	return _species_cache
 
+## Retorna os dados de uma espécie como Dictionary (API retrocompatível)
 static func get_species(key: String) -> Dictionary:
-	if _species_by_key.is_empty():
-		get_all_species()
+	_ensure_loaded()
 	if _species_by_key.has(key):
 		return _species_by_key[key] as Dictionary
+
+	# Fallback gracioso para variações visuais registradas no TilePaletteDB
 	var v_data: Dictionary = TilePaletteDBScript.get_variation_data(key)
 	if not v_data.is_empty():
 		return {
@@ -245,10 +128,12 @@ static func get_species(key: String) -> Dictionary:
 			"origin_level": 5 if key.begins_with("flower_rose") else (4 if key.begins_with("flower_daisy") else 1),
 			"hits": 3,
 			"reward_coins": 5,
-			"desc": String(v_data.get("full_name", key))
+			"desc": String(v_data.get("full_name", key)),
+			"milestones": []
 		}
 	return {}
 
+## Retorna o nome internacionalizado da espécie ou fallback para o nome canônico
 static func get_species_name(species: Dictionary) -> String:
 	var key: String = String(species.get("key", ""))
 	var trans_key: String = "PLANT_" + key.to_upper()

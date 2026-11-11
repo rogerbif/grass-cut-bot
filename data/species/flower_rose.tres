@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="PlantSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://scripts/plants/plant_species_data.gd" id="1_ugxv6"]
+
+[resource]
+script = ExtResource("1_ugxv6")
+key = "flower_rose"
+category = "flower"
+name = "Rosa"
+icon = "🌹"
+color = Color(0.9, 0.15, 0.28, 1)
+origin_level = 5
+hits = 3
+reward_coins = 5
+desc = "A nobreza dos jardins da ilha. Pétalas encorpadas de fragrância intensa e valiosa."
+milestones = Array[Dictionary]([{
+"level": 1,
+"reward": 20,
+"target": 10,
+"title": "Florista Amador"
+}, {
+"level": 2,
+"reward": 35,
+"target": 25,
+"title": "Aroma Suave"
+}, {
+"level": 3,
+"reward": 50,
+"target": 50,
+"title": "Despetalador Hábil"
+}, {
+"level": 4,
+"reward": 80,
+"target": 90,
+"title": "Buquê Nobre"
+}, {
+"level": 5,
+"reward": 120,
+"target": 150,
+"title": "Jardineiro Botânico"
+}, {
+"level": 6,
+"reward": 170,
+"target": 240,
+"title": "Pétalas de Aço"
+}, {
+"level": 7,
+"reward": 230,
+"target": 380,
+"title": "Conservador Floral"
+}, {
+"level": 8,
+"reward": 320,
+"target": 600,
+"title": "Orvalho Real"
+}, {
+"level": 9,
+"reward": 450,
+"target": 900,
+"title": "Mestre Botânico"
+}, {
+"level": 10,
+"reward": 750,
+"target": 1300,
+"title": "Guardião das Pétalas"
+}])
+mesh_path = "res://assets/models/flower_02_rose.glb"
+material_path = "res://shaders/flower_rose_material.tres"
+clipping_color = Color(0.7, 0.15, 0.2, 1)
+particle_petal_color = Color(0.9, 0.15, 0.28, 1)
+particle_center_color = Color(0.6, 0.1, 0.18, 1)

@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="PlantSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://scripts/plants/plant_species_data.gd" id="1_esdyb"]
+
+[resource]
+script = ExtResource("1_esdyb")
+key = "grass_yellow"
+name = "Grama Dourada Solar"
+icon = "🌾"
+color = Color(0.95, 0.82, 0.15, 1)
+desc = "Aquecida pela luz do sol do meio-dia, colore clareiras e canteiros ensolarados."
+milestones = Array[Dictionary]([{
+"level": 1,
+"reward": 10,
+"target": 50,
+"title": "Brotamento"
+}, {
+"level": 2,
+"reward": 20,
+"target": 150,
+"title": "Aparador Iniciante"
+}, {
+"level": 3,
+"reward": 35,
+"target": 350,
+"title": "Ceifador Ágil"
+}, {
+"level": 4,
+"reward": 50,
+"target": 700,
+"title": "Jardineiro Dedicado"
+}, {
+"level": 5,
+"reward": 75,
+"target": 1200,
+"title": "Podador Experiente"
+}, {
+"level": 6,
+"reward": 100,
+"target": 2000,
+"title": "Trator dos Prados"
+}, {
+"level": 7,
+"reward": 150,
+"target": 3200,
+"title": "Ceifa Implacável"
+}, {
+"level": 8,
+"reward": 200,
+"target": 5000,
+"title": "Guardião da Grama"
+}, {
+"level": 9,
+"reward": 300,
+"target": 7500,
+"title": "Lenda dos Gramados"
+}, {
+"level": 10,
+"reward": 500,
+"target": 10000,
+"title": "Mestre da Clorofila"
+}])
+material_path = "res://shaders/interactive_grass_yellow_material.tres"
+clipping_color = Color(0.64, 0.46, 0.1, 1)

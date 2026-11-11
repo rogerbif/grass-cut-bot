@@ -545,6 +545,10 @@ func build_from_level_json(
 
 
 static func _resolve_clipping_color(v_type: String) -> Color:
+	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(v_type)
+	if sp_res != null:
+		return sp_res.clipping_color
+
 	match v_type:
 		"grass_green":
 			return Color(0.17, 0.36, 0.17, 1.0)

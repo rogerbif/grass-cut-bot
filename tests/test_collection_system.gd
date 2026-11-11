@@ -1,14 +1,18 @@
 extends Node
 
+const PlantSpeciesDataScript = preload("res://scripts/plants/plant_species_data.gd")
 const PlantDatabaseScript = preload("res://scripts/plants/plant_database.gd")
 
 func _ready() -> void:
-	print("--- INICIANDO TESTE DO SISTEMA DE HERBÁRIO E COLEÇÃO ---")
+	print("--- INICIANDO TESTE DO SISTEMA DE HERBÁRIO E COLEÇÃO DATA-DRIVEN ---")
 
-	# 1. Validação do PlantDatabase
+	# 1. Validação do PlantDatabase e Recursos Data-Driven
 	var species_list: Array[Dictionary] = PlantDatabaseScript.get_all_species()
-	assert(species_list.size() == 15, "PlantDatabase deve conter exatamente 15 espécies! Atual: %d" % species_list.size())
-	
+	var resource_list: Array[PlantSpeciesData] = PlantDatabaseScript.get_all_resources()
+
+	assert(species_list.size() == 13, "PlantDatabase deve conter exatamente 13 espécies canônicas! Atual: %d" % species_list.size())
+	assert(resource_list.size() == 13, "PlantDatabase deve conter exatamente 13 instâncias PlantSpeciesData! Atual: %d" % resource_list.size())
+
 	var grass_count: int = 0
 	var crop_count: int = 0
 	var flower_count: int = 0
@@ -23,8 +27,8 @@ func _ready() -> void:
 
 	assert(grass_count == 7, "Devem existir 7 gramas coloridas! Atual: %d" % grass_count)
 	assert(crop_count == 1, "Deve existir 1 cultura agrícola (trigo)! Atual: %d" % crop_count)
-	assert(flower_count == 7, "Devem existir 7 flores/canteiros! Atual: %d" % flower_count)
-	print("✔ Teste 1: PlantDatabase validado com 15 espécies e 10 marcos cada.")
+	assert(flower_count == 5, "Devem existir 5 flores canônicas! Atual: %d" % flower_count)
+	print("✔ Teste 1: PlantDatabase validado com 13 espécies e 10 marcos cada via Data-Driven.")
 
 	# 2. Validação do SaveManager
 	var save_mgr: Node = get_node_or_null("/root/SaveManager")
@@ -80,11 +84,11 @@ func _ready() -> void:
 
 	var prog_lbl: Label = tab_col.get_node("Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay/ProgLabel") as Label
 	assert(prog_lbl != null, "ProgLabel deve existir na cena")
-	assert(prog_lbl.text.contains("3 / 15"), "Texto de progresso deve indicar 3 / 15 descobertas! Atual: %s" % prog_lbl.text)
+	assert(prog_lbl.text.contains("3 / 13"), "Texto de progresso deve indicar 3 / 13 descobertas! Atual: %s" % prog_lbl.text)
 
 	var cards_vbox: VBoxContainer = tab_col.get_node("Panel/MainVBox/Scroll/CardsMargin/CardsVBox") as VBoxContainer
 	assert(cards_vbox != null, "CardsVBox deve existir na cena")
-	assert(cards_vbox.get_child_count() == 15, "CardsVBox deve renderizar 15 cards horizontais! Atual: %d" % cards_vbox.get_child_count())
+	assert(cards_vbox.get_child_count() == 13, "CardsVBox deve renderizar 13 cards horizontais! Atual: %d" % cards_vbox.get_child_count())
 
 	# Verifica ordenação estrita por origin_level
 	var prev_lvl: int = 0
@@ -94,7 +98,7 @@ func _ready() -> void:
 		prev_lvl = cur_lvl
 
 	tab_col.queue_free()
-	print("✔ Teste 4: TabCollection UI (15 cards horizontais e ordenação por fase) validada.")
+	print("✔ Teste 4: TabCollection UI (13 cards horizontais e ordenação por fase) validada.")
 
 	print("--- TODOS OS TESTES DO HERBÁRIO FORAM APROVADOS COM SUCESSO! ---")
 	await get_tree().create_timer(1.0).timeout
