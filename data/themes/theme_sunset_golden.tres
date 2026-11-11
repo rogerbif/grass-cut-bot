@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="IslandThemeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/themes/island_theme_data.gd" id="1_theme_data"]
+
+[resource]
+script = ExtResource("1_theme_data")
+id = "sunset_golden"
+name = "Pôr do Sol Dourado"
+world_id = 2
+description = "Mundo 2: atmosfera de Golden Hour tropical, sol dourado quente em ângulo rasante, céu alaranjado e mar acobreado."
+ground_base_color = Color(0.22, 0.52, 0.18, 1)
+ground_brightness = 0.82
+ground_diffuse_toon = true
+cliff_color = Color(0.85, 0.45, 0.22, 1)
+dirt_color = Color(0.62, 0.38, 0.20, 1)
+water_shallow_color = Color(0.35, 0.62, 0.75, 1)
+water_deep_color = Color(0.18, 0.42, 0.65, 1)
+foam_color = Color(1.0, 0.92, 0.82, 1)
+water_roughness = 0.42
+sun_color = Color(1.0, 0.82, 0.55, 1)
+sun_energy = 1.35
+sun_pitch = -24.0
+sun_yaw = 65.0
+sun_shadows = true
+sky_bg_color = Color(0.92, 0.65, 0.55, 1)
+ambient_light_color = Color(0.95, 0.78, 0.70, 1)
+ambient_light_energy = 0.50
+tonemap_mode = 2
+fog_enabled = false
+fog_color = Color(0.95, 0.75, 0.65, 1)
+fog_density = 0.001

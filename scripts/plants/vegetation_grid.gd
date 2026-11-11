@@ -438,6 +438,7 @@ func build_from_level_json(
 
 	var water: Node3D = LevelJsonLoader.WATER_OCEAN_SCENE.instantiate() as Node3D
 	if water != null:
+		water.name = "WaterOcean"
 		add_child(water)
 
 	var grid_info: Dictionary = data.get("grid", {}) as Dictionary

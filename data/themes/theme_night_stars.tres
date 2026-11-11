@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="IslandThemeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/themes/island_theme_data.gd" id="1_theme_data"]
+
+[resource]
+script = ExtResource("1_theme_data")
+id = "night_stars"
+name = "Noite Tropical Estrelada"
+world_id = 3
+description = "Mundo 3: noite tropical serena, iluminação lunar azulada suave, céu anil profundo e mar escuro cristalino."
+ground_base_color = Color(0.08, 0.35, 0.18, 1)
+ground_brightness = 0.75
+ground_diffuse_toon = true
+cliff_color = Color(0.42, 0.32, 0.38, 1)
+dirt_color = Color(0.32, 0.25, 0.28, 1)
+water_shallow_color = Color(0.12, 0.35, 0.58, 1)
+water_deep_color = Color(0.04, 0.18, 0.38, 1)
+foam_color = Color(0.70, 0.85, 0.95, 1)
+water_roughness = 0.50
+sun_color = Color(0.85, 0.70, 0.95, 1)
+sun_energy = 0.75
+sun_pitch = -18.0
+sun_yaw = 80.0
+sun_shadows = true
+sky_bg_color = Color(0.16, 0.20, 0.38, 1)
+ambient_light_color = Color(0.35, 0.45, 0.65, 1)
+ambient_light_energy = 0.40
+tonemap_mode = 2
+fog_enabled = false
+fog_color = Color(0.15, 0.22, 0.40, 1)
+fog_density = 0.001

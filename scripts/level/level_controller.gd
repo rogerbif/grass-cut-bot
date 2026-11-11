@@ -2,6 +2,8 @@ extends Node3D
 
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
+const ThemeDatabase = preload("res://scripts/themes/theme_database.gd")
+const IslandThemeData = preload("res://scripts/themes/island_theme_data.gd")
 
 @onready var plants_container: Node3D = $PlantsContainer
 @onready var obstacles_container: Node3D = $ObstaclesContainer
@@ -50,7 +52,22 @@ func generate_level(level_num: int) -> void:
 	add_child(veg_grid)
 	current_level_node = veg_grid
 
+	# Aplica o tema visual e atmosférico canônico correspondente à fase (Melhoria 204)
+	var theme: IslandThemeData = ThemeDatabase.get_theme_for_level(level_num, data)
+	var main_root: Node = get_node_or_null("..")
+	var world_env: WorldEnvironment = main_root.get_node_or_null("WorldEnvironment") as WorldEnvironment if main_root != null else null
+	var sun: DirectionalLight3D = main_root.get_node_or_null("DirectionalLight3D") as DirectionalLight3D if main_root != null else null
+	ThemeDatabase.apply_theme_to_scene(theme, world_env, sun, null)
+
 	var goals: Dictionary = veg_grid.build_from_level_json(data, obstacles_container, cutter) as Dictionary
+
+	var water_ocean: Node3D = veg_grid.get_node_or_null("WaterOcean") as Node3D
+	if water_ocean != null and theme != null:
+		var surf_water: MeshInstance3D = water_ocean.get_node_or_null("SurfaceWater") as MeshInstance3D
+		if surf_water != null and surf_water.mesh != null:
+			var mat: Material = surf_water.mesh.surface_get_material(0)
+			if mat is ShaderMaterial:
+				theme.apply_to_water(mat as ShaderMaterial)
 
 	if cutter != null:
 		var blade_area: Area3D = cutter.get_node_or_null("BladeArea") as Area3D

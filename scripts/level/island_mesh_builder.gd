@@ -28,6 +28,8 @@ const FOAM_SHADER_PATH: String = "res://shaders/coastal_foam.gdshader"
 static var ground_base_color: Color = Color(0.15, 0.59, 0.22, 1.0)
 static var ground_brightness: float = 0.85
 static var ground_diffuse_toon: bool = true
+static var cliff_base_color: Color = Color(0.745, 0.427, 0.25, 1.0)
+static var dirt_base_color: Color = Color(0.538, 0.364, 0.231, 1.0)
 const CLIFF_COLOR: Color = Color(0.745, 0.427, 0.25, 1.0)
 const DIRT_COLOR: Color = Color(0.538, 0.364, 0.231, 1.0)
 
@@ -53,14 +55,22 @@ static func get_final_ground_color() -> Color:
 
 static func get_final_cliff_color() -> Color:
 	if _is_compatibility_renderer():
-		return Color(CLIFF_COLOR.r * 0.6850, CLIFF_COLOR.g * 0.6780, CLIFF_COLOR.b * 0.7360, 1.0)
-	return CLIFF_COLOR
+		return Color(cliff_base_color.r * 0.6850, cliff_base_color.g * 0.6780, cliff_base_color.b * 0.7360, 1.0)
+	return cliff_base_color
 
 
-static func set_ground_parameters(base_color: Color, brightness: float = 0.80, use_toon: bool = true) -> void:
+static func set_ground_parameters(
+	base_color: Color,
+	brightness: float = 0.80,
+	use_toon: bool = true,
+	p_cliff_color: Color = Color(0.745, 0.427, 0.25, 1.0),
+	p_dirt_color: Color = Color(0.538, 0.364, 0.231, 1.0)
+) -> void:
 	ground_base_color = base_color
 	ground_brightness = brightness
 	ground_diffuse_toon = use_toon
+	cliff_base_color = p_cliff_color
+	dirt_base_color = p_dirt_color
 	if _island_material != null:
 		_island_material.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON if ground_diffuse_toon else BaseMaterial3D.DIFFUSE_BURLEY
 
