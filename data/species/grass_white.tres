@@ -7,59 +7,62 @@ script = ExtResource("1_lfxa3")
 key = "grass_white"
 name = "Grama Branca Cristalina"
 icon = "❄️"
-color = Color(0.88, 0.88, 0.92, 1)
-origin_level = 5
-desc = "Folhas de textura aveludada clara que formam mosaicos geométricos deslumbrantes."
+color = Color(0.82, 0.88, 0.92, 1)
+origin_level = 4
+desc = "Folhagens alvas com brilho prateado suave e sombra azulada de alta pureza visual."
 milestones = Array[Dictionary]([{
 "level": 1,
-"reward": 10,
+"reward": 15,
 "target": 50,
-"title": "Brotamento"
+"title": "Primeira Ceifa"
 }, {
 "level": 2,
-"reward": 20,
-"target": 150,
-"title": "Aparador Iniciante"
+"reward": 25,
+"target": 120,
+"title": "Rastro Limpo"
 }, {
 "level": 3,
-"reward": 35,
-"target": 350,
-"title": "Ceifador Ágil"
+"reward": 40,
+"target": 250,
+"title": "Podador Ágil"
 }, {
 "level": 4,
-"reward": 50,
-"target": 700,
-"title": "Jardineiro Dedicado"
+"reward": 65,
+"target": 500,
+"title": "Campo Aberto"
 }, {
 "level": 5,
-"reward": 75,
-"target": 1200,
-"title": "Podador Experiente"
+"reward": 100,
+"target": 900,
+"title": "Mestre do Gramado"
 }, {
 "level": 6,
-"reward": 100,
-"target": 2000,
-"title": "Trator dos Prados"
+"reward": 150,
+"target": 1500,
+"title": "Esteira Veloz"
 }, {
 "level": 7,
-"reward": 150,
-"target": 3200,
-"title": "Ceifa Implacável"
+"reward": 220,
+"target": 2300,
+"title": "Ceifador Implacável"
 }, {
 "level": 8,
-"reward": 200,
-"target": 5000,
-"title": "Guardião da Grama"
+"reward": 310,
+"target": 3300,
+"title": "Guardião da Colina"
 }, {
 "level": 9,
-"reward": 300,
-"target": 7500,
-"title": "Lenda dos Gramados"
+"reward": 420,
+"target": 4500,
+"title": "Tufos Dourados"
 }, {
 "level": 10,
-"reward": 500,
-"target": 10000,
-"title": "Mestre da Clorofila"
+"reward": 600,
+"target": 6000,
+"title": "Lenda Botânica"
 }])
+mesh_path = "res://assets/models/grass/grass_01.glb"
 material_path = "res://shaders/interactive_grass_white_material.tres"
-clipping_color = Color(0.7, 0.73, 0.68, 1)
+clipping_color = Color(0.48, 0.56, 0.64, 1)
+particle_petal_color = Color(0.82, 0.88, 0.92, 1)
+particle_center_color = Color(0.48, 0.56, 0.64, 1)

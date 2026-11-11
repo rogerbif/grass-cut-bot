@@ -6,66 +6,66 @@
 script = ExtResource("1_oo1bk")
 key = "flower_bed"
 category = "flower"
-name = "Canteiro de Flores Mistas"
+name = "Canteiro Florido Misto"
 icon = "🪻"
-color = Color(0.55, 0.25, 0.75, 1)
-origin_level = 15
+color = Color(0.92, 0.35, 1, 1)
+origin_level = 4
 hits = 3
 reward_coins = 5
-desc = "Arranjo ornamental denso reunindo múltiplos botões aromáticos em uma só jardineira."
+desc = "Arranjo botânico alongado com múltiplos caules floridos em buquê denso de cor magenta."
 milestones = Array[Dictionary]([{
 "level": 1,
-"reward": 20,
+"reward": 25,
 "target": 10,
-"title": "Florista Amador"
+"title": "Florista Aprendiz"
 }, {
 "level": 2,
-"reward": 35,
+"reward": 40,
 "target": 25,
 "title": "Aroma Suave"
 }, {
 "level": 3,
-"reward": 50,
+"reward": 60,
 "target": 50,
 "title": "Despetalador Hábil"
 }, {
 "level": 4,
-"reward": 80,
+"reward": 90,
 "target": 90,
 "title": "Buquê Nobre"
 }, {
 "level": 5,
-"reward": 120,
+"reward": 135,
 "target": 150,
 "title": "Jardineiro Botânico"
 }, {
 "level": 6,
-"reward": 170,
+"reward": 195,
 "target": 240,
-"title": "Pétalas de Aço"
+"title": "Pétalas Preciosas"
 }, {
 "level": 7,
-"reward": 230,
-"target": 380,
+"reward": 275,
+"target": 360,
 "title": "Conservador Floral"
 }, {
 "level": 8,
-"reward": 320,
-"target": 600,
-"title": "Orvalho Real"
+"reward": 380,
+"target": 520,
+"title": "Estufa Encantada"
 }, {
 "level": 9,
-"reward": 450,
-"target": 900,
-"title": "Mestre Botânico"
+"reward": 520,
+"target": 750,
+"title": "Orquídea Celestial"
 }, {
 "level": 10,
 "reward": 750,
-"target": 1300,
-"title": "Guardião das Pétalas"
+"target": 1050,
+"title": "Soberano dos Jardins"
 }])
-mesh_path = "res://assets/models/flower_08_bed.glb"
+mesh_path = "res://assets/models/flowers/flower_05_bed.glb"
 material_path = "res://shaders/flower_bed_material.tres"
-clipping_color = Color(0.45, 0.2, 0.6, 1)
-particle_petal_color = Color(0.55, 0.25, 0.75, 1)
-particle_center_color = Color(0.35, 0.15, 0.5, 1)
+clipping_color = Color(0.2, 0.5, 0.2, 1)
+particle_petal_color = Color(0.92, 0.35, 1, 1)
+particle_center_color = Color(1, 0.9, 0.1, 1)

@@ -10,8 +10,8 @@ func _ready() -> void:
 	var species_list: Array[Dictionary] = PlantDatabaseScript.get_all_species()
 	var resource_list: Array[PlantSpeciesData] = PlantDatabaseScript.get_all_resources()
 
-	assert(species_list.size() == 13, "PlantDatabase deve conter exatamente 13 espécies canônicas! Atual: %d" % species_list.size())
-	assert(resource_list.size() == 13, "PlantDatabase deve conter exatamente 13 instâncias PlantSpeciesData! Atual: %d" % resource_list.size())
+	assert(species_list.size() == 36, "PlantDatabase deve conter exatamente 36 espécies canônicas! Atual: %d" % species_list.size())
+	assert(resource_list.size() == 36, "PlantDatabase deve conter exatamente 36 instâncias PlantSpeciesData! Atual: %d" % resource_list.size())
 
 	var grass_count: int = 0
 	var crop_count: int = 0
@@ -27,8 +27,8 @@ func _ready() -> void:
 
 	assert(grass_count == 7, "Devem existir 7 gramas coloridas! Atual: %d" % grass_count)
 	assert(crop_count == 1, "Deve existir 1 cultura agrícola (trigo)! Atual: %d" % crop_count)
-	assert(flower_count == 5, "Devem existir 5 flores canônicas! Atual: %d" % flower_count)
-	print("✔ Teste 1: PlantDatabase validado com 13 espécies e 10 marcos cada via Data-Driven.")
+	assert(flower_count == 28, "Devem existir 28 flores canônicas! Atual: %d" % flower_count)
+	print("✔ Teste 1: PlantDatabase validado com 36 espécies e 10 marcos cada via Data-Driven.")
 
 	# 2. Validação do SaveManager
 	var save_mgr: Node = get_node_or_null("/root/SaveManager")
@@ -84,11 +84,11 @@ func _ready() -> void:
 
 	var prog_lbl: Label = tab_col.get_node("Panel/MainVBox/HeaderVBox/ProgBox/ProgressOverlay/ProgLabel") as Label
 	assert(prog_lbl != null, "ProgLabel deve existir na cena")
-	assert(prog_lbl.text.contains("3 / 13"), "Texto de progresso deve indicar 3 / 13 descobertas! Atual: %s" % prog_lbl.text)
+	assert(prog_lbl.text.contains("3 / 36"), "Texto de progresso deve indicar 3 / 36 descobertas! Atual: %s" % prog_lbl.text)
 
 	var cards_vbox: VBoxContainer = tab_col.get_node("Panel/MainVBox/Scroll/CardsMargin/CardsVBox") as VBoxContainer
 	assert(cards_vbox != null, "CardsVBox deve existir na cena")
-	assert(cards_vbox.get_child_count() == 13, "CardsVBox deve renderizar 13 cards horizontais! Atual: %d" % cards_vbox.get_child_count())
+	assert(cards_vbox.get_child_count() == 36, "CardsVBox deve renderizar 36 cards horizontais! Atual: %d" % cards_vbox.get_child_count())
 
 	# Verifica ordenação estrita por origin_level
 	var prev_lvl: int = 0
@@ -97,8 +97,18 @@ func _ready() -> void:
 		assert(cur_lvl >= prev_lvl, "Espécies devem estar ordenadas de forma crescente por fase (origin_level)! %d < %d" % [cur_lvl, prev_lvl])
 		prev_lvl = cur_lvl
 
+	# Testa filtros
+	tab_col.call("_on_filter_selected", "grass")
+	assert(cards_vbox.get_child_count() == 7, "Filtro grass deve exibir 7 cards! Atual: %d" % cards_vbox.get_child_count())
+	tab_col.call("_on_filter_selected", "crop")
+	assert(cards_vbox.get_child_count() == 1, "Filtro crop deve exibir 1 card! Atual: %d" % cards_vbox.get_child_count())
+	tab_col.call("_on_filter_selected", "flower")
+	assert(cards_vbox.get_child_count() == 28, "Filtro flower deve exibir 28 cards! Atual: %d" % cards_vbox.get_child_count())
+	tab_col.call("_on_filter_selected", "all")
+	assert(cards_vbox.get_child_count() == 36, "Filtro all deve exibir 36 cards! Atual: %d" % cards_vbox.get_child_count())
+
 	tab_col.queue_free()
-	print("✔ Teste 4: TabCollection UI (13 cards horizontais e ordenação por fase) validada.")
+	print("✔ Teste 4: TabCollection UI (36 cards, filtros dinâmicos e ordenação por fase) validada.")
 
 	print("--- TODOS OS TESTES DO HERBÁRIO FORAM APROVADOS COM SUCESSO! ---")
 	await get_tree().create_timer(1.0).timeout

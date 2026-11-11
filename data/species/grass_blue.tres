@@ -7,59 +7,62 @@ script = ExtResource("1_ye857")
 key = "grass_blue"
 name = "Grama Azul Costeira"
 icon = "🌊"
-color = Color(0.18, 0.58, 0.92, 1)
-origin_level = 2
-desc = "Nutrida pela maresia do oceano turquesa, cresce vigorosa à beira das falésias."
+color = Color(0.25, 0.65, 0.85, 1)
+origin_level = 3
+desc = "Espécie adaptada à maresia e às brisas oceânicas, com tonalidade azul turquesa revigorante."
 milestones = Array[Dictionary]([{
 "level": 1,
-"reward": 10,
+"reward": 15,
 "target": 50,
-"title": "Brotamento"
+"title": "Primeira Ceifa"
 }, {
 "level": 2,
-"reward": 20,
-"target": 150,
-"title": "Aparador Iniciante"
+"reward": 25,
+"target": 120,
+"title": "Rastro Limpo"
 }, {
 "level": 3,
-"reward": 35,
-"target": 350,
-"title": "Ceifador Ágil"
+"reward": 40,
+"target": 250,
+"title": "Podador Ágil"
 }, {
 "level": 4,
-"reward": 50,
-"target": 700,
-"title": "Jardineiro Dedicado"
+"reward": 65,
+"target": 500,
+"title": "Campo Aberto"
 }, {
 "level": 5,
-"reward": 75,
-"target": 1200,
-"title": "Podador Experiente"
+"reward": 100,
+"target": 900,
+"title": "Mestre do Gramado"
 }, {
 "level": 6,
-"reward": 100,
-"target": 2000,
-"title": "Trator dos Prados"
+"reward": 150,
+"target": 1500,
+"title": "Esteira Veloz"
 }, {
 "level": 7,
-"reward": 150,
-"target": 3200,
-"title": "Ceifa Implacável"
+"reward": 220,
+"target": 2300,
+"title": "Ceifador Implacável"
 }, {
 "level": 8,
-"reward": 200,
-"target": 5000,
-"title": "Guardião da Grama"
+"reward": 310,
+"target": 3300,
+"title": "Guardião da Colina"
 }, {
 "level": 9,
-"reward": 300,
-"target": 7500,
-"title": "Lenda dos Gramados"
+"reward": 420,
+"target": 4500,
+"title": "Tufos Dourados"
 }, {
 "level": 10,
-"reward": 500,
-"target": 10000,
-"title": "Mestre da Clorofila"
+"reward": 600,
+"target": 6000,
+"title": "Lenda Botânica"
 }])
+mesh_path = "res://assets/models/grass/grass_01.glb"
 material_path = "res://shaders/interactive_grass_blue_material.tres"
-clipping_color = Color(0.16, 0.31, 0.42, 1)
+clipping_color = Color(0.16, 0.44, 0.62, 1)
+particle_petal_color = Color(0.25, 0.65, 0.85, 1)
+particle_center_color = Color(0.16, 0.44, 0.62, 1)

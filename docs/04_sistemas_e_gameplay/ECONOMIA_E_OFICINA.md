@@ -50,15 +50,19 @@ Acessível na aba "Oficina" do Menu Principal:
 ## 4. O Herbário Botânico & Recompensas de Maestria (`tab_collection.tscn`)
 
 Acessível na aba "Coleção" do Menu Principal:
-- **Catálogo Canônico de 15 Espécies (`PlantDatabase`):**
-  - **7 Gramas:** Verde Esmeralda, Dourada Solar, Azul Costeira, Violeta Crepúsculo, Branca Cristalina, Carmesim Vulcânica e Negra Obsidiana.
-  - **1 Cultura Agrícola:** Trigo Dourado Enraizado.
-  - **7 Flores Nobres & Canteiros:** Margarida Silvestre, Flor de Sino Cerúlea, Rosa Rubra Encantada, Girassol Radiante, Tulipa Imperial, Corola Vulcânica e Canteiro de Flores Mistas.
+- **Catálogo Canônico de 36 Espécies Data-Driven (`PlantDatabase`):**
+  - **7 Gramas Coloridas:** Verde Esmeralda, Dourada Solar, Azul Costeira, Violeta Crepúsculo, Carmesim Vulcânica, Branca Cristalina e Negra Obsidiana.
+  - **1 Cultura Agrícola:** Trigo Dourado Enraizado (`wheat`).
+  - **28 Flores Nobres & Canteiros:** 6 Flores Silvestres, 7 Rosas Nobres, 7 Margaridas Radiadas, 1 Girassol Majestoso, 4 Tulipas Imperiais e 3 Canteiros Floridos.
 - **Rastreamento Dinâmico no `SaveManager`:**
   - Descoberta automática no primeiro corte de cada tufo físico (`record_plant_harvest`).
   - Total vitalício de tufos ceifados por espécie e carreira global.
-- **10 Níveis de Marcos de Maestria por Espécie:**
-  - Cada uma das 15 espécies possui 10 níveis de meta com títulos temáticos e recompensas crescentes em moedas (ex: 50 a 10.000 para gramas, 15 a 2.200 para trigo e 10 a 1.300 para flores).
-  - Botão interativo `COLETAR +X 🪙` em destaque verde quando a meta é alcançada, com feedback de áudio (`"buy"`) e vibração tátil ao resgatar.
-- **Filtros Ágeis:** Botões de alternância `Todas (15)`, `Gramas (7)`, `Culturas (1)` e `Flores (7)`.
+- **10 Níveis de Marcos de Maestria por Espécie (360 Marcos no Total):**
+  - Cada uma das 36 espécies possui 10 níveis de meta rigorosamente crescentes com recompensas em moedas verdes (15 a 500 moedas).
+  - Botão interativo `COLETAR +X 🪙` em destaque verde quando a meta é alcançada, com feedback de áudio (`"buy"`) e vibração háptica (`GameManager.trigger_haptic_cut`) ao resgatar.
+  - Botão de resgate atômico **"Coletar Tudo"** no cabeçalho quando múltiplos marcos estão pendentes.
+- **Ícones 3D Oficiais Estilo Sticker:**
+  - Renderizados dinamicamente via `GoalIconFactory.build_goal_icon(key, 76.0, true)` com os modelos 3D originais da ilha e duplo contorno de sticker (1px preto + 2px branco).
+- **Filtros Ágeis por Categoria:**
+  - Barra de scroll horizontal com botões dinâmicos: `Todas (36)`, `Gramas (7)`, `Culturas (1)`, `Flores (28)` e `Resgatar (⭐)`.
 

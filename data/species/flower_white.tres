@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="PlantSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://scripts/plants/plant_species_data.gd" id="1_nw1x3"]
+
+[resource]
+script = ExtResource("1_nw1x3")
+key = "flower_white"
+category = "flower"
+name = "Flor Silvestre Alva"
+icon = "🤍"
+origin_level = 6
+hits = 3
+reward_coins = 5
+desc = "Pétalas brancas imaculadas com centro amarelo luminoso, símbolo de pureza botânica."
+milestones = Array[Dictionary]([{
+"level": 1,
+"reward": 25,
+"target": 10,
+"title": "Florista Aprendiz"
+}, {
+"level": 2,
+"reward": 40,
+"target": 25,
+"title": "Aroma Suave"
+}, {
+"level": 3,
+"reward": 60,
+"target": 50,
+"title": "Despetalador Hábil"
+}, {
+"level": 4,
+"reward": 90,
+"target": 90,
+"title": "Buquê Nobre"
+}, {
+"level": 5,
+"reward": 135,
+"target": 150,
+"title": "Jardineiro Botânico"
+}, {
+"level": 6,
+"reward": 195,
+"target": 240,
+"title": "Pétalas Preciosas"
+}, {
+"level": 7,
+"reward": 275,
+"target": 360,
+"title": "Conservador Floral"
+}, {
+"level": 8,
+"reward": 380,
+"target": 520,
+"title": "Estufa Encantada"
+}, {
+"level": 9,
+"reward": 520,
+"target": 750,
+"title": "Orquídea Celestial"
+}, {
+"level": 10,
+"reward": 750,
+"target": 1050,
+"title": "Soberano dos Jardins"
+}])
+mesh_path = "res://assets/models/flowers/flower_01.glb"
+material_path = "res://shaders/interactive_flower_white_material.tres"
+clipping_color = Color(0.22, 0.55, 0.24, 1)
+particle_center_color = Color(0.92, 0.7, 0.03, 1)

@@ -6,6 +6,7 @@ extends Control
 ## rastreamento de colheitas, progresso da enciclopédia e resgate dos 10 níveis de marcos.
 
 const PlantDatabaseScript = preload("res://scripts/plants/plant_database.gd")
+const GoalIconFactoryScript = preload("res://scripts/ui/goal_icon_factory.gd")
 
 const TEX_CARD_BG: Texture2D = preload("res://assets/ui/collection/card_species_bg.svg")
 const TEX_BADGE_DISC: Texture2D = preload("res://assets/ui/collection/badge_discovered.svg")
@@ -13,12 +14,6 @@ const TEX_BADGE_LOCK: Texture2D = preload("res://assets/ui/collection/badge_lock
 const TEX_ICON_FRAME: Texture2D = preload("res://assets/ui/collection/icon_frame_cyber.svg")
 const TEX_BADGE_MILESTONE: Texture2D = preload("res://assets/ui/collection/badge_milestone_cyber.svg")
 const TEX_BTN_CLAIM: Texture2D = preload("res://assets/ui/collection/btn_claim_cyber.svg")
-
-const TEX_ILLUS_GRASS_BASE: Texture2D = preload("res://assets/ui/collection/illus_grass_base.svg")
-const TEX_ILLUS_GRASS_BLADES: Texture2D = preload("res://assets/ui/collection/illus_grass_blades.svg")
-const TEX_ILLUS_WHEAT: Texture2D = preload("res://assets/ui/collection/illus_wheat_bundle.svg")
-const TEX_ILLUS_FLOWER_STEMS: Texture2D = preload("res://assets/ui/collection/illus_flower_stems.svg")
-const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/illus_flower_petals.svg")
 const TEX_ILLUS_LOCKED: Texture2D = preload("res://assets/ui/collection/illus_locked_plant.svg")
 
 @onready var title_label: Label = $Panel/MainVBox/HeaderVBox/TitleHBox/Title
@@ -30,6 +25,12 @@ const TEX_ILLUS_LOCKED: Texture2D = preload("res://assets/ui/collection/illus_lo
 @onready var chip_milestones_label: Label = $Panel/MainVBox/HeaderVBox/ChipsHBox/ChipMilestones/Label
 @onready var scroll: ScrollContainer = $Panel/MainVBox/Scroll
 @onready var cards_vbox: VBoxContainer = $Panel/MainVBox/Scroll/CardsMargin/CardsVBox
+
+# Filtros por Categoria Botânica
+var _filter_scroll: ScrollContainer = null
+var _filter_hbox: HBoxContainer = null
+var _selected_filter: String = "all"
+var _filter_buttons: Dictionary = {}
 
 # Variáveis para rolagem inercial touch/mouse suave
 var _is_dragging: bool = false
@@ -43,6 +44,7 @@ func _notification(what: int) -> void:
 		refresh_ui()
 
 func _ready() -> void:
+	_init_filter_bar()
 	_connect_signals()
 	refresh_ui()
 
@@ -119,6 +121,148 @@ func _on_scroll_gui_input(event: InputEvent) -> void:
 		_last_drag_pos = sd.position
 		_last_drag_time = now_t
 
+func _init_filter_bar() -> void:
+	if _filter_scroll != null:
+		return
+	var header_vbox: VBoxContainer = get_node_or_null("Panel/MainVBox/HeaderVBox") as VBoxContainer
+	if header_vbox == null:
+		return
+
+	_filter_scroll = ScrollContainer.new()
+	_filter_scroll.name = "FilterScroll"
+	_filter_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_filter_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_filter_scroll.custom_minimum_size = Vector2(0, 36)
+	_filter_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+
+	_filter_hbox = HBoxContainer.new()
+	_filter_hbox.name = "FilterHBox"
+	_filter_hbox.add_theme_constant_override("separation", 8)
+	_filter_hbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	_filter_scroll.add_child(_filter_hbox)
+
+	header_vbox.add_child(_filter_scroll)
+
+	var filter_configs: Array[Dictionary] = [
+		{"id": "all", "label": "HERBARIUM_FILTER_ALL", "icon": "🌿"},
+		{"id": "grass", "label": "HERBARIUM_FILTER_GRASS", "icon": "🌱"},
+		{"id": "crop", "label": "HERBARIUM_FILTER_CROP", "icon": "🌾"},
+		{"id": "flower", "label": "HERBARIUM_FILTER_FLOWER", "icon": "🌸"},
+		{"id": "claimable", "label": "HERBARIUM_FILTER_CLAIMABLE", "icon": "⭐"}
+	]
+
+	for cfg in filter_configs:
+		var btn: Button = Button.new()
+		var fid: String = String(cfg["id"])
+		btn.name = "FilterBtn_" + fid
+		btn.custom_minimum_size = Vector2(80, 30)
+		btn.mouse_filter = Control.MOUSE_FILTER_PASS
+		btn.add_theme_font_size_override("font_size", 11)
+		btn.pressed.connect(func() -> void: _on_filter_selected(fid))
+		_filter_hbox.add_child(btn)
+		_filter_buttons[fid] = btn
+
+func _on_filter_selected(fid: String) -> void:
+	if _selected_filter == fid:
+		return
+	_selected_filter = fid
+	if AudioManager != null:
+		AudioManager.play_sfx("confirm")
+	_update_filter_buttons()
+	refresh_cards()
+
+func _update_filter_buttons(all_species: Array[Dictionary] = []) -> void:
+	if _filter_buttons.is_empty():
+		return
+	if all_species.is_empty():
+		all_species = PlantDatabaseScript.get_all_species()
+
+	var total_sp: int = all_species.size()
+	var grass_sp: int = 0
+	var crop_sp: int = 0
+	var flower_sp: int = 0
+	for sp in all_species:
+		var cat: String = String(sp.get("category", "grass"))
+		if cat == "grass":
+			grass_sp += 1
+		elif cat == "crop":
+			crop_sp += 1
+		elif cat == "flower":
+			flower_sp += 1
+
+	var claimable_sp: int = 0
+	for sp in all_species:
+		var key: String = String(sp.get("key", ""))
+		if SaveManager != null and SaveManager.is_species_discovered(key):
+			var hc: int = SaveManager.get_harvest_count(key)
+			var cl: int = SaveManager.get_claimed_milestone_level(key)
+			var ms: Array = sp.get("milestones", [])
+			if cl < ms.size():
+				var next_m: Dictionary = ms[cl] as Dictionary
+				if hc >= int(next_m.get("target", 100)):
+					claimable_sp += 1
+
+	var counts: Dictionary = {
+		"all": total_sp,
+		"grass": grass_sp,
+		"crop": crop_sp,
+		"flower": flower_sp,
+		"claimable": claimable_sp
+	}
+
+	var labels: Dictionary = {
+		"all": tr("HERBARIUM_FILTER_ALL"),
+		"grass": tr("HERBARIUM_FILTER_GRASS"),
+		"crop": tr("HERBARIUM_FILTER_CROP"),
+		"flower": tr("HERBARIUM_FILTER_FLOWER"),
+		"claimable": tr("HERBARIUM_FILTER_CLAIMABLE")
+	}
+
+	var icons: Dictionary = {
+		"all": "🌿",
+		"grass": "🌱",
+		"crop": "🌾",
+		"flower": "🌸",
+		"claimable": "⭐"
+	}
+
+	for fid: String in _filter_buttons.keys():
+		var btn: Button = _filter_buttons[fid] as Button
+		if btn == null:
+			continue
+		var count: int = int(counts.get(fid, 0))
+		var title: String = String(labels.get(fid, fid))
+		var icon: String = String(icons.get(fid, ""))
+		btn.text = "%s %s (%d)" % [icon, title, count]
+
+		var is_active: bool = (_selected_filter == fid)
+		var sb: StyleBoxFlat = StyleBoxFlat.new()
+		sb.set_corner_radius_all(6)
+		sb.content_margin_left = 10.0
+		sb.content_margin_right = 10.0
+		sb.content_margin_top = 4.0
+		sb.content_margin_bottom = 4.0
+		if is_active:
+			sb.bg_color = Color(0.12, 0.38, 0.65, 0.95)
+			sb.border_width_left = 1
+			sb.border_width_top = 1
+			sb.border_width_right = 1
+			sb.border_width_bottom = 1
+			sb.border_color = Color(0.35, 0.85, 1.0, 1.0)
+			btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+		else:
+			sb.bg_color = Color(0.06, 0.12, 0.22, 0.75)
+			sb.border_width_left = 1
+			sb.border_width_top = 1
+			sb.border_width_right = 1
+			sb.border_width_bottom = 1
+			sb.border_color = Color(0.18, 0.30, 0.45, 0.55)
+			btn.add_theme_color_override("font_color", Color(0.68, 0.78, 0.88, 0.85))
+
+		btn.add_theme_stylebox_override("normal", sb)
+		btn.add_theme_stylebox_override("hover", sb)
+		btn.add_theme_stylebox_override("pressed", sb)
+
 func refresh_ui() -> void:
 	if SaveManager == null:
 		return
@@ -156,6 +300,7 @@ func refresh_ui() -> void:
 		btn_claim_all.visible = (claimable_count > 0)
 		btn_claim_all.text = tr("HERBARIUM_CLAIM_ALL_FMT") % claimable_count
 
+	_update_filter_buttons(all_species)
 	refresh_cards()
 
 func _get_claimable_milestones_count(all_species: Array[Dictionary]) -> int:
@@ -167,11 +312,13 @@ func _get_claimable_milestones_count(all_species: Array[Dictionary]) -> int:
 		var harvest_count: int = SaveManager.get_harvest_count(key)
 		var claimed_lvl: int = SaveManager.get_claimed_milestone_level(key)
 		var milestones: Array = sp.get("milestones", [])
-		if claimed_lvl < milestones.size():
-			var next_m: Dictionary = milestones[claimed_lvl] as Dictionary
+		for i in range(claimed_lvl, milestones.size()):
+			var next_m: Dictionary = milestones[i] as Dictionary
 			var target_req: int = int(next_m.get("target", 100))
 			if harvest_count >= target_req:
 				count += 1
+			else:
+				break
 	return count
 
 func refresh_cards() -> void:
@@ -184,6 +331,28 @@ func refresh_cards() -> void:
 
 	var all_species: Array[Dictionary] = PlantDatabaseScript.get_all_species()
 	for sp: Dictionary in all_species:
+		var key: String = String(sp.get("key", ""))
+		var cat: String = String(sp.get("category", "grass"))
+
+		if _selected_filter == "grass" and cat != "grass":
+			continue
+		elif _selected_filter == "crop" and cat != "crop":
+			continue
+		elif _selected_filter == "flower" and cat != "flower":
+			continue
+		elif _selected_filter == "claimable":
+			if not SaveManager.is_species_discovered(key):
+				continue
+			var harvest_count: int = SaveManager.get_harvest_count(key)
+			var claimed_lvl: int = SaveManager.get_claimed_milestone_level(key)
+			var milestones: Array = sp.get("milestones", [])
+			if claimed_lvl >= milestones.size():
+				continue
+			var next_m: Dictionary = milestones[claimed_lvl] as Dictionary
+			var target_req: int = int(next_m.get("target", 100))
+			if harvest_count < target_req:
+				continue
+
 		var card: PanelContainer = _build_species_card(sp)
 		cards_vbox.add_child(card)
 
@@ -218,7 +387,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	hbox.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.add_child(hbox)
 
-	# --- 1. Vitrine de Ilustração Botânica 3D (Esquerda - Cantos Retos Chanfrados) ---
+	# --- 1. Vitrine de Ilustração Botânica 3D Oficial (Esquerda) ---
 	var icon_panel: PanelContainer = PanelContainer.new()
 	icon_panel.custom_minimum_size = Vector2(96, 96)
 	icon_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -233,57 +402,20 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	icon_sb.modulate_color = Color(theme_col.r, theme_col.g, theme_col.b, 0.90) if is_disc else Color(0.28, 0.38, 0.52, 0.70)
 	icon_panel.add_theme_stylebox_override("panel", icon_sb)
 
-	var illus_layer: Control = Control.new()
+	var illus_layer: CenterContainer = CenterContainer.new()
 	illus_layer.custom_minimum_size = Vector2(88, 88)
 	illus_layer.mouse_filter = Control.MOUSE_FILTER_PASS
 	icon_panel.add_child(illus_layer)
 
-	if is_disc:
-		if cat == "grass":
-			var base_rect: TextureRect = TextureRect.new()
-			base_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-			base_rect.texture = TEX_ILLUS_GRASS_BASE
-			base_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			base_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			base_rect.mouse_filter = Control.MOUSE_FILTER_PASS
-			illus_layer.add_child(base_rect)
+	var icon_view: Control = GoalIconFactoryScript.build_goal_icon(key, 76.0, true)
+	icon_view.mouse_filter = Control.MOUSE_FILTER_PASS
+	if not is_disc:
+		icon_view.modulate = Color(0.18, 0.26, 0.38, 0.70)
+	illus_layer.add_child(icon_view)
 
-			var blades_rect: TextureRect = TextureRect.new()
-			blades_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-			blades_rect.texture = TEX_ILLUS_GRASS_BLADES
-			blades_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			blades_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			blades_rect.modulate = theme_col
-			blades_rect.mouse_filter = Control.MOUSE_FILTER_PASS
-			illus_layer.add_child(blades_rect)
-		elif cat == "crop":
-			var wheat_rect: TextureRect = TextureRect.new()
-			wheat_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-			wheat_rect.texture = TEX_ILLUS_WHEAT
-			wheat_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			wheat_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			wheat_rect.mouse_filter = Control.MOUSE_FILTER_PASS
-			illus_layer.add_child(wheat_rect)
-		else:
-			var stems_rect: TextureRect = TextureRect.new()
-			stems_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-			stems_rect.texture = TEX_ILLUS_FLOWER_STEMS
-			stems_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			stems_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			stems_rect.mouse_filter = Control.MOUSE_FILTER_PASS
-			illus_layer.add_child(stems_rect)
-
-			var petals_rect: TextureRect = TextureRect.new()
-			petals_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-			petals_rect.texture = TEX_ILLUS_FLOWER_PETALS
-			petals_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			petals_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			petals_rect.modulate = theme_col
-			petals_rect.mouse_filter = Control.MOUSE_FILTER_PASS
-			illus_layer.add_child(petals_rect)
-	else:
+	if not is_disc:
 		var lock_rect: TextureRect = TextureRect.new()
-		lock_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		lock_rect.custom_minimum_size = Vector2(36, 36)
 		lock_rect.texture = TEX_ILLUS_LOCKED
 		lock_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		lock_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED

@@ -142,23 +142,47 @@ TOAST_COMING_SOON_GPLAY,Google Play Games: Em breve!,Google Play Games: Coming s
 TOAST_COMING_SOON_FB,Facebook Connect: Em breve!,Facebook Connect: Coming soon!,¡Facebook Connect: Próximamente!
 TOAST_SUPPORT_OPENING,Abrindo suporte ao jogador...,Opening player support...,Abriendo soporte al jugador...
 TOAST_BENCHMARK_TAPS,"Benchmark Fase 20: mais %d toque(s)...","Benchmark Level 20: %d more tap(s)...","Benchmark Nivel 20: %d toque(s) más..."
+HERBARIUM_FILTER_ALL,Todas,All,Todas
+HERBARIUM_FILTER_GRASS,Gramas,Grasses,Céspedes
+HERBARIUM_FILTER_CROP,Trigo,Wheat,Trigo
+HERBARIUM_FILTER_FLOWER,Flores,Flowers,Flores
+HERBARIUM_FILTER_CLAIMABLE,Prontas,Ready,Listas
 PLANT_GRASS_GREEN,Grama Verde Esmeralda,Emerald Green Grass,Césped Verde Esmeralda
 PLANT_GRASS_YELLOW,Grama Dourada Solar,Golden Sun Grass,Césped Dorado Solar
-PLANT_GRASS_RED,Grama Carmesim Vulcânica,Volcanic Crimson Grass,Césped Carmesí Volcánico
 PLANT_GRASS_BLUE,Grama Azul Costeira,Coastal Blue Grass,Césped Azul Costero
 PLANT_GRASS_PURPLE,Grama Violeta Crepúsculo,Twilight Purple Grass,Césped Violeta Crepúsculo
-PLANT_GRASS_BLACK,Grama Negra Obsidiana,Obsidian Black Grass,Césped Negro Obsidiana
 PLANT_GRASS_WHITE,Grama Branca Cristalina,Crystal White Grass,Césped Blanco Cristalino
-PLANT_WHEAT,Trigo Dourado Enraizado,Golden Rooted Wheat,Trigo Dorado Enraizado
-PLANT_FLOWER_DAISY,Margarida Silvestre,Wild Daisy,Margarita Silvestre
-PLANT_FLOWER_ROSE,Rosa Rubra Nobre,Noble Red Rose,Rosa Roja Noble
-PLANT_FLOWER_ROSE_RED,Rosa Rubra Nobre,Noble Red Rose,Rosa Roja Noble
-PLANT_FLOWER_ROSE_PINK,Rosa Delicada,Delicate Rose,Rosa Delicada
-PLANT_FLOWER_ROSE_BLACK,Rosa Negra,Black Rose,Rosa Negra
-PLANT_FLOWER_TULIP,Tulipa Imperial,Imperial Tulip,Tulipán Imperial
-PLANT_FLOWER_BELL,Flor de Sino Cerúlea,Cerulean Bellflower,Flor de Campana Cerúlea
+PLANT_GRASS_RED,Grama Carmesim Vulcânica,Volcanic Crimson Grass,Césped Carmesí Volcánico
+PLANT_GRASS_BLACK,Grama Negra Obsidiana,Obsidian Black Grass,Césped Negro Obsidiana
+PLANT_WHEAT,Trigo Maduro,Ripe Wheat,Trigo Maduro
+PLANT_FLOWER,Flor Silvestre Rosa,Wild Pink Flower,Flor Silvestre Rosa
+PLANT_FLOWER_BLUE,Flor Silvestre Azul,Wild Blue Flower,Flor Silvestre Azul
+PLANT_FLOWER_SUNSET,Flor Silvestre Sunset,Wild Sunset Flower,Flor Silvestre Sunset
+PLANT_FLOWER_PURPLE,Flor Silvestre Lilás,Wild Lilac Flower,Flor Silvestre Lila
+PLANT_FLOWER_WHITE,Flor Silvestre Alva,Wild White Flower,Flor Silvestre Blanca
+PLANT_FLOWER_TURQUOISE,Flor Silvestre Turquesa,Wild Turquoise Flower,Flor Silvestre Turquesa
+PLANT_FLOWER_ROSE,Rosa Vermelha Nobre,Noble Red Rose,Rosa Roja Noble
+PLANT_FLOWER_ROSE_WHITE,Rosa Branca Neve,Snow White Rose,Rosa Blanca Nieve
+PLANT_FLOWER_ROSE_YELLOW,Rosa Amarela Solar,Golden Yellow Rose,Rosa Amarilla Solar
+PLANT_FLOWER_ROSE_BLUE,Rosa Azul Mística,Mystic Blue Rose,Rosa Azul Mística
+PLANT_FLOWER_ROSE_WINE,Rosa Vinho Imperial,Imperial Wine Rose,Rosa Vino Imperial
+PLANT_FLOWER_ROSE_BLACK,Rosa Negra Obsidiana,Obsidian Black Rose,Rosa Negra Obsidiana
+PLANT_FLOWER_ROSE_PEACH,Rosa Pêssego Suave,Soft Peach Rose,Rosa Melocotón Suave
+PLANT_FLOWER_DAISY,Margarida Branca Clássica,Classic White Daisy,Margarita Blanca Clásica
+PLANT_FLOWER_DAISY_BLUE,Margarida Azul Celeste,Sky Blue Daisy,Margarita Azul Celeste
+PLANT_FLOWER_DAISY_ORANGE,Margarida Laranja Calêndula,Marigold Orange Daisy,Margarita Naranja Caléndula
+PLANT_FLOWER_DAISY_YELLOW,Margarida Amarela Solar,Solar Yellow Daisy,Margarita Amarilla Solar
+PLANT_FLOWER_DAISY_RED,Margarida Vermelha Carmesim,Crimson Red Daisy,Margarita Roja Carmesí
+PLANT_FLOWER_DAISY_PINK,Margarida Rosa Silvestre,Wild Pink Daisy,Margarita Rosa Silvestre
+PLANT_FLOWER_DAISY_BICOLOR,Margarida Coroada Bicolor,Crowned Bicolor Daisy,Margarita Coronada Bicolor
 PLANT_FLOWER_SUNFLOWER,Girassol Radiante,Radiant Sunflower,Girasol Radiante
-PLANT_FLOWER_TUFT,Flor Silvestre,Wildflower,Flor Silvestre
+PLANT_FLOWER_TULIP,Tulipa Imperial Rubi,Imperial Ruby Tulip,Tulipán Imperial Rubí
+PLANT_FLOWER_TULIP_YELLOW,Tulipa Imperial Solar,Solar Imperial Tulip,Tulipán Imperial Solar
+PLANT_FLOWER_TULIP_PURPLE,Tulipa Imperial Real,Royal Imperial Tulip,Tulipán Imperial Real
+PLANT_FLOWER_TULIP_ORANGE,Tulipa Imperial Chama,Flame Imperial Tulip,Tulipán Imperial Llama
+PLANT_FLOWER_BED,Canteiro Florido Misto,Mixed Flower Bed,Cantero Florido Mixto
+PLANT_FLOWER_BED_BLUE,Canteiro Florido Celeste,Sky Blue Flower Bed,Cantero Florido Celeste
+PLANT_FLOWER_BED_WHITE,Canteiro Florido Alvorada,Dawn White Flower Bed,Cantero Florido Alborada
 UPGRADE_BLADE_RADIUS,Raio da Lâmina,Blade Radius,Radio de la Cuchilla
 UPGRADE_BLADE_SPEED,Velocidade da Lâmina,Blade Speed,Velocidad de Cuchilla
 UPGRADE_ROBOT_SPEED,Velocidade do Robô,Robot Speed,Velocidad del Robot

@@ -20,15 +20,15 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
 
 ## 🏆 2. Metagame, Coleção e Retenção Casual
 
-### 2.1 Ativação Real da Aba Coleção (`TabCollection`) — Herbário Botânico
-- **🌿 Herbário da Ilha Interativo:** Conexão direta dos cards botânicos com os dados persistidos no `SaveManager`. O jogador visualiza:
-  - As 7 variantes de cor da **Grama Comum** (Verde, Amarela, Azul, Roxa, Branca, Vermelha, Preta).
-  - O **Trigo Maduro** (Cultura de 2 hits com textura de espiga).
-  - O catálogo completo das 6 **Flores Nobres** (Margarida, Rosa, Flor de Sino, Girassol, Tulipa e Corola).
+### 2.1 Ativação Real da Aba Coleção (`TabCollection`) — Herbário Botânico ✅ (Concluído na v0.12.194-alpha - Melhoria 240)
+- **🌿 Herbário da Ilha 100% Data-Driven & Interativo:** Conexão direta dos 36 cards botânicos com os dados persistidos no `SaveManager` ([Melhoria 240](./historico_melhorias/240_ativacao_completa_herbario_36_especies_icones_3d.md)):
+  - As 7 variantes de cor da **Grama Comum** (Verde, Dourada, Azul, Violeta, Carmesim, Branca Cristalina, Negra Obsidiana).
+  - O **Trigo Maduro** (Cultura agrícola com espiga 3D anatômica).
+  - O catálogo completo das 28 **Flores Nobres & Canteiros** (Silvestres, Rosas, Margaridas, Tulipas, Girassol e Canteiros).
 - **📊 Estatísticas Acumuladas & Mestrado:**
   - Contador vitalício de tufos ceifados por espécie vegetal.
-  - Total histórico de moedas verdes colhidas e tempo total acumulado em corte.
-  - Recompensas em moedas e insígnias cosméticas ao atingir marcos de colheita (ex: *"Colha 500 Trigos"* ➔ Ganha insígnia dourada e 300 moedas).
+  - 10 marcos progressivos por espécie (360 marcos no total) com resgate de moedas verdes, suporte a "Coletar Tudo", feedback de áudio/vibração e ícones 3D em estilo sticker (`GoalIconFactory`).
+  - Barra dinâmica de filtros deslizante com contadores em tempo real (Todas, Gramas, Culturas, Flores, Resgatar).
 
 ### 2.2 Customização de Carcaça do Robô & Lâminas (`TabGarage` / `TabStore`)
 - **🎨 Pinturas do Cutter Bit (Skins de Chassi):** Adquiridas na Oficina/Loja com moedas do jogo:

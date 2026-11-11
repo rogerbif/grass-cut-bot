@@ -6,64 +6,66 @@
 script = ExtResource("1_3c7d6")
 key = "wheat"
 category = "crop"
-name = "Trigo Dourado Enraizado"
+name = "Trigo Maduro"
 icon = "🌾"
-color = Color(0.91, 0.77, 0.42, 1)
+color = Color(0.92, 0.68, 0.18, 1)
 origin_level = 3
 hits = 2
 reward_coins = 3
-desc = "Haste agrícola rígida de 2 golpes com sementes valiosas. Requer precisão e potência."
+desc = "Cultura agrícola densa com grãos pesados em espiga. Exige 2 golpes da serra e concede 3 moedas por colheita."
 milestones = Array[Dictionary]([{
 "level": 1,
-"reward": 15,
-"target": 15,
-"title": "Primeira Colheita"
+"reward": 20,
+"target": 20,
+"title": "Primeiro Feixe"
 }, {
 "level": 2,
-"reward": 25,
-"target": 40,
-"title": "Ceifador do Campo"
+"reward": 35,
+"target": 50,
+"title": "Espiga Dourada"
 }, {
 "level": 3,
-"reward": 40,
-"target": 80,
-"title": "Colheita de Ouro"
+"reward": 55,
+"target": 100,
+"title": "Colheita Farta"
 }, {
 "level": 4,
-"reward": 60,
-"target": 150,
-"title": "Agrônomo da Ilha"
+"reward": 85,
+"target": 180,
+"title": "Moinho Ativo"
 }, {
 "level": 5,
-"reward": 90,
-"target": 250,
-"title": "Moagem Precisa"
+"reward": 130,
+"target": 300,
+"title": "Cerealista Nobre"
 }, {
 "level": 6,
-"reward": 130,
-"target": 400,
-"title": "Celeiro Farto"
+"reward": 190,
+"target": 500,
+"title": "Cesto Transbordante"
 }, {
 "level": 7,
-"reward": 180,
-"target": 650,
-"title": "Colheita Dourada"
+"reward": 270,
+"target": 750,
+"title": "Grãos de Ouro"
 }, {
 "level": 8,
-"reward": 250,
-"target": 1000,
-"title": "Ceifa dos Ventos"
+"reward": 380,
+"target": 1100,
+"title": "Celeiro Imperial"
 }, {
 "level": 9,
-"reward": 350,
-"target": 1500,
-"title": "Patrono da Espiga"
+"reward": 520,
+"target": 1600,
+"title": "Mestre Lavrador"
 }, {
 "level": 10,
-"reward": 600,
+"reward": 750,
 "target": 2200,
-"title": "Grão-Mestre da Seara"
+"title": "Patrono das Searas"
 }])
-mesh_path = "res://assets/models/wheat_01.glb"
+mesh_path = "res://assets/models/wheat/wheat_01.glb"
 material_path = "res://shaders/interactive_wheat_material.tres"
-clipping_color = Color(0.64, 0.46, 0.1, 1)
+clipping_color = Color(0.7, 0.48, 0.1, 1)
+particle_petal_color = Color(0.95, 0.82, 0.25, 1)
+particle_center_color = Color(0.65, 0.42, 0.08, 1)

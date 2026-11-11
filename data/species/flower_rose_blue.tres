@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="PlantSpeciesData" format=3]
+
+[ext_resource type="Script" path="res://scripts/plants/plant_species_data.gd" id="1_6h68i"]
+
+[resource]
+script = ExtResource("1_6h68i")
+key = "flower_rose_blue"
+category = "flower"
+name = "Rosa Azul Mística"
+icon = "💙"
+color = Color(0.38, 0.8, 1, 1)
+origin_level = 7
+hits = 3
+reward_coins = 5
+desc = "Variedade botânica misteriosa das ilhas altas, com tons oceânicos acetinados."
+milestones = Array[Dictionary]([{
+"level": 1,
+"reward": 25,
+"target": 10,
+"title": "Florista Aprendiz"
+}, {
+"level": 2,
+"reward": 40,
+"target": 25,
+"title": "Aroma Suave"
+}, {
+"level": 3,
+"reward": 60,
+"target": 50,
+"title": "Despetalador Hábil"
+}, {
+"level": 4,
+"reward": 90,
+"target": 90,
+"title": "Buquê Nobre"
+}, {
+"level": 5,
+"reward": 135,
+"target": 150,
+"title": "Jardineiro Botânico"
+}, {
+"level": 6,
+"reward": 195,
+"target": 240,
+"title": "Pétalas Preciosas"
+}, {
+"level": 7,
+"reward": 275,
+"target": 360,
+"title": "Conservador Floral"
+}, {
+"level": 8,
+"reward": 380,
+"target": 520,
+"title": "Estufa Encantada"
+}, {
+"level": 9,
+"reward": 520,
+"target": 750,
+"title": "Orquídea Celestial"
+}, {
+"level": 10,
+"reward": 750,
+"target": 1050,
+"title": "Soberano dos Jardins"
+}])
+mesh_path = "res://assets/models/flowers/flower_02_rose.glb"
+material_path = "res://shaders/flower_rose_blue_material.tres"
+clipping_color = Color(0.2, 0.5, 0.22, 1)
+particle_petal_color = Color(0.38, 0.8, 1, 1)
+particle_center_color = Color(0.04, 0.1, 0.4, 1)
