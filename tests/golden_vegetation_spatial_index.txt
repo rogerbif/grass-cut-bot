@@ -1,0 +1,20 @@
+GOLDEN|level_01|tufts=549|cut_total=549|cut_events=549|seq_hash=391074385
+GOLDEN|level_01|clip_counts=[329, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]|rem_grass={ "grass_green": 0, "grass_yellow": 0 }
+GOLDEN|level_01|rem_phys=0/0/0|coll_hash=3462230238
+GOLDEN|level_01|after_reset_cut=0|after_reset_clip=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+GOLDEN|level_03|tufts=994|cut_total=994|cut_events=994|seq_hash=1005199697
+GOLDEN|level_03|clip_counts=[498, 331, 125, 0, 0, 0, 0, 36, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]|rem_grass={ "grass_green": 0, "grass_yellow": 0, "grass_blue": 0 }
+GOLDEN|level_03|rem_phys=0/0/0|coll_hash=2278112087
+GOLDEN|level_03|after_reset_cut=0|after_reset_clip=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+GOLDEN|level_12|tufts=1297|cut_total=1297|cut_events=1297|seq_hash=705125905
+GOLDEN|level_12|clip_counts=[0, 0, 0, 0, 0, 566, 635, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 96, 0, 0, 0, 0, 0, 0, 0, 0, 0]|rem_grass={ "grass_red": 0, "grass_black": 0 }
+GOLDEN|level_12|rem_phys=0/0/0|coll_hash=1278264721
+GOLDEN|level_12|after_reset_cut=0|after_reset_clip=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+GOLDEN|level_20|tufts=1322|cut_total=1322|cut_events=1322|seq_hash=1738318510
+GOLDEN|level_20|clip_counts=[212, 92, 205, 241, 241, 235, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 54, 0, 0, 0, 0, 0, 0]|rem_grass={ "grass_green": 0, "grass_yellow": 0, "grass_blue": 0, "grass_purple": 0, "grass_white": 0, "grass_red": 0 }
+GOLDEN|level_20|rem_phys=0/0/0|coll_hash=1051621214
+GOLDEN|level_20|after_reset_cut=0|after_reset_clip=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+GOLDEN|level_40|tufts=3884|cut_total=3884|cut_events=3884|seq_hash=2010945402
+GOLDEN|level_40|clip_counts=[608, 690, 615, 615, 701, 619, 0, 12, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 0, 0]|rem_grass={ "grass_green": 0, "grass_yellow": 0, "grass_blue": 0, "grass_purple": 0, "grass_white": 0, "grass_red": 0 }
+GOLDEN|level_40|rem_phys=0/0/0|coll_hash=3630332586
+GOLDEN|level_40|after_reset_cut=0|after_reset_clip=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

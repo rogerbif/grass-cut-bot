@@ -43,7 +43,7 @@ Este documento estabelece o diagnóstico técnico, a matriz de priorização por
 Foco em eliminar alocações repetitivas de memória, travamentos de garbage collection e redesenhos invisíveis sem nenhuma alteração visual perceptível.
 
 1. **Tarefa 1.1 — Cache de Colisão de Rochas (`cutter.gd`):** Substitui a varredura dinâmica de nós da árvore a cada 1/60s por arrays numéricos estáticos `PackedVector2Array` e `PackedFloat32Array`.
-2. **Tarefa 1.2 — SubViewport Sob Demanda (`lawn_cut_trail.gd`):** O `SubViewport` só é re-renderizado quando novas coordenadas de corte forem adicionadas ao buffer de pintura.
+2. **Tarefa 1.2 — SubViewport Sob Demanda (`lawn_cut_trail.gd`):** *(Legado descontinuado na `v0.12.185-alpha`)* O rastro de grama via decal foi integralmente substituído por clipping de aparas caídas (`visible_instance_count`) e shaders dinâmicos, eliminando os passes de SubViewport e simplificando o pipeline.
 3. **Tarefa 1.3 — Global Shader Parameters (`cutter.gd`):** Substituição de 9 chamadas GDScript de material individual por uma única atualização direta via `RenderingServer`.
 4. **Tarefa 1.4 — Cache no `FloatingCoinManager`:** Eliminação de chamadas a `get_first_node_in_group` a cada tufo coletado.
 

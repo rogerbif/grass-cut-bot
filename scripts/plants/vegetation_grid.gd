@@ -2,7 +2,6 @@ extends Node3D
 
 const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
-const LawnCutTrailScript = preload("res://scripts/level/lawn_cut_trail.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const PlantScript = preload("res://scripts/plants/plant.gd")
@@ -122,12 +121,10 @@ static var _flower_bed_mesh: ArrayMesh = null
 # Dados por planta (SoA - Structure of Arrays para zero overhead de nós)
 var _positions: PackedVector3Array = PackedVector3Array()
 var _initial_transforms: Array[Transform3D] = []
-var _cut_transforms: Array[Transform3D] = []
 var _mmi_indices: PackedInt32Array = PackedInt32Array()
 var _instance_indices: PackedInt32Array = PackedInt32Array()
 var _health: PackedInt32Array = PackedInt32Array()
 var _max_health: PackedInt32Array = PackedInt32Array()
-var _coin_rewards: PackedInt32Array = PackedInt32Array()
 var _is_cut: PackedByteArray = PackedByteArray()
 var _is_hidden_by_density: PackedByteArray = PackedByteArray()
 var _last_hit_time: PackedFloat32Array = PackedFloat32Array()
@@ -135,16 +132,7 @@ var _plant_keys: PackedStringArray = PackedStringArray()
 var _particle_colors: PackedColorArray = PackedColorArray()
 var _actively_shaking_tufts: PackedInt32Array = PackedInt32Array()
 
-# Mapeamento do tufo para a célula lógica de 0.40m
-var _tuft_logical_cell: PackedInt32Array = PackedInt32Array()
-
-# Dados por célula lógica de 0.40m
-var _cell_remaining_tufts: PackedInt32Array = PackedInt32Array()
-var _cell_keys: PackedStringArray = PackedStringArray()
-var _cell_rewards: PackedInt32Array = PackedInt32Array()
-var _cell_is_completed: PackedByteArray = PackedByteArray()
-
-# Contadores físicos e acumuladores de corte (10 físicos = 1 meta)
+# Contadores físicos e acumuladores de corte por espécie
 var _total_physical_grass: int = 0
 var _total_physical_wheat: int = 0
 var _total_physical_flower: int = 0
@@ -156,8 +144,6 @@ var _remaining_physical_flower: int = 0
 var _remaining_grass_by_type: Dictionary = {}
 var _grass_cut_accumulator_by_type: Dictionary = {}
 
-var _grass_cut_accumulator: int = 0
-var _wheat_cut_accumulator: int = 0
 var _has_custom_goals: bool = false
 
 # MultiMeshes ativos de vegetação (indexados por mmi_idx de 0 a VEG_TYPES.size() - 1)
@@ -170,12 +156,15 @@ var _clipping_mmi_nodes: Array[MultiMeshInstance3D] = []
 var _clipping_counts: PackedInt32Array = PackedInt32Array()
 static var _clipping_meshes: Dictionary = {}
 
-# Decalque de solo orgânico e trilha
-var _lawn_decal_mesh: MeshInstance3D = null
-var _lawn_cut_trail: Node3D = null
-
-# Grade espacial discreta 2D: Vector2i(cx, cz) -> PackedInt32Array de p_idx
-var _grid: Dictionary = {}
+# Índice espacial plano (CSR): células de GRID_STEP em arranjo contíguo, sem alocação por célula.
+# _grid_items guarda os p_idx agrupados por célula; _grid_cell_start[ci]..[ci + 1] delimita a célula ci,
+# com ci = (cz - _grid_min_cz) * _grid_cols + (cx - _grid_min_cx). Imutável após a construção da fase.
+var _grid_min_cx: int = 0
+var _grid_min_cz: int = 0
+var _grid_cols: int = 0
+var _grid_rows: int = 0
+var _grid_cell_start: PackedInt32Array = PackedInt32Array()
+var _grid_items: PackedInt32Array = PackedInt32Array()
 
 # Estado atual de visibilidade para benchmark
 var _last_vegetation_on: bool = true
@@ -349,31 +338,27 @@ func _clear_state() -> void:
 		child.queue_free()
 	_positions.clear()
 	_initial_transforms.clear()
-	_cut_transforms.clear()
 	_mmi_indices.clear()
 	_instance_indices.clear()
 	_health.clear()
 	_max_health.clear()
-	_coin_rewards.clear()
 	_is_cut.clear()
 	_is_hidden_by_density.clear()
 	_last_hit_time.clear()
 	_plant_keys.clear()
 	_particle_colors.clear()
 	_actively_shaking_tufts.clear()
-	_tuft_logical_cell.clear()
-	_cell_remaining_tufts.clear()
-	_cell_keys.clear()
-	_cell_rewards.clear()
-	_cell_is_completed.clear()
-	_lawn_decal_mesh = null
-	_lawn_cut_trail = null
 	_veg_multimeshes.clear()
 	_veg_mmi_nodes.clear()
 	_clipping_multimeshes.clear()
 	_clipping_mmi_nodes.clear()
 	_clipping_counts.clear()
-	_grid.clear()
+	_grid_min_cx = 0
+	_grid_min_cz = 0
+	_grid_cols = 0
+	_grid_rows = 0
+	_grid_cell_start.clear()
+	_grid_items.clear()
 	_remaining_grass_by_type.clear()
 	_grass_cut_accumulator_by_type.clear()
 	_last_vegetation_on = true
@@ -755,36 +740,6 @@ func _build_from_vector_field(
 		if item is Dictionary:
 			tufts.append(item as Dictionary)
 
-	# Agrupa por célula lógica de 0.40m e por espécie vegetal distinta
-	# Garante que flores e grama no mesmo local físico mantenham células lógicas e metas independentes
-	var logical_cells_map: Dictionary = {}
-	for t_dict: Dictionary in tufts:
-		var pos: Vector3 = t_dict["pos"] as Vector3
-		var lx: int = roundi(pos.x / 0.40)
-		var lz: int = roundi(pos.z / 0.40)
-		var v_type: String = String(t_dict.get("type", "grass_green"))
-		var lkey: String = "%d_%d_%s" % [lx, lz, v_type]
-		if not logical_cells_map.has(lkey):
-			var new_cell_idx: int = _cell_keys.size()
-			var g_key: String = v_type
-			var r_coins: int = 1
-			if v_type == "wheat":
-				g_key = "wheat"
-				r_coins = 3
-			elif v_type.begins_with("flower"):
-				g_key = v_type
-				r_coins = 5
-
-			logical_cells_map[lkey] = new_cell_idx
-			_cell_keys.append(g_key)
-			_cell_rewards.append(r_coins)
-			_cell_remaining_tufts.append(0)
-			_cell_is_completed.append(0)
-			goals[g_key] = goals.get(g_key, 0) + 1
-
-		var c_idx: int = int(logical_cells_map[lkey])
-		t_dict["cell_idx"] = c_idx
-
 	# Agrupa por tipo de vegetação para alimentar os MultiMeshes
 	var tufts_by_type: Dictionary = {}
 	for vt: String in VEG_TYPES:
@@ -796,8 +751,6 @@ func _build_from_vector_field(
 		if not tufts_by_type.has(vt):
 			vt = "grass_green"
 		(tufts_by_type[vt] as Array[Dictionary]).append(t_dict)
-		var c_idx: int = int(t_dict["cell_idx"])
-		_cell_remaining_tufts[c_idx] = _cell_remaining_tufts[c_idx] + 1
 
 	# Constrói MultiMeshes por tipo
 	_veg_multimeshes.resize(VEG_TYPES.size())
@@ -878,7 +831,6 @@ func _build_from_vector_field(
 		for inst_idx: int in range(count):
 			var entry: Dictionary = entry_list[inst_idx]
 			var pos: Vector3 = entry["pos"] as Vector3
-			var cell_idx: int = int(entry["cell_idx"])
 			var s_seed: float = float(entry["seed"])
 			var scale_factor: float = float(entry.get("scale_factor", 1.0))
 
@@ -902,35 +854,20 @@ func _build_from_vector_field(
 			var xform: Transform3D = Transform3D(inst_basis, pos)
 			mm.set_instance_transform(inst_idx, xform)
 
-			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, plant_rot), pos)
-
-			var p_idx: int = _positions.size()
 			_positions.append(pos)
 			_initial_transforms.append(xform)
-			_cut_transforms.append(cut_xform)
 			_mmi_indices.append(mmi_idx)
 			_instance_indices.append(inst_idx)
 			_health.append(max_hp)
 			_max_health.append(max_hp)
-			_coin_rewards.append(1)
 			_is_cut.append(0)
 			_is_hidden_by_density.append(0)
 			_last_hit_time.append(-10.0)
 			var own_plant_key: String = v_type
 			_plant_keys.append(own_plant_key)
 			_particle_colors.append(p_col)
-			_tuft_logical_cell.append(cell_idx)
 
-			# Adiciona à grade de colisão 0.40m
-			var cell_key: Vector2i = Vector2i(roundi(pos.x / GRID_STEP), roundi(pos.z / GRID_STEP))
-			if not _grid.has(cell_key):
-				var bucket_new: PackedInt32Array = PackedInt32Array()
-				bucket_new.append(p_idx)
-				_grid[cell_key] = bucket_new
-			else:
-				var bucket: PackedInt32Array = _grid[cell_key] as PackedInt32Array
-				bucket.append(p_idx)
-				_grid[cell_key] = bucket
+	_build_spatial_index()
 
 	# Unifica contagem de metas: 10 tufos físicos = 1 unidade virtual de meta
 	_total_physical_grass = 0
@@ -952,8 +889,6 @@ func _build_from_vector_field(
 	_remaining_physical_grass = _total_physical_grass
 	_remaining_physical_wheat = _total_physical_wheat
 	_remaining_physical_flower = _total_physical_flower
-	_grass_cut_accumulator = 0
-	_wheat_cut_accumulator = 0
 
 	_remaining_grass_by_type.clear()
 	_grass_cut_accumulator_by_type.clear()
@@ -976,373 +911,62 @@ func _build_from_vector_field(
 	return goals
 
 
-func _build_from_vegetation_field(
-	field: RefCounted,
-	width_blocks: int,
-	height_blocks: int,
-	block_cell_size: float,
-	tile_flowers: Dictionary = {}
-) -> Dictionary:
-	var goals: Dictionary = {}
-	var cols: int = int(field.get("cols"))
-	var rows: int = int(field.get("rows"))
-	var sdf: PackedFloat32Array = field.call("compute_sdf_depth_map") as PackedFloat32Array
-
-	# Agrupa subcélulas por célula lógica de 0.40m: Vector2i(lx, lz) onde lx = cx / 2, lz = cz / 2
-	var logical_subcells: Dictionary = {}
-	for r: int in range(rows):
-		for c: int in range(cols):
-			var t_id: int = int(field.call("get_cell", c, r))
-			if t_id == 0:
-				continue
-			var lx: int = c >> 1
-			var lz: int = r >> 1
-			var lkey: Vector2i = Vector2i(lx, lz)
-			if not logical_subcells.has(lkey):
-				var list_new: Array[Vector2i] = []
-				logical_subcells[lkey] = list_new
-			(logical_subcells[lkey] as Array[Vector2i]).append(Vector2i(c, r))
-
-	# Determina tipo lógico, meta e recompensa por célula de 0.40m
-	var cell_indices_by_key: Dictionary = {}
-	for lkey: Vector2i in logical_subcells.keys():
-		var subs: Array[Vector2i] = logical_subcells[lkey] as Array[Vector2i]
-		var type_counts: Dictionary = {}
-		for sub_c: Vector2i in subs:
-			var tid: int = int(field.call("get_cell", sub_c.x, sub_c.y))
-			type_counts[tid] = int(type_counts.get(tid, 0)) + 1
-
-		# Prioridade: flower (9) > wheat (8) > maioria das gramas
-		var chosen_tid: int = 1
-		if type_counts.has(9):
-			chosen_tid = 9
-		elif type_counts.has(8):
-			chosen_tid = 8
-		else:
-			var max_c: int = 0
-			for tid_cand: int in type_counts.keys():
-				var c_cnt: int = int(type_counts[tid_cand])
-				if c_cnt > max_c:
-					max_c = c_cnt
-					chosen_tid = tid_cand
-
-		var cell_idx: int = _cell_remaining_tufts.size()
-		cell_indices_by_key[lkey] = cell_idx
-
-		var p_key: String = "grass"
-		var reward: int = 1
-		if chosen_tid == 8:
-			p_key = "wheat"
-			reward = 3
-		elif chosen_tid == 9:
-			p_key = "flower"
-			reward = 5
-
-		goals[p_key] = int(goals.get(p_key, 0)) + 1
-
-		_cell_keys.append(p_key)
-		_cell_rewards.append(reward)
-		_cell_is_completed.append(0)
-		# Inicializa com 0 tufos; será incrementado ao criar cada micro-tufo
-		_cell_remaining_tufts.append(0)
-
-	# Agrupa posições e escalas dos micro-tufos por mmi_type
-	var tufts_by_type: Dictionary = {}
-	for v_type: String in VEG_TYPES:
-		var empty_list: Array[Dictionary] = []
-		tufts_by_type[v_type] = empty_list
-
-	# Adiciona flores de tile (0.80m) como objetos discretos com sua própria célula lógica
-	for f_cell: Vector2i in tile_flowers.keys():
-		var cell_idx: int = _cell_remaining_tufts.size()
-		var flower_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
-		goals["flower"] = int(goals.get("flower", 0)) + 1
-		_cell_keys.append("flower")
-		_cell_rewards.append(5)
-		_cell_is_completed.append(0)
-		_cell_remaining_tufts.append(1)
-
-		var f_entry: Dictionary = {
-			"pos": flower_pos,
-			"cell_idx": cell_idx,
-			"tid": 9,
-			"sdf": 0.50,
-			"seed": float(f_cell.x * 79 + f_cell.y * 31)
-		}
-		(tufts_by_type["flower"] as Array[Dictionary]).append(f_entry)
-
-	var processed_flowers: Dictionary = {}
-
-	for lkey: Vector2i in logical_subcells.keys():
-		var cell_idx: int = int(cell_indices_by_key[lkey])
-		var subs: Array[Vector2i] = logical_subcells[lkey] as Array[Vector2i]
-
-		for sub_c: Vector2i in subs:
-			var tid: int = int(field.call("get_cell", sub_c.x, sub_c.y))
-			if tid == 0:
-				continue
-			var v_type: String = VegetationFieldScript.type_id_to_name(tid)
-			if not tufts_by_type.has(v_type):
-				v_type = "grass_green"
-
-			if tid == 9:
-				# Flor: 1 única instância centralizada por bloco lógico de 0.40m
-				if processed_flowers.has(lkey):
-					continue
-				processed_flowers[lkey] = true
-				var flower_pos: Vector3 = field.call("cell_to_world", lkey.x * 2, lkey.y * 2, block_cell_size) as Vector3
-				flower_pos.x += 0.10
-				flower_pos.z += 0.10
-
-				var f_entry: Dictionary = {
-					"pos": flower_pos,
-					"cell_idx": cell_idx,
-					"tid": tid,
-					"sdf": 0.50, # centro sempre farto
-					"seed": float(lkey.x * 79 + lkey.y * 31)
-				}
-				(tufts_by_type["flower"] as Array[Dictionary]).append(f_entry)
-				_cell_remaining_tufts[cell_idx] = _cell_remaining_tufts[cell_idx] + 1
-				continue
-
-			# Micro-tufo comum (gramas e trigo)
-			var base_pos: Vector3 = field.call("cell_to_world", sub_c.x, sub_c.y, block_cell_size) as Vector3
-			var sub_seed: float = float(sub_c.x * 73 + sub_c.y * 19)
-			# Jitter determinístico de até +-0.06m para aparência orgânica
-			var j_x: float = (fmod(sub_seed * 0.17, 1.0) - 0.5) * 0.12
-			var j_z: float = (fmod(sub_seed * 0.31, 1.0) - 0.5) * 0.12
-			var tuft_pos: Vector3 = base_pos + Vector3(j_x, 0.0, j_z)
-
-			var sdf_dist: float = sdf[sub_c.y * cols + sub_c.x]
-
-			var t_entry: Dictionary = {
-				"pos": tuft_pos,
-				"cell_idx": cell_idx,
-				"tid": tid,
-				"sdf": sdf_dist,
-				"seed": sub_seed
-			}
-			(tufts_by_type[v_type] as Array[Dictionary]).append(t_entry)
-			_cell_remaining_tufts[cell_idx] = _cell_remaining_tufts[cell_idx] + 1
-
-	# Constrói MultiMeshes por tipo
-	_veg_multimeshes.resize(VEG_TYPES.size())
-	_veg_mmi_nodes.resize(VEG_TYPES.size())
-	_clipping_multimeshes.resize(VEG_TYPES.size())
-	_clipping_mmi_nodes.resize(VEG_TYPES.size())
-	_clipping_counts.resize(VEG_TYPES.size())
-	_clipping_counts.fill(0)
-
-	for mmi_idx: int in range(VEG_TYPES.size()):
-		var v_type: String = VEG_TYPES[mmi_idx]
-		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
-		var count: int = entry_list.size()
-
-		var is_flower: bool = v_type.begins_with("flower")
-		var mm: MultiMesh = MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if is_flower:
-			mm.use_custom_data = true
-			if v_type.begins_with("flower_rose"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_rose_mesh)
-			elif v_type.begins_with("flower_daisy"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
-			elif v_type == "flower_sunflower":
-				mm.mesh = _flower_sunflower_mesh
-			elif v_type.begins_with("flower_tulip"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_tulip_mesh)
-			elif v_type.begins_with("flower_bed"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_bed_mesh)
-			else:
-				mm.mesh = _flower_mesh
-		elif v_type == "wheat":
-			mm.mesh = _wheat_mesh
-		else:
-			mm.mesh = _grass_mesh
-		mm.instance_count = count
-
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		mmi.name = "VegMMI_%s" % v_type
-		mmi.multimesh = mm
-		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-		mmi.custom_aabb = FIXED_ISLAND_AABB
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		if GRASS_MATERIALS.has(v_type):
-			mmi.material_override = GRASS_MATERIALS[v_type] as Material
-		add_child(mmi)
-
-		var clip_mm: MultiMesh = MultiMesh.new()
-		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
-		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
-		clip_mm.instance_count = count
-		clip_mm.visible_instance_count = -1
-
-		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		clip_mmi.name = "ClippingsMMI_%s" % v_type
-		clip_mmi.multimesh = clip_mm
-		clip_mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-		clip_mmi.custom_aabb = FIXED_ISLAND_AABB
-		clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(clip_mmi)
-
-		_veg_multimeshes[mmi_idx] = mm
-		_veg_mmi_nodes[mmi_idx] = mmi
-		_clipping_multimeshes[mmi_idx] = clip_mm
-		_clipping_mmi_nodes[mmi_idx] = clip_mmi
-
-		var is_grass: bool = (v_type != "wheat" and not is_flower)
-		var max_hp: int = 1 if is_grass else (3 if is_flower else 2)
-		var p_col: Color = _resolve_type_particle_color(v_type)
-
-		for inst_idx: int in range(count):
-			var entry: Dictionary = entry_list[inst_idx]
-			var pos: Vector3 = entry["pos"] as Vector3
-			var cell_idx: int = int(entry["cell_idx"])
-			var s_seed: float = float(entry["seed"])
-			var dist_m: float = float(entry["sdf"])
-
-			# Afinamento suave de borda por SDF (envelhecimento/diminuição de escala na fronteira vazia)
-			var edge_t: float = smoothstep(0.0, 0.28, dist_m)
-			var random_rot: float = fmod(s_seed * 1.618, TAU)
-
-			var scale_vec: Vector3
-			if is_grass:
-				var scale_y: float = lerpf(0.48, 0.62, edge_t) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.32, 0.44, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
-				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-			elif v_type == "wheat":
-				# Escala aumentada em 100% (dobrada: 0.55~0.70 -> 1.10~1.40 Y, 0.34~0.46 -> 0.68~0.92 XZ)
-				var scale_y: float = lerpf(1.10, 1.40, edge_t) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.68, 0.92, edge_t) * (0.95 + fmod(s_seed * 0.27, 0.10))
-				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-			else:
-				# Flor (+30% de escala visual: 0.52 * 1.30 = 0.676)
-				var sf: float = 0.676
-				scale_vec = Vector3(sf, sf, sf)
-
-			var inst_basis: Basis = Basis(Vector3.UP, random_rot) * Basis.from_scale(scale_vec)
-			var xform: Transform3D = Transform3D(inst_basis, pos)
-			mm.set_instance_transform(inst_idx, xform)
-			clip_mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
-
-			var cut_xform: Transform3D = Transform3D(Basis(Vector3.UP, random_rot), pos)
-
-			var p_idx: int = _positions.size()
-			_positions.append(pos)
-			_initial_transforms.append(xform)
-			_cut_transforms.append(cut_xform)
-			_mmi_indices.append(mmi_idx)
-			_instance_indices.append(inst_idx)
-			_health.append(max_hp)
-			_max_health.append(max_hp)
-			_coin_rewards.append(1) # a recompensa total é gerenciada por célula lógica
-			_is_cut.append(0)
-			_is_hidden_by_density.append(0)
-			_last_hit_time.append(-10.0)
-			var own_plant_key: String = v_type
-			_plant_keys.append(own_plant_key)
-			_particle_colors.append(p_col)
-			_tuft_logical_cell.append(cell_idx)
-
-			# Adiciona à grade de colisão 0.40m
-			var cell_key: Vector2i = Vector2i(roundi(pos.x / GRID_STEP), roundi(pos.z / GRID_STEP))
-			if not _grid.has(cell_key):
-				var bucket_new: PackedInt32Array = PackedInt32Array()
-				bucket_new.append(p_idx)
-				_grid[cell_key] = bucket_new
-			else:
-				var bucket: PackedInt32Array = _grid[cell_key] as PackedInt32Array
-				bucket.append(p_idx)
-				_grid[cell_key] = bucket
-
-	# Unifica contagem de metas: 10 tufos físicos = 1 unidade virtual de meta
-	_total_physical_grass = 0
-	_total_physical_wheat = 0
-	_total_physical_flower = 0
-	var flower_counts_by_type: Dictionary = {}
-	var grass_counts_by_type: Dictionary = {}
-	for p_idx: int in range(_positions.size()):
-		var pk: String = _plant_keys[p_idx]
-		if pk == "wheat":
-			_total_physical_wheat += 1
-		elif pk.begins_with("flower"):
-			_total_physical_flower += 1
-			flower_counts_by_type[pk] = int(flower_counts_by_type.get(pk, 0)) + 1
-		else:
-			_total_physical_grass += 1
-			grass_counts_by_type[pk] = int(grass_counts_by_type.get(pk, 0)) + 1
-
-	_remaining_physical_grass = _total_physical_grass
-	_remaining_physical_wheat = _total_physical_wheat
-	_remaining_physical_flower = _total_physical_flower
-	_grass_cut_accumulator = 0
-	_wheat_cut_accumulator = 0
-
-	_remaining_grass_by_type.clear()
-	_grass_cut_accumulator_by_type.clear()
-	for g_type: Variant in grass_counts_by_type.keys():
-		var gt_str: String = String(g_type)
-		_remaining_grass_by_type[gt_str] = int(grass_counts_by_type[g_type])
-		_grass_cut_accumulator_by_type[gt_str] = 0
-
-	goals.clear()
-	# Todas as variedades de grama são tratadas individualmente por cor/tipo
-	for g_key: Variant in grass_counts_by_type.keys():
-		var g_count: int = int(grass_counts_by_type[g_key])
-		goals[String(g_key)] = maxi(1, int(ceilf(float(g_count) / float(GRASS_TUFTS_PER_UNIT))))
-	if _total_physical_wheat > 0:
-		goals["wheat"] = _total_physical_wheat
-	if _total_physical_flower > 0:
-		for f_key: Variant in flower_counts_by_type.keys():
-			goals[String(f_key)] = int(flower_counts_by_type[f_key])
-
-	return goals
-
-
-func _setup_lawn_decal_and_trail(
-	field: RefCounted,
-	width_blocks: int,
-	height_blocks: int,
-	block_cell_size: float
-) -> void:
-	if field == null:
+## Constrói o índice espacial plano (CSR) a partir de _positions.
+## Counting sort estável: dentro de cada célula os p_idx permanecem em ordem crescente,
+## idêntica à ordem de inserção da antiga grade por Dictionary.
+func _build_spatial_index() -> void:
+	_grid_cell_start.clear()
+	_grid_items.clear()
+	_grid_cols = 0
+	_grid_rows = 0
+	var total: int = _positions.size()
+	if total == 0:
 		return
 
-	var total_w_m: float = float(width_blocks) * block_cell_size
-	var total_h_m: float = float(height_blocks) * block_cell_size
-	var origin_2d: Vector2 = Vector2(-total_w_m * 0.5, -total_h_m * 0.5)
-	var size_2d: Vector2 = Vector2(total_w_m, total_h_m)
+	var min_cx: int = 0x7FFFFFFF
+	var min_cz: int = 0x7FFFFFFF
+	var max_cx: int = -0x7FFFFFFF
+	var max_cz: int = -0x7FFFFFFF
+	for i: int in range(total):
+		var p: Vector3 = _positions[i]
+		var kx: int = roundi(p.x / GRID_STEP)
+		var kz: int = roundi(p.z / GRID_STEP)
+		min_cx = mini(min_cx, kx)
+		max_cx = maxi(max_cx, kx)
+		min_cz = mini(min_cz, kz)
+		max_cz = maxi(max_cz, kz)
 
-	# Instancia o gerenciador de trilha por SubViewport
-	_lawn_cut_trail = LawnCutTrailScript.new(origin_2d, size_2d) as Node3D
-	_lawn_cut_trail.name = "LawnCutTrail"
-	add_child(_lawn_cut_trail)
+	_grid_min_cx = min_cx
+	_grid_min_cz = min_cz
+	_grid_cols = max_cx - min_cx + 1
+	_grid_rows = max_cz - min_cz + 1
+	var cell_count: int = _grid_cols * _grid_rows
 
-	# Gera textura de densidade colorida a partir do campo
-	var density_img: Image = field.call("to_density_image") as Image
-	var density_tex: ImageTexture = ImageTexture.create_from_image(density_img)
+	_grid_cell_start.resize(cell_count + 1)
+	_grid_cell_start.fill(0)
+	var cell_of: PackedInt32Array = PackedInt32Array()
+	cell_of.resize(total)
+	for i: int in range(total):
+		var p2: Vector3 = _positions[i]
+		var ci: int = (roundi(p2.z / GRID_STEP) - min_cz) * _grid_cols + (roundi(p2.x / GRID_STEP) - min_cx)
+		cell_of[i] = ci
+		_grid_cell_start[ci + 1] += 1
+	for c: int in range(cell_count):
+		_grid_cell_start[c + 1] += _grid_cell_start[c]
 
-	# Cria malha plana cobrindo toda a ilha
-	var plane_mesh: PlaneMesh = PlaneMesh.new()
-	plane_mesh.size = size_2d
+	_grid_items.resize(total)
+	var cursor: PackedInt32Array = _grid_cell_start.duplicate()
+	for i: int in range(total):
+		var cj: int = cell_of[i]
+		_grid_items[cursor[cj]] = i
+		cursor[cj] += 1
 
-	var decal_mat: ShaderMaterial = ShaderMaterial.new()
-	var decal_shader: Shader = preload("res://shaders/lawn_base_decal.gdshader")
-	decal_mat.shader = decal_shader
-	decal_mat.set_shader_parameter("density_tex", density_tex)
-	var trail_tex: ViewportTexture = _lawn_cut_trail.call("get_trail_texture") as ViewportTexture
-	if trail_tex != null:
-		decal_mat.set_shader_parameter("cut_tex", trail_tex)
-	decal_mat.set_shader_parameter("island_origin", origin_2d)
-	decal_mat.set_shader_parameter("island_size", size_2d)
 
-	_lawn_decal_mesh = MeshInstance3D.new()
-	_lawn_decal_mesh.name = "LawnBaseDecal"
-	_lawn_decal_mesh.mesh = plane_mesh
-	_lawn_decal_mesh.material_override = decal_mat
-	_lawn_decal_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_lawn_decal_mesh.position = Vector3(0.0, 0.005, 0.0)
-	add_child(_lawn_decal_mesh)
+## Transformação da apara deitada no solo: só a rotação em Y e a posição do tufo.
+## Derivada de _initial_transforms (R * escala positiva): as colunas já são ortogonais,
+## então orthonormalized() devolve exatamente a rotação, sem armazenar um array extra.
+func _get_cut_transform(p_idx: int) -> Transform3D:
+	return Transform3D(_initial_transforms[p_idx].basis.orthonormalized(), _positions[p_idx])
 
 
 func _resolve_type_particle_color(v_type: String) -> Color:
@@ -1390,9 +1014,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	if gm != null and int(gm.get("current_state")) != 1:
 		return Vector3.ZERO
 
-	# Pinta a trilha contínua da serra no solo
-	if _lawn_cut_trail != null and is_instance_valid(_lawn_cut_trail):
-		_lawn_cut_trail.call("paint", center, blade_radius)
+	# Trilha contínua da serra no solo removida: a antiga cadeia LawnCutTrail nunca era instanciada.
 
 	var hit_radius: float = blade_radius + TUFT_HIT_RADIUS_BONUS
 	var hit_radius_sq: float = hit_radius * hit_radius
@@ -1414,14 +1036,12 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	var any_hit_feedback: bool = false
 	var any_tuft_cut: bool = false
 
-	for cx: int in range(min_cx, max_cx + 1):
-		for cz: int in range(min_cz, max_cz + 1):
-			var cell_key: Vector2i = Vector2i(cx, cz)
-			if not _grid.has(cell_key):
-				continue
-			var bucket: PackedInt32Array = _grid[cell_key] as PackedInt32Array
-			for i: int in range(bucket.size()):
-				var p_idx: int = bucket[i]
+	# Consulta o índice plano limitando a janela aos limites da grade (fora dela não há tufos)
+	for cx: int in range(maxi(min_cx, _grid_min_cx), mini(max_cx, _grid_min_cx + _grid_cols - 1) + 1):
+		for cz: int in range(maxi(min_cz, _grid_min_cz), mini(max_cz, _grid_min_cz + _grid_rows - 1) + 1):
+			var cell_i: int = (cz - _grid_min_cz) * _grid_cols + (cx - _grid_min_cx)
+			for i: int in range(_grid_cell_start[cell_i], _grid_cell_start[cell_i + 1]):
+				var p_idx: int = _grid_items[i]
 				if _is_cut[p_idx] == 1 or _is_hidden_by_density[p_idx] == 1:
 					continue
 
@@ -1472,7 +1092,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 					if clip_mm != null:
 						var c_idx: int = _clipping_counts[mmi_idx]
 						if c_idx < clip_mm.instance_count:
-							clip_mm.set_instance_transform(c_idx, _cut_transforms[p_idx])
+							clip_mm.set_instance_transform(c_idx, _get_cut_transform(p_idx))
 							c_idx += 1
 							_clipping_counts[mmi_idx] = c_idx
 							clip_mm.visible_instance_count = c_idx
@@ -1614,14 +1234,12 @@ func resolve_rigid_plant_collision(cutter_pos: Vector3, cutter_vel: Vector3, bod
 	var resolved_pos: Vector3 = cutter_pos
 	var resolved_vel: Vector3 = cutter_vel
 
-	for cx: int in range(min_cx, max_cx + 1):
-		for cz: int in range(min_cz, max_cz + 1):
-			var cell_key: Vector2i = Vector2i(cx, cz)
-			if not _grid.has(cell_key):
-				continue
-			var bucket: PackedInt32Array = _grid[cell_key] as PackedInt32Array
-			for i: int in range(bucket.size()):
-				var p_idx: int = bucket[i]
+	# Consulta o índice plano limitando a janela aos limites da grade (fora dela não há tufos)
+	for cx: int in range(maxi(min_cx, _grid_min_cx), mini(max_cx, _grid_min_cx + _grid_cols - 1) + 1):
+		for cz: int in range(maxi(min_cz, _grid_min_cz), mini(max_cz, _grid_min_cz + _grid_rows - 1) + 1):
+			var cell_i: int = (cz - _grid_min_cz) * _grid_cols + (cx - _grid_min_cx)
+			for i: int in range(_grid_cell_start[cell_i], _grid_cell_start[cell_i + 1]):
+				var p_idx: int = _grid_items[i]
 				if _max_health[p_idx] <= 1 or _is_cut[p_idx] == 1 or _health[p_idx] <= 0:
 					continue
 
@@ -1694,7 +1312,7 @@ func set_benchmark_visibility(vegetation_on: bool, density_step: int) -> void:
 			if clip_mm != null:
 				var c_idx: int = _clipping_counts[mmi_idx]
 				if c_idx < clip_mm.instance_count:
-					clip_mm.set_instance_transform(c_idx, _cut_transforms[p_idx])
+					clip_mm.set_instance_transform(c_idx, _get_cut_transform(p_idx))
 					_clipping_counts[mmi_idx] = c_idx + 1
 		else:
 			mm.set_instance_transform(inst_idx, HIDDEN_TRANSFORM)
@@ -1712,25 +1330,9 @@ func reset_all_plants() -> void:
 		_health[p_idx] = _max_health[p_idx]
 		_last_hit_time[p_idx] = -10.0
 
-	for c_idx: int in range(_cell_is_completed.size()):
-		_cell_is_completed[c_idx] = 0
-
-	# Recalcula a contagem de tufos restantes por célula lógica
-	for c_idx: int in range(_cell_remaining_tufts.size()):
-		_cell_remaining_tufts[c_idx] = 0
-	for p_idx: int in range(total):
-		var c_idx: int = _tuft_logical_cell[p_idx]
-		if c_idx >= 0 and c_idx < _cell_remaining_tufts.size():
-			_cell_remaining_tufts[c_idx] = _cell_remaining_tufts[c_idx] + 1
-
 	_remaining_physical_grass = _total_physical_grass
 	_remaining_physical_wheat = _total_physical_wheat
 	_remaining_physical_flower = _total_physical_flower
-	_grass_cut_accumulator = 0
-	_wheat_cut_accumulator = 0
-
-	if _lawn_cut_trail != null and is_instance_valid(_lawn_cut_trail):
-		_lawn_cut_trail.call("reset_trail")
 
 	for mmi_idx: int in range(_clipping_multimeshes.size()):
 		if mmi_idx < _clipping_counts.size():

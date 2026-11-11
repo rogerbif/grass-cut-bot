@@ -214,23 +214,3 @@ func compute_sdf_depth_map() -> PackedFloat32Array:
 
 	return dist
 
-# Gera Image RGBA8 do campo para o decal de solo orgânico
-func to_density_image() -> Image:
-	var img: Image = Image.create(cols, rows, false, Image.FORMAT_RGBA8)
-	var type_palette: Array[Color] = [
-		Color(0, 0, 0, 0),                       # 0 vazio
-		Color(0.25, 0.78, 0.32, 1.0),            # 1 grass_green
-		Color(0.95, 0.80, 0.20, 1.0),            # 2 grass_yellow
-		Color(0.25, 0.68, 0.96, 1.0),            # 3 grass_blue
-		Color(0.72, 0.35, 0.92, 1.0),            # 4 grass_purple
-		Color(0.92, 0.94, 0.98, 1.0),            # 5 grass_white
-		Color(0.95, 0.22, 0.24, 1.0),            # 6 grass_red
-		Color(0.20, 0.20, 0.24, 1.0),            # 7 grass_black
-		Color(0.92, 0.68, 0.18, 1.0),            # 8 wheat
-		Color(0.95, 0.38, 0.68, 1.0)             # 9 flower
-	]
-	for r: int in range(rows):
-		for c: int in range(cols):
-			var val: int = int(data[r * cols + c])
-			img.set_pixel(c, r, type_palette[val])
-	return img
