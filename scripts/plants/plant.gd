@@ -62,14 +62,6 @@ const DETACH_CONFIG_BY_TYPE: Dictionary = {
 			"Piece_Leaf": Vector3(0.4674, 0.4865, -0.3224),
 		}
 	},
-	"flower_gerbera": {
-		"model": "res://assets/models/flower_detach_pieces.glb",
-		"offsets": {
-			"Piece_Petal_A": Vector3(0.12, 0.70, 0.15),
-			"Piece_Petal_B": Vector3(-0.15, 0.85, -0.10),
-			"Piece_Leaf": Vector3(0.05, 0.40, 0.20),
-		}
-	},
 	"flower_bed": {
 		"model": "res://assets/models/flower_08_bed_detach.glb",
 		"offsets": {
@@ -280,24 +272,6 @@ static func get_flower_colors(flower_type: String) -> Dictionary:
 		"flower_tulip_orange":
 			petal_col = Color(1.0, 0.45, 0.05, 1.0)
 			center_col = Color(0.95, 0.85, 0.10, 1.0)
-		"flower_gerbera":
-			petal_col = Color(1.0, 0.12, 0.28, 1.0)
-			center_col = Color(0.85, 0.60, 0.05, 1.0)
-		"flower_gerbera_yellow":
-			petal_col = Color(1.0, 0.88, 0.05, 1.0)
-			center_col = Color(0.30, 0.15, 0.05, 1.0)
-		"flower_gerbera_purple":
-			petal_col = Color(0.85, 0.15, 0.80, 1.0)
-			center_col = Color(1.0, 0.85, 0.20, 1.0)
-		"flower_gerbera_orange":
-			petal_col = Color(1.0, 0.45, 0.05, 1.0)
-			center_col = Color(0.95, 0.85, 0.10, 1.0)
-		"flower_gerbera_pink":
-			petal_col = Color(1.0, 0.40, 0.70, 1.0)
-			center_col = Color(1.0, 0.85, 0.10, 1.0)
-		"flower_gerbera_white":
-			petal_col = Color(1.0, 1.0, 1.0, 1.0)
-			center_col = Color(0.85, 0.60, 0.05, 1.0)
 		"flower_bed":
 			petal_col = Color(0.92, 0.35, 1.0, 1.0)
 			center_col = Color(1.0, 0.90, 0.10, 1.0)
@@ -508,8 +482,6 @@ static func _resolve_flower_base_type(flower_type: String) -> String:
 		return "flower_sunflower"
 	if flower_type.begins_with("flower_tulip"):
 		return "flower_tulip"
-	if flower_type.begins_with("flower_gerbera"):
-		return "flower_gerbera"
 	if flower_type.begins_with("flower_bed"):
 		return "flower_bed"
 	return "flower"
