@@ -218,6 +218,7 @@ var _grid_cols: int = 0
 var _grid_rows: int = 0
 var _grid_cell_start: PackedInt32Array = PackedInt32Array()
 var _grid_items: PackedInt32Array = PackedInt32Array()
+var _grid_has_rigid: PackedByteArray = PackedByteArray()
 
 # Estado atual de visibilidade para benchmark
 var _last_vegetation_on: bool = true
@@ -412,6 +413,7 @@ func _clear_state() -> void:
 	_grid_rows = 0
 	_grid_cell_start.clear()
 	_grid_items.clear()
+	_grid_has_rigid.clear()
 	_remaining_grass_by_type.clear()
 	_grass_cut_accumulator_by_type.clear()
 	_last_vegetation_on = true
@@ -961,6 +963,7 @@ func _build_from_vector_field(
 func _build_spatial_index() -> void:
 	_grid_cell_start.clear()
 	_grid_items.clear()
+	_grid_has_rigid.clear()
 	_grid_cols = 0
 	_grid_rows = 0
 	var total: int = _positions.size()
@@ -988,6 +991,9 @@ func _build_spatial_index() -> void:
 
 	_grid_cell_start.resize(cell_count + 1)
 	_grid_cell_start.fill(0)
+	_grid_has_rigid.resize(cell_count)
+	_grid_has_rigid.fill(0)
+
 	var cell_of: PackedInt32Array = PackedInt32Array()
 	cell_of.resize(total)
 	for i: int in range(total):
@@ -995,6 +1001,8 @@ func _build_spatial_index() -> void:
 		var ci: int = (roundi(p2.z / GRID_STEP) - min_cz) * _grid_cols + (roundi(p2.x / GRID_STEP) - min_cx)
 		cell_of[i] = ci
 		_grid_cell_start[ci + 1] += 1
+		if _max_health[i] > 1:
+			_grid_has_rigid[ci] = 1
 	for c: int in range(cell_count):
 		_grid_cell_start[c + 1] += _grid_cell_start[c]
 
@@ -1096,7 +1104,8 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 				var p_pos: Vector3 = _positions[p_idx]
 				var dx: float = p_pos.x - center.x
 				var dz: float = p_pos.z - center.z
-				if dx * dx + dz * dz > hit_radius_sq:
+				var dist_sq: float = dx * dx + dz * dz
+				if dist_sq > hit_radius_sq:
 					continue
 
 				if now_sec - _last_hit_time[p_idx] < MULTI_HIT_COOLDOWN_SEC:
@@ -1120,8 +1129,8 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 				var new_hp: int = old_hp - power
 				_health[p_idx] = new_hp
 				if _max_health[p_idx] > 1 and old_hp == _max_health[p_idx] and new_hp > 0:
-					var recoil_vec: Vector3 = Vector3(center.x - p_pos.x, 0.0, center.z - p_pos.z)
-					if recoil_vec.length_squared() > 0.0001:
+					var recoil_vec: Vector3 = Vector3(-dx, 0.0, -dz)
+					if dist_sq > 0.0001:
 						first_hit_recoil += recoil_vec.normalized()
 					else:
 						first_hit_recoil += Vector3(0.0, 0.0, 1.0)
@@ -1146,10 +1155,10 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 							clip_mm.visible_instance_count = c_idx
 					if particles_spawned_this_frame < 8:
 						var max_p_dist: float = blade_radius * 0.75
-						var dist_xz: float = sqrt(dx * dx + dz * dz)
+						var max_p_dist_sq: float = max_p_dist * max_p_dist
 						var safe_p_pos: Vector3 = p_pos
-						if dist_xz > max_p_dist and dist_xz > 0.001:
-							var ratio: float = max_p_dist / dist_xz
+						if dist_sq > max_p_dist_sq and dist_sq > 0.000001:
+							var ratio: float = max_p_dist / sqrt(dist_sq)
 							safe_p_pos = Vector3(center.x + dx * ratio, p_pos.y, center.z + dz * ratio)
 						var p_key_part: String = _plant_keys[p_idx]
 						if p_key_part.begins_with("flower"):
@@ -1286,9 +1295,11 @@ func resolve_rigid_plant_collision(cutter_pos: Vector3, cutter_vel: Vector3, bod
 	for cx: int in range(maxi(min_cx, _grid_min_cx), mini(max_cx, _grid_min_cx + _grid_cols - 1) + 1):
 		for cz: int in range(maxi(min_cz, _grid_min_cz), mini(max_cz, _grid_min_cz + _grid_rows - 1) + 1):
 			var cell_i: int = (cz - _grid_min_cz) * _grid_cols + (cx - _grid_min_cx)
+			if _grid_has_rigid[cell_i] == 0:
+				continue
 			for i: int in range(_grid_cell_start[cell_i], _grid_cell_start[cell_i + 1]):
 				var p_idx: int = _grid_items[i]
-				if _max_health[p_idx] <= 1 or _is_cut[p_idx] == 1 or _health[p_idx] <= 0:
+				if _is_cut[p_idx] == 1 or _max_health[p_idx] <= 1 or _health[p_idx] <= 0:
 					continue
 
 				var eff_plant_radius: float = 0.23 if _plant_keys[p_idx].begins_with("flower") else plant_radius
