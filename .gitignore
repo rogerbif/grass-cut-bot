@@ -34,9 +34,11 @@ credentials.json
 node_modules/
 package-lock.json
 
-# Arquivos de teste temporários na raiz
+# Arquivos de teste temporários na raiz e rascunhos
 test_*.png
 test_*.png.import
+scratch/*
+!scratch/.gdignore
 
 __pycache__/
 *.pyc
