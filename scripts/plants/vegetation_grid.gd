@@ -103,6 +103,8 @@ static var _cached_veg_types: PackedStringArray = PackedStringArray()
 static func get_veg_types() -> PackedStringArray:
 	if _cached_veg_types.is_empty():
 		_cached_veg_types = PlantDatabase.get_all_registered_types()
+	if _cached_veg_types.is_empty():
+		_cached_veg_types = PackedStringArray(VEG_TYPES)
 	return _cached_veg_types
 
 static func _resolve_mesh_for_type(v_type: String) -> Mesh:
@@ -819,6 +821,9 @@ func _build_from_vector_field(
 		var vt: String = String(t_dict.get("type", "grass_green"))
 		if not tufts_by_type.has(vt):
 			vt = "grass_green"
+		if not tufts_by_type.has(vt):
+			var new_list: Array[Dictionary] = []
+			tufts_by_type[vt] = new_list
 		(tufts_by_type[vt] as Array[Dictionary]).append(t_dict)
 
 	# Constrói MultiMeshes por tipo

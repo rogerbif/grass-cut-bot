@@ -39,7 +39,6 @@ uniform float specular : hint_range(0.0, 1.0) = 0.10;
 
 varying vec3 v_geo_normal_view;
 varying float v_leaf_h;
-varying vec3 v_shadow_ratio;
 
 void vertex() {
 	// Converte para coordenadas globais de mundo
@@ -134,13 +133,6 @@ void vertex() {
 		vec3 blade_normal_world = normalize(mix(vec3(0.0, 1.0, 0.0), world_blade_dir, 0.80));
 		v_geo_normal_view = normalize((VIEW_MATRIX * vec4(blade_normal_world, 0.0)).xyz);
 	}
-
-	// Pré-calcula a razão de sombra em vertex (eliminando divisões, clamp e pow em milhões de fragmentos)
-	vec3 s_ratio = clamp(color_shadow.rgb / max(color_light.rgb, vec3(0.02)), vec3(0.08), vec3(1.2));
-	if (OUTPUT_IS_SRGB) {
-		s_ratio = pow(s_ratio, vec3(1.25));
-	}
-	v_shadow_ratio = s_ratio;
 }
 
 void fragment() {
@@ -163,8 +155,8 @@ void fragment() {
 }
 
 void light() {
-	// Cálculo do Toon Ramp Gradiente usando a normal geométrica em 360° (Half-Lambert)
-	vec3 geo_n = v_geo_normal_view;
+	// Cálculo do Toon Ramp Gradiente usando a normal geométrica real em 360° (Half-Lambert)
+	vec3 geo_n = normalize(v_geo_normal_view);
 	float NdotL = clamp(dot(geo_n, LIGHT) * 0.5 + 0.5, 0.0, 1.0);
 	float half_smooth = max(toon_ramp_smoothness * 0.5, 0.001);
 	float toon_ramp = smoothstep(toon_ramp_offset - half_smooth, toon_ramp_offset + half_smooth, NdotL * ATTENUATION);
@@ -172,10 +164,15 @@ void light() {
 	// Em Godot 4, LIGHT_COLOR inclui multiplicação por PI (3.14159); normalizamos por PI
 	// para evitar superexposição (estouro branco/neon) e preservar as cores reais escolhidas.
 	vec3 light_norm = (LIGHT_COLOR / PI) * toon_ramp_tinting;
+
+	// Razão cromática entre color_shadow e color_light para que ALBEDO * diffuse_light
+	// exiba fielmente color_shadow no lado sombreado e color_light no lado iluminado.
+	vec3 shadow_ratio = clamp(color_shadow.rgb / max(color_light.rgb, vec3(0.02)), vec3(0.08), vec3(1.2));
 	if (OUTPUT_IS_SRGB) {
+		shadow_ratio = pow(shadow_ratio, vec3(1.25));
 		light_norm *= 0.86;
 	}
-	vec3 diffuse_light = mix(v_shadow_ratio * light_norm, light_norm, toon_ramp);
+	vec3 diffuse_light = mix(shadow_ratio * light_norm, light_norm, toon_ramp);
 	DIFFUSE_LIGHT += diffuse_light * ATTENUATION;
 
 	// Rim Lighting estilizado opcional (silhueta suave restrita às pontas das folhas)

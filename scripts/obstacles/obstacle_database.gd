@@ -10,6 +10,16 @@ const RockDataScript = preload("res://scripts/obstacles/rock_data.gd")
 const OBSTACLES_DIR: String = "res://data/obstacles"
 const DEFAULT_MATERIAL_PATH: String = "res://shaders/rock_toon_material.tres"
 
+## Manifesto canônico de obstáculos para builds exportadas (Android / Web)
+const CANONICAL_OBSTACLE_PATHS: PackedStringArray = [
+	"res://data/obstacles/rock_slate.tres",
+	"res://data/obstacles/rock_moss.tres",
+	"res://data/obstacles/rock_monolith.tres",
+	"res://data/obstacles/rock_monolith_moss.tres",
+	"res://data/obstacles/rock_sandstone.tres",
+	"res://data/obstacles/rock_boulder.tres"
+]
+
 # Caches centrais O(1)
 static var _resources: Array[RockData] = []
 static var _resources_by_id: Dictionary = {}
@@ -44,20 +54,38 @@ static func _load_resources() -> void:
 		dir.list_dir_begin()
 		var file_name: String = dir.get_next()
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".tres"):
-				var res_path: String = "%s/%s" % [OBSTACLES_DIR, file_name]
+			if not dir.current_is_dir():
+				var clean_name: String = file_name.trim_suffix(".remap")
+				if clean_name.ends_with(".tres") or clean_name.ends_with(".res"):
+					var res_path: String = "%s/%s" % [OBSTACLES_DIR, clean_name]
+					if ResourceLoader.exists(res_path):
+						var res: Resource = load(res_path)
+						if res is RockData:
+							var r_data: RockData = res as RockData
+							if not r_data.id.is_empty() and not _resources_by_id.has(r_data.id):
+								_resources.append(r_data)
+								_resources_by_id[r_data.id] = r_data
+								for alias in r_data.aliases:
+									var a_str: String = String(alias).strip_edges()
+									if not a_str.is_empty():
+										_resources_by_id[a_str] = r_data
+			file_name = dir.get_next()
+		dir.list_dir_end()
+
+	# Defesa em profundidade para builds exportadas
+	if _resources.is_empty():
+		for res_path in CANONICAL_OBSTACLE_PATHS:
+			if ResourceLoader.exists(res_path):
 				var res: Resource = load(res_path)
 				if res is RockData:
 					var r_data: RockData = res as RockData
-					if not r_data.id.is_empty():
+					if not r_data.id.is_empty() and not _resources_by_id.has(r_data.id):
 						_resources.append(r_data)
 						_resources_by_id[r_data.id] = r_data
 						for alias in r_data.aliases:
 							var a_str: String = String(alias).strip_edges()
 							if not a_str.is_empty():
 								_resources_by_id[a_str] = r_data
-			file_name = dir.get_next()
-		dir.list_dir_end()
 
 	# Ordenação determinística por order (prioridade) e ID
 	_resources.sort_custom(func(a: RockData, b: RockData) -> bool:

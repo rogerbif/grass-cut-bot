@@ -10,6 +10,47 @@ const PlantSpeciesDataScript = preload("res://scripts/plants/plant_species_data.
 const TilePaletteDBScript = preload("res://scripts/editor/tile_palette_db.gd")
 const SPECIES_DIR: String = "res://data/species"
 
+## Manifesto canônico de espécies para garantir carregamento instantâneo e à prova de falhas
+## em builds exportadas (Android APK/AAB, Web HTML5) onde DirAccess pode não listar arquivos empacotados.
+const CANONICAL_SPECIES_PATHS: PackedStringArray = [
+	"res://data/species/grass_green.tres",
+	"res://data/species/grass_yellow.tres",
+	"res://data/species/grass_blue.tres",
+	"res://data/species/grass_purple.tres",
+	"res://data/species/grass_red.tres",
+	"res://data/species/grass_white.tres",
+	"res://data/species/grass_black.tres",
+	"res://data/species/wheat.tres",
+	"res://data/species/flower.tres",
+	"res://data/species/flower_blue.tres",
+	"res://data/species/flower_purple.tres",
+	"res://data/species/flower_white.tres",
+	"res://data/species/flower_turquoise.tres",
+	"res://data/species/flower_sunset.tres",
+	"res://data/species/flower_rose.tres",
+	"res://data/species/flower_rose_peach.tres",
+	"res://data/species/flower_rose_wine.tres",
+	"res://data/species/flower_rose_blue.tres",
+	"res://data/species/flower_rose_white.tres",
+	"res://data/species/flower_rose_yellow.tres",
+	"res://data/species/flower_rose_black.tres",
+	"res://data/species/flower_daisy.tres",
+	"res://data/species/flower_daisy_pink.tres",
+	"res://data/species/flower_daisy_orange.tres",
+	"res://data/species/flower_daisy_yellow.tres",
+	"res://data/species/flower_daisy_red.tres",
+	"res://data/species/flower_daisy_blue.tres",
+	"res://data/species/flower_daisy_bicolor.tres",
+	"res://data/species/flower_sunflower.tres",
+	"res://data/species/flower_tulip.tres",
+	"res://data/species/flower_tulip_yellow.tres",
+	"res://data/species/flower_tulip_purple.tres",
+	"res://data/species/flower_tulip_orange.tres",
+	"res://data/species/flower_bed.tres",
+	"res://data/species/flower_bed_blue.tres",
+	"res://data/species/flower_bed_white.tres"
+]
+
 # Caches centrais O(1)
 static var _resources: Array[PlantSpeciesData] = []
 static var _resources_by_key: Dictionary = {}
@@ -41,16 +82,31 @@ static func _load_resources() -> void:
 		dir.list_dir_begin()
 		var file_name: String = dir.get_next()
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".tres"):
-				var res_path: String = "%s/%s" % [SPECIES_DIR, file_name]
-				var res: Resource = load(res_path)
-				if res is PlantSpeciesData:
-					var p_res: PlantSpeciesData = res as PlantSpeciesData
-					if not p_res.key.is_empty():
-						_resources.append(p_res)
-						_resources_by_key[p_res.key] = p_res
+			if not dir.current_is_dir():
+				var clean_name: String = file_name.trim_suffix(".remap")
+				if clean_name.ends_with(".tres") or clean_name.ends_with(".res"):
+					var res_path: String = "%s/%s" % [SPECIES_DIR, clean_name]
+					if ResourceLoader.exists(res_path):
+						var res: Resource = load(res_path)
+						if res is PlantSpeciesData:
+							var p_res: PlantSpeciesData = res as PlantSpeciesData
+							if not p_res.key.is_empty() and not _resources_by_key.has(p_res.key):
+								_resources.append(p_res)
+								_resources_by_key[p_res.key] = p_res
 			file_name = dir.get_next()
 		dir.list_dir_end()
+
+	# Defesa em profundidade essencial para builds exportadas (Android APK/AAB e Web HTML5):
+	# Se a listagem do DirAccess não encontrou recursos no pacote, carrega diretamente do manifesto canônico
+	if _resources.is_empty():
+		for path in CANONICAL_SPECIES_PATHS:
+			if ResourceLoader.exists(path):
+				var res: Resource = load(path)
+				if res is PlantSpeciesData:
+					var p_res: PlantSpeciesData = res as PlantSpeciesData
+					if not p_res.key.is_empty() and not _resources_by_key.has(p_res.key):
+						_resources.append(p_res)
+						_resources_by_key[p_res.key] = p_res
 
 	# Ordena as espécies de forma crescente pelo origin_level (e alfabética em caso de empate)
 	_resources.sort_custom(func(a: PlantSpeciesData, b: PlantSpeciesData) -> bool:
@@ -160,6 +216,13 @@ static func get_all_registered_types() -> PackedStringArray:
 				var vid: String = String(v.get("id", ""))
 				if not vid.is_empty() and not types.has(vid):
 					types.append(vid)
+
+	# 3. Fallback de segurança se nenhuma espécie foi resolvida
+	if types.is_empty():
+		for path in CANONICAL_SPECIES_PATHS:
+			var base_k: String = path.get_file().get_basename()
+			if not types.has(base_k):
+				types.append(base_k)
 
 	return types
 

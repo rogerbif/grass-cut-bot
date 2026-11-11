@@ -10,6 +10,13 @@ const IslandMeshBuilderScript = preload("res://scripts/level/island_mesh_builder
 const THEMES_DIR: String = "res://data/themes"
 const DEFAULT_THEME_ID: String = "tropical_day"
 
+## Manifesto canônico de temas para builds exportadas (Android / Web)
+const CANONICAL_THEME_PATHS: PackedStringArray = [
+	"res://data/themes/theme_tropical_day.tres",
+	"res://data/themes/theme_sunset.tres",
+	"res://data/themes/theme_night.tres"
+]
+
 static var _resources: Array[IslandThemeData] = []
 static var _resources_by_id: Dictionary = {}
 static var _is_loaded: bool = false
@@ -37,16 +44,30 @@ static func _load_resources() -> void:
 		dir.list_dir_begin()
 		var file_name: String = dir.get_next()
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".tres"):
-				var res_path: String = "%s/%s" % [THEMES_DIR, file_name]
+			if not dir.current_is_dir():
+				var clean_name: String = file_name.trim_suffix(".remap")
+				if clean_name.ends_with(".tres") or clean_name.ends_with(".res"):
+					var res_path: String = "%s/%s" % [THEMES_DIR, clean_name]
+					if ResourceLoader.exists(res_path):
+						var res: Resource = load(res_path)
+						if res is IslandThemeData:
+							var t_data: IslandThemeData = res as IslandThemeData
+							if not t_data.id.is_empty() and not _resources_by_id.has(t_data.id):
+								_resources.append(t_data)
+								_resources_by_id[t_data.id] = t_data
+			file_name = dir.get_next()
+		dir.list_dir_end()
+
+	# Defesa em profundidade para builds exportadas
+	if _resources.is_empty():
+		for res_path in CANONICAL_THEME_PATHS:
+			if ResourceLoader.exists(res_path):
 				var res: Resource = load(res_path)
 				if res is IslandThemeData:
 					var t_data: IslandThemeData = res as IslandThemeData
-					if not t_data.id.is_empty():
+					if not t_data.id.is_empty() and not _resources_by_id.has(t_data.id):
 						_resources.append(t_data)
 						_resources_by_id[t_data.id] = t_data
-			file_name = dir.get_next()
-		dir.list_dir_end()
 
 	# Ordenação determinística por world_id e ID
 	_resources.sort_custom(func(a: IslandThemeData, b: IslandThemeData) -> bool:
