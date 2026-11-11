@@ -7,6 +7,7 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+const ObstacleDatabaseScript = preload("res://scripts/obstacles/obstacle_database.gd")
 const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
 
 # Shaders oficiais da grama com gradiente vertical (raiz -> topo) e balanço de vento
@@ -58,6 +59,8 @@ var _cached_offset_z: float = 0.0
 
 var _rock_transforms: Array[Transform3D] = []
 var _rocks_mmi: MultiMeshInstance3D = null
+var _rock_transforms_by_type: Dictionary = {}
+var _rocks_mmis: Dictionary = {}
 var veg_transforms_by_type: Dictionary = {}
 
 
@@ -108,15 +111,30 @@ func _is_in_front_of_bot(pos: Vector3) -> bool:
 
 
 func _set_rocks_in_front_hidden(hidden: bool) -> void:
-	if _rocks_mmi == null or _rocks_mmi.multimesh == null or _rock_transforms.is_empty():
+	if _rocks_mmis.is_empty():
+		if _rocks_mmi == null or _rocks_mmi.multimesh == null or _rock_transforms.is_empty():
+			return
+		var mm: MultiMesh = _rocks_mmi.multimesh
+		for idx: int in range(_rock_transforms.size()):
+			var xform: Transform3D = _rock_transforms[idx]
+			if hidden and _is_in_front_of_bot(xform.origin):
+				mm.set_instance_transform(idx, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3(0, -999.0, 0)))
+			else:
+				mm.set_instance_transform(idx, xform)
 		return
-	var mm: MultiMesh = _rocks_mmi.multimesh
-	for idx: int in range(_rock_transforms.size()):
-		var xform: Transform3D = _rock_transforms[idx]
-		if hidden and _is_in_front_of_bot(xform.origin):
-			mm.set_instance_transform(idx, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3(0, -999.0, 0)))
-		else:
-			mm.set_instance_transform(idx, xform)
+
+	for otype: String in _rocks_mmis.keys():
+		var mmi: MultiMeshInstance3D = _rocks_mmis[otype] as MultiMeshInstance3D
+		if mmi == null or mmi.multimesh == null:
+			continue
+		var xforms: Array = _rock_transforms_by_type.get(otype, []) as Array
+		var mm: MultiMesh = mmi.multimesh
+		for idx: int in range(xforms.size()):
+			var xform: Transform3D = xforms[idx] as Transform3D
+			if hidden and _is_in_front_of_bot(xform.origin):
+				mm.set_instance_transform(idx, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3(0, -999.0, 0)))
+			else:
+				mm.set_instance_transform(idx, xform)
 
 
 func ensure_content_loaded() -> void:
@@ -338,9 +356,12 @@ func build_miniature_from_json(lvl: int) -> void:
 		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		miniature_container.add_child(foam_inst)
 
-	# 2. Agrupa rochas em MultiMeshInstance3D único (1 draw call por ilha)
+	# 2. Agrupa rochas por variante em MultiMeshInstance3D (1 draw call por variante de rocha)
 	var objects_arr: Array = data.get("objects", []) as Array
 	_rock_transforms.clear()
+	_rock_transforms_by_type.clear()
+	_rocks_mmis.clear()
+	_rocks_mmi = null
 
 	for obj_item: Variant in objects_arr:
 		if not (obj_item is Dictionary):
@@ -357,24 +378,42 @@ func build_miniature_from_json(lvl: int) -> void:
 
 		if otype.begins_with("rock"):
 			var r_basis: Basis = Basis(Vector3.UP, deg_to_rad(float(orot)))
-			_rock_transforms.append(Transform3D(r_basis, base_pos))
+			var xf: Transform3D = Transform3D(r_basis, base_pos)
+			_rock_transforms.append(xf)
+			if not _rock_transforms_by_type.has(otype):
+				var arr: Array[Transform3D] = []
+				_rock_transforms_by_type[otype] = arr
+			(_rock_transforms_by_type[otype] as Array[Transform3D]).append(xf)
 
-	if not _rock_transforms.is_empty():
-		_ensure_rock_mesh()
-		if _rock_mesh != null:
+	for otype: String in _rock_transforms_by_type.keys():
+		var xforms: Array[Transform3D] = _rock_transforms_by_type[otype] as Array[Transform3D]
+		if xforms.is_empty():
+			continue
+
+		var r_mesh: Mesh = ObstacleDatabaseScript.get_mesh(otype)
+		var r_mat: Material = ObstacleDatabaseScript.get_material(otype)
+		if r_mesh == null:
+			_ensure_rock_mesh()
+			r_mesh = _rock_mesh
+			r_mat = _mat_rock
+
+		if r_mesh != null:
 			var r_mm: MultiMesh = MultiMesh.new()
 			r_mm.transform_format = MultiMesh.TRANSFORM_3D
-			r_mm.mesh = _rock_mesh
-			r_mm.instance_count = _rock_transforms.size()
-			for idx: int in range(_rock_transforms.size()):
-				r_mm.set_instance_transform(idx, _rock_transforms[idx])
+			r_mm.mesh = r_mesh
+			r_mm.instance_count = xforms.size()
+			for idx: int in range(xforms.size()):
+				r_mm.set_instance_transform(idx, xforms[idx])
 
-			_rocks_mmi = MultiMeshInstance3D.new()
-			_rocks_mmi.name = "MiniRocksMMI"
-			_rocks_mmi.multimesh = r_mm
-			_rocks_mmi.material_override = _mat_rock
-			_rocks_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			miniature_container.add_child(_rocks_mmi)
+			var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+			mmi.name = "MiniRocksMMI_%s" % otype
+			mmi.multimesh = r_mm
+			mmi.material_override = r_mat
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			miniature_container.add_child(mmi)
+			_rocks_mmis[otype] = mmi
+			if _rocks_mmi == null:
+				_rocks_mmi = mmi
 
 	# 3. Cacheia metadados e constrói containers de vegetação vetorial e 3D
 	_cached_level_data = data

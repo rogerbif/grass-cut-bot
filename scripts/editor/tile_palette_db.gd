@@ -1,5 +1,7 @@
 extends RefCounted
 
+const ObstacleDatabaseScript = preload("res://scripts/obstacles/obstacle_database.gd")
+
 # Catálogo de itens de Terreno (Camada 0: Ilha 3D sobre o Oceano)
 const TERRAIN_ITEMS: Array[Dictionary] = [
 	{
@@ -537,12 +539,20 @@ const ITEM_VARIATIONS: Dictionary = {
 }
 
 static func get_variations(base_id: String) -> Array:
+	if base_id == "rock":
+		var obs_vars: Array[Dictionary] = ObstacleDatabaseScript.get_variations()
+		if not obs_vars.is_empty():
+			return obs_vars
 	return ITEM_VARIATIONS.get(base_id, [])
 
 static func has_variations(base_id: String) -> bool:
+	if base_id == "rock":
+		return true
 	return ITEM_VARIATIONS.has(base_id) and not (ITEM_VARIATIONS[base_id] as Array).is_empty()
 
 static func get_base_id_for_variant(variant_id: String) -> String:
+	if variant_id.begins_with("rock") or ObstacleDatabaseScript.has_obstacle(variant_id):
+		return "rock"
 	for base_id: String in ITEM_VARIATIONS.keys():
 		var var_list: Array = ITEM_VARIATIONS[base_id] as Array
 		for v_var in var_list:
@@ -551,6 +561,10 @@ static func get_base_id_for_variant(variant_id: String) -> String:
 	return variant_id
 
 static func get_variation_data(variant_id: String) -> Dictionary:
+	if ObstacleDatabaseScript.has_obstacle(variant_id):
+		var obs: RockData = ObstacleDatabaseScript.get_obstacle(variant_id)
+		if obs != null:
+			return obs.to_dict()
 	for base_id: String in ITEM_VARIATIONS.keys():
 		var var_list: Array = ITEM_VARIATIONS[base_id] as Array
 		for v_var in var_list:

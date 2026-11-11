@@ -1,5 +1,7 @@
 extends RefCounted
 
+const ObstacleDatabaseScript = preload("res://scripts/obstacles/obstacle_database.gd")
+
 const DEFAULT_CELL_SIZE: float = 0.80
 
 const WATER_OCEAN_SCENE: PackedScene = preload("res://scenes/level/water_ocean.tscn")
@@ -152,6 +154,8 @@ static func get_island_holes(data: Dictionary) -> Array[PackedVector2Array]:
 	return []
 
 static func instantiate_object_node(obj_type: String, rot_deg: int = 0) -> Node3D:
+	if ObstacleDatabaseScript.has_obstacle(obj_type):
+		return ObstacleDatabaseScript.instantiate_obstacle_node(obj_type, float(rot_deg))
 	if not OBJECT_SCENES.has(obj_type):
 		return null
 	var packed: PackedScene = OBJECT_SCENES[obj_type] as PackedScene

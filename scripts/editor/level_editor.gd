@@ -1360,11 +1360,9 @@ func _rebuild_objects_3d() -> void:
 		var entry: Dictionary = object_grid[cell] as Dictionary
 		var o_type: String = String(entry.get("type", ""))
 		if o_type.begins_with("rock"):
-			var scene_res: PackedScene = LevelJsonLoader.OBJECT_SCENES.get(o_type, ROCK_SCENE) as PackedScene
-			var r_inst: Node3D = scene_res.instantiate() as Node3D
+			var r_inst: Node3D = LevelJsonLoader.instantiate_object_node(o_type, int(entry.get("rot", 0)))
 			if r_inst != null:
 				r_inst.position = LevelJsonLoader.grid_to_world(cell.x, cell.y, grid_width, grid_height, CELL_SIZE)
-				r_inst.rotation_degrees.y = float(entry.get("rot", 0))
 				obstacles_container.add_child(r_inst)
 		elif o_type.begins_with("flower"):
 			var f_scene: PackedScene = FLOWER_SCENE

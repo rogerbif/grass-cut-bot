@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RockData" format=3]
+
+[ext_resource type="Script" path="res://scripts/obstacles/rock_data.gd" id="1_rock_data"]
+
+[resource]
+script = ExtResource("1_rock_data")
+id = "rock_moss_spire"
+aliases = PackedStringArray()
+name = "Monólito Musgo"
+full_name = "Monólito com Musgo"
+icon = "🪴"
+color = Color(0.32, 0.68, 0.36, 1)
+category = "obstacle"
+order = 4
+collision_radius = 0.18
+collision_height = 0.8
+clearance_radius = 0.90
+xp_penalty = 1000
+mesh_path = "res://assets/models/rock_moss_spire.glb"
+material_path = "res://shaders/rock_toon_material.tres"
+scene_path = "res://scenes/obstacles/rock_moss_spire.tscn"
+visual_scale = Vector3(1, 1, 1)
