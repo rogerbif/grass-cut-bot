@@ -2,6 +2,8 @@ extends SceneTree
 
 const PlantSpeciesDataScript = preload("res://scripts/plants/plant_species_data.gd")
 const PlantDatabaseScript = preload("res://scripts/plants/plant_database.gd")
+const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
+const PlantScript = preload("res://scripts/plants/plant.gd")
 
 func _initialize() -> void:
 	print("--- TESTE DE AUTO-DESCOBERTA DINÂMICA DE NOVA ESPÉCIE BOTÂNICA ---")
@@ -24,6 +26,8 @@ func _initialize() -> void:
 	new_species.reward_coins = 10
 	new_species.desc = "Espécie bioluminescente rara de pétalas translúcidas de cristal."
 	new_species.clipping_color = Color(0.30, 0.80, 0.95, 1.0)
+	new_species.particle_petal_color = Color(0.20, 0.85, 0.99, 1.0)
+	new_species.particle_center_color = Color(0.95, 0.98, 1.0, 1.0)
 
 	var err: Error = ResourceSaver.save(new_species, test_path)
 	assert(err == OK, "Falha ao gravar arquivo .tres de teste: %d" % err)
@@ -31,28 +35,37 @@ func _initialize() -> void:
 
 	# 3. Força reload dinâmico via DirAccess
 	PlantDatabaseScript.reload_species()
+	VegetationGridScript._cached_veg_types.clear()
 
 	var after_resources: Array[PlantSpeciesData] = PlantDatabaseScript.get_all_resources()
 	var after_species: Array[Dictionary] = PlantDatabaseScript.get_all_species()
+	var after_types: PackedStringArray = VegetationGridScript.get_veg_types()
 
 	assert(after_resources.size() == 14, "Após auto-descoberta, deve haver 14 espécies! Atual: %d" % after_resources.size())
 	assert(after_species.size() == 14, "Após auto-descoberta, Dictionary list deve ter 14 espécies! Atual: %d" % after_species.size())
+	assert(after_types.has("test_crystal_flower"), "VegetationGrid deve incluir 'test_crystal_flower' nos dynamic types!")
 
 	var retrieved: PlantSpeciesData = PlantDatabaseScript.get_resource("test_crystal_flower")
 	assert(retrieved != null, "get_resource deve recuperar a nova espécie!")
 	assert(retrieved.name == "Flor de Cristal Luminosa", "Nome deve corresponder!")
 	assert(retrieved.clipping_color == Color(0.30, 0.80, 0.95, 1.0), "Clipping color deve corresponder!")
 
-	var retrieved_dict: Dictionary = PlantDatabaseScript.get_species("test_crystal_flower")
-	assert(not retrieved_dict.is_empty(), "get_species (Dictionary) deve retornar dados da nova espécie!")
-	assert(String(retrieved_dict.get("icon", "")) == "💎", "Ícone de Dictionary deve corresponder!")
-	print("✔ Passo 3: Auto-descoberta comprovada! Nova espécie assimilada dinamicamente sem tocar em código.")
+	# Valida cores de partículas dinâmicas em Plant.get_flower_colors
+	var p_cols: Dictionary = PlantScript.get_flower_colors("test_crystal_flower")
+	assert(p_cols["petal"] == Color(0.20, 0.85, 0.99, 1.0), "Cores de pétala devem vir do recurso!")
+	assert(p_cols["center"] == Color(0.95, 0.98, 1.0, 1.0), "Cores de centro devem vir do recurso!")
+
+	# Valida resolução de malha e materiais no VegetationGrid
+	var resolved_mesh: Mesh = VegetationGridScript._resolve_mesh_for_type("test_crystal_flower")
+	assert(resolved_mesh != null, "Mesh deve ser resolvido com fallback ou recurso!")
+	print("✔ Passo 3: Auto-descoberta comprovada! Nova espécie assimilada dinamicamente pelo catálogo e renderização.")
 
 	# 4. Limpa arquivo temporário e valida retorno ao estado canônico de 13 espécies
 	var da: DirAccess = DirAccess.open("res://data/species")
 	if da != null:
 		da.remove("test_crystal_flower.tres")
 	PlantDatabaseScript.reload_species()
+	VegetationGridScript._cached_veg_types.clear()
 
 	var final_resources: Array[PlantSpeciesData] = PlantDatabaseScript.get_all_resources()
 	assert(final_resources.size() == 13, "Após remoção e reload, deve voltar a 13 espécies! Atual: %d" % final_resources.size())

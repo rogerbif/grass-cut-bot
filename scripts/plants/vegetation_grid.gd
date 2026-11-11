@@ -98,6 +98,59 @@ const VEG_TYPES: Array[String] = [
 	"flower_bed_white"
 ]
 
+static var _cached_veg_types: PackedStringArray = PackedStringArray()
+
+static func get_veg_types() -> PackedStringArray:
+	if _cached_veg_types.is_empty():
+		_cached_veg_types = PlantDatabase.get_all_registered_types()
+	return _cached_veg_types
+
+static func _resolve_mesh_for_type(v_type: String) -> Mesh:
+	_ensure_static_meshes()
+	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(v_type)
+	if sp_res != null and not sp_res.mesh_path.is_empty() and ResourceLoader.exists(sp_res.mesh_path):
+		var loaded_res: Resource = load(sp_res.mesh_path)
+		if loaded_res is Mesh:
+			return loaded_res as Mesh
+		elif loaded_res is PackedScene:
+			var inst: Node = (loaded_res as PackedScene).instantiate()
+			var mi: MeshInstance3D = _find_first_mesh_instance(inst)
+			var m: Mesh = mi.mesh if mi != null else null
+			inst.free()
+			if m != null:
+				return m
+
+	if v_type.begins_with("flower"):
+		if v_type.begins_with("flower_rose"):
+			return _flower_variation_meshes.get(v_type, _flower_rose_mesh) as Mesh
+		elif v_type.begins_with("flower_daisy"):
+			return _flower_variation_meshes.get(v_type, _flower_daisy_mesh) as Mesh
+		elif v_type == "flower_sunflower":
+			return _flower_sunflower_mesh
+		elif v_type.begins_with("flower_tulip"):
+			return _flower_variation_meshes.get(v_type, _flower_tulip_mesh) as Mesh
+		elif v_type.begins_with("flower_bed"):
+			return _flower_variation_meshes.get(v_type, _flower_bed_mesh) as Mesh
+		else:
+			return _flower_mesh
+	elif v_type == "wheat":
+		return _wheat_mesh
+	else:
+		return _grass_mesh
+
+static func _resolve_material_for_type(v_type: String) -> Material:
+	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(v_type)
+	if sp_res != null and not sp_res.material_path.is_empty() and ResourceLoader.exists(sp_res.material_path):
+		var mat: Resource = load(sp_res.material_path)
+		if mat is Material:
+			return mat as Material
+
+	if GRASS_MATERIALS.has(v_type):
+		return GRASS_MATERIALS[v_type] as Material
+	if FLOWER_MATERIALS.has(v_type):
+		return FLOWER_MATERIALS[v_type] as Material
+	return null
+
 const GRID_STEP: float = 0.40
 const GRASS_TUFTS_PER_UNIT: int = 6
 const TUFT_HIT_RADIUS_BONUS: float = 0.0
@@ -745,8 +798,9 @@ func _build_from_vector_field(
 			tufts.append(item as Dictionary)
 
 	# Agrupa por tipo de vegetação para alimentar os MultiMeshes
+	var dynamic_types: PackedStringArray = get_veg_types()
 	var tufts_by_type: Dictionary = {}
-	for vt: String in VEG_TYPES:
+	for vt: String in dynamic_types:
 		var empty_list: Array[Dictionary] = []
 		tufts_by_type[vt] = empty_list
 
@@ -757,15 +811,15 @@ func _build_from_vector_field(
 		(tufts_by_type[vt] as Array[Dictionary]).append(t_dict)
 
 	# Constrói MultiMeshes por tipo
-	_veg_multimeshes.resize(VEG_TYPES.size())
-	_veg_mmi_nodes.resize(VEG_TYPES.size())
-	_clipping_multimeshes.resize(VEG_TYPES.size())
-	_clipping_mmi_nodes.resize(VEG_TYPES.size())
-	_clipping_counts.resize(VEG_TYPES.size())
+	_veg_multimeshes.resize(dynamic_types.size())
+	_veg_mmi_nodes.resize(dynamic_types.size())
+	_clipping_multimeshes.resize(dynamic_types.size())
+	_clipping_mmi_nodes.resize(dynamic_types.size())
+	_clipping_counts.resize(dynamic_types.size())
 	_clipping_counts.fill(0)
 
-	for mmi_idx: int in range(VEG_TYPES.size()):
-		var v_type: String = VEG_TYPES[mmi_idx]
+	for mmi_idx: int in range(dynamic_types.size()):
+		var v_type: String = dynamic_types[mmi_idx]
 		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
 		var count: int = entry_list.size()
 
@@ -781,22 +835,7 @@ func _build_from_vector_field(
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if is_flower:
 			mm.use_custom_data = true
-			if v_type.begins_with("flower_rose"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_rose_mesh)
-			elif v_type.begins_with("flower_daisy"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_daisy_mesh)
-			elif v_type == "flower_sunflower":
-				mm.mesh = _flower_sunflower_mesh
-			elif v_type.begins_with("flower_tulip"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_tulip_mesh)
-			elif v_type.begins_with("flower_bed"):
-				mm.mesh = _flower_variation_meshes.get(v_type, _flower_bed_mesh)
-			else:
-				mm.mesh = _flower_mesh
-		elif v_type == "wheat":
-			mm.mesh = _wheat_mesh
-		else:
-			mm.mesh = _grass_mesh
+		mm.mesh = _resolve_mesh_for_type(v_type)
 		mm.instance_count = count
 
 		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
@@ -805,8 +844,9 @@ func _build_from_vector_field(
 		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		mmi.custom_aabb = FIXED_ISLAND_AABB
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		if GRASS_MATERIALS.has(v_type):
-			mmi.material_override = GRASS_MATERIALS[v_type] as Material
+		var resolved_mat: Material = _resolve_material_for_type(v_type)
+		if resolved_mat != null:
+			mmi.material_override = resolved_mat
 		add_child(mmi)
 
 		var clip_mm: MultiMesh = MultiMesh.new()
@@ -974,6 +1014,10 @@ func _get_cut_transform(p_idx: int) -> Transform3D:
 
 
 func _resolve_type_particle_color(v_type: String) -> Color:
+	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(v_type)
+	if sp_res != null and sp_res.particle_petal_color != Color.WHITE:
+		return sp_res.particle_petal_color
+
 	if GRASS_MATERIALS.has(v_type):
 		var sm: ShaderMaterial = GRASS_MATERIALS[v_type] as ShaderMaterial
 		if sm != null:

@@ -197,6 +197,13 @@ static func _ensure_particle_meshes() -> void:
 		_grass_blade_tip_mesh = st.commit()
 
 static func get_flower_colors(flower_type: String) -> Dictionary:
+	var sp_res: PlantSpeciesData = PlantDatabase.get_resource(flower_type)
+	if sp_res != null and sp_res.particle_petal_color != Color.WHITE:
+		return {
+			"petal": sp_res.particle_petal_color,
+			"center": sp_res.particle_center_color
+		}
+
 	var petal_col: Color = Color(1.0, 0.58, 0.80, 1.0)
 	var center_col: Color = Color(1.0, 0.88, 0.05, 1.0)
 	match flower_type:

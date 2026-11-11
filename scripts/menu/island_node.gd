@@ -483,7 +483,8 @@ func _ensure_3d_veg_built() -> void:
 	var objects_arr: Array = data.get("objects", []) as Array
 
 	veg_transforms_by_type.clear()
-	for v_type: String in VegetationGrid.VEG_TYPES:
+	var dynamic_types: PackedStringArray = VegetationGrid.get_veg_types()
+	for v_type: String in dynamic_types:
 		var empty_xforms: Array[Transform3D] = []
 		veg_transforms_by_type[v_type] = empty_xforms
 
@@ -650,7 +651,7 @@ func _ensure_3d_veg_built() -> void:
 				var g_basis: Basis = Basis(Vector3.UP, rot_y) * Basis.from_scale(scale_vec)
 				(veg_transforms_by_type[v_type] as Array[Transform3D]).append(Transform3D(g_basis, tuft_pos))
 
-	for v_type: String in VegetationGrid.VEG_TYPES:
+	for v_type: String in dynamic_types:
 		var xforms: Array[Transform3D] = veg_transforms_by_type[v_type] as Array[Transform3D]
 		if xforms.is_empty():
 			continue
@@ -659,22 +660,7 @@ func _ensure_3d_veg_built() -> void:
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		if v_type.begins_with("flower"):
 			mm.use_custom_data = true
-			if v_type.begins_with("flower_rose"):
-				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_rose_mesh)
-			elif v_type.begins_with("flower_daisy"):
-				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_daisy_mesh)
-			elif v_type == "flower_sunflower":
-				mm.mesh = VegetationGrid._flower_sunflower_mesh
-			elif v_type.begins_with("flower_tulip"):
-				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_tulip_mesh)
-			elif v_type.begins_with("flower_bed"):
-				mm.mesh = VegetationGrid._flower_variation_meshes.get(v_type, VegetationGrid._flower_bed_mesh)
-			else:
-				mm.mesh = VegetationGrid._flower_mesh
-		elif v_type == "wheat":
-			mm.mesh = VegetationGrid._wheat_mesh
-		else:
-			mm.mesh = VegetationGrid._grass_mesh
+		mm.mesh = VegetationGrid._resolve_mesh_for_type(v_type)
 		mm.instance_count = xforms.size()
 		for i: int in range(xforms.size()):
 			mm.set_instance_transform(i, xforms[i])

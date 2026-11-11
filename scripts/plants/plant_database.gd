@@ -141,3 +141,25 @@ static func get_species_name(species: Dictionary) -> String:
 	if translated != trans_key:
 		return translated
 	return String(species.get("name", ""))
+
+## Retorna a lista unificada de todos os tipos e variações de vegetação registrados no jogo
+static func get_all_registered_types() -> PackedStringArray:
+	_ensure_loaded()
+	var types: PackedStringArray = PackedStringArray()
+
+	# 1. Adiciona todas as espécies base descobertas em res://data/species/
+	for r: PlantSpeciesData in _resources:
+		if not types.has(r.key):
+			types.append(r.key)
+
+	# 2. Adiciona as variações cosméticas registradas no TilePaletteDB
+	for base_id: String in TilePaletteDBScript.ITEM_VARIATIONS.keys():
+		var var_list: Array = TilePaletteDBScript.ITEM_VARIATIONS[base_id] as Array
+		for v in var_list:
+			if v is Dictionary:
+				var vid: String = String(v.get("id", ""))
+				if not vid.is_empty() and not types.has(vid):
+					types.append(vid)
+
+	return types
+
