@@ -1,4 +1,4 @@
-class_name ThemeDatabase
+﻿class_name ThemeDatabase
 extends RefCounted
 
 ## Catálogo Data-Driven dos Temas de Ilha e Atmosferas do Grass Cut Bot.
@@ -13,8 +13,8 @@ const DEFAULT_THEME_ID: String = "tropical_day"
 ## Manifesto canônico de temas para builds exportadas (Android / Web)
 const CANONICAL_THEME_PATHS: PackedStringArray = [
 	"res://data/themes/theme_tropical_day.tres",
-	"res://data/themes/theme_sunset.tres",
-	"res://data/themes/theme_night.tres"
+	"res://data/themes/theme_sunset_golden.tres",
+	"res://data/themes/theme_night_stars.tres"
 ]
 
 static var _resources: Array[IslandThemeData] = []

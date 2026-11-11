@@ -1,4 +1,4 @@
-class_name ObstacleDatabase
+﻿class_name ObstacleDatabase
 extends RefCounted
 
 ## Catálogo Data-Driven dos Obstáculos e Rochas do Grass Cut Bot.
@@ -14,8 +14,8 @@ const DEFAULT_MATERIAL_PATH: String = "res://shaders/rock_toon_material.tres"
 const CANONICAL_OBSTACLE_PATHS: PackedStringArray = [
 	"res://data/obstacles/rock_slate.tres",
 	"res://data/obstacles/rock_moss.tres",
-	"res://data/obstacles/rock_monolith.tres",
-	"res://data/obstacles/rock_monolith_moss.tres",
+	"res://data/obstacles/rock_spire.tres",
+	"res://data/obstacles/rock_moss_spire.tres",
 	"res://data/obstacles/rock_sandstone.tres",
 	"res://data/obstacles/rock_boulder.tres"
 ]
