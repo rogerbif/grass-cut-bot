@@ -9,8 +9,8 @@ render_mode cull_back, diffuse_toon, specular_disabled;
 
 const float SMOOTHSTEP_AA = 0.01;
 
-uniform sampler2D surfaceNoise : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D distortNoise : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D surfaceNoise : hint_default_black, filter_linear_mipmap, repeat_enable;
+uniform sampler2D distortNoise : hint_default_black, filter_linear_mipmap, repeat_enable;
 
 uniform vec4 foam_color : source_color = vec4(0.88, 0.98, 1.0, 1.0);
 
@@ -35,17 +35,9 @@ void vertex() {
 	distortUV = use_world_coords ? (v_world_pos.xz * world_scale * 0.5) : UV;
 }
 
-float _srgb_to_linear_1(float c) {
-	return (c <= 0.04045) ? (c / 12.92) : pow((c + 0.055) / 1.055, 2.4);
-}
-
 void fragment() {
 	// 1. Amostra de ruído de distorção para mar agitado suave
 	vec4 distortNoiseSample = texture(distortNoise, distortUV);
-	if (OUTPUT_IS_SRGB) {
-		distortNoiseSample.x = _srgb_to_linear_1(distortNoiseSample.x);
-		distortNoiseSample.y = _srgb_to_linear_1(distortNoiseSample.y);
-	}
 	vec2 distortAmount = (distortNoiseSample.xy * 2.0 - 1.0) * surface_distortion_amount;
 
 	// 2. Amostra de cristas de ondas de superfície com deslocamento temporal
@@ -55,7 +47,7 @@ void fragment() {
 	);
 	float surfaceNoiseSample = texture(surfaceNoise, noise_uv).r;
 	if (OUTPUT_IS_SRGB) {
-		surfaceNoiseSample = pow(max(surfaceNoiseSample, 0.0001), 2.15);
+		surfaceNoiseSample = surfaceNoiseSample * surfaceNoiseSample;
 	}
 	float surfaceNoiseAmount = smoothstep(surface_noise_cutoff - SMOOTHSTEP_AA, surface_noise_cutoff + SMOOTHSTEP_AA, surfaceNoiseSample);
 

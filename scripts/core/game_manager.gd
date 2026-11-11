@@ -18,6 +18,11 @@ enum GameState { READY, PLAYING, PAUSED, VICTORY, GAME_OVER }
 const DEFEAT_REASON_TIME_UP: String = "time_up"
 const DEFEAT_REASON_ROBOT_BROKEN: String = "robot_broken"
 
+# Gerenciamento de Taxa de Quadros & Economia de Bateria Mobile
+const FPS_PLAYING: int = 60
+const FPS_PAUSED: int = 30
+const FPS_BACKGROUND: int = 15
+
 var current_state: GameState = GameState.READY
 var current_level: int = 1
 
@@ -56,6 +61,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	Engine.max_fps = FPS_PLAYING
 	get_tree().node_added.connect(_on_scene_node_added)
 	_scan_and_connect_buttons(get_tree().root)
 	call_deferred("_init_graphics_quality")
@@ -65,6 +71,12 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		if current_state == GameState.PLAYING:
 			toggle_pause()
+		Engine.max_fps = FPS_BACKGROUND
+	elif what == NOTIFICATION_APPLICATION_RESUMED or what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		if current_state == GameState.PAUSED:
+			Engine.max_fps = FPS_PAUSED
+		else:
+			Engine.max_fps = FPS_PLAYING
 
 func _init_graphics_quality() -> void:
 	if SaveManager != null:
@@ -128,6 +140,7 @@ func start_level(level_index: int, level_goals: Dictionary, duration_seconds: fl
 
 	current_state = GameState.PLAYING
 	get_tree().paused = false
+	Engine.max_fps = FPS_PLAYING
 	state_changed.emit(current_state)
 	time_updated.emit(time_left)
 
@@ -329,6 +342,7 @@ func toggle_pause() -> void:
 	if current_state == GameState.PLAYING:
 		current_state = GameState.PAUSED
 		get_tree().paused = true
+		Engine.max_fps = FPS_PAUSED
 		if AudioManager != null:
 			AudioManager.play_sfx("pause")
 		game_paused.emit(true)
@@ -336,6 +350,7 @@ func toggle_pause() -> void:
 	elif current_state == GameState.PAUSED:
 		current_state = GameState.PLAYING
 		get_tree().paused = false
+		Engine.max_fps = FPS_PLAYING
 		if AudioManager != null:
 			AudioManager.play_sfx("unpause")
 		game_paused.emit(false)
@@ -356,10 +371,12 @@ func get_total_levels() -> int:
 
 func restart_level() -> void:
 	get_tree().paused = false
+	Engine.max_fps = FPS_PLAYING
 	get_tree().reload_current_scene()
 
 func next_level() -> void:
 	get_tree().paused = false
+	Engine.max_fps = FPS_PLAYING
 	var total_lvls: int = get_total_levels()
 	var next_idx: int = current_level + 1
 	var next_json: String = "res://data/levels/level_%02d.json" % next_idx

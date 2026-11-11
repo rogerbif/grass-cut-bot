@@ -32,9 +32,17 @@ const SFX_USE_ITEM: AudioStream = preload("res://assets/audio/sfx/Use_item.wav")
 const SFX_WATER_SPLASH: AudioStream = preload("res://assets/audio/sfx/Water_splash.wav")
 
 const SFX_POOL_SIZE: int = 8
-const CUT_COOLDOWN_MS: int = 40
-const COIN_COOLDOWN_MS: int = 45
+const CUT_COOLDOWN_MS: int = 32
+const COIN_COOLDOWN_MS: int = 35
 const COUNTDOWN_COOLDOWN_MS: int = 800
+
+const SFX_COOLDOWNS: Dictionary = {
+	"slap_rock": 110,
+	"coin_pickup": 35,
+	"star_pop": 50,
+	"buy": 80,
+	"water_splash": 100
+}
 
 var _sfx_map: Dictionary = {}
 var _music_player: AudioStreamPlayer
@@ -42,6 +50,7 @@ var _engine_player: AudioStreamPlayer
 var _countdown_player: AudioStreamPlayer
 var _sfx_pool: Array[AudioStreamPlayer] = []
 var _pool_index: int = 0
+var _last_sfx_times: Dictionary = {}
 
 var _music_bus_idx: int = -1
 var _sfx_bus_idx: int = -1
@@ -182,6 +191,14 @@ func _switch_music_stream(target_stream: AudioStream, target_volume_db: float, f
 func play_sfx(key: String, pitch_range: float = 0.0, volume_offset_db: float = 0.0) -> void:
 	if not _sfx_enabled:
 		return
+	var min_interval: int = int(SFX_COOLDOWNS.get(key, 0))
+	if min_interval > 0:
+		var now: int = Time.get_ticks_msec()
+		var last_time: int = int(_last_sfx_times.get(key, 0))
+		if now - last_time < min_interval:
+			return
+		_last_sfx_times[key] = now
+
 	var stream: AudioStream = _sfx_map.get(key, null) as AudioStream
 	if stream == null:
 		return
@@ -196,6 +213,11 @@ func play_sfx(key: String, pitch_range: float = 0.0, volume_offset_db: float = 0
 	player.play()
 
 func _get_next_sfx_player() -> AudioStreamPlayer:
+	# Prioriza players ociosos para evitar corte abrupto (micro-pop) de streams em reprodução
+	for p: AudioStreamPlayer in _sfx_pool:
+		if not p.playing:
+			return p
+	# Se todos estiverem ocupados, utiliza o índice circular do pool
 	var player: AudioStreamPlayer = _sfx_pool[_pool_index]
 	_pool_index = (_pool_index + 1) % _sfx_pool.size()
 	return player

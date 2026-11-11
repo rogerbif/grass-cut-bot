@@ -27,12 +27,15 @@ Este documento estabelece o diagnóstico técnico, a matriz de priorização por
 | **1.2** | **Render / GPU** | SubViewport de trilha de corte em modo sob demanda (`UPDATE_ONCE` / dirty) | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.11-alpha`)** |
 | **1.3** | **Shaders / CPU** | Migração de parâmetros da lâmina para `RenderingServer.global_shader_parameter_set` | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.12-alpha`)** |
 | **1.4** | **Efeitos / CPU** | Cache de referência do cortador no `FloatingCoinManager` | **Médio** | **Mínimo** | ✅ **Concluído (`v0.12.13-alpha`)** |
+| **1.5** | **Áudio / CPU** | Limitador de vazão de SFX (debounce) e busca de canais ociosos no `AudioManager` | **Médio** | **Mínimo** | ✅ **Concluído (`v0.12.193-alpha`)** |
 | **2.1** | **Shaders / GPU** | Desacoplar `depth_texture` da água do mar em mobile (aproveitando `CoastalFoamRibbon`) | **Crítico** | **Médio** | ✅ **Concluído (`v0.12.14-alpha`)** |
 | **2.2** | **Render / GPU** | Avaliação de Backface Culling (`cull_back`) nas malhas de grama e aparas de solo | **Alto** | **Médio** | ✅ **Concluído (`v0.12.15-alpha`)** |
 | **2.3** | **Mobile / Engine** | Suporte a Escala de Resolução 3D (Scaling 3D / FSR 1.0) nas configurações de usuário | **Alto** | **Médio** | ✅ **Concluído (`v0.12.16-alpha`)** |
+| **2.4** | **Shaders / GPU ALU** | Pré-cálculo de uniform ratio no vertex (`v_shadow_ratio`) e linearização de ruídos do mar | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.193-alpha`)** |
 | **3.1** | **Vegetação / VRAM** | Gerenciamento de `visible_instance_count` nos MultiMeshes de aparas cortadas | **Médio** | **Médio** | ✅ **Concluído (`v0.12.17-alpha`)** |
 | **3.2** | **Partículas / CPU** | Calibração do pool e contagem de partículas de corte | **Médio** | **Baixo** | ✅ **Concluído (`v0.12.18-alpha`)** |
 | **3.3** | **CPU / Ociosidade** | Refinamento de ciclos ociosos no HUD (1x/s), RobotEyes, Joystick e Corte estático | **Médio** | **Muito Baixo** | ✅ **Concluído (`v0.12.19-alpha`)** |
+| **3.4** | **Engine / Bateria** | Throttling dinâmico de taxa de quadros (60 FPS jogo / 30 FPS pausa / 15 FPS background) | **Médio** | **Muito Baixo** | ✅ **Concluído (`v0.12.193-alpha`)** |
 | **4.1** | **Arquitetura** | Perfil experimental de renderizador OpenGL ES 3.0 (`gl_compatibility`) | **Médio** | **Alto** | `project.godot` |
 
 ---
