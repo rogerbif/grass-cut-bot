@@ -19,7 +19,138 @@ const TEX_ILLUS_FLOWER_STEMS: Texture2D = preload("res://assets/ui/collection/il
 const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/illus_flower_petals.svg")
 
 static var _silhouette_cache: Dictionary = {}
+static var _outline_image_cache: Dictionary = {}
+static var _baked_icon_cache: Dictionary = {}
 static var _outline_material: ShaderMaterial = null
+
+static func _bake_category_outline(cat: String) -> Image:
+	if _outline_image_cache.has(cat):
+		return _outline_image_cache[cat] as Image
+
+	var sil_tex: Texture2D = _get_composite_silhouette("", cat)
+	var sil_img: Image = sil_tex.get_image()
+	sil_img.convert(Image.FORMAT_RGBA8)
+	var w: int = sil_img.get_width()
+	var h: int = sil_img.get_height()
+
+	var out_img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var raw: PackedByteArray = sil_img.get_data()
+	var src_mask: PackedByteArray = PackedByteArray()
+	src_mask.resize(w * h)
+	for i: int in range(w * h):
+		src_mask[i] = 1 if raw[i * 4 + 3] > 30 else 0
+
+	# 1px borda preta interna + 2px borda branca externa adicional (raio 3)
+	for y: int in range(h):
+		for x: int in range(w):
+			var idx: int = y * w + x
+			if src_mask[idx] == 1:
+				out_img.set_pixel(x, y, Color(0, 0, 0, 0))
+				continue
+
+			var is_inner: bool = false
+			for dy: int in range(-1, 2):
+				var ny: int = y + dy
+				if ny < 0 or ny >= h: continue
+				for dx: int in range(-1, 2):
+					var nx: int = x + dx
+					if nx < 0 or nx >= w: continue
+					if src_mask[ny * w + nx] == 1:
+						is_inner = true
+						break
+				if is_inner: break
+
+			if is_inner:
+				out_img.set_pixel(x, y, Color(0.0, 0.0, 0.0, 1.0))
+			else:
+				var is_outer: bool = false
+				for dy: int in range(-3, 4):
+					var ny: int = y + dy
+					if ny < 0 or ny >= h: continue
+					for dx: int in range(-3, 4):
+						if dx * dx + dy * dy > 10: continue
+						var nx: int = x + dx
+						if nx < 0 or nx >= w: continue
+						if src_mask[ny * w + nx] == 1:
+							is_outer = true
+							break
+					if is_outer: break
+
+				if is_outer:
+					out_img.set_pixel(x, y, Color(1.0, 1.0, 1.0, 1.0))
+				else:
+					out_img.set_pixel(x, y, Color(0, 0, 0, 0))
+
+	_outline_image_cache[cat] = out_img
+	return out_img
+
+## Retorna a textura composta de 128x128 pré-assada da espécie com contorno de sticker
+static func get_baked_icon_texture(plant_type: String, with_outline: bool = true) -> Texture2D:
+	var cache_key: String = "%s_%s" % [plant_type, "ol" if with_outline else "no_ol"]
+	if _baked_icon_cache.has(cache_key):
+		return _baked_icon_cache[cache_key] as Texture2D
+
+	var sp_data: Dictionary = PlantDatabaseScript.get_species(plant_type)
+	var cat: String = String(sp_data.get("category", ""))
+	var theme_col: Color = sp_data.get("color", Color.WHITE) as Color
+
+	if cat.is_empty():
+		if plant_type.begins_with("flower"):
+			cat = "flower"
+			theme_col = Color(1.0, 0.18, 0.65)
+		elif plant_type == "wheat":
+			cat = "crop"
+		else:
+			cat = "grass"
+			theme_col = Color(0.28, 0.81, 0.10)
+
+	var tex_base: Texture2D = null
+	var tex_top: Texture2D = null
+	if cat == "crop":
+		tex_base = TEX_ILLUS_WHEAT
+	elif cat == "flower":
+		tex_base = TEX_ILLUS_FLOWER_STEMS
+		tex_top = TEX_ILLUS_FLOWER_PETALS
+	else:
+		tex_base = TEX_ILLUS_GRASS_BASE
+		tex_top = TEX_ILLUS_GRASS_BLADES
+
+	var base_img: Image = tex_base.get_image()
+	base_img.convert(Image.FORMAT_RGBA8)
+	var w: int = base_img.get_width()
+	var h: int = base_img.get_height()
+
+	var final_img: Image
+	if with_outline:
+		var outline_base: Image = _bake_category_outline(cat)
+		final_img = outline_base.duplicate()
+	else:
+		final_img = Image.create(w, h, false, Image.FORMAT_RGBA8)
+
+	# Mescla a base
+	final_img.blend_rect(base_img, Rect2i(0, 0, w, h), Vector2i.ZERO)
+
+	# Mescla a camada colorida (lâminas ou pétalas)
+	if tex_top != null:
+		var top_img: Image = tex_top.get_image()
+		top_img.convert(Image.FORMAT_RGBA8)
+		var top_raw: PackedByteArray = top_img.get_data()
+		var sz: int = top_raw.size()
+		var cr: float = theme_col.r
+		var cg: float = theme_col.g
+		var cb: float = theme_col.b
+		var ca: float = theme_col.a
+		for i: int in range(0, sz, 4):
+			top_raw[i] = int(top_raw[i] * cr)
+			top_raw[i + 1] = int(top_raw[i + 1] * cg)
+			top_raw[i + 2] = int(top_raw[i + 2] * cb)
+			top_raw[i + 3] = int(top_raw[i + 3] * ca)
+		top_img.set_data(w, h, false, Image.FORMAT_RGBA8, top_raw)
+		final_img.blend_rect(top_img, Rect2i(0, 0, w, h), Vector2i.ZERO)
+
+	var baked_tex: ImageTexture = ImageTexture.create_from_image(final_img)
+	_baked_icon_cache[cache_key] = baked_tex
+	return baked_tex
 
 
 static func _get_outline_material() -> ShaderMaterial:
@@ -128,55 +259,14 @@ static func _make_sprite_rect(tex: Texture2D, tint: Color) -> TextureRect:
 
 
 ## Constrói o container da ilustração para o tipo de planta informado.
+## Retorna um TextureRect único com textura pré-assada (silhueta + contornos + cores mescladas).
 static func build_goal_icon(plant_type: String, icon_size: float = 34.0, with_outline: bool = true) -> Control:
-	var illus: Control = Control.new()
-	illus.custom_minimum_size = Vector2(icon_size, icon_size)
-	illus.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	illus.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	illus.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var sp_data: Dictionary = PlantDatabaseScript.get_species(plant_type)
-	var cat: String = String(sp_data.get("category", ""))
-	var theme_col: Color = sp_data.get("color", Color.WHITE) as Color
-
-	# Fallback para chaves genéricas ("grass", "flower")
-	if cat.is_empty():
-		if plant_type.begins_with("flower"):
-			cat = "flower"
-			theme_col = Color(1.0, 0.18, 0.65)
-		elif plant_type == "wheat":
-			cat = "crop"
-		else:
-			cat = "grass"
-			theme_col = Color(0.28, 0.81, 0.10)
-
-	# 1. Camadas visíveis limpas (Child 0 = Base / Stems / Wheat; Child 1 = Blades / Petals)
-	if cat == "crop":
-		var wheat_rect: TextureRect = _make_sprite_rect(TEX_ILLUS_WHEAT, Color.WHITE)
-		illus.add_child(wheat_rect)
-	elif cat == "flower":
-		var stems_rect: TextureRect = _make_sprite_rect(TEX_ILLUS_FLOWER_STEMS, Color.WHITE)
-		illus.add_child(stems_rect)
-		var petals_rect: TextureRect = _make_sprite_rect(TEX_ILLUS_FLOWER_PETALS, theme_col)
-		illus.add_child(petals_rect)
-	else:
-		var base_rect: TextureRect = _make_sprite_rect(TEX_ILLUS_GRASS_BASE, Color.WHITE)
-		illus.add_child(base_rect)
-		var blades_rect: TextureRect = _make_sprite_rect(TEX_ILLUS_GRASS_BLADES, theme_col)
-		illus.add_child(blades_rect)
-
-	# 2. Contorno externo subjacente (silhueta contínua sem vazamentos internos)
-	if with_outline:
-		var outline_rect: TextureRect = TextureRect.new()
-		outline_rect.name = "OutlineRect"
-		outline_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		outline_rect.texture = _get_composite_silhouette(plant_type, cat)
-		outline_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		outline_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		outline_rect.material = _get_outline_material()
-		outline_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		outline_rect.show_behind_parent = true
-		outline_rect.z_index = -1
-		illus.add_child(outline_rect)
-
-	return illus
+	var rect: TextureRect = TextureRect.new()
+	rect.custom_minimum_size = Vector2(icon_size, icon_size)
+	rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.texture = get_baked_icon_texture(plant_type, with_outline)
+	return rect

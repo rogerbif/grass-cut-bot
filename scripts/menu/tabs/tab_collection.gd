@@ -32,6 +32,10 @@ var _filter_hbox: HBoxContainer = null
 var _selected_filter: String = "all"
 var _filter_buttons: Dictionary = {}
 
+# Cache de cards para reaproveitamento e visibilidade instantânea (Pacote 3)
+var _cards_by_key: Dictionary = {}
+var _cards_built: bool = false
+
 # Variáveis para o embalo (inércia) da rolagem; o arrasto em si é do ScrollContainer
 var _is_dragging: bool = false
 var _last_drag_time: float = 0.0
@@ -275,7 +279,51 @@ func _on_filter_selected(fid: String) -> void:
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	_update_filter_buttons()
-	refresh_cards()
+	_apply_active_filter()
+
+func _apply_active_filter() -> void:
+	if not _cards_built:
+		refresh_cards()
+		return
+	var all_species: Array[Dictionary] = PlantDatabaseScript.get_all_species()
+	for sp: Dictionary in all_species:
+		var key: String = String(sp.get("key", ""))
+		var card: PanelContainer = _cards_by_key.get(key) as PanelContainer
+		if card != null:
+			card.visible = _is_matching_filter(key, sp, _selected_filter)
+
+## Retorna a quantidade de cards atualmente visíveis no catálogo (conforme filtro ativo).
+func get_visible_cards_count() -> int:
+	if cards_vbox == null:
+		return 0
+	var count: int = 0
+	for c: Node in cards_vbox.get_children():
+		if c is CanvasItem and (c as CanvasItem).visible:
+			count += 1
+	return count
+
+func _is_matching_filter(key: String, sp: Dictionary, filter_id: String) -> bool:
+	if filter_id == "all":
+		return true
+	var cat: String = String(sp.get("category", "grass"))
+	if filter_id == "grass":
+		return cat == "grass"
+	elif filter_id == "crop":
+		return cat == "crop"
+	elif filter_id == "flower":
+		return cat == "flower"
+	elif filter_id == "claimable":
+		if SaveManager == null or not SaveManager.is_species_discovered(key):
+			return false
+		var harvest_count: int = SaveManager.get_harvest_count(key)
+		var claimed_lvl: int = SaveManager.get_claimed_milestone_level(key)
+		var milestones: Array = sp.get("milestones", [])
+		if claimed_lvl >= milestones.size():
+			return false
+		var next_m: Dictionary = milestones[claimed_lvl] as Dictionary
+		var target_req: int = int(next_m.get("target", 100))
+		return harvest_count >= target_req
+	return true
 
 func _update_filter_buttons(all_species: Array[Dictionary] = []) -> void:
 	if _filter_buttons.is_empty():
@@ -398,26 +446,17 @@ func _refresh_header() -> void:
 
 	_update_filter_buttons(all_species)
 
-## Reconstrói apenas o card da espécie e o troca no mesmo lugar da lista.
-## Com o filtro "claimable" o card pode precisar sumir, então reconstrói tudo.
+## Atualiza apenas os dados do card em-place e sua visibilidade se no filtro 'claimable'.
 func _refresh_single_card(species_key: String) -> void:
-	if cards_vbox == null or _selected_filter == "claimable":
+	if not _cards_built or not _cards_by_key.has(species_key):
 		refresh_cards()
 		return
 	var sp: Dictionary = PlantDatabaseScript.get_species(species_key)
 	if sp.is_empty():
-		refresh_cards()
 		return
-	for old_card: Node in cards_vbox.get_children():
-		if String(old_card.get_meta("species_key", "")) == species_key:
-			var new_card: PanelContainer = _build_species_card(sp)
-			var idx: int = old_card.get_index()
-			cards_vbox.add_child(new_card)
-			cards_vbox.move_child(new_card, idx)
-			cards_vbox.remove_child(old_card)
-			old_card.queue_free()
-			return
-	refresh_cards()
+	var card: PanelContainer = _cards_by_key[species_key] as PanelContainer
+	_update_card_view(card, sp)
+	card.visible = _is_matching_filter(species_key, sp, _selected_filter)
 
 func _get_claimable_milestones_count(all_species: Array[Dictionary]) -> int:
 	var count: int = 0
@@ -441,54 +480,37 @@ func refresh_cards() -> void:
 	if cards_vbox == null or SaveManager == null:
 		return
 
-	for child in cards_vbox.get_children():
-		cards_vbox.remove_child(child)
-		child.queue_free()
-
 	var all_species: Array[Dictionary] = PlantDatabaseScript.get_all_species()
+
+	# Constrói os cards uma única vez para reaproveitamento permanente (Pacote 3)
+	if not _cards_built:
+		for child: Node in cards_vbox.get_children():
+			cards_vbox.remove_child(child)
+			child.queue_free()
+		_cards_by_key.clear()
+
+		for sp: Dictionary in all_species:
+			var key: String = String(sp.get("key", ""))
+			var card: PanelContainer = _build_species_card(sp)
+			cards_vbox.add_child(card)
+			_cards_by_key[key] = card
+		_cards_built = true
+
+	# Atualiza o estado dos cards e ajusta visibilidade conforme o filtro
 	for sp: Dictionary in all_species:
 		var key: String = String(sp.get("key", ""))
-		var cat: String = String(sp.get("category", "grass"))
-
-		if _selected_filter == "grass" and cat != "grass":
-			continue
-		elif _selected_filter == "crop" and cat != "crop":
-			continue
-		elif _selected_filter == "flower" and cat != "flower":
-			continue
-		elif _selected_filter == "claimable":
-			if not SaveManager.is_species_discovered(key):
-				continue
-			var harvest_count: int = SaveManager.get_harvest_count(key)
-			var claimed_lvl: int = SaveManager.get_claimed_milestone_level(key)
-			var milestones: Array = sp.get("milestones", [])
-			if claimed_lvl >= milestones.size():
-				continue
-			var next_m: Dictionary = milestones[claimed_lvl] as Dictionary
-			var target_req: int = int(next_m.get("target", 100))
-			if harvest_count < target_req:
-				continue
-
-		var card: PanelContainer = _build_species_card(sp)
-		cards_vbox.add_child(card)
+		var card: PanelContainer = _cards_by_key.get(key) as PanelContainer
+		if card != null:
+			_update_card_view(card, sp)
+			card.visible = _is_matching_filter(key, sp, _selected_filter)
 
 func _build_species_card(sp: Dictionary) -> PanelContainer:
 	var key: String = String(sp.get("key", ""))
-	var is_disc: bool = SaveManager.is_species_discovered(key)
-	var harvest_count: int = SaveManager.get_harvest_count(key)
-	var claimed_lvl: int = SaveManager.get_claimed_milestone_level(key)
-	var milestones: Array = sp.get("milestones", [])
-	var theme_col: Color = sp.get("color", Color(0.3, 0.7, 0.4, 1.0))
-	var cat: String = String(sp.get("category", "grass"))
-	var hits: int = int(sp.get("hits", 1))
-	var coins: int = int(sp.get("reward_coins", 1))
-	var origin_lvl: int = int(sp.get("origin_level", 1))
 
 	var card: PanelContainer = PanelContainer.new()
 	card.set_meta("species_key", key)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
-	card.add_theme_stylebox_override("panel", _get_card_sb(is_disc))
 
 	var hbox: HBoxContainer = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 14)
@@ -500,9 +522,6 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	icon_panel.custom_minimum_size = Vector2(96, 96)
 	icon_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	icon_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-
-	# A cor da espécie vai em self_modulate para o estilo da moldura ser compartilhado
-	icon_panel.self_modulate = Color(theme_col.r, theme_col.g, theme_col.b, 0.90) if is_disc else Color(0.28, 0.38, 0.52, 0.70)
 	icon_panel.add_theme_stylebox_override("panel", _get_icon_frame_sb())
 
 	var illus_layer: CenterContainer = CenterContainer.new()
@@ -512,18 +531,15 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	var icon_view: Control = GoalIconFactoryScript.build_goal_icon(key, 76.0, true)
 	icon_view.mouse_filter = Control.MOUSE_FILTER_PASS
-	if not is_disc:
-		icon_view.modulate = Color(0.18, 0.26, 0.38, 0.70)
 	illus_layer.add_child(icon_view)
 
-	if not is_disc:
-		var lock_rect: TextureRect = TextureRect.new()
-		lock_rect.custom_minimum_size = Vector2(36, 36)
-		lock_rect.texture = TEX_ILLUS_LOCKED
-		lock_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		lock_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		lock_rect.mouse_filter = Control.MOUSE_FILTER_PASS
-		illus_layer.add_child(lock_rect)
+	var lock_rect: TextureRect = TextureRect.new()
+	lock_rect.custom_minimum_size = Vector2(36, 36)
+	lock_rect.texture = TEX_ILLUS_LOCKED
+	lock_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	lock_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	lock_rect.mouse_filter = Control.MOUSE_FILTER_PASS
+	illus_layer.add_child(lock_rect)
 
 	hbox.add_child(icon_panel)
 
@@ -547,7 +563,6 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	var tag_bg: TextureRect = TextureRect.new()
 	tag_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	tag_bg.texture = TEX_BADGE_DISC if is_disc else TEX_BADGE_LOCK
 	tag_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tag_bg.stretch_mode = TextureRect.STRETCH_SCALE
 	tag_bg.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -555,11 +570,9 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 
 	var tag_lbl: Label = Label.new()
 	tag_lbl.set_anchors_preset(Control.PRESET_FULL_RECT)
-	tag_lbl.text = tr("COLLECTION_TAG_DISC") if is_disc else tr("COLLECTION_TAG_LOCK")
 	tag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tag_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	tag_lbl.add_theme_font_size_override("font_size", 10)
-	tag_lbl.add_theme_color_override("font_color", Color(0.85, 1.0, 0.92, 1.0) if is_disc else Color(0.95, 0.72, 0.76, 0.92))
 	tag_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 	tag_overlay.add_child(tag_lbl)
 
@@ -569,23 +582,132 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	header_row.add_child(header_spacer)
 
 	var origin_badge: Label = Label.new()
-	origin_badge.text = tr("COLLECTION_ORIGIN_LVL") % origin_lvl
 	origin_badge.add_theme_font_size_override("font_size", 11)
-	origin_badge.add_theme_color_override("font_color", Color(0.45, 0.88, 1.0, 0.95) if is_disc else Color(0.60, 0.68, 0.78, 0.75))
 	origin_badge.mouse_filter = Control.MOUSE_FILTER_PASS
 	header_row.add_child(origin_badge)
 
 	# Linha 2: Nome da Espécie
 	var name_lbl: Label = Label.new()
-	name_lbl.text = PlantDatabaseScript.get_species_name(sp) if is_disc else tr("HERBARIUM_UNIDENTIFIED")
 	name_lbl.add_theme_font_size_override("font_size", 16)
-	name_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0) if is_disc else Color(0.72, 0.78, 0.86, 0.92))
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 	info_vbox.add_child(name_lbl)
 
-	# Linha 3: Atributos no formato do exemplo ("Resistência: X golpe • Recompensa: Y moeda")
+	# Linha 3: Atributos
 	var attr_lbl: Label = Label.new()
 	attr_lbl.add_theme_font_size_override("font_size", 11)
+	attr_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+	info_vbox.add_child(attr_lbl)
+
+	# Linha 4: Descrição Botânica
+	var desc_lbl: Label = Label.new()
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc_lbl.add_theme_font_size_override("font_size", 11)
+	desc_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+	info_vbox.add_child(desc_lbl)
+
+	# Linha 5 & 6: Container de Progresso (Colheitas e Barra de Progresso)
+	var prog_container: VBoxContainer = VBoxContainer.new()
+	prog_container.add_theme_constant_override("separation", 4)
+	prog_container.mouse_filter = Control.MOUSE_FILTER_PASS
+	info_vbox.add_child(prog_container)
+
+	var prog_hbox: HBoxContainer = HBoxContainer.new()
+	prog_hbox.add_theme_constant_override("separation", 6)
+	prog_hbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	prog_container.add_child(prog_hbox)
+
+	var count_lbl: Label = Label.new()
+	count_lbl.add_theme_font_size_override("font_size", 11)
+	count_lbl.add_theme_color_override("font_color", Color(0.38, 0.95, 0.58, 1.0))
+	count_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	count_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+	prog_hbox.add_child(count_lbl)
+
+	var milestone_title_lbl: Label = Label.new()
+	milestone_title_lbl.add_theme_font_size_override("font_size", 11)
+	milestone_title_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+	prog_hbox.add_child(milestone_title_lbl)
+
+	var m_bar: ProgressBar = ProgressBar.new()
+	m_bar.custom_minimum_size = Vector2(0, 8)
+	m_bar.show_percentage = false
+	m_bar.mouse_filter = Control.MOUSE_FILTER_PASS
+	m_bar.add_theme_stylebox_override("background", _get_bar_bg_sb())
+	prog_container.add_child(m_bar)
+
+	# --- 3. Coluna Direita: Ação Lateral (Resgate de Marco ou Status) ---
+	var action_vbox: VBoxContainer = VBoxContainer.new()
+	action_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	action_vbox.custom_minimum_size = Vector2(96, 0)
+	action_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	hbox.add_child(action_vbox)
+
+	var refs: Dictionary = {
+		"icon_panel": icon_panel,
+		"icon_view": icon_view,
+		"lock_rect": lock_rect,
+		"tag_bg": tag_bg,
+		"tag_lbl": tag_lbl,
+		"origin_badge": origin_badge,
+		"name_lbl": name_lbl,
+		"attr_lbl": attr_lbl,
+		"desc_lbl": desc_lbl,
+		"prog_container": prog_container,
+		"count_lbl": count_lbl,
+		"milestone_title_lbl": milestone_title_lbl,
+		"m_bar": m_bar,
+		"action_vbox": action_vbox
+	}
+	card.set_meta("refs", refs)
+
+	_update_card_view(card, sp)
+	return card
+
+func _update_card_view(card: PanelContainer, sp: Dictionary) -> void:
+	var refs: Dictionary = card.get_meta("refs", {}) as Dictionary
+	if refs.is_empty() or SaveManager == null:
+		return
+
+	var key: String = String(sp.get("key", ""))
+	var is_disc: bool = SaveManager.is_species_discovered(key)
+	var harvest_count: int = SaveManager.get_harvest_count(key)
+	var claimed_lvl: int = SaveManager.get_claimed_milestone_level(key)
+	var milestones: Array = sp.get("milestones", [])
+	var theme_col: Color = sp.get("color", Color(0.3, 0.7, 0.4, 1.0))
+	var hits: int = int(sp.get("hits", 1))
+	var coins: int = int(sp.get("reward_coins", 1))
+	var origin_lvl: int = int(sp.get("origin_level", 1))
+
+	# 0. Estilo do Card
+	card.add_theme_stylebox_override("panel", _get_card_sb(is_disc))
+
+	# 1. Vitrine de Ilustração Botânica
+	var icon_panel: PanelContainer = refs["icon_panel"] as PanelContainer
+	icon_panel.self_modulate = Color(theme_col.r, theme_col.g, theme_col.b, 0.90) if is_disc else Color(0.28, 0.38, 0.52, 0.70)
+
+	var icon_view: Control = refs["icon_view"] as Control
+	icon_view.modulate = Color(1.0, 1.0, 1.0, 1.0) if is_disc else Color(0.18, 0.26, 0.38, 0.70)
+
+	var lock_rect: TextureRect = refs["lock_rect"] as TextureRect
+	lock_rect.visible = not is_disc
+
+	# 2. Tag e Header
+	var tag_bg: TextureRect = refs["tag_bg"] as TextureRect
+	tag_bg.texture = TEX_BADGE_DISC if is_disc else TEX_BADGE_LOCK
+
+	var tag_lbl: Label = refs["tag_lbl"] as Label
+	tag_lbl.text = tr("COLLECTION_TAG_DISC") if is_disc else tr("COLLECTION_TAG_LOCK")
+	tag_lbl.add_theme_color_override("font_color", Color(0.85, 1.0, 0.92, 1.0) if is_disc else Color(0.95, 0.72, 0.76, 0.92))
+
+	var origin_badge: Label = refs["origin_badge"] as Label
+	origin_badge.text = tr("COLLECTION_ORIGIN_LVL") % origin_lvl
+	origin_badge.add_theme_color_override("font_color", Color(0.45, 0.88, 1.0, 0.95) if is_disc else Color(0.60, 0.68, 0.78, 0.75))
+
+	var name_lbl: Label = refs["name_lbl"] as Label
+	name_lbl.text = PlantDatabaseScript.get_species_name(sp) if is_disc else tr("HERBARIUM_UNIDENTIFIED")
+	name_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0) if is_disc else Color(0.72, 0.78, 0.86, 0.92))
+
+	var attr_lbl: Label = refs["attr_lbl"] as Label
 	if is_disc:
 		attr_lbl.text = tr("COLLECTION_ATTR_FMT") % [
 			hits, tr("COLLECTION_HITS_SINGULAR") if hits == 1 else tr("COLLECTION_HITS_PLURAL"),
@@ -595,50 +717,25 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	else:
 		attr_lbl.text = tr("COLLECTION_ATTR_LOCKED")
 		attr_lbl.add_theme_color_override("font_color", Color(0.55, 0.62, 0.72, 0.80))
-	attr_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-	info_vbox.add_child(attr_lbl)
 
-	# Linha 4: Descrição Botânica
-	var desc_lbl: Label = Label.new()
-	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc_lbl.add_theme_font_size_override("font_size", 11)
+	var desc_lbl: Label = refs["desc_lbl"] as Label
 	if is_disc:
 		desc_lbl.text = String(sp.get("desc", ""))
 		desc_lbl.add_theme_color_override("font_color", Color(0.76, 0.84, 0.92, 0.85))
 	else:
 		desc_lbl.text = tr("COLLECTION_DESC_LOCKED") % origin_lvl
 		desc_lbl.add_theme_color_override("font_color", Color(0.52, 0.58, 0.68, 0.75))
-	desc_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-	info_vbox.add_child(desc_lbl)
 
-	# Linha 5 & 6: Colheitas e Barra de Progresso do Marco (quando descoberta)
+	# 3. Progresso
+	var prog_container: Control = refs["prog_container"] as Control
+	prog_container.visible = is_disc
 	if is_disc:
-		var prog_hbox: HBoxContainer = HBoxContainer.new()
-		prog_hbox.add_theme_constant_override("separation", 6)
-		prog_hbox.mouse_filter = Control.MOUSE_FILTER_PASS
-		info_vbox.add_child(prog_hbox)
-
-		var count_lbl: Label = Label.new()
+		var count_lbl: Label = refs["count_lbl"] as Label
 		count_lbl.text = tr("COLLECTION_HARVEST_COUNT_FMT") % _format_number(harvest_count)
-		count_lbl.add_theme_font_size_override("font_size", 11)
-		count_lbl.add_theme_color_override("font_color", Color(0.38, 0.95, 0.58, 1.0))
-		count_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		count_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-		prog_hbox.add_child(count_lbl)
 
-		var milestone_title_lbl: Label = Label.new()
-		milestone_title_lbl.add_theme_font_size_override("font_size", 11)
-		milestone_title_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-		prog_hbox.add_child(milestone_title_lbl)
-
-		var m_bar: ProgressBar = ProgressBar.new()
-		m_bar.custom_minimum_size = Vector2(0, 8)
-		m_bar.show_percentage = false
-		m_bar.mouse_filter = Control.MOUSE_FILTER_PASS
-
-		m_bar.add_theme_stylebox_override("background", _get_bar_bg_sb())
+		var milestone_title_lbl: Label = refs["milestone_title_lbl"] as Label
+		var m_bar: ProgressBar = refs["m_bar"] as ProgressBar
 		m_bar.add_theme_stylebox_override("fill", _get_bar_fill_sb(theme_col))
-		info_vbox.add_child(m_bar)
 
 		if claimed_lvl < milestones.size():
 			var cur_m: Dictionary = milestones[claimed_lvl] as Dictionary
@@ -662,12 +759,11 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			m_bar.max_value = 1.0
 			m_bar.value = 1.0
 
-	# --- 3. Coluna Direita: Ação Lateral (Resgate de Marco ou Status) ---
-	var action_vbox: VBoxContainer = VBoxContainer.new()
-	action_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	action_vbox.custom_minimum_size = Vector2(96, 0)
-	action_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
-	hbox.add_child(action_vbox)
+	# 4. Ação Lateral
+	var action_vbox: VBoxContainer = refs["action_vbox"] as VBoxContainer
+	for c in action_vbox.get_children():
+		action_vbox.remove_child(c)
+		c.queue_free()
 
 	if not is_disc:
 		var lock_lbl: Label = Label.new()
@@ -720,8 +816,6 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		max_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.25, 1.0))
 		max_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 		action_vbox.add_child(max_lbl)
-
-	return card
 
 func _on_claim_milestone_pressed(species_key: String, milestone_lvl: int, coin_reward: int) -> void:
 	if SaveManager == null:

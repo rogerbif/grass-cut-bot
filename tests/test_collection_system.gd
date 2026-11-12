@@ -97,15 +97,15 @@ func _ready() -> void:
 		assert(cur_lvl >= prev_lvl, "Espécies devem estar ordenadas de forma crescente por fase (origin_level)! %d < %d" % [cur_lvl, prev_lvl])
 		prev_lvl = cur_lvl
 
-	# Testa filtros
+	# Testa filtros (valida visibilidade instantânea dos cards reciclados)
 	tab_col.call("_on_filter_selected", "grass")
-	assert(cards_vbox.get_child_count() == 7, "Filtro grass deve exibir 7 cards! Atual: %d" % cards_vbox.get_child_count())
+	assert(int(tab_col.call("get_visible_cards_count")) == 7, "Filtro grass deve exibir 7 cards! Atual: %d" % int(tab_col.call("get_visible_cards_count")))
 	tab_col.call("_on_filter_selected", "crop")
-	assert(cards_vbox.get_child_count() == 1, "Filtro crop deve exibir 1 card! Atual: %d" % cards_vbox.get_child_count())
+	assert(int(tab_col.call("get_visible_cards_count")) == 1, "Filtro crop deve exibir 1 card! Atual: %d" % int(tab_col.call("get_visible_cards_count")))
 	tab_col.call("_on_filter_selected", "flower")
-	assert(cards_vbox.get_child_count() == 28, "Filtro flower deve exibir 28 cards! Atual: %d" % cards_vbox.get_child_count())
+	assert(int(tab_col.call("get_visible_cards_count")) == 28, "Filtro flower deve exibir 28 cards! Atual: %d" % int(tab_col.call("get_visible_cards_count")))
 	tab_col.call("_on_filter_selected", "all")
-	assert(cards_vbox.get_child_count() == 36, "Filtro all deve exibir 36 cards! Atual: %d" % cards_vbox.get_child_count())
+	assert(int(tab_col.call("get_visible_cards_count")) == 36, "Filtro all deve exibir 36 cards! Atual: %d" % int(tab_col.call("get_visible_cards_count")))
 
 	tab_col.queue_free()
 	print("✔ Teste 4: TabCollection UI (36 cards, filtros dinâmicos e ordenação por fase) validada.")

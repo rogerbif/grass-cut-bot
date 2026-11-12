@@ -52,14 +52,24 @@ func _ready() -> void:
 	tab.call("_on_claim_milestone_pressed", "grass_green", 1, 15)
 	var claim_ms: float = float(Time.get_ticks_usec() - t2) / 1000.0
 
+	# Medição do tempo de alternância de filtros (Pacote 3)
+	var filter_list: Array[String] = ["grass", "crop", "flower", "claimable", "all"]
+	var t3: int = Time.get_ticks_usec()
+	var filter_switches: int = 50
+	for i: int in range(filter_switches):
+		var target_fid: String = filter_list[i % filter_list.size()]
+		tab.call("_on_filter_selected", target_fid)
+	var avg_filter_switch_ms: float = float(Time.get_ticks_usec() - t3) / 1000.0 / float(filter_switches)
+
 	print("PERF cards=%d" % cards.get_child_count())
 	print("PERF nodes=%d" % _count_nodes(tab))
 	print("PERF unique_styleboxes=%d" % styles.size())
 	print("PERF first_build_ms=%.2f" % first_ms)
 	print("PERF avg_refresh_cards_ms=%.2f" % avg_refresh_ms)
+	print("PERF avg_filter_switch_ms=%.3f" % avg_filter_switch_ms)
 	print("PERF claim_one_milestone_ms=%.2f" % claim_ms)
 
-	assert(cards.get_child_count() == 36, "Deve haver 36 cards no filtro 'all'")
+	assert(cards.get_child_count() == 36, "Deve haver 36 cards instanciados")
 	tab.queue_free()
 	await get_tree().create_timer(0.5).timeout
 	get_tree().quit(0)
