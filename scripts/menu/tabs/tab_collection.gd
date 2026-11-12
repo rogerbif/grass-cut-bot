@@ -36,10 +36,12 @@ var _filter_buttons: Dictionary = {}
 var _cards_by_key: Dictionary = {}
 var _cards_built: bool = false
 
-# Variáveis para o embalo (inércia) da rolagem; o arrasto em si é do ScrollContainer
+# Variáveis para a física de rolagem e inércia fluida com boost de arrasto longo
 var _is_dragging: bool = false
-var _last_drag_time: float = 0.0
 var _scroll_velocity_y: float = 0.0
+var _drag_start_pos_y: float = 0.0
+var _drag_start_time: float = 0.0
+var _touch_samples: Array[Dictionary] = []
 
 # Atualização sob demanda: evita reconstruir cards com a aba oculta ou a cada marco em lote
 var _dirty: bool = false
@@ -194,42 +196,72 @@ func _process(delta: float) -> void:
 	# Inércia após soltar o dedo/mouse. Só roda enquanto há velocidade residual.
 	if _is_dragging or scroll == null:
 		return
-	if absf(_scroll_velocity_y) <= 5.0:
+	if absf(_scroll_velocity_y) <= 8.0:
 		_scroll_velocity_y = 0.0
 		set_process(false)
 		return
 	var before: int = scroll.scroll_vertical
 	scroll.scroll_vertical -= int(_scroll_velocity_y * delta)
 	if scroll.scroll_vertical == before:
-		# Chegou ao topo/fim da lista: encerra o embalo
+		# Chegou ao topo/fim da lista: encerra o embalo imediatamente
 		_scroll_velocity_y = 0.0
 		set_process(false)
 		return
-	_scroll_velocity_y = lerpf(_scroll_velocity_y, 0.0, delta * 9.0)
+	# Decaimento exponencial suave (atrito físico orgânico estilo mobile)
+	var friction: float = 3.2
+	_scroll_velocity_y *= exp(-friction * delta)
 
-## O arrasto e a roda do mouse são tratados pelo próprio ScrollContainer (uma única fonte
-## de movimento). Este handler apenas mede a velocidade para o embalo ao soltar o dedo.
-## Usa só eventos de toque: com emulate_touch_from_mouse o mouse também gera ScreenTouch/Drag,
-## e ignorar MouseButton/MouseMotion evita contar o mesmo gesto duas vezes.
+## O arrasto direto e a roda do mouse são tratados pelo próprio ScrollContainer.
+## Este handler calcula o arremesso (fling) em janela deslizante e aplica boost em arrastos longos.
 func _on_scroll_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		var st: InputEventScreenTouch = event as InputEventScreenTouch
 		if st.pressed:
 			_is_dragging = true
-			_last_drag_time = Time.get_ticks_msec() / 1000.0
 			_scroll_velocity_y = 0.0
+			set_process(false)
+			_drag_start_pos_y = st.position.y
+			_drag_start_time = Time.get_ticks_msec() / 1000.0
+			_touch_samples.clear()
+			_touch_samples.append({"time": _drag_start_time, "pos_y": st.position.y})
 		else:
 			_is_dragging = false
-			if absf(_scroll_velocity_y) > 5.0:
+			var now_t: float = Time.get_ticks_msec() / 1000.0
+			while not _touch_samples.is_empty() and (now_t - float(_touch_samples[0]["time"])) > 0.10:
+				_touch_samples.pop_front()
+
+			if _touch_samples.size() >= 2:
+				var first_s: Dictionary = _touch_samples[0]
+				var last_s: Dictionary = _touch_samples[_touch_samples.size() - 1]
+				var dt: float = float(last_s["time"]) - float(first_s["time"])
+				var time_since_last: float = now_t - float(last_s["time"])
+
+				# Só arremessa se o dedo não ficou parado na tela antes de soltar (< 80ms)
+				if time_since_last <= 0.08 and dt > 0.005:
+					var dy: float = float(last_s["pos_y"]) - float(first_s["pos_y"])
+					var raw_vel: float = dy / dt
+					var total_dist: float = absf(st.position.y - _drag_start_pos_y)
+
+					# Se for arrasto longo (> 180px) com velocidade expressiva, turbina o embalo
+					if total_dist > 180.0 and absf(raw_vel) > 350.0:
+						var boost: float = clampf(1.0 + (total_dist / 350.0) * 0.9, 1.25, 2.4)
+						_scroll_velocity_y = raw_vel * boost
+					else:
+						_scroll_velocity_y = raw_vel * 1.15
+
+			if absf(_scroll_velocity_y) > 20.0:
+				_scroll_velocity_y = clampf(_scroll_velocity_y, -9000.0, 9000.0)
 				set_process(true)
+			else:
+				_scroll_velocity_y = 0.0
+				set_process(false)
 
 	elif event is InputEventScreenDrag and _is_dragging:
 		var sd: InputEventScreenDrag = event as InputEventScreenDrag
 		var now_t: float = Time.get_ticks_msec() / 1000.0
-		var dt_t: float = maxf(0.001, now_t - _last_drag_time)
-		# Suaviza a velocidade para evitar picos de um único evento
-		_scroll_velocity_y = lerpf(_scroll_velocity_y, sd.relative.y / dt_t, 0.5)
-		_last_drag_time = now_t
+		_touch_samples.append({"time": now_t, "pos_y": sd.position.y})
+		while not _touch_samples.is_empty() and (now_t - float(_touch_samples[0]["time"])) > 0.12:
+			_touch_samples.pop_front()
 
 func _init_filter_bar() -> void:
 	if _filter_scroll != null:
