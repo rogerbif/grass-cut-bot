@@ -1,7 +1,7 @@
 extends Control
 
 ## TabCollection: Herbário da Ilha & Itens
-## Exibe o catálogo oficial das 15 espécies botânicas ordenadas por fase (origin_level),
+## Exibe o catálogo oficial das 36 espécies botânicas ordenadas por fase (origin_level),
 ## em cards horizontais completos com estética cyber-botânica fiel à referência visual,
 ## rastreamento de colheitas, progresso da enciclopédia e resgate dos 10 níveis de marcos.
 
@@ -32,18 +32,122 @@ var _filter_hbox: HBoxContainer = null
 var _selected_filter: String = "all"
 var _filter_buttons: Dictionary = {}
 
-# Variáveis para rolagem inercial touch/mouse suave
+# Variáveis para o embalo (inércia) da rolagem; o arrasto em si é do ScrollContainer
 var _is_dragging: bool = false
-var _drag_start_pos: Vector2 = Vector2.ZERO
-var _last_drag_pos: Vector2 = Vector2.ZERO
 var _last_drag_time: float = 0.0
 var _scroll_velocity_y: float = 0.0
+
+# Atualização sob demanda: evita reconstruir cards com a aba oculta ou a cada marco em lote
+var _dirty: bool = false
+var _batch_claiming: bool = false
+
+# Estilos compartilhados entre todos os cards (criados uma única vez)
+static var _sb_card: Dictionary = {}
+static var _sb_icon_frame: StyleBoxTexture = null
+static var _sb_bar_bg: StyleBoxFlat = null
+static var _sb_bar_fill: Dictionary = {}
+static var _sb_claim: StyleBoxTexture = null
+static var _sb_badge: StyleBoxTexture = null
+static var _sb_filter: Dictionary = {}
+
+static func _get_card_sb(is_disc: bool) -> StyleBoxTexture:
+	if not _sb_card.has(is_disc):
+		var sb: StyleBoxTexture = StyleBoxTexture.new()
+		sb.texture = TEX_CARD_BG
+		sb.content_margin_left = 14.0
+		sb.content_margin_top = 12.0
+		sb.content_margin_right = 14.0
+		sb.content_margin_bottom = 12.0
+		if not is_disc:
+			sb.modulate_color = Color(0.72, 0.76, 0.85, 0.92)
+		_sb_card[is_disc] = sb
+	return _sb_card[is_disc] as StyleBoxTexture
+
+static func _get_icon_frame_sb() -> StyleBoxTexture:
+	if _sb_icon_frame == null:
+		var sb: StyleBoxTexture = StyleBoxTexture.new()
+		sb.texture = TEX_ICON_FRAME
+		sb.texture_margin_left = 14.0
+		sb.texture_margin_top = 14.0
+		sb.texture_margin_right = 14.0
+		sb.texture_margin_bottom = 14.0
+		_sb_icon_frame = sb
+	return _sb_icon_frame
+
+static func _get_bar_bg_sb() -> StyleBoxFlat:
+	if _sb_bar_bg == null:
+		var sb: StyleBoxFlat = StyleBoxFlat.new()
+		sb.bg_color = Color(0.06, 0.10, 0.18, 1.0)
+		sb.border_width_left = 1
+		sb.border_width_top = 1
+		sb.border_width_right = 1
+		sb.border_width_bottom = 1
+		sb.border_color = Color(0.18, 0.38, 0.58, 0.65)
+		_sb_bar_bg = sb
+	return _sb_bar_bg
+
+static func _get_bar_fill_sb(col: Color) -> StyleBoxFlat:
+	if not _sb_bar_fill.has(col):
+		var sb: StyleBoxFlat = StyleBoxFlat.new()
+		sb.bg_color = col
+		_sb_bar_fill[col] = sb
+	return _sb_bar_fill[col] as StyleBoxFlat
+
+static func _get_claim_sb() -> StyleBoxTexture:
+	if _sb_claim == null:
+		var sb: StyleBoxTexture = StyleBoxTexture.new()
+		sb.texture = TEX_BTN_CLAIM
+		sb.texture_margin_left = 12.0
+		sb.texture_margin_top = 12.0
+		sb.texture_margin_right = 12.0
+		sb.texture_margin_bottom = 12.0
+		sb.content_margin_top = 8.0
+		sb.content_margin_bottom = 8.0
+		_sb_claim = sb
+	return _sb_claim
+
+static func _get_badge_sb() -> StyleBoxTexture:
+	if _sb_badge == null:
+		var sb: StyleBoxTexture = StyleBoxTexture.new()
+		sb.texture = TEX_BADGE_MILESTONE
+		sb.texture_margin_left = 12.0
+		sb.texture_margin_top = 12.0
+		sb.texture_margin_right = 12.0
+		sb.texture_margin_bottom = 12.0
+		sb.content_margin_left = 10.0
+		sb.content_margin_right = 10.0
+		sb.content_margin_top = 8.0
+		sb.content_margin_bottom = 8.0
+		_sb_badge = sb
+	return _sb_badge
+
+static func _get_filter_sb(is_active: bool) -> StyleBoxFlat:
+	if not _sb_filter.has(is_active):
+		var sb: StyleBoxFlat = StyleBoxFlat.new()
+		sb.set_corner_radius_all(6)
+		sb.content_margin_left = 10.0
+		sb.content_margin_right = 10.0
+		sb.content_margin_top = 4.0
+		sb.content_margin_bottom = 4.0
+		sb.border_width_left = 1
+		sb.border_width_top = 1
+		sb.border_width_right = 1
+		sb.border_width_bottom = 1
+		if is_active:
+			sb.bg_color = Color(0.12, 0.38, 0.65, 0.95)
+			sb.border_color = Color(0.35, 0.85, 1.0, 1.0)
+		else:
+			sb.bg_color = Color(0.06, 0.12, 0.22, 0.75)
+			sb.border_color = Color(0.18, 0.30, 0.45, 0.55)
+		_sb_filter[is_active] = sb
+	return _sb_filter[is_active] as StyleBoxFlat
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		refresh_ui()
 
 func _ready() -> void:
+	set_process(false)
 	_init_filter_bar()
 	_connect_signals()
 	refresh_ui()
@@ -54,71 +158,73 @@ func _connect_signals() -> void:
 
 	if SaveManager != null:
 		SaveManager.save_loaded.connect(refresh_ui)
-		SaveManager.plant_harvested.connect(func(_sp: String, _c: int) -> void: refresh_ui())
-		SaveManager.milestone_claimed.connect(func(_sp: String, _lvl: int, _r: int) -> void: refresh_ui())
+		SaveManager.plant_harvested.connect(_on_plant_harvested)
+		SaveManager.milestone_claimed.connect(_on_milestone_claimed)
+
+	visibility_changed.connect(_on_visibility_changed)
 
 	if scroll != null:
 		scroll.gui_input.connect(_on_scroll_gui_input)
 
-func _process(delta: float) -> void:
-	if not visible:
+## Colheitas só ocorrem em gameplay; com a aba oculta apenas marca como suja e
+## reconstrói uma única vez quando a aba voltar a ser exibida.
+func _on_plant_harvested(_species_key: String, _new_count: int) -> void:
+	if is_visible_in_tree():
+		refresh_ui()
+	else:
+		_dirty = true
+
+func _on_visibility_changed() -> void:
+	if is_visible_in_tree() and _dirty:
+		_dirty = false
+		refresh_ui()
+
+## Resgate de marco: atualiza cabeçalho/filtros e reconstrói somente o card afetado.
+func _on_milestone_claimed(species_key: String, _lvl: int, _reward: int) -> void:
+	if _batch_claiming:
 		return
+	_refresh_header()
+	_refresh_single_card(species_key)
 
-	# Inércia suave de rolagem após soltar o dedo/mouse
-	if not _is_dragging and absf(_scroll_velocity_y) > 5.0 and scroll != null:
-		scroll.scroll_vertical -= int(_scroll_velocity_y * delta)
-		_scroll_velocity_y = lerpf(_scroll_velocity_y, 0.0, delta * 9.0)
+func _process(delta: float) -> void:
+	# Inércia após soltar o dedo/mouse. Só roda enquanto há velocidade residual.
+	if _is_dragging or scroll == null:
+		return
+	if absf(_scroll_velocity_y) <= 5.0:
+		_scroll_velocity_y = 0.0
+		set_process(false)
+		return
+	var before: int = scroll.scroll_vertical
+	scroll.scroll_vertical -= int(_scroll_velocity_y * delta)
+	if scroll.scroll_vertical == before:
+		# Chegou ao topo/fim da lista: encerra o embalo
+		_scroll_velocity_y = 0.0
+		set_process(false)
+		return
+	_scroll_velocity_y = lerpf(_scroll_velocity_y, 0.0, delta * 9.0)
 
+## O arrasto e a roda do mouse são tratados pelo próprio ScrollContainer (uma única fonte
+## de movimento). Este handler apenas mede a velocidade para o embalo ao soltar o dedo.
+## Usa só eventos de toque: com emulate_touch_from_mouse o mouse também gera ScreenTouch/Drag,
+## e ignorar MouseButton/MouseMotion evita contar o mesmo gesto duas vezes.
 func _on_scroll_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		var mb: InputEventMouseButton = event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT:
-			if mb.pressed:
-				_is_dragging = true
-				_drag_start_pos = mb.position
-				_last_drag_pos = mb.position
-				_last_drag_time = Time.get_ticks_msec() / 1000.0
-				_scroll_velocity_y = 0.0
-			else:
-				_is_dragging = false
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_UP:
-			if scroll != null:
-				scroll.scroll_vertical -= 40
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			if scroll != null:
-				scroll.scroll_vertical += 40
-
-	elif event is InputEventMouseMotion and _is_dragging:
-		var mm: InputEventMouseMotion = event as InputEventMouseMotion
-		var now: float = Time.get_ticks_msec() / 1000.0
-		var dt: float = maxf(0.001, now - _last_drag_time)
-		var dy: float = mm.position.y - _last_drag_pos.y
-		if scroll != null:
-			scroll.scroll_vertical -= int(dy)
-		_scroll_velocity_y = dy / dt
-		_last_drag_pos = mm.position
-		_last_drag_time = now
-
-	elif event is InputEventScreenTouch:
+	if event is InputEventScreenTouch:
 		var st: InputEventScreenTouch = event as InputEventScreenTouch
 		if st.pressed:
 			_is_dragging = true
-			_drag_start_pos = st.position
-			_last_drag_pos = st.position
 			_last_drag_time = Time.get_ticks_msec() / 1000.0
 			_scroll_velocity_y = 0.0
 		else:
 			_is_dragging = false
+			if absf(_scroll_velocity_y) > 5.0:
+				set_process(true)
 
 	elif event is InputEventScreenDrag and _is_dragging:
 		var sd: InputEventScreenDrag = event as InputEventScreenDrag
 		var now_t: float = Time.get_ticks_msec() / 1000.0
 		var dt_t: float = maxf(0.001, now_t - _last_drag_time)
-		var dy_t: float = sd.position.y - _last_drag_pos.y
-		if scroll != null:
-			scroll.scroll_vertical -= int(dy_t)
-		_scroll_velocity_y = dy_t / dt_t
-		_last_drag_pos = sd.position
+		# Suaviza a velocidade para evitar picos de um único evento
+		_scroll_velocity_y = lerpf(_scroll_velocity_y, sd.relative.y / dt_t, 0.5)
 		_last_drag_time = now_t
 
 func _init_filter_bar() -> void:
@@ -236,27 +342,10 @@ func _update_filter_buttons(all_species: Array[Dictionary] = []) -> void:
 		btn.text = "%s %s (%d)" % [icon, title, count]
 
 		var is_active: bool = (_selected_filter == fid)
-		var sb: StyleBoxFlat = StyleBoxFlat.new()
-		sb.set_corner_radius_all(6)
-		sb.content_margin_left = 10.0
-		sb.content_margin_right = 10.0
-		sb.content_margin_top = 4.0
-		sb.content_margin_bottom = 4.0
+		var sb: StyleBoxFlat = _get_filter_sb(is_active)
 		if is_active:
-			sb.bg_color = Color(0.12, 0.38, 0.65, 0.95)
-			sb.border_width_left = 1
-			sb.border_width_top = 1
-			sb.border_width_right = 1
-			sb.border_width_bottom = 1
-			sb.border_color = Color(0.35, 0.85, 1.0, 1.0)
 			btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 		else:
-			sb.bg_color = Color(0.06, 0.12, 0.22, 0.75)
-			sb.border_width_left = 1
-			sb.border_width_top = 1
-			sb.border_width_right = 1
-			sb.border_width_bottom = 1
-			sb.border_color = Color(0.18, 0.30, 0.45, 0.55)
 			btn.add_theme_color_override("font_color", Color(0.68, 0.78, 0.88, 0.85))
 
 		btn.add_theme_stylebox_override("normal", sb)
@@ -264,6 +353,13 @@ func _update_filter_buttons(all_species: Array[Dictionary] = []) -> void:
 		btn.add_theme_stylebox_override("pressed", sb)
 
 func refresh_ui() -> void:
+	if SaveManager == null:
+		return
+	_refresh_header()
+	refresh_cards()
+
+## Atualiza título, progresso, chips, botão "Coletar Tudo" e contadores dos filtros (sem tocar nos cards).
+func _refresh_header() -> void:
 	if SaveManager == null:
 		return
 
@@ -301,6 +397,26 @@ func refresh_ui() -> void:
 		btn_claim_all.text = tr("HERBARIUM_CLAIM_ALL_FMT") % claimable_count
 
 	_update_filter_buttons(all_species)
+
+## Reconstrói apenas o card da espécie e o troca no mesmo lugar da lista.
+## Com o filtro "claimable" o card pode precisar sumir, então reconstrói tudo.
+func _refresh_single_card(species_key: String) -> void:
+	if cards_vbox == null or _selected_filter == "claimable":
+		refresh_cards()
+		return
+	var sp: Dictionary = PlantDatabaseScript.get_species(species_key)
+	if sp.is_empty():
+		refresh_cards()
+		return
+	for old_card: Node in cards_vbox.get_children():
+		if String(old_card.get_meta("species_key", "")) == species_key:
+			var new_card: PanelContainer = _build_species_card(sp)
+			var idx: int = old_card.get_index()
+			cards_vbox.add_child(new_card)
+			cards_vbox.move_child(new_card, idx)
+			cards_vbox.remove_child(old_card)
+			old_card.queue_free()
+			return
 	refresh_cards()
 
 func _get_claimable_milestones_count(all_species: Array[Dictionary]) -> int:
@@ -369,18 +485,10 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	var origin_lvl: int = int(sp.get("origin_level", 1))
 
 	var card: PanelContainer = PanelContainer.new()
+	card.set_meta("species_key", key)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
-
-	var card_sb: StyleBoxTexture = StyleBoxTexture.new()
-	card_sb.texture = TEX_CARD_BG
-	card_sb.content_margin_left = 14.0
-	card_sb.content_margin_top = 12.0
-	card_sb.content_margin_right = 14.0
-	card_sb.content_margin_bottom = 12.0
-	if not is_disc:
-		card_sb.modulate_color = Color(0.72, 0.76, 0.85, 0.92)
-	card.add_theme_stylebox_override("panel", card_sb)
+	card.add_theme_stylebox_override("panel", _get_card_sb(is_disc))
 
 	var hbox: HBoxContainer = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 14)
@@ -393,14 +501,9 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 	icon_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	icon_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 
-	var icon_sb: StyleBoxTexture = StyleBoxTexture.new()
-	icon_sb.texture = TEX_ICON_FRAME
-	icon_sb.texture_margin_left = 14.0
-	icon_sb.texture_margin_top = 14.0
-	icon_sb.texture_margin_right = 14.0
-	icon_sb.texture_margin_bottom = 14.0
-	icon_sb.modulate_color = Color(theme_col.r, theme_col.g, theme_col.b, 0.90) if is_disc else Color(0.28, 0.38, 0.52, 0.70)
-	icon_panel.add_theme_stylebox_override("panel", icon_sb)
+	# A cor da espécie vai em self_modulate para o estilo da moldura ser compartilhado
+	icon_panel.self_modulate = Color(theme_col.r, theme_col.g, theme_col.b, 0.90) if is_disc else Color(0.28, 0.38, 0.52, 0.70)
+	icon_panel.add_theme_stylebox_override("panel", _get_icon_frame_sb())
 
 	var illus_layer: CenterContainer = CenterContainer.new()
 	illus_layer.custom_minimum_size = Vector2(88, 88)
@@ -533,18 +636,8 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		m_bar.show_percentage = false
 		m_bar.mouse_filter = Control.MOUSE_FILTER_PASS
 
-		var m_bg: StyleBoxFlat = StyleBoxFlat.new()
-		m_bg.bg_color = Color(0.06, 0.10, 0.18, 1.0)
-		m_bg.border_width_left = 1
-		m_bg.border_width_top = 1
-		m_bg.border_width_right = 1
-		m_bg.border_width_bottom = 1
-		m_bg.border_color = Color(0.18, 0.38, 0.58, 0.65)
-		m_bar.add_theme_stylebox_override("background", m_bg)
-
-		var m_fg: StyleBoxFlat = StyleBoxFlat.new()
-		m_fg.bg_color = theme_col
-		m_bar.add_theme_stylebox_override("fill", m_fg)
+		m_bar.add_theme_stylebox_override("background", _get_bar_bg_sb())
+		m_bar.add_theme_stylebox_override("fill", _get_bar_fill_sb(theme_col))
 		info_vbox.add_child(m_bar)
 
 		if claimed_lvl < milestones.size():
@@ -597,14 +690,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 			claim_btn.add_theme_font_size_override("font_size", 12)
 			claim_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 
-			var btn_sb: StyleBoxTexture = StyleBoxTexture.new()
-			btn_sb.texture = TEX_BTN_CLAIM
-			btn_sb.texture_margin_left = 12.0
-			btn_sb.texture_margin_top = 12.0
-			btn_sb.texture_margin_right = 12.0
-			btn_sb.texture_margin_bottom = 12.0
-			btn_sb.content_margin_top = 8.0
-			btn_sb.content_margin_bottom = 8.0
+			var btn_sb: StyleBoxTexture = _get_claim_sb()
 			claim_btn.add_theme_stylebox_override("normal", btn_sb)
 			claim_btn.add_theme_stylebox_override("hover", btn_sb)
 			claim_btn.add_theme_stylebox_override("pressed", btn_sb)
@@ -616,17 +702,7 @@ func _build_species_card(sp: Dictionary) -> PanelContainer:
 		else:
 			var badge_panel: PanelContainer = PanelContainer.new()
 			badge_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-			var b_sb: StyleBoxTexture = StyleBoxTexture.new()
-			b_sb.texture = TEX_BADGE_MILESTONE
-			b_sb.texture_margin_left = 12.0
-			b_sb.texture_margin_top = 12.0
-			b_sb.texture_margin_right = 12.0
-			b_sb.texture_margin_bottom = 12.0
-			b_sb.content_margin_left = 10.0
-			b_sb.content_margin_right = 10.0
-			b_sb.content_margin_top = 8.0
-			b_sb.content_margin_bottom = 8.0
-			badge_panel.add_theme_stylebox_override("panel", b_sb)
+			badge_panel.add_theme_stylebox_override("panel", _get_badge_sb())
 
 			var badge: Label = Label.new()
 			badge.text = tr("COLLECTION_BADGE_LOCKED_FMT") % [claimed_lvl + 1, coin_rew]
@@ -657,12 +733,13 @@ func _on_claim_milestone_pressed(species_key: String, milestone_lvl: int, coin_r
 			AudioManager.play_sfx("buy")
 		if GameManager != null:
 			GameManager.trigger_haptic_cut()
-		refresh_ui()
+		# _on_milestone_claimed já atualiza o cabeçalho e somente o card afetado
 
 func _on_claim_all_pressed() -> void:
 	if SaveManager == null:
 		return
 
+	_batch_claiming = true
 	var all_species: Array[Dictionary] = PlantDatabaseScript.get_all_species()
 	var any_claimed: bool = false
 
@@ -688,6 +765,7 @@ func _on_claim_all_pressed() -> void:
 			else:
 				break
 
+	_batch_claiming = false
 	if any_claimed:
 		if AudioManager != null:
 			AudioManager.play_sfx("buy")

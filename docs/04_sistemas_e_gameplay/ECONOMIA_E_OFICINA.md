@@ -61,8 +61,8 @@ Acessível na aba "Coleção" do Menu Principal:
   - Cada uma das 36 espécies possui 10 níveis de meta rigorosamente crescentes com recompensas em moedas verdes (15 a 500 moedas).
   - Botão interativo `COLETAR +X 🪙` em destaque verde quando a meta é alcançada, com feedback de áudio (`"buy"`) e vibração háptica (`GameManager.trigger_haptic_cut`) ao resgatar.
   - Botão de resgate atômico **"Coletar Tudo"** no cabeçalho quando múltiplos marcos estão pendentes.
-- **Ícones 3D Oficiais Estilo Sticker:**
-  - Renderizados dinamicamente via `GoalIconFactory.build_goal_icon(key, 76.0, true)` com os modelos 3D originais da ilha e duplo contorno de sticker (1px preto + 2px branco).
+- **Ilustrações Oficiais Estilo Sticker:**
+  - Renderizadas via `GoalIconFactory.build_goal_icon(key, 76.0, true)` com sprites compostos e duplo contorno de sticker (1px preto + 2px branco).
 - **Filtros Ágeis por Categoria:**
   - Barra de scroll horizontal com botões dinâmicos: `Todas (36)`, `Gramas (7)`, `Culturas (1)`, `Flores (28)` e `Resgatar (⭐)`.
 

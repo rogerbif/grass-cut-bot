@@ -33,9 +33,9 @@ O **Herbário da Ilha** (`TabCollection`) é a vitrine de progressão e maestria
 - **10 Marcos Progressivos por Espécie:** Cada recurso possui 10 metas rigorosamente crescentes de ceifa (alvos balanceados de 10 a 5.000) e recompensas em moedas verdes (15 a 500 moedas), totalizando 360 marcos de conquista na ilha.
 - **Conformidade com Guardrail 14:** Nenhuma espécie genérica; 100% de individualidade botânica em cada recurso, card e contagem.
 
-### B. Ícones 3D Oficiais Estilo Sticker (`GoalIconFactory`)
-- Substituída a renderização plana em SVG por ícones 3D dinâmicos gerados via `GoalIconFactory.build_goal_icon(key, 76.0, true)`.
-- Cada espécie exibe seu modelo 3D oficial com iluminação toon e contorno duplo de sticker (1px preto + 2px branco), com silhueta escura sombreada quando a planta ainda não foi descoberta pelo jogador.
+### B. Ilustrações Oficiais Estilo Sticker (`GoalIconFactory`)
+- Renderização visual em sprites 2D compostos gerados via `GoalIconFactory.build_goal_icon(key, 76.0, true)`.
+- Cada espécie exibe sua ilustração com contorno duplo de sticker (1px preto + 2px branco), com silhueta escura sombreada quando a planta ainda não foi descoberta pelo jogador.
 
 ### C. Barra de Filtros Dinâmica por Categoria
 - Implementada barra de filtros deslizante horizontal (`ScrollContainer` + `HBoxContainer`) no topo da lista:
