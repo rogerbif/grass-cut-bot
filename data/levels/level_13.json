@@ -1,9 +1,11 @@
 {
 	"card_goals": {
-		"flower_rose_white": 132
+		"flower_rose_white": 132,
+		"grass_purple": 181
 	},
 	"goals": {
-		"flower_rose_white": 132
+		"flower_rose_white": 132,
+		"grass_purple": 181
 	},
 	"grass_vectors": [
 		{
@@ -12086,6 +12088,6 @@
 			"tile_id": "island_corner_out"
 		}
 	],
-	"time_limit": 160.0,
+	"time_limit": 60.0,
 	"version": 5
 }
