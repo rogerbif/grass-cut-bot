@@ -62,28 +62,20 @@ Para prevenir perda ou corrupção de dados caso o jogo feche inesperadamente ou
   },
   "levels": {
     "1": {
-      "unlocked": true,
+      "completed": true,
       "stars": 3,
-      "best_time": 42.5,
-      "completed_at": 1729272100
+      "best_time_taken": 28.4,
+      "best_time_left": 61.6,
+      "times_completed": 2,
+      "high_score_coins": 350
     },
     "2": {
-      "unlocked": true,
+      "completed": true,
       "stars": 3,
-      "best_time": 55.0,
-      "completed_at": 1729272200
-    },
-    "3": {
-      "unlocked": true,
-      "stars": 2,
-      "best_time": 71.2,
-      "completed_at": 1729272300
-    },
-    "4": {
-      "unlocked": true,
-      "stars": 0,
-      "best_time": 0.0,
-      "completed_at": 0
+      "best_time_taken": 45.0,
+      "best_time_left": 45.0,
+      "times_completed": 1,
+      "high_score_coins": 280
     }
   }
 }

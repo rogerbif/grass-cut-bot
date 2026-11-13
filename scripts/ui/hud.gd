@@ -31,6 +31,11 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 @onready var star_2_rect: Control = $VictoryModal.find_child("Star2", true, false) as Control
 @onready var star_3_rect: Control = $VictoryModal.find_child("Star3", true, false) as Control
 @onready var victory_time_label: Label = $VictoryModal.find_child("TimeLabel", true, false) as Label
+@onready var victory_record_col: Control = $VictoryModal.find_child("RecordCol", true, false) as Control
+@onready var victory_record_label: Label = $VictoryModal.find_child("RecordTimeLabel", true, false) as Label
+@onready var victory_time_sublabel: Label = $VictoryModal.find_child("TimeSubLabel", true, false) as Label
+@onready var victory_record_sublabel: Label = $VictoryModal.find_child("RecordSubLabel", true, false) as Label
+@onready var victory_coins_sublabel: Label = $VictoryModal.find_child("CoinsSubLabel", true, false) as Label
 @onready var victory_coins_label: Label = $VictoryModal.find_child("CoinsEarnedLabel", true, false) as Label
 @onready var victory_bottom_bar: Control = $VictoryModal.find_child("BottomBar", true, false) as Control
 @onready var victory_next_label: Label = $VictoryModal.find_child("NextLabel", true, false) as Label
@@ -436,7 +441,25 @@ func _on_level_won(coins_earned: int, stars_earned: int = 1) -> void:
 		var time_taken: float = maxf(0.0, GameManager.time_limit - GameManager.time_left)
 		var mins: int = int(time_taken / 60.0)
 		var secs: int = int(time_taken) % 60
-		victory_time_label.text = "%d:%02d" % [mins, secs]
+		var total_mins: int = int(GameManager.time_limit / 60.0)
+		var total_secs: int = int(GameManager.time_limit) % 60
+		victory_time_label.text = "%d:%02d / %d:%02d" % [mins, secs, total_mins, total_secs]
+
+	var cur_lvl: int = GameManager.current_level if GameManager != null else 1
+	var completion_count: int = SaveManager.get_level_completion_count(cur_lvl) if SaveManager != null else 0
+	if completion_count > 1 and victory_record_col != null:
+		var best_time: float = SaveManager.get_level_best_time_taken(cur_lvl) if SaveManager != null else -1.0
+		if best_time >= 0.0:
+			var rec_mins: int = int(best_time / 60.0)
+			var rec_secs: int = int(best_time) % 60
+			if victory_record_label != null:
+				victory_record_label.text = "%d:%02d" % [rec_mins, rec_secs]
+			victory_record_col.visible = true
+		else:
+			victory_record_col.visible = false
+	else:
+		if victory_record_col != null:
+			victory_record_col.visible = false
 
 	var total_lvls: int = GameManager.get_total_levels() if GameManager != null else 40
 	if GameManager != null and GameManager.current_level >= total_lvls:
@@ -555,6 +578,12 @@ func _refresh_localized_ui() -> void:
 		victory_repeat_label.text = tr("BTN_REPEAT")
 	if victory_next_label != null and not victory_modal.visible:
 		victory_next_label.text = tr("HUD_NEXT_LEVEL")
+	if victory_time_sublabel != null:
+		victory_time_sublabel.text = tr("HUD_CURRENT_TIME")
+	if victory_record_sublabel != null:
+		victory_record_sublabel.text = tr("HUD_RECORD_TIME")
+	if victory_coins_sublabel != null:
+		victory_coins_sublabel.text = tr("HUD_BONUS_LABEL")
 	if workshop_title != null:
 		workshop_title.text = tr("WORKSHOP_TITLE")
 	if workshop_close_btn != null:

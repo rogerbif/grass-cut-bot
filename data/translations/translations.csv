@@ -47,6 +47,9 @@ HUD_LEVEL_CLEAR,FASE %02d CONCLUÍDA!,LEVEL %02d CLEARED!,¡NIVEL %02d COMPLETAD
 HUD_CHAMPION_TITLE,CAMPEÃO DO JARDIM!,GARDEN CHAMPION!,¡CAMPEÓN DEL JARDÍN!
 HUD_MASTER_CYCLE,CICLO MESTRE (FASE 1),MASTER CYCLE (LEVEL 1),CICLO MAESTRO (NIVEL 1)
 HUD_COINS_EARNED,+ %d MOEDAS,+ %d COINS,+ %d MONEDAS
+HUD_CURRENT_TIME,Tempo Atual,Current Time,Tiempo Actual
+HUD_RECORD_TIME,Recorde!,Record!,¡Récord!
+HUD_BONUS_LABEL,Bônus,Bonus,Bonificación
 DEFEAT_CUT_PROGRESS,Progresso do Corte:,Mowing Progress:,Progreso del Corte:
 DEFEAT_SUBTITLE_CLOSE,Faltou pouco para concluir a fase!,Almost cleared the level!,¡Faltó poco para completar el nivel!
 DEFEAT_SUBTITLE_TRY_AGAIN,Continue tentando você consegue!,Keep trying you can do it!,¡Sigue intentando tú puedes!

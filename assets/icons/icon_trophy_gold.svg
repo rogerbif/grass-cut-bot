@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Gradiente Ouro Vibrante para o Troféu -->
+    <linearGradient id="trophy_gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff275"/>
+      <stop offset="40%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#d49b28"/>
+    </linearGradient>
+
+    <linearGradient id="trophy_gold_rim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffbe0b"/>
+      <stop offset="50%" stop-color="#fff275"/>
+      <stop offset="100%" stop-color="#d49b28"/>
+    </linearGradient>
+
+    <filter id="gold_glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#ffd166" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#gold_glow)">
+    <!-- Alça Esquerda -->
+    <path d="M 18 14 C 8 14 8 28 19 30"
+          fill="none"
+          stroke="url(#trophy_gold)"
+          stroke-width="4.5"
+          stroke-linecap="round"/>
+
+    <!-- Alça Direita -->
+    <path d="M 46 14 C 56 14 56 28 45 30"
+          fill="none"
+          stroke="url(#trophy_gold)"
+          stroke-width="4.5"
+          stroke-linecap="round"/>
+
+    <!-- Corpo da Taça -->
+    <path d="M 16 10 L 48 10 L 46 27 C 45 37 39 42 32 42 C 25 42 19 37 18 27 Z"
+          fill="url(#trophy_gold)"/>
+
+    <!-- Brilho Especular Lateral na Taça -->
+    <path d="M 21 14 L 26 14 L 25 28 C 25 32 23 35 21 34 Z"
+          fill="#ffffff"
+          opacity="0.45"/>
+
+    <!-- Haste -->
+    <rect x="28" y="41" width="8" height="10" rx="2" fill="#d49b28"/>
+
+    <!-- Pedestal / Base Dupla -->
+    <path d="M 20 50 L 44 50 L 47 56 L 17 56 Z" fill="url(#trophy_gold)"/>
+    <rect x="15" y="55" width="34" height="4" rx="2" fill="#ffbe0b"/>
+  </g>
+</svg>

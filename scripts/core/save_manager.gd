@@ -286,6 +286,7 @@ func record_level_victory(level_num: int, time_left: float, time_limit: float, c
 	else:
 		stars = 1
 
+	var current_time_taken: float = maxf(0.0, time_limit - time_left)
 	var levels: Dictionary = save_data.get("levels", {}) as Dictionary
 	var key: String = str(level_num)
 	var prev_data: Dictionary = levels.get(key, {}) as Dictionary
@@ -297,10 +298,23 @@ func record_level_victory(level_num: int, time_left: float, time_limit: float, c
 	var prev_high_coins: int = int(prev_data.get("high_score_coins", 0))
 	var final_high_coins: int = maxi(coins_earned, prev_high_coins)
 
+	var prev_completions: int = int(prev_data.get("times_completed", 1 if prev_data.get("completed", false) else 0))
+	var final_completions: int = prev_completions + 1
+
+	var final_best_taken: float = current_time_taken
+	if prev_data.has("best_time_taken"):
+		var prev_best_taken: float = float(prev_data.get("best_time_taken", current_time_taken))
+		final_best_taken = minf(current_time_taken, prev_best_taken)
+	elif prev_data.has("best_time_left") and float(prev_data.get("best_time_left", 0.0)) > 0.0:
+		var prev_legacy_taken: float = maxf(0.0, time_limit - float(prev_data.get("best_time_left", 0.0)))
+		final_best_taken = minf(current_time_taken, prev_legacy_taken)
+
 	levels[key] = {
 		"completed": true,
 		"stars": final_stars,
 		"best_time_left": final_best_time,
+		"best_time_taken": final_best_taken,
+		"times_completed": final_completions,
 		"high_score_coins": final_high_coins
 	}
 	save_data["levels"] = levels
@@ -314,6 +328,26 @@ func record_level_victory(level_num: int, time_left: float, time_limit: float, c
 
 	save_game()
 	return final_stars
+
+func get_level_best_time_taken(level_num: int) -> float:
+	var levels: Dictionary = save_data.get("levels", {}) as Dictionary
+	var key: String = str(level_num)
+	if levels.has(key) and levels[key] is Dictionary:
+		var lvl_dict: Dictionary = levels[key] as Dictionary
+		if lvl_dict.has("best_time_taken"):
+			return float(lvl_dict["best_time_taken"])
+	return -1.0
+
+func get_level_completion_count(level_num: int) -> int:
+	var levels: Dictionary = save_data.get("levels", {}) as Dictionary
+	var key: String = str(level_num)
+	if levels.has(key) and levels[key] is Dictionary:
+		var lvl_dict: Dictionary = levels[key] as Dictionary
+		return int(lvl_dict.get("times_completed", 1 if lvl_dict.get("completed", false) else 0))
+	return 0
+
+func has_level_record(level_num: int) -> bool:
+	return get_level_completion_count(level_num) > 1
 
 func is_level_unlocked(level_num: int) -> bool:
 	if level_num <= 1:
