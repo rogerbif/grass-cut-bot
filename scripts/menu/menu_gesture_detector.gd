@@ -22,6 +22,7 @@ var _start_pos: Vector2 = Vector2.ZERO
 var _last_pos: Vector2 = Vector2.ZERO
 var _start_time: float = 0.0
 var _touch_index: int = -1
+var _is_mobile: bool = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
 
 
 func reset() -> void:
@@ -53,8 +54,8 @@ func process_input(event: InputEvent) -> bool:
 		if _tracking and sd.index == _touch_index:
 			_last_pos = sd.position
 
-	# 2. Mouse (PC / Desenvolvimento no Editor)
-	elif event is InputEventMouseButton:
+	# 2. Mouse (PC / Desenvolvimento no Editor — ignorado no mobile para evitar eventos sintéticos)
+	elif not _is_mobile and event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
@@ -63,7 +64,7 @@ func process_input(event: InputEvent) -> bool:
 			elif _tracking and _touch_index == -999:
 				return _end_tracking(mb.position)
 
-	elif event is InputEventMouseMotion:
+	elif not _is_mobile and event is InputEventMouseMotion:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
 		if _tracking and _touch_index == -999:
 			_last_pos = mm.position

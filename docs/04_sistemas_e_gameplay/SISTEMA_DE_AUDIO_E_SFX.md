@@ -37,7 +37,7 @@ O design de áudio do **Grass Cut Bot** segue os pilares de **relaxamento tátil
    - `Slap_rock.wav`: Choque seco com rochas e obstáculos sólidos, sincronizado com tremor de câmera e faíscas.
    - `Water_splash.wav`: Borrifo de água costeira ao aproximar-se da borda do oceano.
 3. **Motor Elétrico Procedural:**
-   - `Electric_Engine.wav`: Loop contínuo do motor da serra, modulado proceduralmente por velocidade (repouso a `0.85x` pitch / aceleração até `1.25x` pitch).
+   - `Electric_Engine.wav`: Loop contínuo do motor da serra, modulado proceduralmente por velocidade (repouso a `0.85x` pitch / aceleração até `1.25x` pitch), aplicando zona morta de variação mínima (`> 0.005` no pitch e `> 0.08 dB` no volume antes de cravar no alvo) para evitar reatribuições redundantes no `AudioServer` a 60Hz durante gravações internas e ajustes de volume no Android.
 4. **Economia e Recompensas:**
    - `coin_pickup.wav`: Ganho de moedas e feedback imediato a cada ceifada.
    - `Buy_sell.wav`: Transações comerciais realizadas com sucesso.

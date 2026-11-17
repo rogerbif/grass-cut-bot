@@ -17,7 +17,7 @@ var touch_pointer_id: int = -1
 var _is_mobile: bool = false
 
 func _ready() -> void:
-	_is_mobile = OS.has_feature("mobile")
+	_is_mobile = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
 	# Cobrir a área inferior da tela
 	anchor_left = 0.0
 	anchor_top = 0.4
@@ -27,6 +27,11 @@ func _ready() -> void:
 	if GameManager != null:
 		GameManager.state_changed.connect(_on_game_state_changed)
 	queue_redraw()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		if is_active:
+			_reset_joystick()
 
 func _on_game_state_changed(new_state: int) -> void:
 	if new_state != GameManager.GameState.PLAYING:
@@ -42,14 +47,14 @@ func _input(event: InputEvent) -> void:
 			_reset_joystick()
 		return
 
-	# Suporte a toque e mouse
+	# Suporte a toque e mouse (descarta mouse sintético em dispositivos móveis)
 	if event is InputEventScreenTouch:
 		_handle_touch(event)
 	elif event is InputEventScreenDrag:
 		_handle_drag(event)
-	elif event is InputEventMouseButton:
+	elif not _is_mobile and event is InputEventMouseButton:
 		_handle_mouse_button(event)
-	elif event is InputEventMouseMotion:
+	elif not _is_mobile and event is InputEventMouseMotion:
 		_handle_mouse_motion(event)
 
 func _handle_touch(event: InputEventScreenTouch) -> void:

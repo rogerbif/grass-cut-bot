@@ -46,8 +46,9 @@ Para máxima acessibilidade no PC, Web e dispositivos com controles conectados:
 2. **Desativação Fora de Gameplay Ativo:**
    - O joystick escuta `GameManager.state_changed`. Caso o estado mude para `VICTORY`, `GAME_OVER` ou `PAUSED`, o joystick zera seu vetor de saída, oculta seus desenhos visuais (`visible = false`) e descarta quaisquer eventos em `_input()`.
    - Isso impede qualquer conflito ou sequestro de toques/cliques direcionados aos botões dos modais de fim de fase.
-3. **Emulação Bidirecional de Toque e Mouse:**
-   - Configurados `pointing/emulate_touch_from_mouse = true` e `pointing/emulate_mouse_from_touch = true` em `project.godot`, garantindo que os botões de interface respondam imediatamente tanto a cliques de mouse no PC quanto a toques diretos em telas móveis touchscreen.
+3. **Emulação Bidirecional e Isolamento Mobile:**
+   - Configurados `pointing/emulate_touch_from_mouse = true` e `pointing/emulate_mouse_from_touch = true` em `project.godot`, garantindo que botões de UI respondam a cliques de mouse no PC e toques em telas móveis.
+   - Em dispositivos móveis (`_is_mobile`), o `FloatingJoystick` e o `MenuGestureDetector` descartam eventos sintéticos de mouse (`InputEventMouseButton` e `InputEventMouseMotion`), processando exclusivamente eventos nativos de `InputEventScreenTouch` e `InputEventScreenDrag`, além de resetar toques/swipes ativos em `NOTIFICATION_APPLICATION_PAUSED`, `NOTIFICATION_APPLICATION_FOCUS_OUT` e `NOTIFICATION_WM_WINDOW_FOCUS_OUT` para impedir travamento de direção caso overlays do Android interceptem a soltura do dedo.
 
 ---
 

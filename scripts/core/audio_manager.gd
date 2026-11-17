@@ -297,8 +297,15 @@ func update_engine_speed(speed_ratio: float) -> void:
 	var target_pitch: float = lerpf(0.85, 1.25, clamped_ratio)
 	var target_volume: float = lerpf(-18.0, -8.0, clamped_ratio)
 
-	_engine_player.pitch_scale = lerpf(_engine_player.pitch_scale, target_pitch, 0.2)
-	_engine_player.volume_db = lerpf(_engine_player.volume_db, target_volume, 0.2)
+	if absf(_engine_player.pitch_scale - target_pitch) > 0.005:
+		_engine_player.pitch_scale = lerpf(_engine_player.pitch_scale, target_pitch, 0.2)
+	elif not is_equal_approx(_engine_player.pitch_scale, target_pitch):
+		_engine_player.pitch_scale = target_pitch
+
+	if absf(_engine_player.volume_db - target_volume) > 0.08:
+		_engine_player.volume_db = lerpf(_engine_player.volume_db, target_volume, 0.2)
+	elif not is_equal_approx(_engine_player.volume_db, target_volume):
+		_engine_player.volume_db = target_volume
 
 # ---------------------------------------------------------
 # Configurações de Volume e Mute

@@ -59,6 +59,8 @@ func _notification(what: int) -> void:
 		_update_all_localized_texts()
 		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		if not visible and not _waiting_for_android_haptic_toggle:
+			return
 		if OS.get_name() == "Android" or OS.has_feature("android"):
 			var system_haptic_on: bool = _is_android_haptic_feedback_enabled()
 			if _waiting_for_android_haptic_toggle:
@@ -115,6 +117,7 @@ func _ready() -> void:
 			android_vib_hint_btn.add_theme_font_size_override("font_size", 14)
 			android_vib_hint_btn.add_theme_color_override("font_color", Color(1.0, 0.82, 0.35, 1.0))
 			android_vib_hint_btn.text = "Ajustar Vibração no Celular"
+			android_vib_hint_btn.visible = not system_haptic_on
 			android_vib_hint_btn.pressed.connect(_on_android_vib_hint_pressed)
 			toggles_box.add_child(android_vib_hint_btn)
 
@@ -175,6 +178,7 @@ func open_modal() -> void:
 	if AudioManager != null:
 		AudioManager.play_sfx("confirm")
 	visible = true
+	_update_toggle_visuals()
 	modulate.a = 0.0
 	var tw: Tween = create_tween()
 	tw.tween_property(self, "modulate:a", 1.0, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -300,7 +304,7 @@ func _update_toggle_visuals() -> void:
 	_apply_switch_state(sfx_btn, sfx_state_label, sfx_enabled)
 	_apply_switch_state(vib_btn, vib_state_label, vib_enabled)
 
-	if android_vib_hint_btn != null:
+	if android_vib_hint_btn != null and visible:
 		var haptic_on: bool = _is_android_haptic_feedback_enabled()
 		if not haptic_on:
 			android_vib_hint_btn.visible = true

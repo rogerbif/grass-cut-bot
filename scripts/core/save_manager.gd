@@ -22,6 +22,7 @@ var save_data: Dictionary = {}
 var is_initialized: bool = false
 var _life_regen_tick_accum: float = 0.0
 var _save_pending: bool = false
+var _last_lifecycle_save_msec: int = -1000
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -39,10 +40,14 @@ func _process(delta: float) -> void:
 		_refresh_lives_regen(true)
 
 func _notification(what: int) -> void:
-	# Persiste estado ao sair ou pausar no Android/Desktop
-	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+	# Persiste estado ao sair ou pausar no Android/Desktop (ignorando overlays passageiros de volume/gravador no Android)
+	var is_android_device: bool = OS.has_feature("android")
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED or (what == NOTIFICATION_APPLICATION_FOCUS_OUT and not is_android_device):
 		if is_initialized:
-			save_game()
+			var now_msec: int = Time.get_ticks_msec()
+			if now_msec - _last_lifecycle_save_msec >= 500 or what == NOTIFICATION_WM_CLOSE_REQUEST:
+				_last_lifecycle_save_msec = now_msec
+				save_game()
 
 func get_default_save() -> Dictionary:
 	return {

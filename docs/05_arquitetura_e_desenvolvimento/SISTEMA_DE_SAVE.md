@@ -28,7 +28,7 @@ Para prevenir perda ou corrupção de dados caso o jogo feche inesperadamente ou
 - Conclusão de fase (`GameManager.level_won`).
 - Compra de upgrades na oficina (`UpgradeManager.upgrade_purchased`).
 - Modificação de preferências de áudio/vibração no `SettingsModal`.
-- Interrupções de ciclo de vida móvel (`NOTIFICATION_APPLICATION_FOCUS_OUT`, `NOTIFICATION_APPLICATION_PAUSED` e `NOTIFICATION_WM_CLOSE_REQUEST`).
+- Interrupções de ciclo de vida móvel (`NOTIFICATION_APPLICATION_PAUSED` e `NOTIFICATION_WM_CLOSE_REQUEST`; `NOTIFICATION_APPLICATION_FOCUS_OUT` atua apenas fora do Android para não gravar em disco durante overlays passageiros de volume/gravador de tela, com debounce de `500ms` no ciclo de vida).
 
 ---
 

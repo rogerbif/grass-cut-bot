@@ -64,9 +64,10 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
 
 ## 7. Gestão de Ciclo de Vida e Auto-Pausa (Google Play Core App Quality)
 
-- **Proteção Contra Perda de Foco:** Ao receber chamadas telefônicas, alternar para outros apps ou pressionar o botão Home, o sistema operacional Android envia as notificações `NOTIFICATION_APPLICATION_PAUSED` e `NOTIFICATION_APPLICATION_FOCUS_OUT`.
-- **Auto-Pausa no `GameManager`:** Se uma fase estiver ativa (`current_state == GameState.PLAYING`), o jogo pausa imediatamente (`get_tree().paused = true`), impedindo que o cronômetro continue correndo ou cause derrota injusta em segundo plano.
-- **Persistência Atômica:** O `SaveManager` escuta essas mesmas notificações para descarregar o progresso do jogador em disco imediatamente antes que o processo possa ser suspenso ou finalizado pelo SO.
+- **Diferenciação Entre Minimização Real e Overlays de Sistema:** No Android (`OS.has_feature("android")`), overlays passageiros como a barra de volume ou o menu/contador flutuante de gravação de tela disparam `NOTIFICATION_APPLICATION_FOCUS_OUT` sem suspender a Activity. Por isso, o `GameManager` dispara a auto-pausa e a redução de FPS (`FPS_BACKGROUND = 15`) estritamente em `NOTIFICATION_APPLICATION_PAUSED` no Android (ao receber chamadas, alternar de app ou pressionar Home), evitando quedas de FPS e pausas involuntárias ao ajustar o volume ou gravar a tela. No Desktop/Web, `NOTIFICATION_APPLICATION_FOCUS_OUT` continua pausando normalmente.
+- **Proteção Contra Delta Spikes no Cronômetro:** Em `GameManager._process()`, o desconto de tempo por frame é limitado a `minf(delta, 0.1)`, impedindo que engasgos momentâneos ao iniciar codificadores de gravação de vídeo consumam segundos inteiros do relógio da fase de uma só vez.
+- **Consultas JNI Sob Demanda no `SettingsModal`:** O `SettingsModal` ignora `NOTIFICATION_APPLICATION_FOCUS_IN` quando fechado (`not visible and not _waiting_for_android_haptic_toggle`) e só consulta `android.provider.Settings$System` via JNI quando visível na tela, evitando travamentos na thread principal ao fechar a barra de volume.
+- **Persistência Atômica:** O `SaveManager` escuta `NOTIFICATION_APPLICATION_PAUSED` (e `NOTIFICATION_WM_CLOSE_REQUEST`) com debounce de `500ms` para gravar o progresso do jogador imediatamente antes que o processo possa ser suspenso pelo SO.
 
 ---
 

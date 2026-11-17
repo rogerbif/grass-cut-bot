@@ -67,8 +67,10 @@ func _ready() -> void:
 	call_deferred("_init_graphics_quality")
 
 func _notification(what: int) -> void:
-	# Pausa automaticamente se o aplicativo perder o foco ou for minimizado pelo SO (ex: ligação, home)
-	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+	var is_android_device: bool = OS.has_feature("android")
+	# No Android, overlays passageiros (barra de volume, gravador de tela) emitem FOCUS_OUT sem pausar a Activity.
+	# A pausa real do app (Home, ligação, alternar app) sempre emite NOTIFICATION_APPLICATION_PAUSED.
+	if what == NOTIFICATION_APPLICATION_PAUSED or (what == NOTIFICATION_APPLICATION_FOCUS_OUT and not is_android_device):
 		if current_state == GameState.PLAYING:
 			toggle_pause()
 		Engine.max_fps = FPS_BACKGROUND
@@ -112,7 +114,8 @@ func _scan_and_connect_buttons(node: Node) -> void:
 
 func _process(delta: float) -> void:
 	if current_state == GameState.PLAYING and not _is_victory_pending:
-		time_left -= delta
+		var safe_delta: float = minf(delta, 0.1)
+		time_left -= safe_delta
 		if time_left < 0.0:
 			time_left = 0.0
 			time_updated.emit(time_left)
