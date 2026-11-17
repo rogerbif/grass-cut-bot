@@ -107,6 +107,36 @@ static func get_foam_material() -> ShaderMaterial:
 	return _foam_material
 
 
+## Sanitiza e unifica polígonos de terra firme que se sobrepõem, eliminando costuras internas e paredes invisíveis
+static func sanitize_island_polygons(
+	polygons: Array[PackedVector2Array],
+	holes: Array[PackedVector2Array] = []
+) -> Dictionary:
+	if polygons.size() <= 1:
+		return {"polygons": polygons, "holes": holes}
+
+	var has_overlap: bool = false
+	for i in range(polygons.size()):
+		for j in range(i + 1, polygons.size()):
+			if not Geometry2D.intersect_polygons(polygons[i], polygons[j]).is_empty():
+				has_overlap = true
+				break
+		if has_overlap:
+			break
+
+	if not has_overlap:
+		return {"polygons": polygons, "holes": holes}
+
+	var current_outers: Array[PackedVector2Array] = polygons.duplicate()
+	var current_holes: Array[PackedVector2Array] = holes.duplicate()
+	var red: Dictionary = VectorTerrainField._reduce_overlapping_polygons_with_holes(current_outers)
+	current_outers = red["outers"]
+	for nh: PackedVector2Array in red["holes"]:
+		current_holes.append(nh)
+
+	return {"polygons": current_outers, "holes": current_holes}
+
+
 ## Constrói a malha 3D completa da ilha (ArrayMesh) em 1 único commit
 static func build_island_mesh(
 	polygons: Array[PackedVector2Array],
@@ -115,12 +145,16 @@ static func build_island_mesh(
 	if polygons.is_empty():
 		return null
 
+	var sanitized: Dictionary = sanitize_island_polygons(polygons, holes)
+	var safe_polys: Array[PackedVector2Array] = sanitized["polygons"] as Array[PackedVector2Array]
+	var safe_holes: Array[PackedVector2Array] = sanitized["holes"] as Array[PackedVector2Array]
+
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var final_ground_color: Color = get_final_ground_color()
 	var final_cliff_color: Color = get_final_cliff_color()
 
-	for poly: PackedVector2Array in polygons:
+	for poly: PackedVector2Array in safe_polys:
 		if poly.size() < 3:
 			continue
 
@@ -131,7 +165,7 @@ static func build_island_mesh(
 
 		# 2. Triangulação da tampa superior (Teto de Grama em Y = 0.0m)
 		# Furos internos são subtraídos por bissecção para garantir polígonos simples sem furos (trianguláveis)
-		var polys_to_triangulate: Array[PackedVector2Array] = _clip_cap_with_holes(outer, holes)
+		var polys_to_triangulate: Array[PackedVector2Array] = _clip_cap_with_holes(outer, safe_holes)
 
 		for p_cap: PackedVector2Array in polys_to_triangulate:
 			if p_cap.size() < 3:
@@ -344,14 +378,18 @@ static func build_coastal_foam_mesh(
 	holes: Array[PackedVector2Array] = [],
 	foam_y: float = FOAM_Y_LEVEL
 ) -> ArrayMesh:
+	var sanitized: Dictionary = sanitize_island_polygons(polygons, holes)
+	var safe_polys: Array[PackedVector2Array] = sanitized["polygons"] as Array[PackedVector2Array]
+	var safe_holes: Array[PackedVector2Array] = sanitized["holes"] as Array[PackedVector2Array]
+
 	var all_loops: Array[PackedVector2Array] = []
-	for p in polygons:
+	for p in safe_polys:
 		if p.size() >= 3:
 			var op: PackedVector2Array = p
 			if not Geometry2D.is_polygon_clockwise(op):
 				op = _reverse_polygon(op)
 			all_loops.append(op)
-	for h in holes:
+	for h in safe_holes:
 		if h.size() >= 3:
 			var hp: PackedVector2Array = h
 			if Geometry2D.is_polygon_clockwise(hp):
@@ -427,14 +465,18 @@ static func build_coastal_colliders(
 	if parent_body == null:
 		return
 
+	var sanitized: Dictionary = sanitize_island_polygons(polygons, holes)
+	var safe_polys: Array[PackedVector2Array] = sanitized["polygons"] as Array[PackedVector2Array]
+	var safe_holes: Array[PackedVector2Array] = sanitized["holes"] as Array[PackedVector2Array]
+
 	var all_loops: Array[PackedVector2Array] = []
-	for p in polygons:
+	for p in safe_polys:
 		if p.size() >= 3:
 			var op: PackedVector2Array = p
 			if not Geometry2D.is_polygon_clockwise(op):
 				op = _reverse_polygon(op)
 			all_loops.append(op)
-	for h in holes:
+	for h in safe_holes:
 		if h.size() >= 3:
 			var hp: PackedVector2Array = h
 			if Geometry2D.is_polygon_clockwise(hp):

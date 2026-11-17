@@ -1236,12 +1236,6 @@
 		},
 		{
 			"gx": 12,
-			"gz": 27,
-			"rot": 0,
-			"type": "rock_boulder"
-		},
-		{
-			"gx": 12,
 			"gz": 33,
 			"rot": 0,
 			"type": "flower_rose_wine"
@@ -1314,18 +1308,6 @@
 		},
 		{
 			"gx": 19,
-			"gz": 7,
-			"rot": 180,
-			"type": "rock_boulder"
-		},
-		{
-			"gx": 19,
-			"gz": 39,
-			"rot": 0,
-			"type": "rock_boulder"
-		},
-		{
-			"gx": 27,
 			"gz": 7,
 			"rot": 180,
 			"type": "rock_boulder"
@@ -1407,12 +1389,6 @@
 			"gz": 13,
 			"rot": 0,
 			"type": "flower_rose_wine"
-		},
-		{
-			"gx": 34,
-			"gz": 19,
-			"rot": 180,
-			"type": "rock_boulder"
 		},
 		{
 			"gx": 34,

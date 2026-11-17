@@ -207,15 +207,25 @@ func add_land(new_poly: PackedVector2Array) -> void:
 		var next_step: Array[PackedVector2Array] = []
 		var did_merge: bool = false
 		for base_p: PackedVector2Array in union_result:
-			var res: Array[PackedVector2Array] = Geometry2D.merge_polygons(base_p, to_merge)
-			if res.size() == 1:
-				to_merge = res[0]
+			var m_res: Dictionary = _merge_land_polygons(base_p, to_merge)
+			if m_res["merged"]:
+				var r_outers: Array = m_res["outers"]
+				var r_holes: Array = m_res["holes"]
+				if not r_outers.is_empty():
+					to_merge = r_outers[0]
+					for k in range(1, r_outers.size()):
+						next_step.append(r_outers[k])
+				for nh: PackedVector2Array in r_holes:
+					base_holes.append(nh)
 				did_merge = true
 			else:
 				next_step.append(base_p)
 		next_step.append(to_merge)
 		if did_merge and next_step.size() > 1:
-			union_result = _reduce_overlapping_polygons(next_step)
+			var red: Dictionary = _reduce_overlapping_polygons_with_holes(next_step)
+			union_result = red["outers"]
+			for nh: PackedVector2Array in red["holes"]:
+				base_holes.append(nh)
 		else:
 			union_result = next_step
 
@@ -225,7 +235,10 @@ func add_land(new_poly: PackedVector2Array) -> void:
 				up.reverse()
 			unaffected_polys.append(up)
 
-	base_outer_polygons = _reduce_overlapping_polygons(unaffected_polys)
+	var final_red: Dictionary = _reduce_overlapping_polygons_with_holes(unaffected_polys)
+	base_outer_polygons = final_red["outers"]
+	for nh: PackedVector2Array in final_red["holes"]:
+		base_holes.append(nh)
 	_update_derived_polygons()
 
 
@@ -405,6 +418,12 @@ func from_dict(data: Dictionary) -> void:
 			clean_h.reverse()
 		base_holes.append(clean_h)
 
+	if base_outer_polygons.size() > 1:
+		var red: Dictionary = _reduce_overlapping_polygons_with_holes(base_outer_polygons)
+		base_outer_polygons = red["outers"]
+		for nh: PackedVector2Array in red["holes"]:
+			base_holes.append(nh)
+
 	_update_derived_polygons()
 
 
@@ -453,13 +472,60 @@ static func _is_hole_inside_any_outer(h: PackedVector2Array, outers: Array[Packe
 	return false
 
 
-static func _reduce_overlapping_polygons(polys: Array[PackedVector2Array]) -> Array[PackedVector2Array]:
+## Executa a fusão booleana de dois polígonos de terra firme, extraindo contornos externos e furos
+static func _merge_land_polygons(poly_a: PackedVector2Array, poly_b: PackedVector2Array) -> Dictionary:
+	var inter: Array[PackedVector2Array] = Geometry2D.intersect_polygons(poly_a, poly_b)
+	if inter.is_empty():
+		return {"merged": false, "outers": [poly_a, poly_b], "holes": []}
+
+	var res: Array[PackedVector2Array] = Geometry2D.merge_polygons(poly_a, poly_b)
+	if res.is_empty():
+		return {"merged": false, "outers": [poly_a, poly_b], "holes": []}
+
+	var outers: Array[PackedVector2Array] = []
+	var new_holes: Array[PackedVector2Array] = []
+
+	if res.size() == 1:
+		var p: PackedVector2Array = res[0]
+		if not Geometry2D.is_polygon_clockwise(p):
+			p.reverse()
+		return {"merged": true, "outers": [p], "holes": []}
+
+	for i in range(res.size()):
+		var p_i: PackedVector2Array = res[i]
+		var is_inside_another: bool = false
+		for j in range(res.size()):
+			if i == j:
+				continue
+			var p_j: PackedVector2Array = res[j]
+			if p_i.size() >= 3 and p_j.size() >= 3:
+				var test_pt: Vector2 = (p_i[0] + p_i[1] + p_i[2]) / 3.0
+				if Geometry2D.is_point_in_polygon(test_pt, p_j):
+					is_inside_another = true
+					break
+
+		if is_inside_another:
+			var h_clean: PackedVector2Array = p_i
+			if Geometry2D.is_polygon_clockwise(h_clean):
+				h_clean.reverse()
+			new_holes.append(h_clean)
+		else:
+			var o_clean: PackedVector2Array = p_i
+			if not Geometry2D.is_polygon_clockwise(o_clean):
+				o_clean.reverse()
+			outers.append(o_clean)
+
+	return {"merged": true, "outers": outers, "holes": new_holes}
+
+
+static func _reduce_overlapping_polygons_with_holes(polys: Array[PackedVector2Array]) -> Dictionary:
 	if polys.size() <= 1:
-		return polys
+		return {"outers": polys, "holes": []}
 
 	var current: Array[PackedVector2Array] = polys.duplicate()
+	var accumulated_holes: Array[PackedVector2Array] = []
 	var changed: bool = true
-	var max_passes: int = 10
+	var max_passes: int = 15
 	var current_pass: int = 0
 
 	while changed and current_pass < max_passes:
@@ -484,13 +550,25 @@ static func _reduce_overlapping_polygons(polys: Array[PackedVector2Array]) -> Ar
 				if not aabb_a.intersects(aabb_b.grow(0.02)):
 					continue
 
-				var res: Array[PackedVector2Array] = Geometry2D.merge_polygons(cur_p, other_p)
-				if res.size() == 1:
-					cur_p = res[0]
+				var m_res: Dictionary = _merge_land_polygons(cur_p, other_p)
+				if m_res["merged"]:
+					var r_outers: Array = m_res["outers"]
+					var r_holes: Array = m_res["holes"]
+					if not r_outers.is_empty():
+						cur_p = r_outers[0]
+						for k in range(1, r_outers.size()):
+							merged.append(r_outers[k])
+					for nh: PackedVector2Array in r_holes:
+						accumulated_holes.append(nh)
 					skip[j] = true
 					changed = true
 
 			merged.append(cur_p)
 		current = merged
 
-	return current
+	return {"outers": current, "holes": accumulated_holes}
+
+
+static func _reduce_overlapping_polygons(polys: Array[PackedVector2Array]) -> Array[PackedVector2Array]:
+	var red: Dictionary = _reduce_overlapping_polygons_with_holes(polys)
+	return red["outers"] as Array[PackedVector2Array]

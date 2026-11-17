@@ -18,9 +18,10 @@ Para proporcionar uma experiência limpa, solar, fluida e de altíssima performa
 - **Espuma Costeira 2D Minimalista em Fita Contínua (`CoastalFoamRibbon` & `coastal_foam.gdshader`):**
   - Gerada proceduralmente por `IslandMeshBuilder.build_coastal_foam_mesh()`, acompanhando as normais radiais suaves dos vértices do perímetro da ilha ($C^1$) em $Y = -0.692\text{m}$.
   - Renderizada via `shaders/coastal_foam.gdshader` (`unshaded, depth_draw_never`) em duas faixas nítidas estilo 2D Toon com oscilação contínua da maré (`sin(TIME * wave_speed)`).
-- **Contenção Física Costeira Invisível (Camada 1 - Zero Cercas):**
+- **Contenção Física Costeira Invisível (Camada 1 - Zero Cercas) & Sanitização de Polígonos:**
   - Todas as bordas da ilha voltadas para a água recebem barreiras físicas de colisão verticais na Camada Física 1 (`Layer 1: Ground & Limits`), geradas por `IslandMeshBuilder.build_coastal_colliders()`.
   - As caixas têm espessura de $0.06\text{m}$ e altura de $1.2\text{m}$, contendo perfeitamente o cortador sem necessitar de cercas visuais.
+  - **Sanitização Prévia de Polígonos (`IslandMeshBuilder.sanitize_island_polygons`):** Para prevenir que polígonos de terra sobrepostos gerem paredes de colisão internas nos corredores transitáveis, o construtor executa fusão booleana recursiva antes de gerar a malha, a espuma e os colisores, garantindo que apenas as bordas marítimas reais e furos genuínos recebam colisão costeira.
 - **Retrocompatibilidade, JSON v4 e Cantos Arredondados Canônicos ($R = 0.28\text{m}$):**
   - Níveis legados com matriz `"terrain"` de blocos são convertidos automaticamente via união booleana (`Geometry2D.merge_polygons`) seguida de arredondamento analítico de cantos convexos (`IslandMeshBuilder.round_polygon_corners()` com raio canônico de $0.28\text{m}$ e 5 arcos de segmento).
   - Todos os 20 níveis canônicos do jogo possuem polígonos perimetrais no formato JSON v4 com cantos suaves idênticos à curvatura dos tiles originais (`tile_island_corner_out.glb`), eliminando quinas retas ásperas de 90° e garantindo continuidade suave $C^1$ tanto na malha do platô quanto na fita de espuma e nos colisores de limite.
