@@ -233,6 +233,13 @@ var _grid_has_rigid: PackedByteArray = PackedByteArray()
 # Estado atual de visibilidade para benchmark
 var _last_vegetation_on: bool = true
 var _last_density_step: int = 1
+var _has_active_multihit_contact: bool = false
+
+# Cache defensivo de Autoloads para evitar lookups repetitivos na SceneTree a 60Hz
+var _gm_ref: Node = null
+var _am_ref: Node = null
+var _sm_ref: Node = null
+var _um_ref: Node = null
 
 
 static func _ensure_static_meshes() -> void:
@@ -428,6 +435,7 @@ func _clear_state() -> void:
 	_grass_cut_accumulator_by_type.clear()
 	_last_vegetation_on = true
 	_last_density_step = 1
+	_has_active_multihit_contact = false
 
 
 func build_from_level_json(
@@ -949,6 +957,7 @@ func _build_from_vector_field(
 	_remaining_physical_grass = _total_physical_grass
 	_remaining_physical_wheat = _total_physical_wheat
 	_remaining_physical_flower = _total_physical_flower
+	_has_active_multihit_contact = false
 
 	_remaining_grass_by_type.clear()
 	_grass_cut_accumulator_by_type.clear()
@@ -1071,17 +1080,21 @@ func _resolve_type_particle_color(v_type: String) -> Color:
 
 
 func _get_game_manager() -> Node:
+	if _gm_ref != null and is_instance_valid(_gm_ref):
+		return _gm_ref
 	if not is_inside_tree():
 		return null
 	var tree: SceneTree = get_tree()
 	if tree == null or tree.root == null:
 		return null
-	return tree.root.get_node_or_null("GameManager")
+	_gm_ref = tree.root.get_node_or_null("GameManager")
+	return _gm_ref
 
 
 func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	var gm: Node = _get_game_manager()
 	if gm != null and int(gm.get("current_state")) != 1:
+		_has_active_multihit_contact = false
 		return Vector3.ZERO
 
 	# Trilha contínua da serra no solo removida: a antiga cadeia LawnCutTrail nunca era instanciada.
@@ -1099,12 +1112,20 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	var first_hit_recoil: Vector3 = Vector3.ZERO
 	var tree_node: SceneTree = get_tree()
 	var s_root: Node = tree_node.current_scene if (tree_node != null and tree_node.current_scene != null) else self
-	var am_node: Node = get_node_or_null("/root/AudioManager") if is_inside_tree() else null
-	var sm_node: Node = get_node_or_null("/root/SaveManager") if is_inside_tree() else null
-	var um_node: Node = get_node_or_null("/root/UpgradeManager") if is_inside_tree() else null
+	if is_inside_tree():
+		if _am_ref == null or not is_instance_valid(_am_ref):
+			_am_ref = get_node_or_null("/root/AudioManager")
+		if _sm_ref == null or not is_instance_valid(_sm_ref):
+			_sm_ref = get_node_or_null("/root/SaveManager")
+		if _um_ref == null or not is_instance_valid(_um_ref):
+			_um_ref = get_node_or_null("/root/UpgradeManager")
+	var am_node: Node = _am_ref if (_am_ref != null and is_instance_valid(_am_ref)) else null
+	var sm_node: Node = _sm_ref if (_sm_ref != null and is_instance_valid(_sm_ref)) else null
+	var um_node: Node = _um_ref if (_um_ref != null and is_instance_valid(_um_ref)) else null
 	var xp_gained_this_frame: float = 0.0
 	var any_hit_feedback: bool = false
 	var any_tuft_cut: bool = false
+	var active_multihit: bool = false
 
 	# Consulta o índice plano limitando a janela aos limites da grade (fora dela não há tufos)
 	for cx: int in range(maxi(min_cx, _grid_min_cx), mini(max_cx, _grid_min_cx + _grid_cols - 1) + 1):
@@ -1125,6 +1146,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 				if now_sec - _last_hit_time[p_idx] < MULTI_HIT_COOLDOWN_SEC:
 					# Enquanto a serra estiver em contato antes de fechar o tempo de 1s, treme sutilmente a planta resistente
 					if _max_health[p_idx] > 1 and _is_cut[p_idx] == 0 and _health[p_idx] > 0:
+						active_multihit = true
 						var jitter_amp: float = 0.022
 						var jitter_x: float = sin(now_sec * 65.0 + float(p_idx) * 13.0) * jitter_amp
 						var jitter_z: float = cos(now_sec * 65.0 + float(p_idx) * 17.0) * jitter_amp
@@ -1223,6 +1245,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 				else:
 					var p_key: String = _plant_keys[p_idx]
 					any_hit_feedback = true
+					active_multihit = true
 
 					if mm != null:
 						if p_key.begins_with("flower"):
@@ -1279,6 +1302,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 		if not new_shaking_tufts.has(old_p_idx):
 			_restore_plant_transform(old_p_idx)
 	_actively_shaking_tufts = new_shaking_tufts
+	_has_active_multihit_contact = active_multihit
 	return first_hit_recoil.normalized() if first_hit_recoil.length_squared() > 0.0001 else Vector3.ZERO
 
 
@@ -1406,6 +1430,7 @@ func reset_all_plants() -> void:
 	_remaining_physical_grass = _total_physical_grass
 	_remaining_physical_wheat = _total_physical_wheat
 	_remaining_physical_flower = _total_physical_flower
+	_has_active_multihit_contact = false
 
 	for mmi_idx: int in range(_clipping_multimeshes.size()):
 		if mmi_idx < _clipping_counts.size():

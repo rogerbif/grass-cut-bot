@@ -85,6 +85,7 @@ var _last_shader_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
 var _last_shader_radius: float = -1.0
 var _last_cut_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
 var _last_cut_radius: float = -1.0
+var _last_slash_intensity: float = -1.0
 var _overlapping_vegetation: Array[Area3D] = []
 
 # Cache pré-calculado de obstáculos (Tarefa 1.1)
@@ -229,6 +230,9 @@ func reset_orientation_to_camera() -> void:
 	current_pitch = 0.0
 	current_roll = 0.0
 	shock_compression = 0.0
+	_last_cut_pos = Vector3(99999.0, 99999.0, 99999.0)
+	_last_cut_radius = -1.0
+	_last_slash_intensity = -1.0
 
 func play_victory_celebration() -> void:
 	if _is_celebrating:
@@ -479,7 +483,10 @@ func _update_blade_slash_intensity() -> void:
 	var speed_ratio: float = clampf((current_blade_speed - idle_rotation_speed) / maxf(rotation_speed - idle_rotation_speed, 1.0), 0.0, 1.0)
 	# Intensidade calibrada para exibir nitidamente as 3 faixas concêntricas verde-lima sob a lâmina
 	var base_intensity: float = lerpf(0.45, 0.85, speed_ratio)
-	mat.set_shader_parameter("slash_intensity", base_intensity * _slash_flash_boost)
+	var final_intensity: float = base_intensity * _slash_flash_boost
+	if absf(final_intensity - _last_slash_intensity) >= 0.002:
+		_last_slash_intensity = final_intensity
+		mat.set_shader_parameter("slash_intensity", final_intensity)
 
 func update_upgrades() -> void:
 	if UpgradeManager == null:
@@ -938,6 +945,8 @@ func _cut_vegetation_area(area: Area3D) -> bool:
 
 func _process_cutting() -> void:
 	if vegetation_grid != null and is_instance_valid(vegetation_grid):
+		if global_position.distance_squared_to(_last_cut_pos) <= 0.0001 and absf(_cached_blade_radius - _last_cut_radius) <= 0.0001 and not bool(vegetation_grid.get("_has_active_multihit_contact")):
+			return
 		_last_cut_pos = global_position
 		_last_cut_radius = _cached_blade_radius
 		var first_hit_recoil: Variant = vegetation_grid.call("cut_in_circle", global_position, _cached_blade_radius, _cached_cutter_power)

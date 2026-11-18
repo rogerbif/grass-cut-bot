@@ -26,6 +26,7 @@ var _is_max: bool = false
 var _shake_tween: Tween = null
 var _pulse_tween: Tween = null
 var _fill_tween: Tween = null
+var _last_rendered_progress: float = -1.0
 
 func _ready() -> void:
 	# Desacopla a rotação e herança direta de transformação do chassi do robô
@@ -59,7 +60,10 @@ func _request_viewport_update() -> void:
 func _set_progress_value(val: float) -> void:
 	if progress_bar != null:
 		progress_bar.value = val
-		_request_viewport_update()
+		var at_boundary: bool = (val <= 0.01 and _last_rendered_progress > 0.01) or (val >= 99.9 and _last_rendered_progress < 99.9)
+		if _last_rendered_progress < 0.0 or absf(val - _last_rendered_progress) >= 0.4 or at_boundary:
+			_last_rendered_progress = val
+			_request_viewport_update()
 
 func _setup_styles() -> void:
 	if progress_bar == null:
@@ -87,13 +91,18 @@ func _on_blade_level_changed(new_level: int, is_max: bool) -> void:
 		play_level_up_reaction()
 
 func _on_blade_xp_changed(_current_xp: float, _max_xp: float, progress_ratio: float) -> void:
-	if _fill_tween != null and _fill_tween.is_valid():
-		_fill_tween.kill()
 	if progress_bar == null:
 		return
-	_fill_tween = create_tween()
 	var max_lvl: int = UpgradeManager.MAX_BLADE_LEVEL if UpgradeManager != null else 10
 	var target_val: float = 100.0 if (_is_max or _current_level >= max_lvl) else (progress_ratio * 100.0)
+	if absf(target_val - progress_bar.value) < 2.5:
+		if _fill_tween != null and _fill_tween.is_valid():
+			_fill_tween.kill()
+		_set_progress_value(target_val)
+		return
+	if _fill_tween != null and _fill_tween.is_valid():
+		_fill_tween.kill()
+	_fill_tween = create_tween()
 	_fill_tween.tween_method(_set_progress_value, progress_bar.value, target_val, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _on_blade_penalized(_new_level: int) -> void:

@@ -34,12 +34,14 @@ func generate_level(level_num: int) -> void:
 			obstacles_container.remove_child(child)
 			child.queue_free()
 
-	if default_terrain != null:
+	if default_terrain != null and is_instance_valid(default_terrain):
 		default_terrain.visible = false
 		default_terrain.process_mode = Node.PROCESS_MODE_DISABLED
 		if default_terrain is CollisionObject3D:
 			(default_terrain as CollisionObject3D).collision_layer = 0
 			(default_terrain as CollisionObject3D).collision_mask = 0
+		default_terrain.queue_free()
+		default_terrain = null
 
 	var json_path: String = "res://data/levels/level_%02d.json" % level_num
 	if not FileAccess.file_exists(json_path):
