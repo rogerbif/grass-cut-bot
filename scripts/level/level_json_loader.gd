@@ -114,8 +114,13 @@ static func load_json_file(path: String) -> Dictionary:
 	return {}
 
 static func get_island_polygons(data: Dictionary) -> Array[PackedVector2Array]:
-	if data.has("island_polygons") and data["island_polygons"] is Array:
-		var raw_list: Array = data["island_polygons"] as Array
+	var target_key: String = "island_polygons"
+	if not data.has("island_polygons") or not (data["island_polygons"] is Array) or (data["island_polygons"] as Array).is_empty():
+		if data.has("base_island_polygons") and (data["base_island_polygons"] is Array) and not (data["base_island_polygons"] as Array).is_empty():
+			target_key = "base_island_polygons"
+
+	if data.has(target_key) and data[target_key] is Array:
+		var raw_list: Array = data[target_key] as Array
 		var result: Array[PackedVector2Array] = []
 		for item: Variant in raw_list:
 			if item is Array:
@@ -138,8 +143,13 @@ static func get_island_polygons(data: Dictionary) -> Array[PackedVector2Array]:
 
 
 static func get_island_holes(data: Dictionary) -> Array[PackedVector2Array]:
-	if data.has("island_holes") and data["island_holes"] is Array:
-		var raw_list: Array = data["island_holes"] as Array
+	var target_key: String = "island_holes"
+	if not data.has("island_holes") or not (data["island_holes"] is Array) or (data["island_holes"] as Array).is_empty():
+		if data.has("base_island_holes") and (data["base_island_holes"] is Array) and not (data["base_island_holes"] as Array).is_empty():
+			target_key = "base_island_holes"
+
+	if data.has(target_key) and data[target_key] is Array:
+		var raw_list: Array = data[target_key] as Array
 		var result: Array[PackedVector2Array] = []
 		for item: Variant in raw_list:
 			if item is Array:

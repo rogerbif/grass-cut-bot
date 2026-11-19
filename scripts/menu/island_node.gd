@@ -319,8 +319,8 @@ func build_miniature_from_json(lvl: int) -> void:
 		mini_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		miniature_container.add_child(mini_mi)
 
-	# Fita de espuma costeira animada (CoastalFoamRibbon) na base exata das falésias
-	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys)
+	# Fita de espuma costeira animada (CoastalFoamRibbon) na base exata das falésias (incluindo lagos/furos)
+	var foam_mesh: ArrayMesh = IslandMeshBuilder.build_coastal_foam_mesh(island_polys, island_holes)
 	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
 		var foam_inst: MeshInstance3D = MeshInstance3D.new()
 		foam_inst.name = "CoastalFoamRibbon"
