@@ -38,7 +38,9 @@ uniform float roughness : hint_range(0.0, 1.0) = 0.90;
 uniform float specular : hint_range(0.0, 1.0) = 0.10;
 
 varying vec3 v_geo_normal_view;
-varying float v_leaf_h;
+varying vec3 v_base_surface;
+varying vec3 v_shadow_ratio;
+varying float v_rim_h_mask;
 
 void vertex() {
 	// Converte para coordenadas globais de mundo
@@ -51,7 +53,25 @@ void vertex() {
 		raw_h = COLOR.r;
 	}
 	float h = clamp(raw_h, 0.0, 1.0);
-	v_leaf_h = h;
+	v_rim_h_mask = h * h;
+
+	// Gradiente vertical de altura foliar e razão de sombra pré-calculados no vertex() (economia ALU no fragment/light)
+	float grad_t = smoothstep(0.04, 0.88, h);
+	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
+	if (OUTPUT_IS_SRGB) {
+		// Compensa o mix Linear + ACES Tonemap do pipeline Mobile quando em gl_compatibility (Web)
+		vec3 cb_lin = pow(max(color_base.rgb, vec3(0.0001)), vec3(2.2));
+		vec3 cl_lin = pow(max(color_light.rgb, vec3(0.0001)), vec3(2.2));
+		vec3 mix_lin = mix(cb_lin, cl_lin, mix(1.0, grad_t, vertical_gradient_mix));
+		base_surface = pow(mix_lin, vec3(1.0 / 2.2)) * vec3(0.74, 0.69, 1.06);
+	}
+	v_base_surface = base_surface;
+
+	vec3 shadow_ratio = clamp(color_shadow.rgb / max(color_light.rgb, vec3(0.02)), vec3(0.08), vec3(1.2));
+	if (OUTPUT_IS_SRGB) {
+		shadow_ratio = pow(shadow_ratio, vec3(1.25));
+	}
+	v_shadow_ratio = shadow_ratio;
 
 	// A base da folha fica 100% estática, agindo rigorosamente como uma dobradiça/eixo na raiz.
 	// Vértices abaixo de 6% de altura possuem deslocamento rigorosamente zero.
@@ -136,20 +156,7 @@ void vertex() {
 }
 
 void fragment() {
-	// Gradiente vertical de altura foliar (Base escura visível no corpo inferior -> Topo iluminado na ponta)
-	float h = clamp(v_leaf_h, 0.0, 1.0);
-	// Curva suave que mantém color_base rica na raiz/inserção da folha e sobe gradualmente para color_light na ponta
-	float grad_t = smoothstep(0.04, 0.88, h);
-	vec3 base_surface = mix(color_base.rgb, color_light.rgb, mix(1.0, grad_t, vertical_gradient_mix));
-	if (OUTPUT_IS_SRGB) {
-		// Compensa o mix Linear + ACES Tonemap do pipeline Mobile quando em gl_compatibility (Web)
-		vec3 cb_lin = pow(max(color_base.rgb, vec3(0.0001)), vec3(2.2));
-		vec3 cl_lin = pow(max(color_light.rgb, vec3(0.0001)), vec3(2.2));
-		vec3 mix_lin = mix(cb_lin, cl_lin, mix(1.0, grad_t, vertical_gradient_mix));
-		base_surface = pow(mix_lin, vec3(1.0 / 2.2)) * vec3(0.74, 0.69, 1.06);
-	}
-
-	ALBEDO = base_surface;
+	ALBEDO = v_base_surface;
 	ROUGHNESS = roughness;
 	SPECULAR = specular;
 }
@@ -164,26 +171,18 @@ void light() {
 	// Em Godot 4, LIGHT_COLOR inclui multiplicação por PI (3.14159); normalizamos por PI
 	// para evitar superexposição (estouro branco/neon) e preservar as cores reais escolhidas.
 	vec3 light_norm = (LIGHT_COLOR / PI) * toon_ramp_tinting;
-
-	// Razão cromática entre color_shadow e color_light para que ALBEDO * diffuse_light
-	// exiba fielmente color_shadow no lado sombreado e color_light no lado iluminado.
-	vec3 shadow_ratio = clamp(color_shadow.rgb / max(color_light.rgb, vec3(0.02)), vec3(0.08), vec3(1.2));
 	if (OUTPUT_IS_SRGB) {
-		shadow_ratio = pow(shadow_ratio, vec3(1.25));
 		light_norm *= 0.86;
 	}
-	vec3 diffuse_light = mix(shadow_ratio * light_norm, light_norm, toon_ramp);
+	vec3 diffuse_light = mix(v_shadow_ratio * light_norm, light_norm, toon_ramp);
 	DIFFUSE_LIGHT += diffuse_light * ATTENUATION;
 
 	// Rim Lighting estilizado opcional (silhueta suave restrita às pontas das folhas)
 	if (use_rim) {
-		float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
-		float h_mask = clamp(raw_h, 0.0, 1.0);
-		h_mask = h_mask * h_mask;
 		float NdotV = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
 		float rim = (1.0 - NdotV) * pow(max(NdotL, 0.001), rim_power * 0.5);
 		float rim_half_smooth = max(rim_smoothness * 0.5, 0.001);
 		float rim_ramp = smoothstep(rim_cutoff - rim_half_smooth, rim_cutoff + rim_half_smooth, rim);
-		DIFFUSE_LIGHT += (rim_color.rgb / PI) * rim_ramp * rim_brightness * h_mask * ATTENUATION;
+		DIFFUSE_LIGHT += (rim_color.rgb / PI) * rim_ramp * rim_brightness * v_rim_h_mask * ATTENUATION;
 	}
 }

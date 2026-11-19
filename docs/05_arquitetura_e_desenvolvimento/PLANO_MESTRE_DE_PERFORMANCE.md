@@ -37,6 +37,7 @@ Este documento estabelece o diagnóstico técnico, a matriz de priorização por
 | **3.3** | **CPU / Ociosidade** | Refinamento de ciclos ociosos no HUD (1x/s), RobotEyes, Joystick e Corte estático | **Médio** | **Muito Baixo** | ✅ **Concluído (`v0.12.19-alpha`)** |
 | **3.4** | **Engine / Bateria** | Throttling dinâmico de taxa de quadros (60 FPS jogo / 30 FPS pausa / 15 FPS background) | **Médio** | **Muito Baixo** | ✅ **Concluído (`v0.12.193-alpha`)** |
 | **3.5** | **CPU 60Hz & Geometria** | **Pacote 1:** Early-exit estacionário em `_process_cutting`, cache de Autoloads no `VegetationGrid`, cache de `slash_intensity`, throttle de `SubViewport`/`Tween` na `BladeProgressBar` e remoção de `DeepWater` + `Terrain` legado | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.206-alpha`)** |
+| **3.6** | **Shaders / GPU Mobile** | **Pacote 2:** Pré-cálculo no `vertex()` (`v_base_surface`, `v_shadow_ratio`, `v_base_col`), ramo `if/else` de vértices colapsados em flores e remoção de `discard` + `pow()` triplicado em `blade_slash.gdshader` | **Alto** | **Baixo** | ✅ **Concluído (`v0.12.207-alpha`)** |
 | **4.1** | **Arquitetura** | Perfil experimental de renderizador OpenGL ES 3.0 (`gl_compatibility`) | **Médio** | **Alto** | `project.godot` |
 
 ---
