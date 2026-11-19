@@ -533,13 +533,10 @@ static func spawn_flower_detach_pieces(scene_root: Node, flower_xform: Transform
 		var local_off: Vector3 = offsets[piece_name] as Vector3
 		var start_pos: Vector3 = flower_xform * local_off
 
-		var piece: FlowerDetachPiece = FlowerDetachPiece.new()
+		var piece: FlowerDetachPiece = FlowerDetachPiece.acquire()
 		piece.name = "%s_%s" % [flower_type, piece_name]
-		var mi: MeshInstance3D = MeshInstance3D.new()
-		mi.mesh = meshes[piece_name] as Mesh
-		mi.material_override = _get_or_create_particle_material(col)
-		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		piece.add_child(mi)
+		piece.mesh_instance.mesh = meshes[piece_name] as Mesh
+		piece.mesh_instance.material_override = _get_or_create_particle_material(col)
 		scene_root.add_child(piece)
 
 		var lateral: Vector3 = Vector3(local_off.x, 0.0, local_off.z).normalized() * randf_range(0.5, 1.1)

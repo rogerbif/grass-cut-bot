@@ -347,8 +347,10 @@ func convert_from_tile_grid(
 
 ## Converte para Dicionário pronto para gravação em JSON
 func to_dict() -> Dictionary:
+	# island_polygons e island_holes devem conter os polígonos derivados finais (com corner_radius aplicado),
+	# pois são esses que o motor do jogo (VegetationGrid), menus (IslandNode), limites costeiros e fitas de espuma renderizam.
 	var polys_data: Array = []
-	var src_outers: Array[PackedVector2Array] = base_outer_polygons if not base_outer_polygons.is_empty() else outer_polygons
+	var src_outers: Array[PackedVector2Array] = outer_polygons if not outer_polygons.is_empty() else base_outer_polygons
 	for p: PackedVector2Array in src_outers:
 		var pts: Array = []
 		for pt: Vector2 in p:
@@ -356,17 +358,34 @@ func to_dict() -> Dictionary:
 		polys_data.append(pts)
 
 	var holes_data: Array = []
-	var src_holes: Array[PackedVector2Array] = base_holes if not base_holes.is_empty() else holes
+	var src_holes: Array[PackedVector2Array] = holes if not holes.is_empty() else base_holes
 	for h: PackedVector2Array in src_holes:
 		var h_pts: Array = []
 		for pt: Vector2 in h:
 			h_pts.append([snappedf(pt.x, 0.001), snappedf(pt.y, 0.001)])
 		holes_data.append(h_pts)
 
+	# Preserva os polígonos base retangulares originais para edição posterior no Editor de Fases sem perda geométrica
+	var base_polys_data: Array = []
+	for p: PackedVector2Array in base_outer_polygons:
+		var pts: Array = []
+		for pt: Vector2 in p:
+			pts.append([snappedf(pt.x, 0.001), snappedf(pt.y, 0.001)])
+		base_polys_data.append(pts)
+
+	var base_holes_data: Array = []
+	for h: PackedVector2Array in base_holes:
+		var h_pts: Array = []
+		for pt: Vector2 in h:
+			h_pts.append([snappedf(pt.x, 0.001), snappedf(pt.y, 0.001)])
+		base_holes_data.append(h_pts)
+
 	return {
 		"corner_radius": snappedf(corner_radius, 0.001),
 		"island_polygons": polys_data,
-		"island_holes": holes_data
+		"island_holes": holes_data,
+		"base_island_polygons": base_polys_data,
+		"base_island_holes": base_holes_data
 	}
 
 
@@ -379,8 +398,9 @@ func from_dict(data: Dictionary) -> void:
 		corner_radius = 0.28
 
 	var loaded_polys: Array[PackedVector2Array] = []
-	if data.has("island_polygons") and data["island_polygons"] is Array:
-		var raw_list: Array = data["island_polygons"] as Array
+	var poly_source_key: String = "base_island_polygons" if (data.has("base_island_polygons") and not (data["base_island_polygons"] as Array).is_empty()) else "island_polygons"
+	if data.has(poly_source_key) and data[poly_source_key] is Array:
+		var raw_list: Array = data[poly_source_key] as Array
 		for item: Variant in raw_list:
 			if item is Array:
 				var pts: PackedVector2Array = PackedVector2Array()
@@ -392,8 +412,9 @@ func from_dict(data: Dictionary) -> void:
 					loaded_polys.append(pts)
 
 	var loaded_holes: Array[PackedVector2Array] = []
-	if data.has("island_holes") and data["island_holes"] is Array:
-		var raw_holes: Array = data["island_holes"] as Array
+	var hole_source_key: String = "base_island_holes" if (data.has("base_island_holes") and not (data["base_island_holes"] as Array).is_empty()) else "island_holes"
+	if data.has(hole_source_key) and data[hole_source_key] is Array:
+		var raw_holes: Array = data[hole_source_key] as Array
 		for item: Variant in raw_holes:
 			if item is Array:
 				var pts: PackedVector2Array = PackedVector2Array()

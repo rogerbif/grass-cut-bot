@@ -83,11 +83,17 @@ static func save_level_json(
 	# Gera e salva os polígonos contínuos da ilha para o formato vetorial v4/v5
 	var island_polys_data: Array = []
 	var island_holes_data: Array = []
+	var base_island_polys_data: Array = []
+	var base_island_holes_data: Array = []
+	var corner_radius_val: float = 0.28
 
 	if vector_terrain != null and vector_terrain.has_method("to_dict"):
 		var vt_dict: Dictionary = vector_terrain.call("to_dict") as Dictionary
 		island_polys_data = vt_dict.get("island_polygons", []) as Array
 		island_holes_data = vt_dict.get("island_holes", []) as Array
+		base_island_polys_data = vt_dict.get("base_island_polygons", []) as Array
+		base_island_holes_data = vt_dict.get("base_island_holes", []) as Array
+		corner_radius_val = float(vt_dict.get("corner_radius", 0.28))
 	elif not terrain_list.is_empty():
 		var island_polys: Array[PackedVector2Array] = IslandMeshBuilder.convert_tile_grid_to_polygons(
 			terrain_list, grid_width, grid_height, cell_size
@@ -121,6 +127,7 @@ static func save_level_json(
 		"level_id": level_id,
 		"name": level_name,
 		"time_limit": time_limit,
+		"corner_radius": snappedf(corner_radius_val, 0.001),
 		"grid": {
 			"cell_size": cell_size,
 			"width": grid_width,
@@ -136,6 +143,11 @@ static func save_level_json(
 		"island_holes": island_holes_data,
 		"objects": objects_list
 	}
+
+	if not base_island_polys_data.is_empty():
+		payload["base_island_polygons"] = base_island_polys_data
+	if not base_island_holes_data.is_empty():
+		payload["base_island_holes"] = base_island_holes_data
 
 	if not custom_goals.is_empty():
 		payload["goals"] = custom_goals
@@ -237,10 +249,13 @@ static func save_autosave_snapshot(
 		"level_id": level_id,
 		"timestamp": int(Time.get_unix_time_from_system()),
 		"time_limit": time_limit,
+		"corner_radius": float(vt_dict.get("corner_radius", 0.28)),
 		"grid": { "cell_size": cell_size, "width": grid_width, "height": grid_height },
 		"spawn": { "gx": spawn_cell.x, "gz": spawn_cell.y, "rot": spawn_rot },
 		"island_polygons": vt_dict.get("island_polygons", []),
 		"island_holes": vt_dict.get("island_holes", []),
+		"base_island_polygons": vt_dict.get("base_island_polygons", []),
+		"base_island_holes": vt_dict.get("base_island_holes", []),
 		"objects": objects_list,
 		"grass_vectors": vector_field.call("to_dict_list") if (vector_field != null and vector_field.has_method("to_dict_list")) else [],
 		"goals": custom_goals

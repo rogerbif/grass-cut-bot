@@ -7,6 +7,7 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const BrushPatterns = preload("res://scripts/editor/brush_patterns.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
+const LevelCardDataScript = preload("res://scripts/level/level_card_data.gd")
 const ObstacleDatabaseScript = preload("res://scripts/obstacles/obstacle_database.gd")
 const ROCK_MODEL: PackedScene = preload("res://assets/models/rock.glb")
 
@@ -56,6 +57,9 @@ var _cached_height: int = 8
 var _cached_cell_size: float = 0.8
 var _cached_offset_x: float = 0.0
 var _cached_offset_z: float = 0.0
+var _cached_clipped_shapes: Array[Dictionary] = []
+var _cached_clipped_next_id: int = 1
+var _has_clipped_shapes: bool = false
 
 var _rock_transforms: Array[Transform3D] = []
 var _rocks_mmi: MultiMeshInstance3D = null
@@ -73,29 +77,12 @@ func setup_island(lvl: int, unlocked: bool, stars: int) -> void:
 
 
 func read_island_metadata(lvl: int) -> void:
-	var json_path: String = "res://data/levels/level_%02d.json" % lvl
-	if not FileAccess.file_exists(json_path):
+	var meta: Dictionary = LevelCardDataScript.get_cached_island_meta(lvl)
+	if not bool(meta.get("valid", false)):
 		return
-	var file: FileAccess = FileAccess.open(json_path, FileAccess.READ)
-	if file == null:
-		return
-	var text: String = file.get_as_text()
-	file.close()
-	var parsed: Variant = JSON.parse_string(text)
-	if parsed is Dictionary:
-		var data: Dictionary = parsed as Dictionary
-		var grid_info: Dictionary = data.get("grid", {}) as Dictionary
-		var width: int = int(grid_info.get("width", 12))
-		var height: int = int(grid_info.get("height", 8))
-		var cell_size: float = float(grid_info.get("cell_size", 0.8))
-		island_dimensions = Vector2(float(width) * cell_size, float(height) * cell_size)
-		if data.has("spawn") and data["spawn"] is Dictionary:
-			var sp_dict: Dictionary = data["spawn"] as Dictionary
-			var sp_x: int = int(sp_dict.get("gx", int(float(width) / 2.0)))
-			var sp_z: int = int(sp_dict.get("gz", int(float(height) / 2.0)))
-			var sp_world: Vector3 = LevelJsonLoader.grid_to_world(sp_x, sp_z, width, height, cell_size)
-			if bot_anchor != null:
-				bot_anchor.position = Vector3(sp_world.x, -0.052, sp_world.z)
+	island_dimensions = meta.get("dimensions", island_dimensions) as Vector2
+	if bool(meta.get("has_spawn", false)) and bot_anchor != null:
+		bot_anchor.position = meta.get("bot_pos", Vector3.ZERO) as Vector3
 
 
 func _is_in_front_of_bot(pos: Vector3) -> bool:
@@ -278,29 +265,15 @@ func build_miniature_from_json(lvl: int) -> void:
 	for c: Node in miniature_container.get_children():
 		c.queue_free()
 	grass_mesh_records.clear()
+	_cached_clipped_shapes.clear()
+	_cached_clipped_next_id = 1
+	_has_clipped_shapes = false
 
-	var json_path: String = "res://data/levels/level_%02d.json" % lvl
-	if not FileAccess.file_exists(json_path):
+	var data: Dictionary = LevelCardDataScript.get_cached_level_json(lvl)
+	if data.is_empty():
 		if fallback_mesh != null:
 			fallback_mesh.visible = true
 		return
-
-	var file: FileAccess = FileAccess.open(json_path, FileAccess.READ)
-	if file == null:
-		if fallback_mesh != null:
-			fallback_mesh.visible = true
-		return
-
-	var text: String = file.get_as_text()
-	file.close()
-
-	var parsed: Variant = JSON.parse_string(text)
-	if not (parsed is Dictionary):
-		if fallback_mesh != null:
-			fallback_mesh.visible = true
-		return
-
-	var data: Dictionary = parsed as Dictionary
 	var grid_info: Dictionary = data.get("grid", {}) as Dictionary
 	var width: int = int(grid_info.get("width", 12))
 	var height: int = int(grid_info.get("height", 8))
@@ -442,6 +415,49 @@ func build_miniature_from_json(lvl: int) -> void:
 	_apply_mode_visibility()
 
 
+func _get_base_clipped_vector_field() -> RefCounted:
+	var vector_field: RefCounted = VectorGrassFieldScript.new()
+	if not _cached_level_data.has("grass_vectors") or not (_cached_level_data["grass_vectors"] is Array):
+		return vector_field
+
+	if not _has_clipped_shapes:
+		vector_field.call("from_dict_list", _cached_level_data["grass_vectors"] as Array)
+		var width: int = _cached_width
+		var height: int = _cached_height
+		var cell_size: float = _cached_cell_size
+		var objects_arr: Array = _cached_level_data.get("objects", []) as Array
+
+		# Remove polígonos sob rochas para manter recorte estético limpo (1 vez por ilha)
+		for obj_item: Variant in objects_arr:
+			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")).begins_with("rock"):
+				var rx: int = int((obj_item as Dictionary).get("gx", 0))
+				var rz: int = int((obj_item as Dictionary).get("gz", 0))
+				var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
+				var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+					Vector2(r_world.x, r_world.z),
+					0.90
+				)
+				vector_field.call("clip_shapes", rock_clip_poly)
+
+		# Remove grama na clareira de spawn do robô (raio atual da rocha: 1.40m)
+		if bot_anchor != null:
+			var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
+				Vector2(bot_anchor.position.x, bot_anchor.position.z),
+				1.40
+			)
+			vector_field.call("clip_shapes", spawn_clip_poly)
+
+		_cached_clipped_shapes.assign(vector_field.get("shapes") as Array)
+		_cached_clipped_next_id = int(vector_field.get("_next_id"))
+		_has_clipped_shapes = true
+
+	var cloned_shapes: Array[Dictionary] = []
+	cloned_shapes.assign(_cached_clipped_shapes)
+	vector_field.set("shapes", cloned_shapes)
+	vector_field.set("_next_id", _cached_clipped_next_id)
+	return vector_field
+
+
 func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: float) -> void:
 	if vector_ground_container == null:
 		return
@@ -452,30 +468,8 @@ func _build_vector_ground(data: Dictionary, width: int, height: int, cell_size: 
 	if not data.has("grass_vectors") or not (data["grass_vectors"] is Array):
 		return
 
-	var vector_field: RefCounted = VectorGrassFieldScript.new()
-	vector_field.call("from_dict_list", data["grass_vectors"] as Array)
-
+	var vector_field: RefCounted = _get_base_clipped_vector_field()
 	var objects_arr: Array = data.get("objects", []) as Array
-
-	# Remove polígonos sob rochas para manter recorte estético limpo
-	for obj_item: Variant in objects_arr:
-		if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")).begins_with("rock"):
-			var rx: int = int((obj_item as Dictionary).get("gx", 0))
-			var rz: int = int((obj_item as Dictionary).get("gz", 0))
-			var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
-			var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
-				Vector2(r_world.x, r_world.z),
-				0.90
-			)
-			vector_field.call("clip_shapes", rock_clip_poly)
-
-	# Remove grama na clareira de spawn do robô (raio atual da rocha: 1.40m)
-	if bot_anchor != null:
-		var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
-			Vector2(bot_anchor.position.x, bot_anchor.position.z),
-			1.40
-		)
-		vector_field.call("clip_shapes", spawn_clip_poly)
 
 	# Adiciona flores e trigos de tile como selos circulares na malha vetorial
 	for obj_item: Variant in objects_arr:
@@ -528,26 +522,7 @@ func _ensure_3d_veg_built() -> void:
 		veg_transforms_by_type[v_type] = empty_xforms
 
 	if data.has("grass_vectors") and data["grass_vectors"] is Array:
-		var vector_field: RefCounted = VectorGrassFieldScript.new()
-		vector_field.call("from_dict_list", data["grass_vectors"] as Array)
-
-		for obj_item: Variant in objects_arr:
-			if obj_item is Dictionary and String((obj_item as Dictionary).get("type", "")).begins_with("rock"):
-				var rx: int = int((obj_item as Dictionary).get("gx", 0))
-				var rz: int = int((obj_item as Dictionary).get("gz", 0))
-				var r_world: Vector3 = LevelJsonLoader.grid_to_world(rx, rz, width, height, cell_size)
-				var rock_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
-					Vector2(r_world.x, r_world.z),
-					0.90
-				)
-				vector_field.call("clip_shapes", rock_clip_poly)
-
-		if bot_anchor != null:
-			var spawn_clip_poly: PackedVector2Array = BrushPatterns.get_circle_polygon(
-				Vector2(bot_anchor.position.x, bot_anchor.position.z),
-				1.40
-			)
-			vector_field.call("clip_shapes", spawn_clip_poly)
+		var vector_field: RefCounted = _get_base_clipped_vector_field()
 
 		for obj_item: Variant in objects_arr:
 			if obj_item is Dictionary:
