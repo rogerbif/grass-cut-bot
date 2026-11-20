@@ -19,6 +19,7 @@ static var _particle_materials: Dictionary = {}
 static var _scale_curve: Curve = null
 static var _fallback_material: StandardMaterial3D = null
 static var _detach_meshes_by_type: Dictionary = {}
+static var _cached_gm: Node = null
 
 # Peças desprendíveis das Flores no Hit 1 (2 pétalas + 1 folha por espécie)
 const DETACH_CONFIG_BY_TYPE: Dictionary = {
@@ -435,8 +436,15 @@ static func _emit_sub_burst(scene_root: Node, pos: Vector3, mesh: Mesh, col: Col
 	if not emitter.is_inside_tree():
 		scene_root.add_child(emitter)
 
+	if _cached_gm == null or not is_instance_valid(_cached_gm):
+		_cached_gm = scene_root.get_node_or_null("/root/GameManager")
+	var final_count: int = count
+	if _cached_gm != null and _cached_gm.has_method("is_eco_graphics") and bool(_cached_gm.call("is_eco_graphics")):
+		final_count = maxi(1, int(ceilf(float(count) * 0.5)))
+
 	emitter.mesh = mesh
-	emitter.amount = count
+	if emitter.amount != final_count:
+		emitter.amount = final_count
 	emitter.emitting = false
 	emitter.material_override = _get_or_create_particle_material(col)
 	if emitter.is_inside_tree():

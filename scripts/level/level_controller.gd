@@ -60,6 +60,8 @@ func generate_level(level_num: int) -> void:
 	var world_env: WorldEnvironment = main_root.get_node_or_null("WorldEnvironment") as WorldEnvironment if main_root != null else null
 	var sun: DirectionalLight3D = main_root.get_node_or_null("DirectionalLight3D") as DirectionalLight3D if main_root != null else null
 	ThemeDatabase.apply_theme_to_scene(theme, world_env, sun, null)
+	if sun != null and GameManager != null and GameManager.has_method("is_eco_graphics") and GameManager.is_eco_graphics():
+		sun.shadow_enabled = false
 
 	var goals: Dictionary = veg_grid.build_from_level_json(data, obstacles_container, cutter) as Dictionary
 

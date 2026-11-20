@@ -39,3 +39,4 @@ func _ready() -> void:
 	print("✔ Teste 4: Ciclo completo de desintegração, reposicionamento e materialização concluído.")
 
 	print("--- TODOS OS TESTES DE TELEPORTE PASSARAM COM SUCESSO! ---")
+	get_tree().quit(0)

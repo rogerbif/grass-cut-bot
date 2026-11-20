@@ -46,10 +46,15 @@ void vertex() {
 	// Converte para coordenadas globais de mundo
 	vec3 world_vert = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
-	// Altura normalizada da folha: 0.0 na raiz até 1.0 na ponta
-	// Se invert_height for true (como no modelo wheat_01.glb), inverte o UV.y para ancorar a raiz no solo
-	float raw_h = invert_height ? (1.0 - UV.y) : UV.y;
-	if (invert_height && COLOR.r > 0.001) {
+	// Verifica se a malha possui atributos de vértice assados válidos (não dummy todo preto nem todo branco)
+	bool is_all_black = (COLOR.r < 0.001 && COLOR.g < 0.001 && COLOR.b < 0.001);
+	bool is_all_white = (COLOR.r > 0.999 && COLOR.g > 0.999 && COLOR.b > 0.999);
+	bool has_baked_attr = !is_all_black && !is_all_white;
+
+	// Altura normalizada da folha: 0.0 na raiz até 1.0 na ponta.
+	// Tanto grass_01.glb quanto wheat_01.glb remodelado (v0.12.178+) possuem UV.y = 0.0 no solo e 1.0 no topo.
+	float raw_h = UV.y;
+	if (invert_height && has_baked_attr) {
 		raw_h = COLOR.r;
 	}
 	float h = clamp(raw_h, 0.0, 1.0);
@@ -84,10 +89,6 @@ void vertex() {
 	float blade_angle = 0.0;
 	float blade_freq = 1.0;
 
-	// Verifica se a malha possui atributos de vertice assados válidos (não dummy todo preto nem todo branco)
-	bool is_all_black = (COLOR.r < 0.001 && COLOR.g < 0.001 && COLOR.b < 0.001);
-	bool is_all_white = (COLOR.r > 0.999 && COLOR.g > 0.999 && COLOR.b > 0.999);
-	bool has_baked_attr = !is_all_black && !is_all_white;
 	if (has_baked_attr) {
 		blade_phase = COLOR.r * 6.2831853;
 		blade_angle = (COLOR.g - 0.5) * 6.2831853;

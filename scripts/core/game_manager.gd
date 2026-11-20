@@ -25,6 +25,7 @@ const FPS_BACKGROUND: int = 15
 
 var current_state: GameState = GameState.READY
 var current_level: int = 1
+var current_graphics_profile: String = "balanced"
 
 var time_limit: float = 90.0
 var time_left: float = 90.0
@@ -85,25 +86,42 @@ func _init_graphics_quality() -> void:
 		var profile: String = String(SaveManager.get_setting("graphics_quality", "balanced"))
 		apply_graphics_quality(profile)
 
+func is_eco_graphics() -> bool:
+	return current_graphics_profile == "eco"
+
 func apply_graphics_quality(profile: String) -> void:
-	var vp: Viewport = get_viewport()
-	if vp == null:
-		return
-	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	match profile:
-		"high":
-			vp.scaling_3d_scale = 1.0
-		"balanced":
-			vp.scaling_3d_scale = 0.85
-		"eco":
-			vp.scaling_3d_scale = 0.70
+		"high", "balanced", "eco":
+			current_graphics_profile = profile
 		_:
-			vp.scaling_3d_scale = 0.85
+			current_graphics_profile = "balanced"
+
+	var vp: Viewport = get_viewport()
+	if vp != null:
+		vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+		match current_graphics_profile:
+			"high":
+				vp.scaling_3d_scale = 1.0
+			"balanced":
+				vp.scaling_3d_scale = 0.85
+			"eco":
+				vp.scaling_3d_scale = 0.70
+
+	if get_tree() != null and get_tree().root != null:
+		_apply_shadow_quality_recursive(get_tree().root, current_graphics_profile != "eco")
+
+func _apply_shadow_quality_recursive(node: Node, shadows_enabled: bool) -> void:
+	if node is DirectionalLight3D:
+		(node as DirectionalLight3D).shadow_enabled = shadows_enabled
+	for child: Node in node.get_children():
+		_apply_shadow_quality_recursive(child, shadows_enabled)
 
 func _on_scene_node_added(node: Node) -> void:
 	if node is BaseButton:
 		if not node.pressed.is_connected(trigger_haptic_ui):
 			node.pressed.connect(trigger_haptic_ui)
+	elif node is DirectionalLight3D:
+		(node as DirectionalLight3D).shadow_enabled = (current_graphics_profile != "eco")
 
 func _scan_and_connect_buttons(node: Node) -> void:
 	if node is BaseButton:
