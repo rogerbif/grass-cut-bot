@@ -421,6 +421,8 @@ func _get_base_clipped_vector_field() -> RefCounted:
 		return vector_field
 
 	if not _has_clipped_shapes:
+		if _cached_level_data.has("grass_sample_distance"):
+			vector_field.set("sample_distance", float(_cached_level_data["grass_sample_distance"]))
 		vector_field.call("from_dict_list", _cached_level_data["grass_vectors"] as Array)
 		var width: int = _cached_width
 		var height: int = _cached_height
@@ -455,6 +457,9 @@ func _get_base_clipped_vector_field() -> RefCounted:
 	cloned_shapes.assign(_cached_clipped_shapes)
 	vector_field.set("shapes", cloned_shapes)
 	vector_field.set("_next_id", _cached_clipped_next_id)
+	var lvl_id: int = int(_cached_level_data.get("level_id", -1))
+	if lvl_id > 0:
+		vector_field.set("cache_key", "level_%d" % lvl_id)
 	return vector_field
 
 

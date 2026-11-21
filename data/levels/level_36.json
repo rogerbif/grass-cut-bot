@@ -11,6 +11,7 @@
 		"grass_yellow": 1108,
 		"wheat": 24
 	},
+	"grass_sample_distance": 0.38,
 	"grass_vectors": [
 		{
 			"holes": [],

@@ -18,7 +18,50 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
 
 ---
 
-## 🏆 2. Metagame, Coleção e Retenção Casual
+## 🧹 2. Pacote Imediato: Sanitização e Limpeza de Código e Assets
+
+Com base na auditoria profunda realizada na versão `v0.12.211-alpha` (inspeção do pacote `.aab`, profiling de memória e análise estática do repositório), foi mapeado um conjunto de arquivos órfãos, assets não utilizados e código morto pronto para sanitização na sequência imediata:
+
+### 2.1 Eliminação de Assets de Áudio Não Usados (Economia de ~3.5 MB no AAB / ~17 MB VRAM/RAM)
+- **`assets/audio/sfx/Water_splash.wav`:** Pesa **16.92 MB descompactado** (3.42 MB compactado no `.aab`). É pré-carregado no `audio_manager.gd` (`WATER_SPLASH = preload(...)`), porém não existe nenhuma chamada a esse som em todo o projeto.
+- **`assets/audio/sfx/Star_win.mp3`:** Pesa 38 KB, pré-carregado como `STAR_WIN`, mas sem chamadas no código ativo.
+- **Ação:** Remover referências no `audio_manager.gd` e deletar os arquivos físicos de áudio.
+
+### 2.2 Purga de Modelos 3D e Cenas de Tiles Legados (Economia de ~1 MB)
+O sistema antigo de ilha modular baseada em blocos pré-moldados foi 100% substituído pelo gerador procedural vetorial `IslandMeshBuilder`. Os seguintes arquivos estão completamente obsoletos:
+- `assets/models/tiles/tile_center.glb` e `scenes/editor/tiles/tile_center.tscn`
+- `assets/models/tiles/tile_straight.glb` e `scenes/editor/tiles/tile_straight.tscn`
+- `assets/models/tiles/tile_corner_outer.glb` e `scenes/editor/tiles/tile_corner_outer.tscn`
+- `assets/models/tiles/tile_corner_inner.glb` e `scenes/editor/tiles/tile_corner_inner.tscn`
+- `assets/models/tiles/tile_diagonal.glb` e `scenes/editor/tiles/tile_diagonal.tscn`
+- `assets/models/tiles/tile_diagonal_inner.glb` e `scenes/editor/tiles/tile_diagonal_inner.tscn`
+- **Ação:** Excluir os 6 arquivos `.glb`, as 6 cenas `.tscn` correspondentes e seus arquivos `.import` associados.
+
+### 2.3 Purga de Ícones e SVGs Órfãos (19 Arquivos)
+Arquivos vetoriais em `assets/` sem qualquer referência em scripts `.gd` ou cenas `.tscn`:
+- `assets/icons/app_icon_192.svg`
+- `assets/ui/defeat/clock.svg`, `flag.svg`, `pause.svg`
+- `assets/ui/pause/gear.svg`, `play.svg`
+- `assets/ui/topbar/icon_arrow_right.svg`, `icon_diamond.svg`, `icon_settings.svg`, `icon_star.svg`
+- Rascunhos temporários e testes de ícones não utilizados em `assets/icons/plants/`.
+- Arquivos `.uid` soltos em `tests/` (`test_all_levels.gd.uid`, etc.).
+- **Ação:** Excluir arquivos órfãos confirmados por busca de referências.
+
+### 2.4 Sanitização de Código GDScript Morto
+- **23 Funções Não Referenciadas:** Funções utilitárias remanescentes em scripts como `vector_grass_field.gd`, `island_mesh_builder.gd`, `editor_canvas.gd` e `math_utils.gd` que não possuem chamadores internos nem externos.
+- **18 Constantes Não Usadas:** Constantes de cores e parâmetros de debug abandonados durante iterações de prototipagem.
+- **Ação:** Remoção segura das funções e constantes com validação por suite de testes automatizada (Zero Warnings).
+
+### 2.5 Filtro Estrito de Exportação do APK/AAB (`export_presets.cfg`)
+Atualmente, arquivos da pasta `docs/` e capturas promocionais de marketing corriam o risco de serem empacotados no build release.
+- **Ação:** Configurar `exclude_filter` no `export_presets.cfg` para excluir explicitamente: `docs/*`, `build/*`, `assets/marketing/*`, `tests/*`, `*.ps1`, `*.md`, `*.py`.
+
+### 2.6 Segurança de Keystore e Credenciais
+- **Ação:** Substituir senhas hardcoded em scripts locais (`build_android_aab.ps1`, `generate_keystore.ps1`) por variáveis de ambiente ou leitura segura do prompt interativo, garantindo compliance total.
+
+---
+
+## 🏆 3. Metagame, Coleção e Retenção Casual
 
 ### 2.1 Ativação Real da Aba Coleção (`TabCollection`) — Herbário Botânico ✅ (Concluído na v0.12.194-alpha - Melhoria 240)
 - **🌿 Herbário da Ilha 100% Data-Driven & Interativo:** Conexão direta dos 36 cards botânicos com os dados persistidos no `SaveManager` ([Melhoria 240](./historico_melhorias/240_ativacao_completa_herbario_36_especies_icones_3d.md)):
@@ -144,6 +187,7 @@ Para orientar a tomada de decisão ágil e a esteira de desenvolvimento, as melh
 
 | Ordem | Iniciativa / Melhoria | Impacto | Esforço | Categoria | Justificativa Estratégica |
 | :---: | :--- | :---: | :---: | :---: | :--- |
+| **0º** | **Sanitização de Código & Limpeza de Assets Órfãos** | **Alto** | **Baixo** | Manutenibilidade / Tamanho | **Execução Imediata:** Purga de 17MB de áudios não usados, 6 tiles 3D legados, 19 SVGs órfãos e código morto, aliviando o APK/AAB e a esteira de desenvolvimento. |
 | **1º** | **Bônus Diário (Daily Bonus) & Missões Rápidas** | **Alto** | **Baixo/Médio** | Retenção / Metagame | **Vitória Rápida (Quick Win):** Cria o hábito diário de retorno (D1/D7) com lógica leve no `SaveManager` e modal de resgate. |
 | **2º** | **Ativação Real dos Pacotes da Loja (`TabStore`)** | **Médio/Alto** | **Baixo** | Economia / UI | Elimina o texto `"EM BREVE"`, dando função real à aba Loja com resgates e conversões de moedas. |
 | **3º** | **Assets Promocionais & ASO da Play Store** | **Alto** | **Baixo/Médio** | Publicação / Marketing | Feature Graphic (1024x500) e Screenshots 9:16 com lettering usando as ferramentas prontas `capture_store_screenshots.tscn` e `icon_photo_studio.tscn`. |

@@ -84,9 +84,12 @@ func _ready() -> void:
 	_reset_head_timer(randf_range(1.0, 2.5))
 	_reset_expression_timer(randf_range(3.0, 6.0))
 
-	if UpgradeManager != null:
-		UpgradeManager.upgrade_purchased.connect(_on_upgrade_purchased)
-		UpgradeManager.blade_level_changed.connect(func(_lvl: int, _max: bool): update_blade_tier())
+	var um: Node = get_node_or_null("/root/UpgradeManager") if is_inside_tree() else null
+	if um != null:
+		if um.has_signal("upgrade_purchased"):
+			um.connect("upgrade_purchased", _on_upgrade_purchased)
+		if um.has_signal("blade_level_changed"):
+			um.connect("blade_level_changed", func(_lvl: int, _max: bool): update_blade_tier())
 
 func _apply_compat_blade_tint(mi: MeshInstance3D) -> void:
 	if mi == null or mi.mesh == null:
@@ -264,8 +267,9 @@ func _reset_expression_timer(seconds: float) -> void:
 
 func update_blade_tier() -> void:
 	var active_tier: int = 1
-	if UpgradeManager != null:
-		active_tier = UpgradeManager.get_blade_tier()
+	var um: Node = get_node_or_null("/root/UpgradeManager") if is_inside_tree() else null
+	if um != null and um.has_method("get_blade_tier"):
+		active_tier = int(um.call("get_blade_tier"))
 
 	if blade_tier_1 != null:
 		blade_tier_1.visible = (active_tier == 1)
@@ -408,8 +412,9 @@ func teleport_to_position(target_pos: Vector3, on_complete: Callable = Callable(
 	_set_teleport_mode(0) # 0 = Desaparecendo de cima para baixo
 	teleport_progress = 0.0
 
-	if AudioManager != null:
-		AudioManager.play_sfx("fast_forward", 0.0, linear_to_db(0.25))
+	var am: Node = get_node_or_null("/root/AudioManager") if is_inside_tree() else null
+	if am != null and am.has_method("play_sfx"):
+		am.call("play_sfx", "fast_forward", 0.0, linear_to_db(0.25))
 
 	_teleport_tween = create_tween()
 	# 1. Desaparece de cima para baixo (50% mais lento: 0.36s -> 0.54s)

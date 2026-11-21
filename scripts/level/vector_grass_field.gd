@@ -18,14 +18,28 @@ const EDGE_TAPER_DISTANCE: float = 0.16
 # }
 var shapes: Array[Dictionary] = []
 var _next_id: int = 1
+var sample_distance: float = MIN_TUFT_DISTANCE
+
+static var _global_cache: Dictionary = {}
+
+var cache_key: String = ""
+var _cached_tufts: Array[Dictionary] = []
+var _cache_min_dist: float = -1.0
+
+static func clear_global_cache() -> void:
+	_global_cache.clear()
 
 func _init() -> void:
 	shapes = []
 	_next_id = 1
+	_cached_tufts.clear()
+	_cache_min_dist = -1.0
 
 func clear() -> void:
 	shapes.clear()
 	_next_id = 1
+	_cached_tufts.clear()
+	_cache_min_dist = -1.0
 
 func get_shapes() -> Array[Dictionary]:
 	return shapes
@@ -323,6 +337,18 @@ func _clip_polygon_without_holes(subject: PackedVector2Array, eraser: PackedVect
 ## Amostra tufos em distribuição Poisson Disk / Blue Noise dentro de todos os polígonos
 ## Retorna Array[Dictionary]: [{ "pos": Vector3, "type": String, "scale_factor": float, "seed": float }]
 func sample_all_tufts(min_dist: float = MIN_TUFT_DISTANCE) -> Array[Dictionary]:
+	var effective_dist: float = min_dist
+	if is_equal_approx(min_dist, MIN_TUFT_DISTANCE) and sample_distance > 0.0:
+		effective_dist = sample_distance
+
+	if not cache_key.is_empty() and _global_cache.has(cache_key):
+		var entry: Dictionary = _global_cache[cache_key] as Dictionary
+		if is_equal_approx(float(entry.get("min_dist", -1.0)), effective_dist):
+			return (entry.get("tufts", []) as Array[Dictionary]).duplicate(true)
+
+	if not _cached_tufts.is_empty() and is_equal_approx(_cache_min_dist, effective_dist):
+		return _cached_tufts.duplicate(true)
+
 	var result_tufts: Array[Dictionary] = []
 	var global_seed: int = 101
 
@@ -334,7 +360,7 @@ func sample_all_tufts(min_dist: float = MIN_TUFT_DISTANCE) -> Array[Dictionary]:
 		if poly.size() < 3:
 			continue
 
-		var points_sampled: Array[Vector2] = _sample_poisson_in_polygon(poly, holes_list, min_dist, global_seed)
+		var points_sampled: Array[Vector2] = _sample_poisson_in_polygon(poly, holes_list, effective_dist, global_seed)
 		global_seed += points_sampled.size() + 17
 
 		for pt: Vector2 in points_sampled:
@@ -351,6 +377,17 @@ func sample_all_tufts(min_dist: float = MIN_TUFT_DISTANCE) -> Array[Dictionary]:
 				"scale_factor": scale_factor,
 				"seed": sub_seed
 			})
+
+	_cached_tufts = result_tufts
+	_cache_min_dist = effective_dist
+
+	if not cache_key.is_empty():
+		if _global_cache.size() >= 8 and not _global_cache.has(cache_key):
+			_global_cache.clear()
+		_global_cache[cache_key] = {
+			"min_dist": effective_dist,
+			"tufts": result_tufts
+		}
 
 	return result_tufts
 
@@ -655,7 +692,11 @@ func _sample_poisson_in_polygon(poly: PackedVector2Array, holes_list: Array, min
 				break
 
 		if not found_neighbor:
-			active_list.remove_at(rand_idx)
+			# O(1) swap-and-pop em vez de O(n) remove_at
+			var last_idx: int = active_list.size() - 1
+			if rand_idx != last_idx:
+				active_list[rand_idx] = active_list[last_idx]
+			active_list.pop_back()
 
 	return result
 
@@ -665,14 +706,36 @@ func _is_point_in_any_hole(pt: Vector2, holes_list: Array) -> bool:
 			return true
 	return false
 
-func _compute_min_distance_to_polygon_edge(pt: Vector2, poly: PackedVector2Array) -> float:
-	var min_d: float = 999.0
+func _compute_min_distance_to_polygon_edge(pt: Vector2, poly: PackedVector2Array, max_dist: float = EDGE_TAPER_DISTANCE) -> float:
+	var min_d_sq: float = max_dist * max_dist
+	var has_close_segment: bool = false
 	var n: int = poly.size()
 	for i: int in range(n):
 		var a: Vector2 = poly[i]
 		var b: Vector2 = poly[(i + 1) % n]
+		# Fast AABB reject antes de chamar get_closest_point_to_segment
+		var seg_min_x: float = minf(a.x, b.x) - max_dist
+		if pt.x < seg_min_x:
+			continue
+		var seg_max_x: float = maxf(a.x, b.x) + max_dist
+		if pt.x > seg_max_x:
+			continue
+		var seg_min_y: float = minf(a.y, b.y) - max_dist
+		if pt.y < seg_min_y:
+			continue
+		var seg_max_y: float = maxf(a.y, b.y) + max_dist
+		if pt.y > seg_max_y:
+			continue
+
 		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(pt, a, b)
-		var d: float = pt.distance_to(closest)
-		if d < min_d:
-			min_d = d
-	return min_d
+		var d_sq: float = pt.distance_squared_to(closest)
+		if d_sq < min_d_sq:
+			min_d_sq = d_sq
+			has_close_segment = true
+			# Early exit: ponto praticamente coincidente com o segmento de borda
+			if min_d_sq <= 0.0001:
+				break
+
+	if not has_close_segment:
+		return max_dist
+	return sqrt(min_d_sq)

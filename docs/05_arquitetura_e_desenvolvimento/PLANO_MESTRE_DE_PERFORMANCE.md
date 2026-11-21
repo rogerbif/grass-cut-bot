@@ -74,3 +74,4 @@ Todas as alterações devem ser mensuradas com a ferramenta de benchmark integra
 - **Game Feel Inalterado:** Resposta da lâmina, recuo nas rochas, efeitos visuais e haptics 100% preservados.
 - **60 FPS cravados** em dispositivos móveis Android de entrada/intermediários.
 - **Redução do Physics Process Time** de ~2.8ms para < 0.9ms.
+- **Melhoria 247 (v0.12.212-alpha):** Downscale de VRAM de texturas (eyes_atlas de 5.59MB para 0.34MB, -93.7%), amostragem Poisson O(1) swap-and-pop + fast AABB reject (-58% no tempo total de CPU), cache de amostragem in-game (0 ms no carregamento), calibração da Fase 36 (11.303 para 3.911 tufos), MultiMesh spatial chunking 2x2 com Frustum Culling ativo e decimação de 50% em flores nobres no Blender.

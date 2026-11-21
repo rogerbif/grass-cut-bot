@@ -8,10 +8,11 @@ const PlantScript = preload("res://scripts/plants/plant.gd")
 func _initialize() -> void:
 	print("--- TESTE DE AUTO-DESCOBERTA DINÂMICA DE NOVA ESPÉCIE BOTÂNICA ---")
 
-	# 1. Estado inicial: 13 espécies canônicas
+	# 1. Estado inicial: 36 espécies canônicas do catálogo
 	var initial_resources: Array[PlantSpeciesData] = PlantDatabaseScript.get_all_resources()
-	assert(initial_resources.size() == 13, "Inicialmente deve haver 13 espécies. Atual: %d" % initial_resources.size())
-	print("✔ Passo 1: Estado inicial com 13 espécies verificado com sucesso.")
+	var base_count: int = initial_resources.size()
+	assert(base_count == 36, "Inicialmente deve haver 36 espécies. Atual: %d" % base_count)
+	print("✔ Passo 1: Estado inicial com %d espécies verificado com sucesso." % base_count)
 
 	# 2. Cria um novo arquivo .tres em tempo de execução na pasta data/species/
 	var test_path: String = "res://data/species/test_crystal_flower.tres"
@@ -41,8 +42,8 @@ func _initialize() -> void:
 	var after_species: Array[Dictionary] = PlantDatabaseScript.get_all_species()
 	var after_types: PackedStringArray = VegetationGridScript.get_veg_types()
 
-	assert(after_resources.size() == 14, "Após auto-descoberta, deve haver 14 espécies! Atual: %d" % after_resources.size())
-	assert(after_species.size() == 14, "Após auto-descoberta, Dictionary list deve ter 14 espécies! Atual: %d" % after_species.size())
+	assert(after_resources.size() == base_count + 1, "Após auto-descoberta, deve haver %d espécies! Atual: %d" % [base_count + 1, after_resources.size()])
+	assert(after_species.size() == base_count + 1, "Após auto-descoberta, Dictionary list deve ter %d espécies! Atual: %d" % [base_count + 1, after_species.size()])
 	assert(after_types.has("test_crystal_flower"), "VegetationGrid deve incluir 'test_crystal_flower' nos dynamic types!")
 
 	var retrieved: PlantSpeciesData = PlantDatabaseScript.get_resource("test_crystal_flower")
@@ -68,8 +69,8 @@ func _initialize() -> void:
 	VegetationGridScript._cached_veg_types.clear()
 
 	var final_resources: Array[PlantSpeciesData] = PlantDatabaseScript.get_all_resources()
-	assert(final_resources.size() == 13, "Após remoção e reload, deve voltar a 13 espécies! Atual: %d" % final_resources.size())
-	print("✔ Passo 4: Limpeza do teste e restauração para 13 espécies canônicas validada.")
+	assert(final_resources.size() == base_count, "Após remoção e reload, deve voltar a %d espécies! Atual: %d" % [base_count, final_resources.size()])
+	print("✔ Passo 4: Limpeza do teste e restauração para %d espécies canônicas validada." % base_count)
 
 	print("==================================================")
 	print(">>> TESTE DE AUTO-DESCOBERTA PASSOU COM 100% DE SUCESSO! <<<")

@@ -532,6 +532,8 @@ func build_from_level_json(
 	var vector_field: RefCounted = null
 	if data.has("grass_vectors") and data["grass_vectors"] is Array:
 		vector_field = VectorGrassFieldScript.new()
+		if data.has("grass_sample_distance"):
+			vector_field.set("sample_distance", float(data["grass_sample_distance"]))
 		vector_field.from_dict_list(data["grass_vectors"] as Array)
 	else:
 		# Modo Legado v1/v2: carrega o campo discreto e converte para polígonos vetoriais
@@ -576,6 +578,10 @@ func build_from_level_json(
 			1.40
 		)
 		vector_field.clip_shapes(spawn_clip_poly)
+
+	var lvl_id: int = int(data.get("level_id", -1))
+	if lvl_id > 0:
+		vector_field.set("cache_key", "level_%d" % lvl_id)
 
 	# Constrói MultiMeshes e grade espacial a partir do campo vetorial
 	goals = _build_from_vector_field(vector_field, width, height, cell_size, flower_cells, wheat_cells, rock_cells)
@@ -764,14 +770,23 @@ func _build_from_vector_field(
 
 	var tufts: Array[Dictionary] = []
 
+	# Pré-calcula posições 2D das rochas para clearance ultrarrápida sem alocações repetidas (O(1))
+	var rock_pos_2d: PackedVector2Array = PackedVector2Array()
+	var rock_keys: Array = tile_rocks.keys()
+	rock_pos_2d.resize(rock_keys.size())
+	for ri: int in range(rock_keys.size()):
+		var rc: Vector2i = rock_keys[ri] as Vector2i
+		var rp: Vector3 = LevelJsonLoader.grid_to_world(rc.x, rc.y, width_blocks, height_blocks, block_cell_size)
+		rock_pos_2d[ri] = Vector2(rp.x, rp.z)
+
 	# Adiciona flores de tile caso existam no JSON (respeitando clareira de rochas de 1.40m)
 	# Regra canônica: flores convivem harmoniosamente com a grama (não limpam tufos de grama)
 	for f_cell: Vector2i in tile_flowers.keys():
 		var f_pos: Vector3 = LevelJsonLoader.grid_to_world(f_cell.x, f_cell.y, width_blocks, height_blocks, block_cell_size)
 		var inside_rock_radius: bool = false
-		for r_cell: Vector2i in tile_rocks.keys():
-			var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width_blocks, height_blocks, block_cell_size)
-			if Vector2(f_pos.x - r_pos.x, f_pos.z - r_pos.z).length() <= 1.40:
+		var fp2d: Vector2 = Vector2(f_pos.x, f_pos.z)
+		for rp2d: Vector2 in rock_pos_2d:
+			if fp2d.distance_squared_to(rp2d) <= 1.96: # 1.40 * 1.40
 				inside_rock_radius = true
 				break
 		if inside_rock_radius:
@@ -798,9 +813,9 @@ func _build_from_vector_field(
 	for w_cell: Vector2i in tile_wheat.keys():
 		var w_pos: Vector3 = LevelJsonLoader.grid_to_world(w_cell.x, w_cell.y, width_blocks, height_blocks, block_cell_size)
 		var inside_rock: bool = false
-		for r_cell: Vector2i in tile_rocks.keys():
-			var r_pos: Vector3 = LevelJsonLoader.grid_to_world(r_cell.x, r_cell.y, width_blocks, height_blocks, block_cell_size)
-			if Vector2(w_pos.x - r_pos.x, w_pos.z - r_pos.z).length() <= 1.40:
+		var wp2d: Vector2 = Vector2(w_pos.x, w_pos.z)
+		for rp2d: Vector2 in rock_pos_2d:
+			if wp2d.distance_squared_to(rp2d) <= 1.96: # 1.40 * 1.40
 				inside_rock = true
 				break
 		if inside_rock:
@@ -834,106 +849,147 @@ func _build_from_vector_field(
 			tufts_by_type[vt] = new_list
 		(tufts_by_type[vt] as Array[Dictionary]).append(t_dict)
 
-	# Constrói MultiMeshes por tipo
-	_veg_multimeshes.resize(dynamic_types.size())
-	_veg_mmi_nodes.resize(dynamic_types.size())
-	_clipping_multimeshes.resize(dynamic_types.size())
-	_clipping_mmi_nodes.resize(dynamic_types.size())
-	_clipping_counts.resize(dynamic_types.size())
-	_clipping_counts.fill(0)
+	# Constrói MultiMeshes por tipo com particionamento espacial (Spatial Chunking)
+	# para ativar Frustum Culling em aparelhos móveis fracos quando a contagem for alta (> 800)
+	var use_chunks: bool = (tufts.size() > 800)
 
-	for mmi_idx: int in range(dynamic_types.size()):
-		var v_type: String = dynamic_types[mmi_idx]
+	_veg_multimeshes.clear()
+	_veg_mmi_nodes.clear()
+	_clipping_multimeshes.clear()
+	_clipping_mmi_nodes.clear()
+	_clipping_counts.clear()
+
+	for v_type: String in dynamic_types:
 		var entry_list: Array[Dictionary] = tufts_by_type.get(v_type, []) as Array[Dictionary]
-		var count: int = entry_list.size()
-
-		if count <= 0:
-			_veg_multimeshes[mmi_idx] = null
-			_veg_mmi_nodes[mmi_idx] = null
-			_clipping_multimeshes[mmi_idx] = null
-			_clipping_mmi_nodes[mmi_idx] = null
+		var total_count: int = entry_list.size()
+		if total_count <= 0:
 			continue
 
+		var chunks: Array[Array] = []
+		if use_chunks:
+			# 4 Quadrantes: 0: NW (x<0, z<0), 1: NE (x>=0, z<0), 2: SW (x<0, z>=0), 3: SE (x>=0, z>=0)
+			var q0: Array[Dictionary] = []
+			var q1: Array[Dictionary] = []
+			var q2: Array[Dictionary] = []
+			var q3: Array[Dictionary] = []
+			for entry: Dictionary in entry_list:
+				var p: Vector3 = entry["pos"] as Vector3
+				if p.x < 0.0:
+					if p.z < 0.0: q0.append(entry)
+					else: q2.append(entry)
+				else:
+					if p.z < 0.0: q1.append(entry)
+					else: q3.append(entry)
+			chunks = [q0, q1, q2, q3]
+		else:
+			chunks = [entry_list]
+
 		var is_flower: bool = v_type.begins_with("flower")
-		var mm: MultiMesh = MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		if is_flower:
-			mm.use_custom_data = true
-		mm.mesh = _resolve_mesh_for_type(v_type)
-		mm.instance_count = count
-
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		mmi.name = "VegMMI_%s" % v_type
-		mmi.multimesh = mm
-		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-		mmi.custom_aabb = FIXED_ISLAND_AABB
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var resolved_mat: Material = _resolve_material_for_type(v_type)
-		if resolved_mat != null:
-			mmi.material_override = resolved_mat
-		add_child(mmi)
-
-		var clip_mm: MultiMesh = MultiMesh.new()
-		clip_mm.transform_format = MultiMesh.TRANSFORM_3D
-		clip_mm.mesh = _get_or_create_clippings_mesh(v_type)
-		clip_mm.instance_count = count
-		clip_mm.visible_instance_count = 0
-
-		var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		clip_mmi.name = "ClippingsMMI_%s" % v_type
-		clip_mmi.multimesh = clip_mm
-		clip_mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-		clip_mmi.custom_aabb = FIXED_ISLAND_AABB
-		clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(clip_mmi)
-
-		_veg_multimeshes[mmi_idx] = mm
-		_veg_mmi_nodes[mmi_idx] = mmi
-		_clipping_multimeshes[mmi_idx] = clip_mm
-		_clipping_mmi_nodes[mmi_idx] = clip_mmi
-
 		var is_grass: bool = (v_type != "wheat" and not is_flower)
 		var max_hp: int = 1 if is_grass else (3 if is_flower else 2)
 		var p_col: Color = _resolve_type_particle_color(v_type)
+		var shared_mesh: Mesh = _resolve_mesh_for_type(v_type)
+		var resolved_mat: Material = _resolve_material_for_type(v_type)
+		var clip_mesh_shared: Mesh = _get_or_create_clippings_mesh(v_type)
 
-		for inst_idx: int in range(count):
-			var entry: Dictionary = entry_list[inst_idx]
-			var pos: Vector3 = entry["pos"] as Vector3
-			var s_seed: float = float(entry["seed"])
-			var scale_factor: float = float(entry.get("scale_factor", 1.0))
+		for c_idx_quad: int in range(chunks.size()):
+			var chunk_entries: Array = chunks[c_idx_quad]
+			var count: int = chunk_entries.size()
+			if count <= 0:
+				continue
 
-			var plant_rot: float = deg_to_rad(float(entry.get("rot", 0.0))) if is_flower else fmod(s_seed * 1.618, TAU)
+			var mmi_idx: int = _veg_multimeshes.size()
 
-			var scale_vec: Vector3
-			if is_grass:
-				var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
-				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-			elif v_type == "wheat":
-				# Escala aumentada em 100% (dobrada: 0.55~0.70 -> 1.10~1.40 Y, 0.34~0.46 -> 0.68~0.92 XZ)
-				var scale_y: float = lerpf(1.10, 1.40, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
-				var scale_xz: float = lerpf(0.68, 0.92, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
-				scale_vec = Vector3(scale_xz, scale_y, scale_xz)
-			else:
-				var sf: float = 0.676 * scale_factor
-				scale_vec = Vector3(sf, sf, sf)
+			var mm: MultiMesh = MultiMesh.new()
+			mm.transform_format = MultiMesh.TRANSFORM_3D
+			if is_flower:
+				mm.use_custom_data = true
+			mm.mesh = shared_mesh
+			mm.instance_count = count
 
-			var inst_basis: Basis = Basis(Vector3.UP, plant_rot) * Basis.from_scale(scale_vec)
-			var xform: Transform3D = Transform3D(inst_basis, pos)
-			mm.set_instance_transform(inst_idx, xform)
+			var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+			mmi.name = "VegMMI_%s_c%d" % [v_type, c_idx_quad]
+			mmi.multimesh = mm
+			mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			if resolved_mat != null:
+				mmi.material_override = resolved_mat
+			add_child(mmi)
 
-			_positions.append(pos)
-			_initial_transforms.append(xform)
-			_mmi_indices.append(mmi_idx)
-			_instance_indices.append(inst_idx)
-			_health.append(max_hp)
-			_max_health.append(max_hp)
-			_is_cut.append(0)
-			_is_hidden_by_density.append(0)
-			_last_hit_time.append(-10.0)
-			var own_plant_key: String = v_type
-			_plant_keys.append(own_plant_key)
-			_particle_colors.append(p_col)
+			var clip_mm: MultiMesh = MultiMesh.new()
+			clip_mm.transform_format = MultiMesh.TRANSFORM_3D
+			clip_mm.mesh = clip_mesh_shared
+			clip_mm.instance_count = count
+			clip_mm.visible_instance_count = 0
+
+			var clip_mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+			clip_mmi.name = "ClippingsMMI_%s_c%d" % [v_type, c_idx_quad]
+			clip_mmi.multimesh = clip_mm
+			clip_mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+			clip_mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			add_child(clip_mmi)
+
+			_veg_multimeshes.append(mm)
+			_veg_mmi_nodes.append(mmi)
+			_clipping_multimeshes.append(clip_mm)
+			_clipping_mmi_nodes.append(clip_mmi)
+			_clipping_counts.append(0)
+
+			var min_bound: Vector3 = Vector3(999.0, 999.0, 999.0)
+			var max_bound: Vector3 = Vector3(-999.0, -999.0, -999.0)
+
+			for inst_idx: int in range(count):
+				var entry: Dictionary = chunk_entries[inst_idx] as Dictionary
+				var pos: Vector3 = entry["pos"] as Vector3
+				var s_seed: float = float(entry["seed"])
+				var scale_factor: float = float(entry.get("scale_factor", 1.0))
+
+				min_bound.x = minf(min_bound.x, pos.x)
+				min_bound.y = minf(min_bound.y, pos.y)
+				min_bound.z = minf(min_bound.z, pos.z)
+				max_bound.x = maxf(max_bound.x, pos.x)
+				max_bound.y = maxf(max_bound.y, pos.y)
+				max_bound.z = maxf(max_bound.z, pos.z)
+
+				var plant_rot: float = deg_to_rad(float(entry.get("rot", 0.0))) if is_flower else fmod(s_seed * 1.618, TAU)
+
+				var scale_vec: Vector3
+				if is_grass:
+					var scale_y: float = lerpf(0.48, 0.62, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+					var scale_xz: float = lerpf(0.32, 0.44, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+				elif v_type == "wheat":
+					var scale_y: float = lerpf(1.10, 1.40, scale_factor) * (0.95 + fmod(s_seed * 0.13, 0.10))
+					var scale_xz: float = lerpf(0.68, 0.92, scale_factor) * (0.95 + fmod(s_seed * 0.27, 0.10))
+					scale_vec = Vector3(scale_xz, scale_y, scale_xz)
+				else:
+					var sf: float = 0.676 * scale_factor
+					scale_vec = Vector3(sf, sf, sf)
+
+				var inst_basis: Basis = Basis(Vector3.UP, plant_rot) * Basis.from_scale(scale_vec)
+				var xform: Transform3D = Transform3D(inst_basis, pos)
+				mm.set_instance_transform(inst_idx, xform)
+
+				_positions.append(pos)
+				_initial_transforms.append(xform)
+				_mmi_indices.append(mmi_idx)
+				_instance_indices.append(inst_idx)
+				_health.append(max_hp)
+				_max_health.append(max_hp)
+				_is_cut.append(0)
+				_is_hidden_by_density.append(0)
+				_last_hit_time.append(-10.0)
+				var own_plant_key: String = v_type
+				_plant_keys.append(own_plant_key)
+				_particle_colors.append(p_col)
+
+			# Calcula AABB justo com margem vertical para a ponta das plantas
+			var chunk_aabb: AABB = AABB(
+				min_bound - Vector3(0.5, 0.5, 0.5),
+				(max_bound - min_bound) + Vector3(1.0, 2.5, 1.0)
+			)
+			mmi.custom_aabb = chunk_aabb
+			clip_mmi.custom_aabb = chunk_aabb
 
 	_build_spatial_index()
 
@@ -1110,7 +1166,7 @@ func cut_in_circle(center: Vector3, blade_radius: float, power: int) -> Vector3:
 	var particles_spawned_this_frame: int = 0
 	var new_shaking_tufts: PackedInt32Array = PackedInt32Array()
 	var first_hit_recoil: Vector3 = Vector3.ZERO
-	var tree_node: SceneTree = get_tree()
+	var tree_node: SceneTree = get_tree() if is_inside_tree() else null
 	var s_root: Node = tree_node.current_scene if (tree_node != null and tree_node.current_scene != null) else self
 	if is_inside_tree():
 		if _am_ref == null or not is_instance_valid(_am_ref):
