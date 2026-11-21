@@ -196,8 +196,11 @@ func _detect_levels_and_build_archipelago() -> void:
 		dimensions.append(Vector2(20.0, 14.0))
 		menu_camera.set_island_waypoints(waypoints, dimensions)
 
-	# Lazy loading inicial: constrói apenas a ilha selecionada e suas vizinhas imediatas
-	_load_surrounding_islands(selected_level)
+	# Lazy loading inicial: constrói apenas a ilha selecionada ativa no modo Bot
+	if selected_level >= 1 and selected_level <= island_nodes.size():
+		var active_isl: Node3D = island_nodes[selected_level - 1]
+		if active_isl != null and active_isl.has_method("ensure_content_loaded"):
+			active_isl.ensure_content_loaded()
 
 	# Posiciona o robô na ilha da fase atual
 	_update_bot_position()

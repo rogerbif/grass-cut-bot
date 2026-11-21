@@ -14,6 +14,51 @@ static var _cache: Dictionary = {}
 static var _json_cache: Dictionary = {}
 static var _meta_cache: Dictionary = {}
 
+## Metadados canônicos pré-computados das 40 fases em O(1) puro.
+## Elimina a abertura e parsing síncrono de ~7 MB de arquivos JSON no boot splash.
+const CANONICAL_ISLAND_METAS: Dictionary = {
+	1: { "valid": true, "dimensions": Vector2(10.0, 10.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	2: { "valid": true, "dimensions": Vector2(10.0, 10.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	3: { "valid": true, "dimensions": Vector2(11.6, 11.6), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	4: { "valid": true, "dimensions": Vector2(12.4, 12.4), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	5: { "valid": true, "dimensions": Vector2(18.8, 18.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	6: { "valid": true, "dimensions": Vector2(22.8, 22.8), "has_spawn": true, "bot_pos": Vector3(-9.6, -0.052, -8.0) },
+	7: { "valid": true, "dimensions": Vector2(17.2, 14.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	8: { "valid": true, "dimensions": Vector2(18.8, 13.6), "has_spawn": true, "bot_pos": Vector3(-6.8, -0.052, 4.6) },
+	9: { "valid": true, "dimensions": Vector2(14.0, 14.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	10: { "valid": true, "dimensions": Vector2(15.6, 15.6), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	11: { "valid": true, "dimensions": Vector2(18.8, 14.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	12: { "valid": true, "dimensions": Vector2(14.8, 14.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	13: { "valid": true, "dimensions": Vector2(15.6, 15.6), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	14: { "valid": true, "dimensions": Vector2(18.8, 21.2), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	15: { "valid": true, "dimensions": Vector2(14.8, 25.2), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	16: { "valid": true, "dimensions": Vector2(18.8, 18.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	17: { "valid": true, "dimensions": Vector2(18.8, 13.6), "has_spawn": true, "bot_pos": Vector3(-2.4, -0.052, -2.6) },
+	18: { "valid": true, "dimensions": Vector2(19.6, 19.6), "has_spawn": true, "bot_pos": Vector3(-6.0, -0.052, 8.4) },
+	19: { "valid": true, "dimensions": Vector2(15.2, 15.2), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	20: { "valid": true, "dimensions": Vector2(16.4, 16.4), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	21: { "valid": true, "dimensions": Vector2(18.4, 18.4), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	22: { "valid": true, "dimensions": Vector2(18.4, 18.4), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	23: { "valid": true, "dimensions": Vector2(20.0, 16.8), "has_spawn": true, "bot_pos": Vector3(-5.0, -0.052, -0.2) },
+	24: { "valid": true, "dimensions": Vector2(20.0, 20.0), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	25: { "valid": true, "dimensions": Vector2(20.0, 20.0), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	26: { "valid": true, "dimensions": Vector2(20.0, 20.0), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	27: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -6.6) },
+	28: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	29: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	30: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	31: { "valid": true, "dimensions": Vector2(23.2, 23.2), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, 7.0) },
+	32: { "valid": true, "dimensions": Vector2(23.2, 23.2), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	33: { "valid": true, "dimensions": Vector2(23.2, 23.2), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	34: { "valid": true, "dimensions": Vector2(23.2, 23.2), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	35: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	36: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	37: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	38: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -7.4) },
+	39: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	40: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) }
+}
+
 
 ## Lê e faz parse de level_XX.json uma única vez por sessão, mantendo cache estático em memória.
 static func get_cached_level_json(level_num: int) -> Dictionary:
@@ -30,6 +75,11 @@ static func get_cached_level_json(level_num: int) -> Dictionary:
 static func get_cached_island_meta(level_num: int) -> Dictionary:
 	if _meta_cache.has(level_num):
 		return _meta_cache[level_num] as Dictionary
+
+	if CANONICAL_ISLAND_METAS.has(level_num):
+		var c_meta: Dictionary = (CANONICAL_ISLAND_METAS[level_num] as Dictionary).duplicate(true)
+		_meta_cache[level_num] = c_meta
+		return c_meta
 
 	var data: Dictionary = get_cached_level_json(level_num)
 	if data.is_empty():

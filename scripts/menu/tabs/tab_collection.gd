@@ -156,7 +156,11 @@ func _ready() -> void:
 	set_process(false)
 	_init_filter_bar()
 	_connect_signals()
-	refresh_ui()
+	_dirty = true
+	# Se já iniciar visível (o que não é o caso, pois a aba inicial é Home), atualiza
+	if is_visible_in_tree():
+		_dirty = false
+		refresh_ui()
 
 func _connect_signals() -> void:
 	if btn_claim_all != null:
