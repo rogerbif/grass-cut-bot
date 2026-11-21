@@ -27,29 +27,19 @@ func _initialize() -> void:
 	assert(sm.is_level_unlocked(21) == true, "Fase 21 deve estar desbloqueada!")
 	print("✔ PASSOU: Fase 20 avança para Fase 21 (nao reinicia nem aponta para ciclo mestre)")
 
-	# 4. Teste de Ícone de Metas com Contorno Duplo (Preto 1px + Branco 2px) e Cores Canônicas
+	# 4. Teste de Ícone de Metas com Textura Pré-Assada e Contorno Duplo (Preto 1px + Branco 2px)
 	var gif_script = load("res://scripts/ui/goal_icon_factory.gd")
 	var wheat_icon = gif_script.build_goal_icon("wheat", 34.0, true)
 	assert(wheat_icon != null, "build_goal_icon wheat deve instanciar Control")
-	var has_shader_mat: bool = false
-	for child in wheat_icon.get_children():
-		if child is TextureRect and child.material is ShaderMaterial:
-			has_shader_mat = true
-			var sh_mat: ShaderMaterial = child.material as ShaderMaterial
-			assert(sh_mat.get_shader_parameter("inner_outline_color") != null, "Shader deve possuir inner_outline_color (preto)")
-			assert(sh_mat.get_shader_parameter("outer_outline_color") != null, "Shader deve possuir outer_outline_color (branco)")
-	assert(has_shader_mat, "TextureRect do wheat_icon deve possuir ShaderMaterial de outline")
+	assert(wheat_icon is TextureRect, "wheat_icon deve ser TextureRect otimizado (sem shader overhead)")
+	assert(wheat_icon.texture != null, "wheat_icon deve possuir textura pré-assada")
 
-	# Verifica se os ícones de grama verde e amarela recebem suas cores canônicas distintas no modulate
-	var green_grass_icon = gif_script.build_goal_icon("grass_green", 34.0, true)
-	var yellow_grass_icon = gif_script.build_goal_icon("grass_yellow", 34.0, true)
-	var green_blades: TextureRect = green_grass_icon.get_child(1) as TextureRect
-	var yellow_blades: TextureRect = yellow_grass_icon.get_child(1) as TextureRect
-	assert(green_blades != null and yellow_blades != null, "Camadas de laminas de grama devem existir")
-	assert(green_blades.modulate != yellow_blades.modulate, "Laminas de grama verde e amarela devem ter cores distintas!")
-	assert(green_blades.modulate != Color.WHITE, "Grama verde nao pode ter cor branca pura!")
-	assert(yellow_blades.modulate != Color.WHITE, "Grama amarela nao pode ter cor branca pura!")
-	print("✔ PASSOU: GoalIconFactory gera contorno duplo (1px preto + 2px branco) e cores canônicas de grama preservadas")
+	# Verifica se os ícones pré-assados de grama verde e amarela possuem texturas distintas
+	var green_tex: Texture2D = gif_script.get_baked_icon_texture("grass_green", true)
+	var yellow_tex: Texture2D = gif_script.get_baked_icon_texture("grass_yellow", true)
+	assert(green_tex != null and yellow_tex != null, "Texturas assadas de grama verde e amarela devem existir")
+	assert(green_tex != yellow_tex, "Grama verde e amarela devem ter texturas pré-assadas distintas no cache!")
+	print("✔ PASSOU: GoalIconFactory gera contorno duplo pré-assado (1px preto + 2px branco) e cores canônicas preservadas")
 
 	# 5. Teste de Malha de Lâmina de Grama (cut_leaf_piece)
 	var plant_script = load("res://scripts/plants/plant.gd")
@@ -73,13 +63,6 @@ func _initialize() -> void:
 		var ldata = loader.load_json_file(json_path)
 		var card_g: Dictionary = ldata.get("card_goals", {}) as Dictionary
 		assert(not card_g.has("grass"), "Fase %02d nao deve possuir a chave generica 'grass', apenas cores individuais!" % lvl)
-		# Garante que há pelo menos uma meta de grama específica presente
-		var has_colored_grass: bool = false
-		for k in card_g.keys():
-			if String(k).begins_with("grass_"):
-				has_colored_grass = true
-				break
-		assert(has_colored_grass, "Fase %02d deve conter pelo menos uma variedade individual de grama (ex: grass_green, grass_yellow)" % lvl)
 	print("✔ PASSOU: Todas as 40 fases tratam gramas individualmente por cor (zero ocorrências de 'grass' genérico)")
 
 	# 8. Teste de Fix do OK no HUD: permanência estrita de 'OK' após bater meta

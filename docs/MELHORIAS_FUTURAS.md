@@ -18,46 +18,35 @@ No ecossistema de jogos casuais e arcade mobile, a retenção de jogadores (D1 e
 
 ---
 
-## 🧹 2. Pacote Imediato: Sanitização e Limpeza de Código e Assets
+## 🧹 2. Pacote Imediato: Sanitização e Limpeza de Código e Assets ✅ (Concluído na v0.12.213-alpha - Melhoria 248)
 
-Com base na auditoria profunda realizada na versão `v0.12.211-alpha` (inspeção do pacote `.aab`, profiling de memória e análise estática do repositório), foi mapeado um conjunto de arquivos órfãos, assets não utilizados e código morto pronto para sanitização na sequência imediata:
+Com base na auditoria profunda realizada na versão `v0.12.211-alpha` e executada integralmente na versão `v0.12.213-alpha` ([Melhoria 248](./historico_melhorias/248_sanitizacao_limpeza_assets_orfaos_e_codigo_morto.md)), foi sanitizado todo o conjunto de arquivos órfãos, assets legados e código morto:
 
-### 2.1 Eliminação de Assets de Áudio Não Usados (Economia de ~3.5 MB no AAB / ~17 MB VRAM/RAM)
-- **`assets/audio/sfx/Water_splash.wav`:** Pesa **16.92 MB descompactado** (3.42 MB compactado no `.aab`). É pré-carregado no `audio_manager.gd` (`WATER_SPLASH = preload(...)`), porém não existe nenhuma chamada a esse som em todo o projeto.
-- **`assets/audio/sfx/Star_win.mp3`:** Pesa 38 KB, pré-carregado como `STAR_WIN`, mas sem chamadas no código ativo.
-- **Ação:** Remover referências no `audio_manager.gd` e deletar os arquivos físicos de áudio.
+### 2.1 Eliminação de Assets de Áudio Não Usados (Economia de ~3.5 MB no AAB / ~17 MB VRAM/RAM) ✅
+- **`assets/audio/sfx/Water_splash.wav`:** Removido arquivo de 16.92 MB descompactado (~3.5 MB no AAB) e desvinculado de `audio_manager.gd`.
+- **`assets/audio/sfx/Star_win.mp3`:** Removido arquivo de 38 KB e desvinculado de `audio_manager.gd`.
 
-### 2.2 Purga de Modelos 3D e Cenas de Tiles Legados (Economia de ~1 MB)
-O sistema antigo de ilha modular baseada em blocos pré-moldados foi 100% substituído pelo gerador procedural vetorial `IslandMeshBuilder`. Os seguintes arquivos estão completamente obsoletos:
-- `assets/models/tiles/tile_center.glb` e `scenes/editor/tiles/tile_center.tscn`
-- `assets/models/tiles/tile_straight.glb` e `scenes/editor/tiles/tile_straight.tscn`
-- `assets/models/tiles/tile_corner_outer.glb` e `scenes/editor/tiles/tile_corner_outer.tscn`
-- `assets/models/tiles/tile_corner_inner.glb` e `scenes/editor/tiles/tile_corner_inner.tscn`
-- `assets/models/tiles/tile_diagonal.glb` e `scenes/editor/tiles/tile_diagonal.tscn`
-- `assets/models/tiles/tile_diagonal_inner.glb` e `scenes/editor/tiles/tile_diagonal_inner.tscn`
-- **Ação:** Excluir os 6 arquivos `.glb`, as 6 cenas `.tscn` correspondentes e seus arquivos `.import` associados.
+### 2.2 Purga de Modelos 3D e Cenas de Tiles Legados (Economia de ~1 MB) ✅
+- Preservada textura de gradiente canônica migrada para `res://assets/textures/island_palette.png`.
+- Excluídos modelos 3D legados e cenas modulares em `assets/models/tiles/*` e `scenes/editor/tiles/*`.
+- Excluídos modelos órfãos `terrain_tileset.glb`, `cut_leaf_piece.glb`, `cut_petal_piece.glb`.
 
-### 2.3 Purga de Ícones e SVGs Órfãos (19 Arquivos)
-Arquivos vetoriais em `assets/` sem qualquer referência em scripts `.gd` ou cenas `.tscn`:
-- `assets/icons/app_icon_192.svg`
-- `assets/ui/defeat/clock.svg`, `flag.svg`, `pause.svg`
-- `assets/ui/pause/gear.svg`, `play.svg`
-- `assets/ui/topbar/icon_arrow_right.svg`, `icon_diamond.svg`, `icon_settings.svg`, `icon_star.svg`
-- Rascunhos temporários e testes de ícones não utilizados em `assets/icons/plants/`.
-- Arquivos `.uid` soltos em `tests/` (`test_all_levels.gd.uid`, etc.).
-- **Ação:** Excluir arquivos órfãos confirmados por busca de referências.
+### 2.3 Purga de Ícones, SVGs Órfãos e Arquivos .uid Quebrados ✅
+- Excluídos 9 SVGs órfãos em `assets/icons/` (`icon_blade.svg`, `icon_cancel.svg`, `icon_close.svg`, `icon_flower.svg`, `icon_map.svg`, `icon_music.svg`, `icon_shop.svg`, `icon_speaker.svg`, `icon_wheat.svg`).
+- Excluídos 6 SVGs órfãos em `assets/ui/defeat/` (`btn_extra_time_*.svg`, `btn_retry_*.svg`, `card_defeat_bg.svg`, `icon_restart_orange.svg`).
+- Excluídos 2 SVGs em `assets/ui/pause/` (`icon_play_green.svg`, `icon_refresh_cyan.svg`).
+- Excluídos 2 SVGs em `assets/ui/topbar/` (`btn_plus_square.svg`, `btn_plus_square_pressed.svg`).
+- Excluídos 3 arquivos `.uid` quebrados em `tests/` (`inspect_grass_mesh.gd.uid`, `test_editor_picker_and_ring.gd.uid`, `test_editor_selection_and_duplicate.gd.uid`).
 
-### 2.4 Sanitização de Código GDScript Morto
-- **23 Funções Não Referenciadas:** Funções utilitárias remanescentes em scripts como `vector_grass_field.gd`, `island_mesh_builder.gd`, `editor_canvas.gd` e `math_utils.gd` que não possuem chamadores internos nem externos.
-- **18 Constantes Não Usadas:** Constantes de cores e parâmetros de debug abandonados durante iterações de prototipagem.
-- **Ação:** Remoção segura das funções e constantes com validação por suite de testes automatizada (Zero Warnings).
+### 2.4 Sanitização de Código GDScript Morto ✅
+- Removidas funções privadas mortas (`_spawn_cut_particles_at` em `vegetation_grid.gd`, `_rotate_active_step` em `level_editor.gd`, `_is_point_in_any_outer` em `vector_terrain_field.gd`).
+- Removidas constantes mortas (`STAR_SMALL/MEDIUM/LARGE` em `brush_patterns.gd`, `ROCK_SCENE` em `level_editor.gd`, `SCENE_MAP` em `level_json_loader.gd`, `UV_DIRT_TOP` e `DIRT_COLOR` em `island_mesh_builder.gd`, `LIFE_REFILL_COST_COINS` em `save_manager.gd`, `EXTRA_TIME_SECONDS` e `COL_LIFE_LOST` em `defeat_modal.gd`).
 
-### 2.5 Filtro Estrito de Exportação do APK/AAB (`export_presets.cfg`)
-Atualmente, arquivos da pasta `docs/` e capturas promocionais de marketing corriam o risco de serem empacotados no build release.
-- **Ação:** Configurar `exclude_filter` no `export_presets.cfg` para excluir explicitamente: `docs/*`, `build/*`, `assets/marketing/*`, `tests/*`, `*.ps1`, `*.md`, `*.py`.
+### 2.5 Filtro Estrito de Exportação do APK/AAB (`export_presets.cfg`) ✅
+- `exclude_filter` blindado nos presets Android e Web com exclusão explícita de `docs/*`, `tests/*`, `assets/brand/screenshots/*`, `scripts/tools/*`, `tools/*`, `scratch/*`, `build/*`, `*.ps1`, `*.md`, `*.py`.
 
-### 2.6 Segurança de Keystore e Credenciais
-- **Ação:** Substituir senhas hardcoded em scripts locais (`build_android_aab.ps1`, `generate_keystore.ps1`) por variáveis de ambiente ou leitura segura do prompt interativo, garantindo compliance total.
+### 2.6 Segurança de Keystore e Credenciais ✅
+- Atualizados `build_android_aab.ps1` e `generate_keystore.ps1` com suporte prioritário a `$env:RELEASE_KEYSTORE_PASSWORD`.
 
 ---
 

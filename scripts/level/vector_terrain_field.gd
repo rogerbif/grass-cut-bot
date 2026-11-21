@@ -472,13 +472,6 @@ static func _compute_poly_center(poly: PackedVector2Array) -> Vector2:
 	return sum / float(poly.size())
 
 
-func _is_point_in_any_outer(pt: Vector2) -> bool:
-	for p: PackedVector2Array in base_outer_polygons:
-		if p.size() >= 3 and Geometry2D.is_point_in_polygon(pt, p):
-			return true
-	return false
-
-
 static func _is_hole_inside_any_outer(h: PackedVector2Array, outers: Array[PackedVector2Array]) -> bool:
 	if h.size() < 3 or outers.is_empty():
 		return false

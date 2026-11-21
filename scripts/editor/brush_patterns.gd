@@ -66,37 +66,6 @@ const HEART_LARGE: Array[String] = [
 	"....#...."
 ]
 
-# Bitmaps para Estrela em 3 escalas (Pequeno 5x5, Médio 7x7, Grande 9x9)
-const STAR_SMALL: Array[String] = [
-	"..#..",
-	"#####",
-	".###.",
-	".#.#.",
-	"#...#"
-]
-
-const STAR_MEDIUM: Array[String] = [
-	"...#...",
-	"..###..",
-	"#######",
-	".#####.",
-	"..###..",
-	".##.##.",
-	"#.....#"
-]
-
-const STAR_LARGE: Array[String] = [
-	"....#....",
-	"...###...",
-	"...###...",
-	"#########",
-	".#######.",
-	"..#####..",
-	".###.###.",
-	"##.....##",
-	"#.......#"
-]
-
 static func get_brush_offsets(shape: int, brush_size: int, custom_params: Dictionary = {}) -> Array[Vector2i]:
 	var offsets: Array[Vector2i] = []
 	var clamped_size: int = clampi(brush_size, 1, 20)

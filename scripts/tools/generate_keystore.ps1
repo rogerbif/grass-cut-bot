@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de Geração da Keystore de Release para Google Play Store
 # Projeto: Grass Cut Bot
 # ==============================================================================
@@ -6,7 +6,7 @@
 param(
     [string]$KeystoreName = "upload-keystore.jks",
     [string]$Alias = "grasscutbot",
-    [string]$Password = "grasscutbot2026",
+    [string]$Password = $(if ($env:RELEASE_KEYSTORE_PASSWORD) { $env:RELEASE_KEYSTORE_PASSWORD } else { "grasscutbot2026" }),
     [int]$ValidityDays = 10000
 )
 

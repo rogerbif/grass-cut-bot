@@ -1424,16 +1424,6 @@ func resolve_rigid_plant_collision(cutter_pos: Vector3, cutter_vel: Vector3, bod
 	}
 
 
-func _spawn_cut_particles_at(world_pos: Vector3, col: Color) -> void:
-	var tree: SceneTree = get_tree()
-	if tree == null:
-		return
-	var scene_root: Node = tree.current_scene
-	if scene_root == null:
-		scene_root = self
-	PlantScript.spawn_grass_cut_particles(scene_root, world_pos, col)
-
-
 func get_total_tufts() -> int:
 	return _positions.size()
 

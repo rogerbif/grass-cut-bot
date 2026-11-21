@@ -10,7 +10,6 @@ const VegetationFieldScript = preload("res://scripts/level/vegetation_field.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
 const VectorTerrainFieldScript = preload("res://scripts/level/vector_terrain_field.gd")
 const VegetationGridScript = preload("res://scripts/plants/vegetation_grid.gd")
-const ROCK_SCENE: PackedScene = preload("res://scenes/obstacles/rock.tscn")
 const FLOWER_SCENE: PackedScene = preload("res://scenes/plants/flower_tuft.tscn")
 const FLOWER_ROSE_SCENE: PackedScene = preload("res://scenes/plants/flower_rose.tscn")
 const FLOWER_DAISY_SCENE: PackedScene = preload("res://scenes/plants/flower_daisy.tscn")
@@ -405,9 +404,6 @@ func _rotate_active_step_dir(direction: int, is_shift: bool) -> void:
 		current_rot_deg = posmod(current_rot_deg + direction * step_deg, 360)
 	_sync_all_ui()
 	_refresh_hover_preview()
-
-func _rotate_active_step() -> void:
-	_rotate_active_step_dir(1, false)
 
 func _sync_all_ui(recalc_goals: bool = true) -> void:
 	if ui == null:

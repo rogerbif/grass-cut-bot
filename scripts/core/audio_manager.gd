@@ -17,7 +17,6 @@ const SFX_COIN_PICKUP: AudioStream = preload("res://assets/audio/sfx/coin_pickup
 const SFX_TIMER_COUNTDOWN: AudioStream = preload("res://assets/audio/sfx/Timer_Countdown.wav")
 const SFX_GOAL_COMPLETED: AudioStream = preload("res://assets/audio/sfx/goal_completed.wav")
 const SFX_LEVEL_COMPLETED: AudioStream = preload("res://assets/audio/sfx/level_completed.wav")
-const SFX_STAR_WIN: AudioStream = preload("res://assets/audio/sfx/Star_win.mp3")
 const SFX_STAR_POP: AudioStream = preload("res://assets/audio/sfx/Star_pop.wav")
 const SFX_MACHINE_POWER_OFF: AudioStream = preload("res://assets/audio/sfx/MachinePowerOff.ogg")
 const SFX_PAUSE: AudioStream = preload("res://assets/audio/sfx/Pause.wav")
@@ -29,7 +28,6 @@ const SFX_POWER_UP: AudioStream = preload("res://assets/audio/sfx/Power_up.mp3")
 const SFX_DENIED: AudioStream = preload("res://assets/audio/sfx/Denied.wav")
 const SFX_FAST_FORWARD: AudioStream = preload("res://assets/audio/sfx/Fast_foward.mp3")
 const SFX_USE_ITEM: AudioStream = preload("res://assets/audio/sfx/Use_item.wav")
-const SFX_WATER_SPLASH: AudioStream = preload("res://assets/audio/sfx/Water_splash.wav")
 
 const SFX_POOL_SIZE: int = 8
 const CUT_COOLDOWN_MS: int = 32
@@ -40,8 +38,7 @@ const SFX_COOLDOWNS: Dictionary = {
 	"slap_rock": 110,
 	"coin_pickup": 35,
 	"star_pop": 50,
-	"buy": 80,
-	"water_splash": 100
+	"buy": 80
 }
 
 var _sfx_map: Dictionary = {}
@@ -93,8 +90,7 @@ func _init_sfx_map() -> void:
 		"power_up": SFX_POWER_UP,
 		"denied": SFX_DENIED,
 		"fast_forward": SFX_FAST_FORWARD,
-		"use_item": SFX_USE_ITEM,
-		"water_splash": SFX_WATER_SPLASH
+		"use_item": SFX_USE_ITEM
 	}
 
 func _create_audio_players() -> void:
@@ -131,9 +127,10 @@ func _create_audio_players() -> void:
 		_sfx_pool.append(p)
 
 func _sync_settings_from_save() -> void:
-	if SaveManager != null:
-		_music_enabled = bool(SaveManager.get_setting("music_enabled", true))
-		_sfx_enabled = bool(SaveManager.get_setting("sfx_enabled", true))
+	var save_mgr = get_node_or_null("/root/SaveManager") if is_inside_tree() else null
+	if save_mgr != null and save_mgr.has_method("get_setting"):
+		_music_enabled = bool(save_mgr.get_setting("music_enabled", true))
+		_sfx_enabled = bool(save_mgr.get_setting("sfx_enabled", true))
 	set_music_enabled(_music_enabled)
 	set_sfx_enabled(_sfx_enabled)
 
@@ -160,7 +157,7 @@ func stop_music(fade_duration: float = 0.4) -> void:
 	)
 
 func _switch_music_stream(target_stream: AudioStream, target_volume_db: float, fade_duration: float) -> void:
-	if _music_player == null:
+	if _music_player == null or not _music_player.is_inside_tree():
 		return
 	if _music_player.playing and _music_player.stream == target_stream:
 		return
@@ -204,6 +201,8 @@ func play_sfx(key: String, pitch_range: float = 0.0, volume_offset_db: float = 0
 		return
 
 	var player: AudioStreamPlayer = _get_next_sfx_player()
+	if player == null:
+		return
 	player.stream = stream
 	player.volume_db = volume_offset_db
 	if pitch_range > 0.0:
@@ -215,11 +214,15 @@ func play_sfx(key: String, pitch_range: float = 0.0, volume_offset_db: float = 0
 func _get_next_sfx_player() -> AudioStreamPlayer:
 	# Prioriza players ociosos para evitar corte abrupto (micro-pop) de streams em reprodução
 	for p: AudioStreamPlayer in _sfx_pool:
+		if not p.is_inside_tree():
+			return null
 		if not p.playing:
 			return p
 	# Se todos estiverem ocupados, utiliza o índice circular do pool
 	var player: AudioStreamPlayer = _sfx_pool[_pool_index]
 	_pool_index = (_pool_index + 1) % _sfx_pool.size()
+	if not player.is_inside_tree():
+		return null
 	return player
 
 # ---------------------------------------------------------
@@ -235,6 +238,8 @@ func play_cut_sfx(is_special: bool = false) -> void:
 	_last_cut_time = now
 
 	var player: AudioStreamPlayer = _get_next_sfx_player()
+	if player == null:
+		return
 	if is_special:
 		player.stream = SFX_CUT_FRUIT
 		player.volume_db = 0.5
@@ -254,13 +259,15 @@ func play_coin_sfx() -> void:
 	_last_coin_time = now
 
 	var player: AudioStreamPlayer = _get_next_sfx_player()
+	if player == null:
+		return
 	player.stream = SFX_COIN_PICKUP
 	player.volume_db = -3.5
 	player.pitch_scale = randf_range(0.96, 1.06)
 	player.play()
 
 func play_countdown_alert() -> void:
-	if not _sfx_enabled or _countdown_player == null:
+	if not _sfx_enabled or _countdown_player == null or not _countdown_player.is_inside_tree():
 		return
 	var now: int = Time.get_ticks_msec()
 	if now - _last_countdown_time < COUNTDOWN_COOLDOWN_MS:
@@ -279,7 +286,7 @@ func stop_countdown_alert() -> void:
 # ---------------------------------------------------------
 
 func start_engine() -> void:
-	if _engine_player == null:
+	if _engine_player == null or not _engine_player.is_inside_tree():
 		return
 	if not _engine_player.playing:
 		_engine_player.volume_db = -18.0
@@ -318,7 +325,8 @@ func set_music_enabled(enabled: bool) -> void:
 	if not enabled and _music_player != null and _music_player.playing:
 		_music_player.stop()
 	elif enabled and _music_player != null and not _music_player.playing:
-		if GameManager != null and GameManager.current_state == GameManager.GameState.PLAYING:
+		var gm = get_node_or_null("/root/GameManager") if is_inside_tree() else null
+		if gm != null and gm.get("current_state") == 1:
 			play_gameplay_music(0.2)
 		else:
 			play_menu_music(0.2)
@@ -329,8 +337,10 @@ func set_sfx_enabled(enabled: bool) -> void:
 		AudioServer.set_bus_mute(_sfx_bus_idx, not enabled)
 	if not enabled and _engine_player != null:
 		_engine_player.stop()
-	elif enabled and _engine_player != null and GameManager != null and GameManager.current_state == GameManager.GameState.PLAYING:
-		start_engine()
+	elif enabled and _engine_player != null:
+		var gm = get_node_or_null("/root/GameManager") if is_inside_tree() else null
+		if gm != null and gm.get("current_state") == 1:
+			start_engine()
 
 func is_music_enabled() -> bool:
 	return _music_enabled

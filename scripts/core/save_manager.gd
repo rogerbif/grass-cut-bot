@@ -16,7 +16,6 @@ const CURRENT_SAVE_VERSION: String = "1.0"
 
 const MAX_LIVES: int = 5
 const LIFE_REGEN_SECONDS: int = 1200 # 20 minutos por vida (1200 segundos)
-const LIFE_REFILL_COST_COINS: int = 1000
 
 var save_data: Dictionary = {}
 var is_initialized: bool = false

@@ -12,8 +12,6 @@ signal extra_time_requested
 signal repair_robot_requested
 signal menu_requested
 
-const EXTRA_TIME_SECONDS: float = 15.0
-
 const TEX_BANNER_TITLE: Texture2D = preload("res://assets/ui/defeat/banner_defeat_title.svg")
 const TEX_BANNER_PROGRESS: Texture2D = preload("res://assets/ui/defeat/banner_defeat_progress.svg")
 const TEX_BANNER_GOALS: Texture2D = preload("res://assets/ui/defeat/banner_defeat_goals.svg")
@@ -38,7 +36,6 @@ const COL_TITLE_RED: Color = Color(1.0, 0.31, 0.34, 1.0)
 const COL_PERCENT: Color = Color(1.0, 0.85, 0.28, 1.0)
 const COL_DARK_PETROL: Color = Color(0.027, 0.11, 0.16, 1.0)
 const COL_GOAL_DONE: Color = Color(0.35, 1.0, 0.58, 1.0)
-const COL_LIFE_LOST: Color = Color(1.0, 0.45, 0.52, 1.0)
 
 var _font: SystemFont = null
 var _touch_Catcher: Control = null

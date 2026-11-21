@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de Exportacao Automatizada: Android App Bundle (.aab) para Google Play
 # Projeto: Grass Cut Bot
 # ==============================================================================
@@ -8,7 +8,7 @@ param(
     [string]$OutputPath = "build/release/grass_cut_bot.aab",
     [string]$KeystorePath = "$PSScriptRoot\..\..\upload-keystore.jks",
     [string]$KeystoreUser = "grasscutbot",
-    [string]$KeystorePass = "grasscutbot2026",
+    [string]$KeystorePass = $(if ($env:RELEASE_KEYSTORE_PASSWORD) { $env:RELEASE_KEYSTORE_PASSWORD } else { "grasscutbot2026" }),
     [switch]$Publish,
     [string]$Track = "internal",
     [string]$NotesPt = "",

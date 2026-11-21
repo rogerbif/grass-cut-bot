@@ -1,14 +1,16 @@
-extends Node
+extends SceneTree
 
-func _ready() -> void:
+func _init() -> void:
 	print("--- INICIANDO TESTE DO SISTEMA DE AUDIO (AUDIOMANAGER) ---")
 
-	var audio_mgr = get_node_or_null("/root/AudioManager")
+	var audio_mgr = root.get_node_or_null("AudioManager")
 	if audio_mgr == null:
 		var script = load("res://scripts/core/audio_manager.gd")
 		audio_mgr = script.new()
 		audio_mgr.name = "AudioManager"
-		get_tree().root.add_child(audio_mgr)
+		root.add_child(audio_mgr)
+		if not audio_mgr.is_node_ready():
+			audio_mgr._ready()
 
 	assert(audio_mgr != null, "AudioManager não pôde ser instanciado!")
 	print("✔ Teste 1: AudioManager instanciado com sucesso.")
@@ -30,7 +32,7 @@ func _ready() -> void:
 	assert(audio_mgr.SFX_COIN_PICKUP != null, "SFX_COIN_PICKUP deve estar carregado")
 	assert(audio_mgr.SFX_TIMER_COUNTDOWN != null, "SFX_TIMER_COUNTDOWN deve estar carregado")
 	assert(audio_mgr.SFX_GOAL_COMPLETED != null, "SFX_GOAL_COMPLETED deve estar carregado")
-	assert(audio_mgr.SFX_STAR_WIN != null, "SFX_STAR_WIN deve estar carregado")
+	assert(audio_mgr.SFX_LEVEL_COMPLETED != null, "SFX_LEVEL_COMPLETED deve estar carregado")
 	assert(audio_mgr.SFX_STAR_POP != null, "SFX_STAR_POP deve estar carregado")
 	assert(audio_mgr.SFX_MACHINE_POWER_OFF != null, "SFX_MACHINE_POWER_OFF deve estar carregado")
 	assert(audio_mgr.SFX_PAUSE != null, "SFX_PAUSE deve estar carregado")
@@ -42,8 +44,7 @@ func _ready() -> void:
 	assert(audio_mgr.SFX_DENIED != null, "SFX_DENIED deve estar carregado")
 	assert(audio_mgr.SFX_FAST_FORWARD != null, "SFX_FAST_FORWARD deve estar carregado")
 	assert(audio_mgr.SFX_USE_ITEM != null, "SFX_USE_ITEM deve estar carregado")
-	assert(audio_mgr.SFX_WATER_SPLASH != null, "SFX_WATER_SPLASH deve estar carregado")
-	print("✔ Teste 3: Todos os 22 recursos de áudio foram pré-carregados com sucesso.")
+	print("✔ Teste 3: Todos os 20 recursos de áudio foram pré-carregados com sucesso.")
 
 	# 4. Teste de SFX e Throttling
 	audio_mgr.play_cut_sfx(false)
@@ -89,5 +90,5 @@ func _ready() -> void:
 	print("✔ Teste 7: Controles de mute/unmute dos barramentos validados com sucesso.")
 
 	print("--- TODOS OS TESTES DE AUDIO PASSARAM COM 100% DE SUCESSO! ---")
-	var timer = get_tree().create_timer(1.5)
-	timer.timeout.connect(func(): get_tree().quit(0))
+	audio_mgr.queue_free()
+	quit(0)

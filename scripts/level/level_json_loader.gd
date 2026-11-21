@@ -74,8 +74,6 @@ const OBJECT_SCENES: Dictionary = {
 	"rock_boulder": preload("res://scenes/obstacles/rock_boulder.tscn")
 }
 
-const SCENE_MAP: Dictionary = OBJECT_SCENES
-
 static func grid_to_world(gx: int, gz: int, width: int, height: int, cell_size: float = DEFAULT_CELL_SIZE) -> Vector3:
 	var offset_x: float = -(float(width) * cell_size) / 2.0 + (cell_size / 2.0)
 	var offset_z: float = -(float(height) * cell_size) / 2.0 + (cell_size / 2.0)

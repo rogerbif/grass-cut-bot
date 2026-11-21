@@ -16,12 +16,11 @@ const BOUNDARY_WALL_THICKNESS: float = 0.06
 const DEFAULT_CORNER_RADIUS: float = 0.28
 const DEFAULT_CORNER_ARC_STEPS: int = 5
 
-# Coordenadas UV canônicas no atlas de cores GRADIENT (tile_island_center_Image_0.png)
+# Coordenadas UV canônicas no atlas de cores (island_palette.png)
 const UV_GRASS_TOP: Vector2 = Vector2(0.819989, 0.789990)
-const UV_DIRT_TOP: Vector2 = Vector2(0.379995, 0.619989)
 const UV_CLIFF_WALL: Vector2 = Vector2(0.189990, 0.169986)
 
-const PALETTE_TEXTURE_PATH: String = "res://assets/models/tiles/tile_island_center_Image_0.png"
+const PALETTE_TEXTURE_PATH: String = "res://assets/textures/island_palette.png"
 const FOAM_SHADER_PATH: String = "res://shaders/coastal_foam.gdshader"
 
 # Parâmetros Canônicos do Solo da Ilha e Falésias (Verde Esmeralda #3DC151 da Referência)
@@ -31,7 +30,6 @@ static var ground_diffuse_toon: bool = true
 static var cliff_base_color: Color = Color(0.745, 0.427, 0.25, 1.0)
 static var dirt_base_color: Color = Color(0.538, 0.364, 0.231, 1.0)
 const CLIFF_COLOR: Color = Color(0.745, 0.427, 0.25, 1.0)
-const DIRT_COLOR: Color = Color(0.538, 0.364, 0.231, 1.0)
 
 static var _island_material: StandardMaterial3D = null
 static var _foam_material: ShaderMaterial = null
