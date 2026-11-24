@@ -4,6 +4,7 @@ const IslandAutotiler = preload("res://scripts/editor/island_autotiler.gd")
 const LevelJsonLoader = preload("res://scripts/level/level_json_loader.gd")
 const LevelSerializer = preload("res://scripts/editor/level_serializer.gd")
 const VectorGrassFieldScript = preload("res://scripts/level/vector_grass_field.gd")
+const VectorTerrainFieldScript = preload("res://scripts/level/vector_terrain_field.gd")
 
 const CELL_SIZE: float = 0.80
 const MIN_SPAWN_CLEAR_DIST: float = 1.47 # 1.05 * 1.40m (raio lâmina nv 6)
@@ -15,13 +16,13 @@ const ROCK_GRASS_CLEAR_RADIUS: float = 0.90  # Clareira da rocha (raio da menor 
 # Gerador Procedural Agnóstico de Fases do Grass Cut Bot.
 # Suporta criação/recriação de qualquer intervalo de fases via argumentos CLI ou variáveis:
 # Exemplos CLI:
-#   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=21 --end=40
+#   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=41 --end=50
 #   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=41 --count=10
 #   godot --headless --script scripts/tools/generate_procedural_levels.gd -- --start=1 --end=5
 
 # Parâmetros padrão configuráveis se executado sem argumentos CLI:
-var default_start: int = 21
-var default_end: int = 40
+var default_start: int = 41
+var default_end: int = 50
 
 func _init() -> void:
 	print("==================================================")
@@ -652,6 +653,316 @@ func generate_level(lvl: int) -> int:
 			]:
 				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
 
+		41:
+			level_name = "O Prado das Margaridas Silvestres"
+			width = 27; height = 27; base_time_limit = 160.0
+			spawn_cell = Vector2i(13, 13)
+			_add_chamfered_rect_island(terrain_grid, 2, 2, 23, 23, 3) # ~480 tiles
+			_add_diagonal_stripes(vector_field, width, height, ["grass_green", "grass_yellow"], 1.80)
+			# 6 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(7, 7))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(19, 7))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(7, 19))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(19, 19))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(13, 6))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(13, 20))
+			# 8 margaridas bicolor + 8 margaridas rosa
+			for c: Vector2i in [Vector2i(9, 9), Vector2i(17, 9), Vector2i(9, 17), Vector2i(17, 17), Vector2i(13, 9), Vector2i(13, 17), Vector2i(9, 13), Vector2i(17, 13)]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy_bicolor")
+			for c: Vector2i in [Vector2i(6, 13), Vector2i(20, 13), Vector2i(13, 4), Vector2i(13, 22), Vector2i(6, 9), Vector2i(20, 9), Vector2i(6, 17), Vector2i(20, 17)]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy_pink")
+
+		42:
+			level_name = "O Istmo das Tulipas Roxas"
+			width = 27; height = 27; base_time_limit = 165.0
+			spawn_cell = Vector2i(13, 13)
+			_add_rect_island(terrain_grid, 2, 2, 8, 23)
+			_add_rect_island(terrain_grid, 17, 2, 8, 23)
+			_add_rect_island(terrain_grid, 9, 8, 9, 11) # Istmo central
+			_add_grass_rect(vector_field, "grass_purple", 2, 2, 9, 24, width, height)
+			_add_grass_rect(vector_field, "grass_blue", 17, 2, 24, 24, width, height)
+			_add_grass_rect(vector_field, "grass_green", 9, 8, 17, 18, width, height)
+			# 6 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 21))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 21))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 13))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 13))
+			# 12 trigos + 10 tulipas roxas
+			for c: Vector2i in [
+				Vector2i(11, 9), Vector2i(13, 9), Vector2i(15, 9), Vector2i(11, 17), Vector2i(13, 17), Vector2i(15, 17),
+				Vector2i(10, 11), Vector2i(10, 15), Vector2i(16, 11), Vector2i(16, 15), Vector2i(11, 11), Vector2i(15, 11)
+			]:
+				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
+			for c: Vector2i in [
+				Vector2i(4, 7), Vector2i(6, 7), Vector2i(4, 19), Vector2i(6, 19),
+				Vector2i(20, 7), Vector2i(22, 7), Vector2i(20, 19), Vector2i(22, 19),
+				Vector2i(11, 15), Vector2i(15, 15)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip_purple")
+
+		43:
+			level_name = "O Jardim dos Pêssegos e Alabastro"
+			width = 27; height = 27; base_time_limit = 165.0
+			spawn_cell = Vector2i(13, 13)
+			_add_octagon_island(terrain_grid, 13, 13, 11) # ~400 tiles
+			_add_grass_circle(vector_field, "grass_yellow", 13, 13, width, height, 8.5)
+			_add_grass_ring(vector_field, "grass_white", 13, 13, width, height, 4.8, 7.2)
+			_add_grass_circle(vector_field, "grass_green", 13, 13, width, height, 4.8)
+			# 7 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(13, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(13, 21))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 13))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 13))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(8, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(18, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(8, 18))
+			# 8 rosas pêssego + 8 rosas brancas
+			for c: Vector2i in [
+				Vector2i(10, 10), Vector2i(16, 10), Vector2i(10, 16), Vector2i(16, 16),
+				Vector2i(13, 8), Vector2i(13, 18), Vector2i(8, 13), Vector2i(18, 13)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose_peach")
+			for c: Vector2i in [
+				Vector2i(7, 10), Vector2i(19, 10), Vector2i(7, 16), Vector2i(19, 16),
+				Vector2i(10, 7), Vector2i(16, 7), Vector2i(10, 19), Vector2i(16, 19)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose_white")
+
+		44:
+			level_name = "O Arquipélago Solar Duplo"
+			width = 29; height = 25; base_time_limit = 170.0
+			spawn_cell = Vector2i(7, 12)
+			_add_chamfered_rect_island(terrain_grid, 2, 2, 11, 21, 2)
+			_add_chamfered_rect_island(terrain_grid, 16, 2, 11, 21, 2)
+			_add_rect_island(terrain_grid, 11, 7, 7, 11)
+			_add_grass_rect(vector_field, "grass_yellow", 2, 2, 12, 22, width, height)
+			_add_grass_rect(vector_field, "grass_green", 16, 2, 26, 22, width, height)
+			_add_grass_circle(vector_field, "grass_white", 14, 12, width, height, 3.5)
+			# 7 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(7, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(7, 19))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 19))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 12))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 16))
+			# 8 girassóis + 8 canteiros brancos
+			for c: Vector2i in [
+				Vector2i(5, 8), Vector2i(9, 8), Vector2i(5, 16), Vector2i(9, 16),
+				Vector2i(4, 10), Vector2i(10, 10), Vector2i(4, 14), Vector2i(10, 14)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_sunflower")
+			for c: Vector2i in [
+				Vector2i(19, 8), Vector2i(23, 8), Vector2i(19, 16), Vector2i(23, 16),
+				Vector2i(18, 12), Vector2i(24, 12), Vector2i(21, 9), Vector2i(21, 15)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed_white")
+
+		45:
+			level_name = "O Castelo das Pétalas Escuras"
+			width = 29; height = 29; base_time_limit = 175.0
+			spawn_cell = Vector2i(14, 14)
+			_add_rounded_cross_island(terrain_grid, 14, 14, 12, 11)
+			_add_grass_diamond_world(vector_field, "grass_black", Vector2.ZERO, 9.5)
+			_add_grass_diamond_world(vector_field, "grass_red", Vector2.ZERO, 6.5)
+			_add_grass_diamond_world(vector_field, "grass_purple", Vector2.ZERO, 3.5)
+			# 7 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(8, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(8, 20))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 20))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 23))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 14))
+			# 8 rosas vinho + 8 rosas negras + 12 trigos
+			for c: Vector2i in [
+				Vector2i(14, 9), Vector2i(14, 19), Vector2i(9, 14), Vector2i(19, 14),
+				Vector2i(11, 11), Vector2i(17, 11), Vector2i(11, 17), Vector2i(17, 17)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose_wine")
+			for c: Vector2i in [
+				Vector2i(6, 11), Vector2i(22, 11), Vector2i(6, 17), Vector2i(22, 17),
+				Vector2i(11, 6), Vector2i(17, 6), Vector2i(11, 22), Vector2i(17, 22)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose_black")
+			for c: Vector2i in [
+				Vector2i(13, 7), Vector2i(15, 7), Vector2i(13, 21), Vector2i(15, 21),
+				Vector2i(7, 13), Vector2i(7, 15), Vector2i(21, 13), Vector2i(21, 15),
+				Vector2i(10, 10), Vector2i(18, 10), Vector2i(10, 18), Vector2i(18, 18)
+			]:
+				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
+
+		46:
+			level_name = "O Grande Atol da Alvorada"
+			width = 29; height = 29; base_time_limit = 180.0
+			spawn_cell = Vector2i(14, 6)
+			_add_chamfered_rect_island(terrain_grid, 2, 2, 25, 25, 4)
+			for x: int in range(11, 18):
+				for z: int in range(11, 18):
+					terrain_grid.erase(Vector2i(x, z))
+			_add_grass_rect(vector_field, "grass_yellow", 2, 2, 26, 26, width, height)
+			_add_grass_rect(vector_field, "grass_green", 5, 5, 23, 23, width, height)
+			# 8 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(7, 7))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 7))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(7, 21))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(21, 21))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 23))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 14))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(23, 14))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(14, 3))
+			# 8 tulipas laranja + 8 margaridas laranja + 12 trigos
+			for c: Vector2i in [
+				Vector2i(9, 6), Vector2i(19, 6), Vector2i(9, 22), Vector2i(19, 22),
+				Vector2i(6, 9), Vector2i(22, 9), Vector2i(6, 19), Vector2i(22, 19)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip_orange")
+			for c: Vector2i in [
+				Vector2i(11, 8), Vector2i(17, 8), Vector2i(11, 20), Vector2i(17, 20),
+				Vector2i(8, 11), Vector2i(20, 11), Vector2i(8, 17), Vector2i(20, 17)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy_orange")
+			for c: Vector2i in [
+				Vector2i(10, 10), Vector2i(14, 9), Vector2i(18, 10), Vector2i(10, 18),
+				Vector2i(14, 19), Vector2i(18, 18), Vector2i(9, 14), Vector2i(19, 14),
+				Vector2i(12, 9), Vector2i(16, 9), Vector2i(12, 19), Vector2i(16, 19)
+			]:
+				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, c)
+
+		47:
+			level_name = "O Tridente do Oceano Safira"
+			width = 31; height = 31; base_time_limit = 185.0
+			spawn_cell = Vector2i(15, 24)
+			_add_rect_island(terrain_grid, 2, 20, 27, 9)
+			_add_rect_island(terrain_grid, 3, 2, 6, 19)
+			_add_rect_island(terrain_grid, 12, 2, 7, 19)
+			_add_rect_island(terrain_grid, 22, 2, 6, 19)
+			_add_grass_rect(vector_field, "grass_blue", 2, 20, 28, 28, width, height)
+			_add_grass_rect(vector_field, "grass_white", 3, 2, 8, 20, width, height)
+			_add_grass_rect(vector_field, "grass_purple", 12, 2, 18, 20, width, height)
+			_add_grass_rect(vector_field, "grass_green", 22, 2, 27, 20, width, height)
+			# 8 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 14))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(15, 14))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(24, 14))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(8, 24))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(22, 24))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(15, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 6))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(24, 6))
+			# 8 canteiros azuis + 8 rosas azuis + 6 tulipas roxas
+			for c: Vector2i in [
+				Vector2i(5, 4), Vector2i(6, 4), Vector2i(5, 10), Vector2i(6, 10),
+				Vector2i(14, 4), Vector2i(16, 4), Vector2i(14, 10), Vector2i(16, 10)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_bed_blue")
+			for c: Vector2i in [
+				Vector2i(24, 4), Vector2i(25, 4), Vector2i(24, 10), Vector2i(25, 10),
+				Vector2i(14, 18), Vector2i(16, 18), Vector2i(7, 22), Vector2i(23, 22)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_rose_blue")
+			for c: Vector2i in [
+				Vector2i(5, 17), Vector2i(24, 17), Vector2i(12, 24), Vector2i(18, 24), Vector2i(4, 26), Vector2i(26, 26)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip_purple")
+
+		48:
+			level_name = "A Cidadela de Rubi e Trigo"
+			width = 31; height = 31; base_time_limit = 190.0
+			spawn_cell = Vector2i(15, 15)
+			_add_diamond_island(terrain_grid, 15, 15, 13)
+			_add_rect_island(terrain_grid, 11, 11, 9, 9)
+			_add_grass_diamond_world(vector_field, "grass_red", Vector2.ZERO, 9.8)
+			_add_grass_diamond_world(vector_field, "grass_yellow", Vector2.ZERO, 6.8)
+			_add_grass_diamond_world(vector_field, "grass_green", Vector2.ZERO, 3.8)
+			# 8 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(15, 6))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(15, 24))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(6, 15))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(24, 15))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(10, 10))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 10))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(10, 20))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 20))
+			# 24 trigos em anel defensivo
+			for i: int in range(24):
+				var a: float = float(i) * TAU / 24.0
+				var wx: int = 15 + int(round(cos(a) * 6.0))
+				var wz: int = 15 + int(round(sin(a) * 6.0))
+				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, Vector2i(wx, wz))
+			# 10 margaridas vermelhas
+			for c: Vector2i in [
+				Vector2i(15, 9), Vector2i(15, 21), Vector2i(9, 15), Vector2i(21, 15),
+				Vector2i(12, 12), Vector2i(18, 12), Vector2i(12, 18), Vector2i(18, 18),
+				Vector2i(8, 15), Vector2i(22, 15)
+			]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy_red")
+
+		49:
+			level_name = "O Trevo dos Ventos Cromáticos"
+			width = 31; height = 31; base_time_limit = 195.0
+			spawn_cell = Vector2i(15, 15)
+			_add_rect_island(terrain_grid, 10, 10, 11, 11)
+			_add_chamfered_rect_island(terrain_grid, 10, 2, 11, 9, 2)
+			_add_chamfered_rect_island(terrain_grid, 10, 20, 11, 9, 2)
+			_add_chamfered_rect_island(terrain_grid, 2, 10, 9, 11, 2)
+			_add_chamfered_rect_island(terrain_grid, 20, 10, 9, 11, 2)
+			_add_grass_rect(vector_field, "grass_green", 10, 2, 20, 11, width, height)
+			_add_grass_rect(vector_field, "grass_yellow", 10, 20, 20, 28, width, height)
+			_add_grass_rect(vector_field, "grass_blue", 2, 10, 10, 20, width, height)
+			_add_grass_rect(vector_field, "grass_purple", 20, 10, 28, 20, width, height)
+			_add_grass_circle(vector_field, "grass_white", 15, 15, width, height, 4.2)
+			# 8 rochas
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(15, 5))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(15, 25))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(5, 15))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(25, 15))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(10, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 8))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(10, 22))
+			_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(20, 22))
+			# 4 espécies ricas do Herbário (6 flores cada)
+			for c: Vector2i in [Vector2i(13, 5), Vector2i(17, 5), Vector2i(12, 7), Vector2i(18, 7), Vector2i(14, 8), Vector2i(16, 8)]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_turquoise")
+			for c: Vector2i in [Vector2i(13, 25), Vector2i(17, 25), Vector2i(12, 23), Vector2i(18, 23), Vector2i(14, 22), Vector2i(16, 22)]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_sunset")
+			for c: Vector2i in [Vector2i(5, 13), Vector2i(5, 17), Vector2i(7, 12), Vector2i(7, 18), Vector2i(8, 14), Vector2i(8, 16)]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_tulip_yellow")
+			for c: Vector2i in [Vector2i(25, 13), Vector2i(25, 17), Vector2i(23, 12), Vector2i(23, 18), Vector2i(22, 14), Vector2i(22, 16)]:
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, c, "flower_daisy_yellow")
+
+		50:
+			level_name = "A Coroa Imperial da Mãe Natureza"
+			width = 31; height = 31; base_time_limit = 200.0
+			spawn_cell = Vector2i(15, 15)
+			_add_star_island(terrain_grid, 15, 15, 13, 9)
+			_add_grass_star_world(vector_field, "grass_purple", Vector2.ZERO, 9.8, 7.8, 8)
+			_add_grass_star_world(vector_field, "grass_blue", Vector2.ZERO, 7.8, 5.8, 8)
+			_add_grass_star_world(vector_field, "grass_yellow", Vector2.ZERO, 5.8, 3.8, 8)
+			_add_grass_circle(vector_field, "grass_green", 15, 15, width, height, 3.8)
+			_add_grass_circle(vector_field, "grass_white", 15, 15, width, height, 2.2)
+			# 8 rochas
+			for i: int in range(8):
+				var a: float = float(i) * TAU / 8.0
+				var rx: int = 15 + int(round(cos(a) * 9.2))
+				var rz: int = 15 + int(round(sin(a) * 9.2))
+				_add_valid_rock(terrain_grid, object_grid, spawn_cell, Vector2i(rx, rz))
+			# 16 trigos + 5 tipos de flores nobres (6 de cada)
+			for i: int in range(16):
+				var a: float = float(i) * TAU / 16.0
+				var wx: int = 15 + int(round(cos(a) * 5.5))
+				var wz: int = 15 + int(round(sin(a) * 5.5))
+				_add_valid_wheat(terrain_grid, object_grid, spawn_cell, Vector2i(wx, wz))
+			for i: int in range(6):
+				var a: float = float(i) * TAU / 6.0
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a) * 7.2)), 15 + int(round(sin(a) * 7.2))), "flower_sunflower")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 0.25) * 8.5)), 15 + int(round(sin(a + 0.25) * 8.5))), "flower_rose_peach")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 0.50) * 9.8)), 15 + int(round(sin(a + 0.50) * 9.8))), "flower_rose_wine")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 0.75) * 11.0)), 15 + int(round(sin(a + 0.75) * 11.0))), "flower_tulip_purple")
+				_add_valid_flower(terrain_grid, object_grid, spawn_cell, Vector2i(15 + int(round(cos(a + 1.00) * 11.5)), 15 + int(round(sin(a + 1.00) * 11.5))), "flower_tulip_orange")
+
 		_:
 			level_name = _get_procedural_level_name(lvl)
 			var size_choice: int = 23 + (lvl % 5) * 2 # 23, 25, 27, 29, 31
@@ -664,15 +975,28 @@ func generate_level(lvl: int) -> int:
 	IslandAutotiler.apply_autotile(terrain_grid)
 	_clip_vector_field_to_island(vector_field, terrain_grid, object_grid, spawn_cell, width, height)
 
-	if lvl == 27:
-		var p0: Vector3 = LevelJsonLoader.grid_to_world(10, 10, width, height, CELL_SIZE)
-		var p1: Vector3 = LevelJsonLoader.grid_to_world(16, 16, width, height, CELL_SIZE)
+	var terrain_list: Array[Dictionary] = []
+	var sorted_t_keys: Array = terrain_grid.keys()
+	sorted_t_keys.sort()
+	for k: Variant in sorted_t_keys:
+		var cell: Vector2i = k as Vector2i
+		terrain_list.append({ "gx": cell.x, "gz": cell.y })
+
+	var vector_terrain: RefCounted = VectorTerrainFieldScript.new()
+	vector_terrain.call("convert_from_tile_grid", terrain_list, width, height, CELL_SIZE, 0.28, 5)
+
+	if lvl == 27 or lvl == 46:
+		var x0: int = 10 if lvl == 27 else 11
+		var x1: int = 16 if lvl == 27 else 17
+		var p0: Vector3 = LevelJsonLoader.grid_to_world(x0, x0, width, height, CELL_SIZE)
+		var p1: Vector3 = LevelJsonLoader.grid_to_world(x1, x1, width, height, CELL_SIZE)
 		var lake_poly: PackedVector2Array = PackedVector2Array([
 			Vector2(p0.x - 0.50, p0.z - 0.50),
 			Vector2(p1.x + 0.50, p0.z - 0.50),
 			Vector2(p1.x + 0.50, p1.z + 0.50),
 			Vector2(p0.x - 0.50, p1.z + 0.50)
 		])
+		vector_terrain.call("carve_water", lake_poly)
 		vector_field.call("clip_shapes", lake_poly)
 
 	var audit_res: Dictionary = _validate_and_calibrate_level(
@@ -694,7 +1018,8 @@ func generate_level(lvl: int) -> int:
 		null,
 		vector_field,
 		custom_goals,
-		CELL_SIZE
+		CELL_SIZE,
+		vector_terrain
 	)
 
 	if not ok:

@@ -1,16 +1,16 @@
 extends SceneTree
 
 # verify_levels_integrity.gd
-# Validador de integridade e smoke test canônico das 40 fases do Grass Cut Bot.
+# Validador de integridade e smoke test canônico das 50 fases do Grass Cut Bot.
 # Garante o cumprimento do Mandamento 17 do GEMINI.md:
-# Imutabilidade das Fases 01 a 20 e consistência dimensional das fases 21 a 40.
+# Imutabilidade das Fases 01 a 20 e consistência dimensional das fases 21 a 50.
 
 func _init() -> void:
 	print("==================================================")
 	print("🔍 INICIANDO SMOKE TEST DE INTEGRIDADE DAS FASES")
 	print("==================================================")
 	
-	var total_levels: int = 40
+	var total_levels: int = 50
 	var errors: Array[String] = []
 	var checked_count: int = 0
 	
@@ -69,7 +69,7 @@ func _init() -> void:
 				errors.append("Fase %02d: Metas de corte (goals/card_goals) estão vazias!" % i)
 				is_ok = false
 		else:
-			# Validação 2: Fases de Expansão 21 a 40 (>= 18.0 metros reais)
+			# Validação 2: Fases de Expansão 21 a 50 (>= 18.0 metros reais)
 			if dim_w < 17.9:
 				errors.append("Fase %02d: Dimensão real menor que 18m (encontrado %.2fm = %dx%.2f)" % [i, dim_w, width, cell_size])
 				is_ok = false
@@ -91,7 +91,7 @@ func _init() -> void:
 	print("--------------------------------------------------")
 	if errors.is_empty():
 		print("✅ [SUCESSO] Todas as %d fases verificadas com 100%% de integridade!" % checked_count)
-		print("   Mandamento 17 (Imutabilidade Fases 01-20) e Fases 21-40 respeitados.")
+		print("   Mandamento 17 (Imutabilidade Fases 01-20) e Fases 21-50 respeitados.")
 		print("==================================================")
 		quit(0)
 	else:

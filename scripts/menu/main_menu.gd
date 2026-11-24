@@ -113,14 +113,14 @@ func _detect_levels_and_build_archipelago() -> void:
 
 	# Identifica quantidade de fases existentes reutilizando o cache do GameManager
 	if GameManager != null and GameManager.has_method("get_total_levels"):
-		total_levels_count = maxi(GameManager.get_total_levels(), 40)
+		total_levels_count = maxi(GameManager.get_total_levels(), 50)
 	else:
 		var level_count: int = 0
 		for lvl: int in range(1, 101):
 			var json_path: String = "res://data/levels/level_%02d.json" % lvl
 			if FileAccess.file_exists(json_path):
 				level_count = lvl
-		total_levels_count = maxi(level_count, 40)
+		total_levels_count = maxi(level_count, 50)
 
 	# Garante que selected_level e GameManager.current_level estejam em faixa válida
 	var cur_lvl: int = GameManager.current_level if GameManager != null else 1

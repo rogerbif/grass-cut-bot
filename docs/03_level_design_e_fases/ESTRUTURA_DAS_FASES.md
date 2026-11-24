@@ -68,7 +68,17 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 | **37** | *A Coroa de Ilhotas* | Ilha central + 4 satélites (461 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🔔 8 Sinos<br>🌼 8 Margaridas | Núcleo octogonal com 4 ilhotas conectadas por istmos. |
 | **38** | *O Grande Fiorde Selvagem* | Sinuoso em S longo (653 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 20 Trigos<br>🏵️ 10 Corolas | Fiorde oceânico largo com atmosfera vulcânica. |
 | **39** | *O Santuário Botânico* | Estrela monumental (509 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌹 6 Rosas<br>🌻 6 Girassóis<br>🌷 6 Tulipas<br>🪻 6 Canteiros | Santuário com as 4 principais famílias de flores nobres. |
-| **40** | *O Grande Arquipélago Mestre* 👑| Mega-arquipélago de 5 ilhas (513 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 16 Trigos<br>🌹 6 Rosas<br>🌷 6 Tulipas<br>🌻 6 Girassóis<br>🌼 6 Margaridas | **Clímax supremo do Mundo 1:** 5 grandes ilhas unidas por praças monumentais e as 6 metas canônicas. |
+| **40** | *O Grande Arquipélago Mestre* 👑| Mega-arquipélago de 5 ilhas (513 tiles)| $31 \times 31$ | 8 Rochas | 🌿 Grama<br>🌾 16 Trigos<br>🌹 6 Rosas<br>🌷 6 Tulipas<br>🌻 6 Girassóis<br>🌼 6 Margaridas | **Clímax do Tier 4:** 5 grandes ilhas unidas por praças monumentais e as 6 metas canônicas. |
+| **41** | *O Prado das Margaridas Silvestres* | Ilha chanfrada (505 tiles) | $27 \times 27$ | 6 Rochas | 🌿 Grama Verde/Amarela<br>🌼 8 Margaridas Bicolor<br>🌸 8 Margaridas Rosa | Listras diagonais e introdução das variações de margarida silvestre no Herbário. |
+| **42** | *O Istmo das Tulipas Roxas* | H estilizado com istmo largo (445 tiles) | $27 \times 27$ | 6 Rochas | 🌿 Grama Púrpura/Azul/Verde<br>🌾 12 Trigos<br>🌷 10 Tulipas Roxas | Travessia tática entre blocos laterais com cultivo de trigo no istmo. |
+| **43** | *O Jardim dos Pêssegos e Alabastro* | Octógono elegante (385 tiles) | $27 \times 27$ | 7 Rochas | 🌿 Grama Amarela/Branca/Verde<br>🧡 8 Rosas Pêssego<br>🤍 8 Rosas Brancas | Anéis concêntricos de grama e rosas nobres em tons pastéis. |
+| **44** | *O Arquipélago Solar Duplo* | Duas ilhas com ponte larga (471 tiles) | $29 \times 25$ | 7 Rochas | 🌿 Grama Amarela/Verde/Branca<br>🌻 8 Girassóis<br>🤍 8 Canteiros Brancos | Ilhas gêmeas conectadas por ponte dupla de 5 tiles com rochas estratégicas. |
+| **45** | *O Castelo das Pétalas Escuras* | Cruz grega arredondada (433 tiles) | $29 \times 29$ | 7 Rochas | 🌿 Grama Negra/Vermelha/Púrpura<br>🍷 8 Rosas Vinho<br>🖤 8 Rosas Negras<br>🌾 12 Trigos | Cruz monumental com flora escura e portais defensivos de trigo. |
+| **46** | *O Grande Atol da Alvorada* | Atol com lago central vazado (536 tiles) | $29 \times 29$ | 8 Rochas | 🌿 Grama Amarela/Verde<br>🌷 8 Tulipas Laranja<br>🌼 8 Margaridas Laranja<br>🌾 12 Trigos | Lago interior vazado (7x7) exigindo contorno orbital contínuo. |
+| **47** | *O Tridente do Oceano Safira* | Base sul + 3 pontas norte (585 tiles) | $31 \times 31$ | 8 Rochas | 🌿 Grama Azul/Branca/Púrpura/Verde<br>💙 8 Canteiros Azuis<br>💙 8 Rosas Azuis<br>🌷 6 Tulipas Roxas | Navegação em 3 penínsulas compridas com variedades azuis e roxas. |
+| **48** | *A Cidadela de Rubi e Trigo* | Diamante com praça central (365 tiles) | $31 \times 31$ | 8 Rochas | 🌿 Grama Vermelha/Amarela/Verde<br>🌾 24 Trigos<br>❤️ 10 Margaridas Vermelhas | Muralha circular concêntrica de 24 trigos protegendo o núcleo rubi. |
+| **49** | *O Trevo dos Ventos Cromáticos* | Trevo de 4 folhas amplo (441 tiles) | $31 \times 31$ | 8 Rochas | 🌿 Grama 4 Cores + Branca<br>💎 6 Flores Turquesa<br>🌅 6 Flores Pôr do Sol<br>💛 6 Tulipas Amarelas<br>💛 6 Margaridas Amarelas | Quatro lóbulos temáticos liberando espécies cromáticas raras do Herbário. |
+| **50** | *A Coroa Imperial da Mãe Natureza* 👑 | Estrela de 8 pontas imperial (521 tiles) | $31 \times 31$ | 8 Rochas | 🌿 Grama 5 Cores<br>🌾 16 Trigos<br>🌻 6 Girassóis<br>🧡 6 Rosas Pêssego<br>🍷 6 Rosas Vinho<br>🌷 6 Tulipas Roxas<br>🌷 6 Tulipas Laranja | **Clímax do Tier 5:** Mandala estelar de 8 pontas reunindo 11 metas botânicas distintas. |
 
 ---
 
@@ -83,8 +93,10 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 3. **Tier 3 (Fases 21 a 30) — O Grande Arquipélago e Labirintos (221 a 465 tiles):**
    - Áreas amplas de corte e labirintos agrícolas ($15.2\text{m} a $18.4\text{m}$ com `cell_size = 0.80m`), tornando indispensáveis os upgrades de Raio e Potência da lâmina na Oficina.
 4. **Tier 4 (Fases 31 a 40) — As Mega-Ilhas e a Maestria Suprema (433 a 689 tiles):**
-   - O ápice de escala do primeiro bloco do Mundo 1 com as maiores ilhas do jogo ($20.0\text{m}$ a $21.6\text{m}$), finalizando no monumental *Grande Arquipélago Mestre* (Fase 40).
-5. **Roteiro Canônico de Expansão (Fases 41 a 100 do Mundo 1):**
+   - O ápice de escala do primeiro bloco do Mundo 1 com as maiores ilhas do jogo ($20.0\text{m}$ a $21.6\text{m}$), finalizando no *Grande Arquipélago Mestre* (Fase 40).
+5. **Tier 5 (Fases 41 a 50) — Expansão Botânica do Herbário (365 a 585 tiles):**
+   - Arquipélagos de 21.6m a 24.8m com cantos arredondados nativos (`corner_radius = 0.28`), lagos vazados e introdução gradual das variações ricas do Herbário (Margaridas Bicolor/Rosa/Laranja/Vermelha/Amarela, Tulipas Roxas/Laranja/Amarelas, Rosas Pêssego/Branca/Vinho/Negra/Azul, Canteiros Branco/Azul e Flores Turquesa/Pôr do Sol).
+6. **Roteiro Canônico de Expansão (Fases 51 a 100 do Mundo 1):**
    - O Mundo 1 (Ilhas Tropicais Diurnas) compreenderá exatamente **100 fases autorais, criadas, balanceadas e revisadas**.
    - **Sem variantes atmosféricas no mesmo mundo:** Toda a progressão do Mundo 1 ocorre na ambientação diurna tropical clássica (sol a pino, mar turquesa e céu ciano limpo).
    - **Regra Canônica de Transição:** As variações de horário/atmosfera constituem mundos próprios. O **Mundo 2 (Sunset / Ilhas do Entardecer Dourado)** será criado **exclusivamente após atingir 100 fases criadas e revisadas no Mundo 1**. Seguido posteriormente pelo **Mundo 3 (Noite Tropical / Night World)** após 100 fases no Mundo 2.
@@ -94,11 +106,9 @@ Todas as 40 fases residem em formato canônico JSON v4 na pasta `res://data/leve
 ## 4. Arquitetura Técnica e Scripts
 
 - **Carregamento Runtime (`LevelController.gd` + `VegetationGrid.gd`):**
-  - Carrega dinamicamente qualquer arquivo `res://data/levels/level_%02d.json` de 1 a 40.
-  - O `VegetationGrid` instancia os tufos via `MultiMeshInstance3D` e grades espaciais discretas de $0.40\text{m}$, mantendo **60 FPS estáveis** mesmo em ilhas de 100 tiles.
-- **Suporte Nativo a Metas Unificadas (`VegetationGrid.gd`):**
-  - Quando a meta do HUD é `"grass"`, ceifar qualquer tufo de qualquer cor cosmética credita automaticamente o corte para a meta única de grama.
+  - Carrega dinamicamente qualquer arquivo `res://data/levels/level_%02d.json` de 1 a 50 (com suporte arquitetural até 100).
+  - O `VegetationGrid` instancia os tufos via `MultiMeshInstance3D` e grades espaciais discretas, mantendo **60 FPS estáveis**.
 - **Detecção Automática no Hub (`main_menu.gd`):**
-  - O mapa 3D do arquipélago escaneia dinamicamente até 100 fases, instanciando automaticamente todas as 40 ilhas em ziguezague com scroll vertical e teleporte.
-- **Gerador Headless Canônico (`scripts/tools/generate_all_40_levels.gd`):**
-  - Gera e audita todas as 40 fases com 0 erros de conformidade geométrica.
+  - O mapa 3D do arquipélago escaneia dinamicamente até 100 fases, instanciando automaticamente todas as 50 ilhas em ziguezague com scroll vertical e teleporte.
+- **Gerador Headless Canônico (`scripts/tools/generate_procedural_levels.gd`) & Smoke Test (`verify_levels_integrity.gd`):**
+  - Gera e audita as fases de expansão mantendo imutabilidade das fases anteriores e validando 100% de integridade das 50 fases.

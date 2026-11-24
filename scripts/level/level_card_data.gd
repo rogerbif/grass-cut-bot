@@ -14,8 +14,8 @@ static var _cache: Dictionary = {}
 static var _json_cache: Dictionary = {}
 static var _meta_cache: Dictionary = {}
 
-## Metadados canônicos pré-computados das 40 fases em O(1) puro.
-## Elimina a abertura e parsing síncrono de ~7 MB de arquivos JSON no boot splash.
+## Metadados canônicos pré-computados das 50 fases em O(1) puro.
+## Elimina a abertura e parsing síncrono de arquivos JSON no boot splash.
 const CANONICAL_ISLAND_METAS: Dictionary = {
 	1: { "valid": true, "dimensions": Vector2(10.0, 10.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
 	2: { "valid": true, "dimensions": Vector2(10.0, 10.0), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
@@ -56,7 +56,17 @@ const CANONICAL_ISLAND_METAS: Dictionary = {
 	37: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
 	38: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -7.4) },
 	39: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
-	40: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) }
+	40: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(-0.2, -0.052, -0.2) },
+	41: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	42: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	43: { "valid": true, "dimensions": Vector2(21.6, 21.6), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	44: { "valid": true, "dimensions": Vector2(23.2, 20.0), "has_spawn": true, "bot_pos": Vector3(-5.6, -0.052, 0.0) },
+	45: { "valid": true, "dimensions": Vector2(23.2, 23.2), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	46: { "valid": true, "dimensions": Vector2(23.2, 23.2), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, -6.4) },
+	47: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 7.2) },
+	48: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	49: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) },
+	50: { "valid": true, "dimensions": Vector2(24.8, 24.8), "has_spawn": true, "bot_pos": Vector3(0.0, -0.052, 0.0) }
 }
 
 

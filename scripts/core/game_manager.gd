@@ -387,7 +387,7 @@ func get_total_levels() -> int:
 		var json_path: String = "res://data/levels/level_%02d.json" % lvl
 		if FileAccess.file_exists(json_path):
 			count = lvl
-	_cached_total_levels = maxi(count, 40)
+	_cached_total_levels = maxi(count, 50)
 	return _cached_total_levels
 
 func restart_level() -> void:
