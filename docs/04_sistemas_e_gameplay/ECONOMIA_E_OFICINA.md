@@ -66,3 +66,12 @@ Acessível na aba "Coleção" do Menu Principal:
 - **Filtros Ágeis por Categoria:**
   - Barra de scroll horizontal com botões dinâmicos: `Todas (36)`, `Gramas (7)`, `Culturas (1)`, `Flores (28)` e `Resgatar (⭐)`.
 
+---
+
+## 5. Bônus Diário de 7 Dias (`DailyBonusModal`)
+
+Acessível automaticamente ao abrir o `MainMenu` (quando disponível) ou pelo botão de presente (`🎁`) na `TopBar`:
+- **Ciclo de Calendário Civil Local (Meia-noite 00:00):**
+  - **Dia 1:** `+50` 🪙 | **Dia 2:** `+100` 🪙 | **Dia 3:** `+150` 🪙 | **Dia 4:** `+250` 🪙 | **Dia 5:** `+350` 🪙 | **Dia 6:** `+500` 🪙 | **Dia 7 (Grande Prêmio):** `+1.000` 🪙 + Recarga Completa de Vidas.
+- **Regras de Sequência:** Ao completar o Dia 7, o ciclo reinicia no Dia 1; pular um dia civil inteiro reinicia a sequência para o Dia 1. Quando já resgatado no dia, o modal exibe contagem regressiva em tempo real até a próxima meia-noite.
+

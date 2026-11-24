@@ -8,6 +8,7 @@ signal save_reset
 signal plant_harvested(species_key: String, new_count: int)
 signal milestone_claimed(species_key: String, milestone_level: int, reward: int)
 signal lives_changed(current_lives: int, max_lives: int)
+signal daily_bonus_claimed(day_index: int, coin_reward: int)
 
 const SAVE_PATH: String = "user://savegame.json"
 const TEMP_PATH: String = "user://savegame.tmp"
@@ -16,12 +17,14 @@ const CURRENT_SAVE_VERSION: String = "1.0"
 
 const MAX_LIVES: int = 5
 const LIFE_REGEN_SECONDS: int = 1200 # 20 minutos por vida (1200 segundos)
+const DAILY_BONUS_REWARDS: Array[int] = [50, 100, 150, 250, 350, 500, 1000]
 
 var save_data: Dictionary = {}
 var is_initialized: bool = false
 var _life_regen_tick_accum: float = 0.0
 var _save_pending: bool = false
 var _last_lifecycle_save_msec: int = -1000
+var _debug_day_override: int = -1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -81,6 +84,11 @@ func get_default_save() -> Dictionary:
 			"discovered": {},
 			"harvest_counts": {},
 			"claimed_milestone_levels": {}
+		},
+		"daily_bonus": {
+			"streak": 0,
+			"last_claim_day": 0,
+			"total_claims": 0
 		}
 	}
 
@@ -181,6 +189,13 @@ func _merge_with_defaults(loaded: Dictionary) -> Dictionary:
 			def_col["harvest_counts"] = (col["harvest_counts"] as Dictionary).duplicate(true)
 		if col.has("claimed_milestone_levels") and col["claimed_milestone_levels"] is Dictionary:
 			def_col["claimed_milestone_levels"] = (col["claimed_milestone_levels"] as Dictionary).duplicate(true)
+
+	if loaded.has("daily_bonus") and loaded["daily_bonus"] is Dictionary:
+		var db: Dictionary = loaded["daily_bonus"] as Dictionary
+		var def_db: Dictionary = merged["daily_bonus"] as Dictionary
+		for k in def_db:
+			if db.has(k):
+				def_db[k] = db[k]
 
 	return merged
 
@@ -602,3 +617,110 @@ func add_lives(amount: int) -> void:
 
 func refill_lives_full() -> void:
 	add_lives(MAX_LIVES)
+
+# ==============================================================================
+# Sistema de Bônus Diário (Ciclo de 7 Dias - Calendário Civil Local)
+# ==============================================================================
+
+func _get_local_day_index() -> int:
+	if _debug_day_override > 0:
+		return _debug_day_override
+	var dt: Dictionary = Time.get_datetime_dict_from_system(false)
+	var midnight_dt: Dictionary = {
+		"year": int(dt.get("year", 2026)),
+		"month": int(dt.get("month", 1)),
+		"day": int(dt.get("day", 1)),
+		"hour": 0,
+		"minute": 0,
+		"second": 0
+	}
+	var midnight_unix: int = int(Time.get_unix_time_from_datetime_dict(midnight_dt))
+	return int(round(float(midnight_unix) / 86400.0))
+
+func can_claim_daily_bonus() -> bool:
+	var db: Dictionary = save_data.get("daily_bonus", {}) as Dictionary
+	var last_day: int = int(db.get("last_claim_day", 0))
+	if last_day <= 0:
+		return true
+	var today: int = _get_local_day_index()
+	return today > last_day
+
+func get_daily_bonus_effective_streak() -> int:
+	var db: Dictionary = save_data.get("daily_bonus", {}) as Dictionary
+	var streak: int = clampi(int(db.get("streak", 0)), 0, 7)
+	var last_day: int = int(db.get("last_claim_day", 0))
+	if last_day <= 0:
+		return 0
+	var today: int = _get_local_day_index()
+	if today > last_day:
+		# Perdeu 1 ou mais dias civis completos -> reinicia ciclo
+		if (today - last_day) > 1:
+			return 0
+		# Completou o 7º dia ontem -> inicia novo ciclo a partir do Dia 1
+		if streak >= 7:
+			return 0
+	return streak
+
+func get_daily_bonus_next_day() -> int:
+	var eff: int = get_daily_bonus_effective_streak()
+	if can_claim_daily_bonus():
+		return clampi(eff + 1, 1, 7)
+	return clampi(eff, 1, 7)
+
+func get_daily_bonus_reward_for_day(day_num: int) -> int:
+	var idx: int = clampi(day_num - 1, 0, DAILY_BONUS_REWARDS.size() - 1)
+	return DAILY_BONUS_REWARDS[idx]
+
+func get_seconds_until_next_daily_bonus() -> int:
+	if can_claim_daily_bonus():
+		return 0
+	var dt: Dictionary = Time.get_datetime_dict_from_system(false)
+	var midnight_dt: Dictionary = {
+		"year": int(dt.get("year", 2026)),
+		"month": int(dt.get("month", 1)),
+		"day": int(dt.get("day", 1)),
+		"hour": 0,
+		"minute": 0,
+		"second": 0
+	}
+	var today_midnight_unix: int = int(Time.get_unix_time_from_datetime_dict(midnight_dt))
+	var next_midnight_unix: int = today_midnight_unix + 86400
+	var now_unix: int = int(Time.get_unix_time_from_system())
+	return maxi(0, next_midnight_unix - now_unix)
+
+func claim_daily_bonus() -> Dictionary:
+	if not can_claim_daily_bonus():
+		return { "success": false }
+
+	var next_day: int = get_daily_bonus_next_day()
+	var reward: int = get_daily_bonus_reward_for_day(next_day)
+	var today: int = _get_local_day_index()
+
+	var db: Dictionary = save_data.get("daily_bonus", {}) as Dictionary
+	db["streak"] = next_day
+	db["last_claim_day"] = today
+	db["total_claims"] = int(db.get("total_claims", 0)) + 1
+	save_data["daily_bonus"] = db
+
+	var upgrade_mgr: Node = get_node_or_null("/root/UpgradeManager")
+	if upgrade_mgr != null and upgrade_mgr.has_method("add_coins"):
+		upgrade_mgr.call("add_coins", reward)
+	else:
+		var pl: Dictionary = save_data.get("player", {}) as Dictionary
+		pl["total_coins"] = int(pl.get("total_coins", 0)) + reward
+		save_data["player"] = pl
+
+	var refilled_lives: bool = false
+	if next_day == 7:
+		if get_lives() < MAX_LIVES:
+			refill_lives_full()
+			refilled_lives = true
+
+	save_game()
+	daily_bonus_claimed.emit(next_day, reward)
+	return {
+		"success": true,
+		"day": next_day,
+		"coins": reward,
+		"refilled_lives": refilled_lives
+	}

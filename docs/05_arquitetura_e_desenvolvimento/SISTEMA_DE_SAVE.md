@@ -77,6 +77,11 @@ Para prevenir perda ou corrupção de dados caso o jogo feche inesperadamente ou
       "times_completed": 1,
       "high_score_coins": 280
     }
+  },
+  "daily_bonus": {
+    "streak": 1,
+    "last_claim_day": 20781,
+    "total_claims": 1
   }
 }
 ```

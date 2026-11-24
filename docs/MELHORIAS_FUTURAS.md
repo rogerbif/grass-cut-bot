@@ -72,8 +72,8 @@ Com base na auditoria profunda realizada na versão `v0.12.211-alpha` e executad
 - **✨ Temas Cosméticos de Lâmina:** Trilhas visuais de corte customizadas (azul neon, arco-íris pastel, faíscas douradas).
 
 ### 2.3 Engajamento Diário & Desafios Rápidos
-- **🎁 Recompensa Diária (Daily Login Bonus):** Temporizador de 24h real com bônus crescente de moedas a cada dia consecutivo de login.
-- **📜 Missões Rápidas (3 Tarefas Diárias):**
+- **🎁 Recompensa Diária (Daily Login Bonus) ✅ *(Concluído na v0.12.218-alpha - Melhoria 251)*:** Ciclo de 7 dias por calendário civil local com recompensas crescentes (`50` a `1.000` 🪙 + Refil de Vidas no Dia 7), modal Cyber-Mecha `DailyBonusModal` e indicador na `TopBar`.
+- **📜 Missões Rápidas (3 Tarefas Diárias):** *(Pendente)*
   - Exemplo 1: *"Ceife 200 tufos de grama amarela."*
   - Exemplo 2: *"Conclua 2 fases sem colidir com rochas."*
   - Exemplo 3: *"Alcance a Lâmina Nível 5 ou 6 em qualquer fase."*

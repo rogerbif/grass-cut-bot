@@ -14,10 +14,12 @@ const MenuGestureDetectorScript = preload("res://scripts/menu/menu_gesture_detec
 @onready var coin_badge: CyberResourceBadge = $CanvasLayer/TopBar/HBox/CoinBadge as CyberResourceBadge
 @onready var life_badge: CyberResourceBadge = $CanvasLayer/TopBar/HBox/LifeBadge as CyberResourceBadge
 @onready var settings_btn: TextureButton = $CanvasLayer/TopBar/HBox/SettingsButton as TextureButton
+@onready var daily_bonus_btn: TextureButton = $CanvasLayer/TopBar/HBox.get_node_or_null("DailyBonusButton") as TextureButton
 
 # Modais e Abas
 @onready var settings_modal: Control = $CanvasLayer/SettingsModal
 @onready var exit_modal: Control = $CanvasLayer.get_node_or_null("ExitModal") as Control
+@onready var daily_bonus_modal: Control = $CanvasLayer.get_node_or_null("DailyBonusModal") as Control
 @onready var bottom_nav: Control = $CanvasLayer/BottomNavBar
 @onready var tab_garage: Control = $CanvasLayer/TabViews/TabGarage
 @onready var tab_home: Control = $CanvasLayer/TabViews/TabHome
@@ -58,6 +60,11 @@ func _ready() -> void:
 		SaveManager.save_reset.connect(_on_save_reset)
 		if SaveManager.has_signal("lives_changed"):
 			SaveManager.lives_changed.connect(func(_cur: int, _max: int) -> void: _update_top_bar())
+		if SaveManager.has_signal("daily_bonus_claimed"):
+			SaveManager.daily_bonus_claimed.connect(func(_d: int, _c: int) -> void:
+				_update_top_bar()
+				_update_daily_bonus_indicator()
+			)
 
 	# Detecta fases e constrói o arquipélago 3D
 	_detect_levels_and_build_archipelago()
@@ -65,6 +72,12 @@ func _ready() -> void:
 	# Conecta sinais da interface
 	if settings_btn != null and settings_modal != null:
 		settings_btn.pressed.connect(settings_modal.open_modal)
+	if daily_bonus_btn != null and daily_bonus_modal != null:
+		_setup_daily_bonus_button()
+		daily_bonus_btn.pressed.connect(func() -> void:
+			if daily_bonus_modal.has_method("open"):
+				daily_bonus_modal.call("open")
+		)
 
 
 	if coin_badge != null:
@@ -96,6 +109,13 @@ func _ready() -> void:
 	if AudioManager != null:
 		AudioManager.play_menu_music()
 
+	_update_daily_bonus_indicator()
+	if SaveManager != null and SaveManager.has_method("can_claim_daily_bonus") and bool(SaveManager.call("can_claim_daily_bonus")):
+		get_tree().create_timer(0.45).timeout.connect(func() -> void:
+			if is_instance_valid(daily_bonus_modal) and not _are_modals_open() and daily_bonus_modal.has_method("open"):
+				daily_bonus_modal.call("open")
+		)
+
 func _process(_delta: float) -> void:
 	if ocean_mesh != null and menu_camera != null:
 		ocean_mesh.global_position.x = menu_camera.global_position.x
@@ -103,6 +123,36 @@ func _process(_delta: float) -> void:
 
 func _on_save_reset() -> void:
 	_update_top_bar()
+	_update_daily_bonus_indicator()
+
+func _setup_daily_bonus_button() -> void:
+	if daily_bonus_btn == null or daily_bonus_btn.get_node_or_null("NotifyDot") != null:
+		return
+	var dot_panel: Panel = Panel.new()
+	dot_panel.name = "NotifyDot"
+	dot_panel.custom_minimum_size = Vector2(14, 14)
+	dot_panel.size = Vector2(14, 14)
+	dot_panel.position = Vector2(38, 2)
+	dot_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb: StyleBoxFlat = StyleBoxFlat.new()
+	sb.bg_color = Color(1.0, 0.25, 0.35, 1.0)
+	sb.border_color = Color(1.0, 0.92, 0.45, 1.0)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(7)
+	dot_panel.add_theme_stylebox_override("panel", sb)
+	daily_bonus_btn.add_child(dot_panel)
+	dot_panel.set_meta("is_notify_dot", true)
+
+func _update_daily_bonus_indicator() -> void:
+	if daily_bonus_btn == null:
+		return
+	var can_claim: bool = false
+	if SaveManager != null and SaveManager.has_method("can_claim_daily_bonus"):
+		can_claim = bool(SaveManager.call("can_claim_daily_bonus"))
+	var dot: Node = daily_bonus_btn.get_node_or_null("NotifyDot")
+	if dot is Control:
+		(dot as Control).visible = can_claim
+	daily_bonus_btn.modulate = Color(1.0, 1.0, 1.0, 1.0) if can_claim else Color(0.85, 0.90, 0.98, 0.78)
 	_detect_levels_and_build_archipelago()
 
 func _detect_levels_and_build_archipelago() -> void:
@@ -504,6 +554,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _are_modals_open() -> bool:
+	if daily_bonus_modal != null and daily_bonus_modal.has_method("is_open") and daily_bonus_modal.call("is_open"):
+		return true
 	if exit_modal != null and exit_modal.has_method("is_open") and exit_modal.call("is_open"):
 		return true
 	if settings_modal != null:
