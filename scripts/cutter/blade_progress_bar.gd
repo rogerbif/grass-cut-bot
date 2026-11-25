@@ -29,7 +29,8 @@ var _fill_tween: Tween = null
 var _last_rendered_progress: float = -1.0
 
 func _ready() -> void:
-	# Desacopla a rotação e herança direta de transformação do chassi do robô
+	# Desacopla a rotação, interpolação e herança direta de transformação do chassi do robô
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	set_as_top_level(true)
 	rotation_degrees = Vector3(-40.0, 0.0, 0.0)
 	
@@ -37,6 +38,8 @@ func _ready() -> void:
 	if parent_node is Node3D:
 		_target_node = parent_node as Node3D
 		global_position = _target_node.global_position + SCREEN_OFFSET
+		if is_inside_tree():
+			reset_physics_interpolation()
 
 	_setup_styles()
 

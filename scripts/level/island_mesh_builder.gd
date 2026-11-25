@@ -15,6 +15,7 @@ const BOUNDARY_WALL_HEIGHT: float = 1.20
 const BOUNDARY_WALL_THICKNESS: float = 0.06
 const DEFAULT_CORNER_RADIUS: float = 0.28
 const DEFAULT_CORNER_ARC_STEPS: int = 5
+const FIXED_MESH_AABB: AABB = AABB(Vector3(-60.0, -5.0, -60.0), Vector3(120.0, 15.0, 120.0))
 
 # Coordenadas UV canônicas no atlas de cores (island_palette.png)
 const UV_GRASS_TOP: Vector2 = Vector2(0.819989, 0.789990)
@@ -213,6 +214,7 @@ static func build_island_mesh(
 
 	var mesh: ArrayMesh = st.commit()
 	if mesh != null:
+		mesh.custom_aabb = FIXED_MESH_AABB
 		mesh.surface_set_material(0, get_island_material())
 	return mesh
 
@@ -449,8 +451,10 @@ static func build_coastal_foam_mesh(
 			st.add_vertex(v_out0)
 
 	var foam_mesh: ArrayMesh = st.commit()
-	if foam_mesh != null and foam_mesh.get_surface_count() > 0:
-		foam_mesh.surface_set_material(0, get_foam_material())
+	if foam_mesh != null:
+		foam_mesh.custom_aabb = FIXED_MESH_AABB
+		if foam_mesh.get_surface_count() > 0:
+			foam_mesh.surface_set_material(0, get_foam_material())
 	return foam_mesh
 
 

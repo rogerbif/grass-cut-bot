@@ -449,6 +449,11 @@ func build_from_level_json(
 	var water: Node3D = LevelJsonLoader.WATER_OCEAN_SCENE.instantiate() as Node3D
 	if water != null:
 		water.name = "WaterOcean"
+		water.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		var surf_water: MeshInstance3D = water.get_node_or_null("SurfaceWater") as MeshInstance3D
+		if surf_water != null:
+			surf_water.extra_cull_margin = 32.0
+			surf_water.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		add_child(water)
 
 	var grid_info: Dictionary = data.get("grid", {}) as Dictionary
@@ -469,6 +474,7 @@ func build_from_level_json(
 		island_mi.material_override = IslandMeshBuilder.get_island_material()
 		island_mi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		island_mi.custom_aabb = FIXED_ISLAND_AABB
+		island_mi.extra_cull_margin = 16.0
 		island_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(island_mi)
 
@@ -495,6 +501,9 @@ func build_from_level_json(
 		foam_inst.name = "CoastalFoamRibbon"
 		foam_inst.mesh = foam_mesh
 		foam_inst.material_override = IslandMeshBuilder.get_foam_material()
+		foam_inst.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+		foam_inst.custom_aabb = FIXED_ISLAND_AABB
+		foam_inst.extra_cull_margin = 16.0
 		foam_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		coastal_body.add_child(foam_inst)
 

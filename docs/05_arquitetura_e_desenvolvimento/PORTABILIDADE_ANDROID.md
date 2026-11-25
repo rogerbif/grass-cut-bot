@@ -13,12 +13,12 @@ Este documento reúne os requisitos técnicos, presets de exportação e boas pr
 
 ## 2. Escolha do Renderizador da Godot 4
 
-- **Modo Padrão (`mobile`):**
-  - Utiliza a API Vulkan mobile moderna da Godot 4.
-  - Oferece suporte eficiente a materiais StandardMaterial3D e sombras dinâmicas de alta fidelidade.
-- **Alternativa de Compatibilidade Ampla (`gl_compatibility`):**
-  - Utiliza OpenGL ES 3.0 / WebGL2.
-  - Recomendado se o público alvo incluir smartphones Android de entrada com drivers Vulkan instáveis.
+- **Modo Padrão Adotado (`gl_compatibility` — OpenGL ES 3.0):**
+  - Configurado via `renderer/rendering_method="gl_compatibility"` e `renderer/rendering_method.mobile="gl_compatibility"` em `project.godot`, alinhando 100% Android e Web.
+  - Elimina integralmente falhas conhecidas de drivers Vulkan Mobile em GPUs Android Tile-Based (especialmente Adreno/Mali, Issues Godot #115217, #123370 e #125576), que causavam descarte de *tiles* por 1 frame ("quadrados brancos" vazando o `background_color` do `WorldEnvironment`, desaparecimento momentâneo da ilha e listras horizontais de ponta a ponta) ao acionar overlays do Android (barra de volume física, gravador de tela) com `scaling_3d_scale < 1.0`.
+  - Todos os shaders (`toon_water.gdshader`, `interactive_grass.gdshader`, `interactive_flower.gdshader`) e builders (`IslandMeshBuilder`, `Cutter`, `MenuBot`) mantêm paridade cromática 1:1 via `OUTPUT_IS_SRGB` e `_is_compatibility_renderer()`, além de contar com `custom_aabb` e `extra_cull_margin` explícitos nas malhas da ilha, espuma costeira e oceano, e `shader_baker/enabled=true` no `export_presets.cfg`.
+- **Histórico (`mobile` / Vulkan Mobile):**
+  - Mantido apenas como referência histórica; não deve ser reativado no Android sem validação específica contra corrupção de *tile resolve* com Hardware Overlays do sistema.
 
 ---
 
