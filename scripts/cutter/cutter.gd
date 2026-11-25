@@ -87,6 +87,7 @@ var _last_cut_pos: Vector3 = Vector3(99999.0, 99999.0, 99999.0)
 var _last_cut_radius: float = -1.0
 var _last_slash_intensity: float = -1.0
 var _overlapping_vegetation: Array[Area3D] = []
+var _warmup_frames: int = 0
 
 # Cache pré-calculado de obstáculos (Tarefa 1.1)
 var _obstacle_positions_2d: PackedVector2Array = PackedVector2Array()
@@ -136,6 +137,7 @@ func _ready() -> void:
 		GameManager.state_changed.connect(_on_game_state_changed)
 	if AudioManager != null:
 		AudioManager.start_engine()
+	_start_gpu_warmup()
 
 func _exit_tree() -> void:
 	if AudioManager != null:
@@ -428,12 +430,38 @@ func _setup_blade_slash_and_shockwave() -> void:
 	ring_plane.size = Vector2(2.0, 2.0)
 	shockwave_mesh.mesh = ring_plane
 	shockwave_mesh.position = Vector3(0.0, 0.035, 0.0)
+	shockwave_mesh.scale = Vector3(0.001, 1.0, 0.001)
 	shockwave_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var shock_mat_res: ShaderMaterial = load("res://shaders/shockwave_ring_material.tres")
 	if shock_mat_res != null:
-		shockwave_mesh.material_override = shock_mat_res.duplicate()
-	shockwave_mesh.visible = false
+		var shock_mat_dup: ShaderMaterial = shock_mat_res.duplicate() as ShaderMaterial
+		if shock_mat_dup != null:
+			shock_mat_dup.set_shader_parameter("alpha", 0.0)
+		shockwave_mesh.material_override = shock_mat_dup
+	shockwave_mesh.visible = true
 	add_child(shockwave_mesh)
+
+func _start_gpu_warmup() -> void:
+	_warmup_frames = 2
+	if blade_tier_1 != null:
+		blade_tier_1.visible = true
+	if blade_tier_2 != null:
+		blade_tier_2.visible = true
+	if blade_tier_3 != null:
+		blade_tier_3.visible = true
+	if blade_tier_4 != null:
+		blade_tier_4.visible = true
+	if shockwave_mesh != null:
+		shockwave_mesh.visible = true
+		shockwave_mesh.scale = Vector3(0.01, 1.0, 0.01)
+		var sw_mat: ShaderMaterial = shockwave_mesh.material_override as ShaderMaterial
+		if sw_mat != null:
+			sw_mat.set_shader_parameter("alpha", 0.001)
+	if spark_particles != null:
+		spark_particles.scale = Vector3(0.001, 0.001, 0.001)
+		spark_particles.global_position = global_position + Vector3(0.0, 0.05, 0.0)
+		spark_particles.reset_physics_interpolation()
+		spark_particles.restart()
 
 func _trigger_level_up_effects() -> void:
 	# 1. Pop elástico da lâmina (Punch Scale com Squash & Stretch)
@@ -464,12 +492,18 @@ func _trigger_level_up_effects() -> void:
 		_shockwave_tween.tween_property(shockwave_mesh, "scale", Vector3(target_scale, 1.0, target_scale), 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		if shock_mat != null:
 			_shockwave_tween.tween_method(func(a: float): shock_mat.set_shader_parameter("alpha", a), 1.0, 0.0, 0.32).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
-		_shockwave_tween.chain().tween_callback(func(): shockwave_mesh.visible = false)
+		_shockwave_tween.chain().tween_callback(func():
+			shockwave_mesh.visible = false
+			shockwave_mesh.scale = Vector3(0.001, 1.0, 0.001)
+			if shock_mat != null:
+				shock_mat.set_shader_parameter("alpha", 0.0)
+		)
 
 	# 4. Feedback tátil mobile e faíscas estelares
 	if Input.has_method("vibrate_handheld"):
 		Input.vibrate_handheld(25)
 	if spark_particles != null:
+		spark_particles.scale = Vector3.ONE
 		spark_particles.global_position = global_position + Vector3(0.0, 0.45, 0.0)
 		spark_particles.reset_physics_interpolation()
 		spark_particles.restart()
@@ -559,6 +593,20 @@ func set_input_direction(dir: Vector2) -> void:
 	input_direction = dir
 
 func _physics_process(delta: float) -> void:
+	if _warmup_frames > 0:
+		_warmup_frames -= 1
+		if _warmup_frames == 0:
+			_update_blade_tier_visual()
+			if shockwave_mesh != null and (_shockwave_tween == null or not _shockwave_tween.is_valid()):
+				shockwave_mesh.visible = false
+				shockwave_mesh.scale = Vector3(0.001, 1.0, 0.001)
+				var sw_mat: ShaderMaterial = shockwave_mesh.material_override as ShaderMaterial
+				if sw_mat != null:
+					sw_mat.set_shader_parameter("alpha", 0.0)
+			if spark_particles != null and not is_stunned:
+				spark_particles.emitting = false
+				spark_particles.scale = Vector3.ONE
+
 	if _shock_cooldown > 0.0:
 		_shock_cooldown = maxf(0.0, _shock_cooldown - delta)
 	if _blade_penalty_cooldown > 0.0:
@@ -870,6 +918,7 @@ func _trigger_obstacle_shock(normal: Vector3, spark_pos: Vector3 = Vector3.ZERO)
 
 	# Efeito de faíscas metálicas no ponto de contato dente-de-serra contra rocha
 	if spark_particles:
+		spark_particles.scale = Vector3.ONE
 		spark_particles.emitting = false
 		if spark_pos != Vector3.ZERO:
 			spark_particles.global_position = spark_pos

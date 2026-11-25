@@ -110,19 +110,41 @@ static func get_veg_types() -> PackedStringArray:
 static func _resolve_mesh_for_type(v_type: String) -> Mesh:
 	_ensure_static_meshes()
 	if v_type.begins_with("flower"):
+		if _flower_variation_meshes.has(v_type):
+			return _flower_variation_meshes[v_type] as Mesh
+		var packed_scene: PackedScene = FLOWER_SCENE
 		if v_type.begins_with("flower_rose"):
-			return _flower_variation_meshes.get(v_type, _flower_rose_mesh) as Mesh
+			packed_scene = FLOWER_ROSE_SCENE
 		elif v_type.begins_with("flower_daisy"):
-			return _flower_variation_meshes.get(v_type, _flower_daisy_mesh) as Mesh
+			packed_scene = FLOWER_DAISY_SCENE
 		elif v_type == "flower_sunflower":
-			return _flower_sunflower_mesh
+			packed_scene = FLOWER_SUNFLOWER_SCENE
 		elif v_type.begins_with("flower_tulip"):
-			return _flower_variation_meshes.get(v_type, _flower_tulip_mesh) as Mesh
+			packed_scene = FLOWER_TULIP_SCENE
 		elif v_type.begins_with("flower_bed"):
-			return _flower_variation_meshes.get(v_type, _flower_bed_mesh) as Mesh
-		else:
-			return _flower_variation_meshes.get(v_type, _flower_mesh) as Mesh
+			packed_scene = FLOWER_BED_SCENE
+		var built_mesh: ArrayMesh = _build_flower_combined_mesh(v_type, packed_scene)
+		_flower_variation_meshes[v_type] = built_mesh
+		if v_type == "flower":
+			_flower_mesh = built_mesh
+		elif v_type == "flower_rose":
+			_flower_rose_mesh = built_mesh
+		elif v_type == "flower_daisy":
+			_flower_daisy_mesh = built_mesh
+		elif v_type == "flower_sunflower":
+			_flower_sunflower_mesh = built_mesh
+		elif v_type == "flower_tulip":
+			_flower_tulip_mesh = built_mesh
+		elif v_type == "flower_bed":
+			_flower_bed_mesh = built_mesh
+		return built_mesh
 	elif v_type == "wheat":
+		if _wheat_mesh == null:
+			var wheat_inst: Node = WHEAT_SCENE.instantiate()
+			var visual_root: Node3D = wheat_inst.get_node_or_null("VisualMesh") as Node3D
+			if visual_root != null:
+				_wheat_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
+			wheat_inst.free()
 		return _wheat_mesh
 	elif v_type.begins_with("grass_"):
 		return _grass_mesh
@@ -249,56 +271,6 @@ static func _ensure_static_meshes() -> void:
 		if mi != null and mi.mesh != null:
 			_grass_mesh = mi.mesh
 		grass_inst.free()
-
-	if _wheat_mesh == null:
-		var wheat_inst: Node = WHEAT_SCENE.instantiate()
-		var visual_root: Node3D = wheat_inst.get_node_or_null("VisualMesh") as Node3D
-		if visual_root != null:
-			_wheat_mesh = _build_combined_mesh_from_hierarchy(visual_root, Transform3D.IDENTITY)
-		wheat_inst.free()
-
-	if _flower_mesh == null:
-		_flower_mesh = _build_flower_combined_mesh("flower", FLOWER_SCENE)
-		_flower_variation_meshes["flower"] = _flower_mesh
-
-	for f_var_key in ["flower_blue", "flower_sunset", "flower_purple", "flower_white", "flower_turquoise"]:
-		if not _flower_variation_meshes.has(f_var_key):
-			_flower_variation_meshes[f_var_key] = _build_flower_combined_mesh(f_var_key, FLOWER_SCENE)
-
-	if _flower_rose_mesh == null:
-		_flower_rose_mesh = _build_flower_combined_mesh("flower_rose", FLOWER_ROSE_SCENE)
-		_flower_variation_meshes["flower_rose"] = _flower_rose_mesh
-
-	for r_var_key in ["flower_rose_white", "flower_rose_yellow", "flower_rose_blue", "flower_rose_wine", "flower_rose_black", "flower_rose_peach"]:
-		if not _flower_variation_meshes.has(r_var_key):
-			_flower_variation_meshes[r_var_key] = _build_flower_combined_mesh(r_var_key, FLOWER_ROSE_SCENE)
-
-	if _flower_daisy_mesh == null:
-		_flower_daisy_mesh = _build_flower_combined_mesh("flower_daisy", FLOWER_DAISY_SCENE)
-		_flower_variation_meshes["flower_daisy"] = _flower_daisy_mesh
-
-	for d_var_key in ["flower_daisy_blue", "flower_daisy_orange", "flower_daisy_yellow", "flower_daisy_red", "flower_daisy_pink", "flower_daisy_bicolor"]:
-		if not _flower_variation_meshes.has(d_var_key):
-			_flower_variation_meshes[d_var_key] = _build_flower_combined_mesh(d_var_key, FLOWER_DAISY_SCENE)
-
-	if _flower_sunflower_mesh == null:
-		_flower_sunflower_mesh = _build_flower_combined_mesh("flower_sunflower", FLOWER_SUNFLOWER_SCENE)
-
-	if _flower_tulip_mesh == null:
-		_flower_tulip_mesh = _build_flower_combined_mesh("flower_tulip", FLOWER_TULIP_SCENE)
-		_flower_variation_meshes["flower_tulip"] = _flower_tulip_mesh
-
-	for t_var_key in ["flower_tulip_yellow", "flower_tulip_purple", "flower_tulip_orange"]:
-		if not _flower_variation_meshes.has(t_var_key):
-			_flower_variation_meshes[t_var_key] = _build_flower_combined_mesh(t_var_key, FLOWER_TULIP_SCENE)
-
-	if _flower_bed_mesh == null:
-		_flower_bed_mesh = _build_flower_combined_mesh("flower_bed", FLOWER_BED_SCENE)
-		_flower_variation_meshes["flower_bed"] = _flower_bed_mesh
-
-	for b_var_key in ["flower_bed_blue", "flower_bed_white"]:
-		if not _flower_variation_meshes.has(b_var_key):
-			_flower_variation_meshes[b_var_key] = _build_flower_combined_mesh(b_var_key, FLOWER_BED_SCENE)
 
 
 static func _build_flower_combined_mesh(flower_type: String, packed_scene: PackedScene) -> ArrayMesh:
@@ -626,6 +598,8 @@ func build_from_level_json(
 			cutter.reset_orientation_to_camera()
 		if "vegetation_grid" in cutter:
 			cutter.set("vegetation_grid", self)
+
+	PlantScript.warmup_particle_pool(self, sp_world)
 
 	if goals.is_empty():
 		goals = { "grass": 1 }

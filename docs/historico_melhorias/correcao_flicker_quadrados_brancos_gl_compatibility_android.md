@@ -32,6 +32,11 @@ A análise frame a frame de gravações em vídeo no Android revelou que os arte
 3. **Desacoplamento de Interpolação da Barra da Lâmina e `shader_baker`:**
    - [`scripts/cutter/blade_progress_bar.gd`](../../scripts/cutter/blade_progress_bar.gd): definido `physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF` e `reset_physics_interpolation()` no `_ready()`.
    - [`export_presets.cfg`](../../export_presets.cfg): habilitado `shader_baker/enabled=true` no preset Android.
+4. **Warm-up de Shaders OpenGL ES 3.0, Lazy Loading Botânico por Fase e Zero I/O de Disco no Level Up:**
+   - [`scripts/cutter/cutter.gd`](../../scripts/cutter/cutter.gd): adicionado `_start_gpu_warmup()` para pré-aquecer os 4 tiers de lâmina (`blade_tier_1..4`), `shockwave_mesh` e `spark_particles` nos 2 primeiros frames da fase, eliminando travadas de compilação JIT ao evoluir a lâmina.
+   - [`scripts/plants/plant.gd`](../../scripts/plants/plant.gd): criada `warmup_particle_pool()` chamada em `VegetationGrid.build_from_level_json()` para pré-alocar os 36 `CPUParticles3D` e compilar o shader de partículas antes do 1º corte.
+   - [`scripts/plants/vegetation_grid.gd`](../../scripts/plants/vegetation_grid.gd): refatorado `_resolve_mesh_for_type()` para construir sob demanda (lazy loading) apenas as malhas das espécies presentes na fase atual em vez de instanciar todas as 28 flores na abertura da Fase 1.
+   - [`scripts/core/upgrade_manager.gd`](../../scripts/core/upgrade_manager.gd), [`scripts/core/save_manager.gd`](../../scripts/core/save_manager.gd), [`scripts/core/game_manager.gd`](../../scripts/core/game_manager.gd) e [`scripts/ui/hud.gd`](../../scripts/ui/hud.gd): removidas gravações síncronas em disco durante `add_blade_xp()` e `penalize_blade_hit()`, diferido `set_last_played_level()`, adicionado `save_game_deferred()` ao pausar e cacheada `_shared_goal_font` estática no HUD.
 
 ---
 

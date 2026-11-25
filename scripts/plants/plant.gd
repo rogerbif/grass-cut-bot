@@ -443,6 +443,8 @@ static func _emit_sub_burst(scene_root: Node, pos: Vector3, mesh: Mesh, col: Col
 		final_count = maxi(1, int(ceilf(float(count) * 0.5)))
 
 	emitter.mesh = mesh
+	if emitter.scale != Vector3.ONE:
+		emitter.scale = Vector3.ONE
 	if emitter.amount != final_count:
 		emitter.amount = final_count
 	emitter.emitting = false
@@ -611,3 +613,23 @@ static func _init_particle_pool(scene_root: Node) -> void:
 		p.scale_amount_curve = _scale_curve
 		scene_root.add_child(p)
 		_particle_pool.append(p)
+
+static func warmup_particle_pool(scene_root: Node, warmup_pos: Vector3) -> void:
+	if scene_root == null or not scene_root.is_inside_tree():
+		return
+	if _particle_pool.is_empty() or not is_instance_valid(_particle_pool[0]) or not _particle_pool[0].is_inside_tree():
+		_init_particle_pool(scene_root)
+	if _particle_pool.is_empty():
+		return
+	_ensure_particle_meshes()
+	var emitter: CPUParticles3D = _particle_pool[0]
+	emitter.mesh = _grass_blade_mesh
+	emitter.amount = 1
+	emitter.material_override = _get_or_create_particle_material(Color(0.25, 0.75, 0.3, 1.0))
+	emitter.scale = Vector3(0.001, 0.001, 0.001)
+	if emitter.is_inside_tree():
+		emitter.global_position = warmup_pos
+		emitter.reset_physics_interpolation()
+	else:
+		emitter.position = warmup_pos
+	emitter.restart()

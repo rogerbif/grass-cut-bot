@@ -45,6 +45,7 @@ const TEX_ILLUS_FLOWER_PETALS: Texture2D = preload("res://assets/ui/collection/i
 @onready var workshop_close_btn: Button = $WorkshopModal.find_child("CloseBtn", true, false) as Button
 
 # Dicionário de Goal Cards instanciados: { "grass": { "container": Node, "count_label": Label, ... } }
+static var _shared_goal_font: SystemFont = null
 var goal_cards: Dictionary = {}
 var _floating_icons_container: Control = null
 var _last_goal_fly_times: Dictionary = {}
@@ -265,10 +266,11 @@ func _create_goal_card(plant_type: String, target: int) -> void:
 	count_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.5))
 	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
 
-	var sys_font: SystemFont = SystemFont.new()
-	sys_font.font_names = PackedStringArray(["Segoe UI", "Arial Black", "Montserrat", "sans-serif"])
-	sys_font.font_weight = 900
-	count_lbl.add_theme_font_override("font", sys_font)
+	if _shared_goal_font == null:
+		_shared_goal_font = SystemFont.new()
+		_shared_goal_font.font_names = PackedStringArray(["Segoe UI", "Arial Black", "Montserrat", "sans-serif"])
+		_shared_goal_font.font_weight = 900
+	count_lbl.add_theme_font_override("font", _shared_goal_font)
 
 	vbox.add_child(count_lbl)
 	margin.add_child(vbox)

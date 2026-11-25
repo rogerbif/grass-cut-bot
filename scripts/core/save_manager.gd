@@ -392,9 +392,11 @@ func get_last_played_level() -> int:
 
 func set_last_played_level(lvl: int) -> void:
 	var pl: Dictionary = save_data.get("player", {}) as Dictionary
+	if int(pl.get("last_played_level", 1)) == lvl:
+		return
 	pl["last_played_level"] = lvl
 	save_data["player"] = pl
-	save_game()
+	save_game_deferred()
 
 func get_setting(key: String, default_val: Variant) -> Variant:
 	var st: Dictionary = save_data.get("settings", {}) as Dictionary

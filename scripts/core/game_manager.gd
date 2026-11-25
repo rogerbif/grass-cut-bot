@@ -364,6 +364,8 @@ func toggle_pause() -> void:
 		current_state = GameState.PAUSED
 		get_tree().paused = true
 		Engine.max_fps = FPS_PAUSED
+		if SaveManager != null and SaveManager.has_method("save_game_deferred"):
+			SaveManager.save_game_deferred()
 		if AudioManager != null:
 			AudioManager.play_sfx("pause")
 		game_paused.emit(true)
