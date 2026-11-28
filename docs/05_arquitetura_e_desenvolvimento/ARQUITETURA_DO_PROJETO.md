@@ -35,6 +35,7 @@ grass-cut-bot/
 │   ├── 03_level_design_e_fases/
 │   ├── 04_sistemas_e_gameplay/
 │   ├── 05_arquitetura_e_desenvolvimento/
+│   │   └── MAPA_DE_SIMBOLOS.md # Grafo de símbolos .gd/.tscn (gerado por tools/build_gd_graph.py)
 │   ├── historico_melhorias/   # Changelog perpétuo com 238+ relatórios técnicos
 │   ├── MELHORIAS_FUTURAS.md   # Roadmap de novidades e Bot Arquiteto Mobile
 │   └── PROJETO_GRASS_CUT_BOT.md # Hub mestre dos 5 Pilares
@@ -70,6 +71,7 @@ grass-cut-bot/
 │   ├── themes/                # island_theme_data.gd e theme_database.gd
 │   ├── tools/                 # Geradores automatizados, bump_version e validadores
 │   └── ui/                    # Controladores de HUD, modais e joystick flutuante
+├── tools/                     # Ferramentas Python offline (Blender, malhas e build_gd_graph.py)
 ├── README.md                  # Vitrine oficial do repositório no GitHub
 ├── GEMINI.md                  # Central de Guardrails Invariantes e Roteador Mestre
 ├── GDD.md                     # Ponteiro de referência rápida para o GDD canônico

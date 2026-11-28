@@ -8,12 +8,21 @@ description: >-
 
 Ao finalizar melhorias, fases ou refatorações, execute os seguintes 5 passos obrigatórios com rigor:
 
-## 1. Auditoria de Alterações
+## 1. Auditoria de Alterações e Assets 3D
 - Execute `git status` e `git diff` para mapear arquivos modificados e criados.
-- Se houverem assets 3D (.glb) alterados, garanta que foram exportados com `export_apply=True`, `export_yup=True`, orientação canônica em rot=0 (falésia em -Z) e que o cache `.godot/imported/` foi regenerado via `godot --headless --import`.
+- Se houverem assets 3D (`.glb`) alterados:
+  - Garanta que foram exportados do Blender com `export_apply=True` (para aplicar modificadores `Mirror` e deformadores) e `export_yup=True`. Em peças espelhadas, mantenha o pivô de simetria em $X=0$ ou compense os vértices (`v.co -= offset`).
+  - Confira a orientação canônica em `rot=0` (face externa/falésia para Norte $-Z$ no Godot / $-Y$ no Blender; face interna para Sul $+Z$ / $+Y$).
+  - Nunca dependa de `surface_material_override` em `.tscn` para filhos de `.glb` (o exportador binário da Godot 4 descarta ao compilar `.scn` no APK): garanta materiais base com albedo neutro no Blender e injeção via código (`FLOWER_MATERIALS`, `GRASS_MATERIALS`, etc.).
+  - Execute obrigatoriamente `godot --headless --import` para regenerar o cache `.godot/imported/` antes de validar ou rodar o jogo.
 
-## 2. Mapeamento e Atualização Canônica
+## 2. Mapeamento, Grafo de Símbolos e Atualização Canônica
+- Sempre que scripts `.gd` ou cenas `.tscn` forem adicionados, removidos ou alterados, regenere o grafo local de símbolos para manter a economia de tokens:
+  ```powershell
+  python tools/build_gd_graph.py
+  ```
 - Atualize os arquivos da pasta `docs/` de acordo com a Matriz do `GEMINI.md`:
+  - **Grafo de Símbolos:** `docs/05_arquitetura_e_desenvolvimento/MAPA_DE_SIMBOLOS.md` (gerado pelo script acima)
   - **Visão Geral e Design:** `docs/01_visao_geral_e_gdd/GDD_OFICIAL.md`, `docs/01_visao_geral_e_gdd/DIRECAO_DE_ARTE_E_VISUAL.md`
   - **Entidades e Mecânicas:** `docs/02_entidades_e_mecanicas/SISTEMA_DO_CORTADOR.md`, `docs/02_entidades_e_mecanicas/SISTEMA_DE_VEGETACAO.md`, `docs/02_entidades_e_mecanicas/SISTEMA_DE_OBSTACULOS_E_TERRENO.md`
   - **Level Design:** `docs/03_level_design_e_fases/ESTRUTURA_DAS_FASES.md`
@@ -37,4 +46,4 @@ Ao finalizar melhorias, fases ou refatorações, execute os seguintes 5 passos o
 - Execute `git status` para auditoria.
 - Execute `git add -A` e `git commit` utilizando `BypassSandbox: true` para evitar falhas de criação de lock (`.git/index.lock: Permission denied`) ocasionadas pelo isolamento do sandbox em caminhos do OneDrive no Windows.
 - Crie o commit semântico padronizado (Exemplo: `git commit -m "docs: atualizacao da wiki e historico [vX.Y.Z]"`).
-- **Push Obrigatório:** Execute obrigatoriamente `git push origin main` a cada nova versão atualizada (bump de versão) ou melhoria finalizada, mantendo o repositório remoto (`https://github.com/rogerbif/grass-cut-bot.git`) 100% sincronizado.
+- **Push Obrigatório:** Execute obrigatoriamente `git push origin main` a cada nova versão atualizada (bump de versão) ou melhoria finalizada, mantendo o repositório remoto (`https://github.com/rogerbif/grass-cut-bot.git`) 100% atualizado e sincronizado.
